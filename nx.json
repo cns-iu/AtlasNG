@@ -43,9 +43,29 @@
   "generators": {
     "@nx/angular:application": {
       "e2eTestRunner": "none",
-      "linter": "eslint",
+      "prefix": "ang",
       "style": "scss",
+      "tags": "application",
       "unitTestRunner": "vitest-angular"
+    },
+    "@nx/angular:component": {
+      "style": "scss",
+      "changeDetection": "OnPush",
+      "displayBlock": true,
+      "prefix": "ang"
+    },
+    "@nx/angular:directive": {
+      "prefix": "ang"
+    },
+    "@nx/angular:library": {
+      "linter": "eslint",
+      "unitTestRunner": "vitest-angular",
+      "changeDetection": "OnPush",
+      "displayBlock": true,
+      "prefix": "ang",
+      "publishable": true,
+      "style": "scss",
+      "tags": "library"
     }
   }
 }
