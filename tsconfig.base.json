@@ -23,7 +23,8 @@
     "paths": {
       "@atlasng/cdk": ["libs/cdk/src/index.ts"],
       "@atlasng/core": ["libs/core/src/index.ts"],
-      "@atlasng/design-system": ["libs/design-system/src/index.ts"]
+      "@atlasng/design-system": ["libs/design-system/src/index.ts"],
+      "@atlasng/common": ["libs/common/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

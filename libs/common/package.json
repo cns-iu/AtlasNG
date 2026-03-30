@@ -1,0 +1,8 @@
+{
+  "name": "@atlasng/common",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/core": "^21.2.0"
+  },
+  "sideEffects": false
+}
