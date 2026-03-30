@@ -22,6 +22,7 @@
     "useUnknownInCatchVariables": true,
     "paths": {
       "@atlasng/cdk": ["libs/cdk/src/index.ts"],
+      "@atlasng/core": ["libs/core/src/index.ts"],
       "@atlasng/design-system": ["libs/design-system/src/index.ts"]
     }
   },
