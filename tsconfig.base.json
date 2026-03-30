@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": ".",
     "rootDir": ".",
     "target": "es2023",
     "module": "preserve",
@@ -19,7 +20,9 @@
     "strict": true,
     "useDefineForClassFields": true,
     "useUnknownInCatchVariables": true,
-    "paths": {}
+    "paths": {
+      "@atlasng/design-system": ["libs/design-system/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"],
   "angularCompilerOptions": {
