@@ -7,73 +7,16 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/apps/AtlasNG",
-        "browser": "apps/AtlasNG/src/main.ts",
-        "tsConfig": "apps/AtlasNG/tsconfig.app.json",
-        "inlineStyleLanguage": "scss",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "apps/AtlasNG/public"
-          }
-        ],
-        "styles": ["apps/AtlasNG/src/styles.scss"]
-      },
-      "configurations": {
-        "production": {
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
-            },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
-              "maximumError": "8kb"
-            }
-          ],
-          "outputHashing": "all"
-        },
-        "development": {
-          "optimization": false,
-          "extractLicenses": false,
-          "sourceMap": true
-        }
-      },
-      "defaultConfiguration": "production"
+      "executor": "@nx/angular:application"
     },
     "serve": {
-      "continuous": true,
-      "executor": "@angular/build:dev-server",
-      "configurations": {
-        "production": {
-          "buildTarget": "AtlasNG:build:production"
-        },
-        "development": {
-          "buildTarget": "AtlasNG:build:development"
-        }
-      },
-      "defaultConfiguration": "development"
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/angular:dev-server"
     },
     "test": {
-      "executor": "@angular/build:unit-test",
-      "options": {}
+      "executor": "@nx/angular:unit-test"
     },
     "serve-static": {
-      "continuous": true,
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "AtlasNG:build",
-        "staticFilePath": "dist/apps/AtlasNG/browser",
-        "spa": true
-      }
+      "executor": "@nx/web:file-server"
     }
   }
 }

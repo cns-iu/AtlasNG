@@ -21,10 +21,97 @@
     "sharedGlobals": []
   },
   "targetDefaults": {
-    "@angular/build:application": {
+    "@nx/angular:application": {
       "cache": true,
       "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "inputs": ["production", "^production"],
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/{projectRoot}",
+        "browser": "{projectRoot}/src/main.ts",
+        "tsConfig": "{projectRoot}/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "styles": ["{projectRoot}/src/styles.scss"],
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "{projectRoot}/public"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "@nx/angular:package": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "outputs": ["dist/{projectRoot}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "project": "{projectRoot}/ng-package.json",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "{projectRoot}/tsconfig.lib.prod.json"
+        },
+        "development": {}
+      }
+    },
+    "@nx/angular:dev-server": {
+      "continuous": true,
+      "defaultConfiguration": "development",
+      "configurations": {
+        "production": {
+          "buildTarget": "{projectName}:build:production"
+        },
+        "development": {
+          "buildTarget": "{projectName}:build:development"
+        }
+      }
+    },
+    "@nx/angular:unit-test": {
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "options": {
+        "coverage": true,
+        "coverageReporters": ["html", "lcovonly", "json-summary", "text-summary"],
+        "coverageThresholds": {
+          "branches": 85,
+          "functions": 85,
+          "lines": 85,
+          "statements": 85
+        },
+        "watch": false
+      },
+      "configurations": {
+        "watch": {
+          "continuous": true,
+          "watch": true
+        }
+      }
     },
     "@nx/eslint:lint": {
       "cache": true,
@@ -35,18 +122,18 @@
         "{workspaceRoot}/eslint.config.mjs"
       ]
     },
-    "@angular/build:unit-test": {
-      "cache": true,
-      "inputs": ["default", "^production"]
+    "@nx/js:release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
     },
-    "@nx/angular:package": {
-      "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
-    },
-    "@nx/angular:unit-test": {
-      "cache": true,
-      "inputs": ["default", "^production"]
+    "@nx/web:file-server": {
+      "continuous": true,
+      "options": {
+        "buildTarget": "{projectName}:build",
+        "staticFilePath": "dist/{projectRoot}/browser",
+        "spa": true
+      }
     }
   },
   "generators": {
@@ -79,7 +166,7 @@
   },
   "release": {
     "version": {
-      "preVersionCommand": "npx nx run-many -t build"
+      "preVersionCommand": "npx nx run-many -t build --projects=tag:library"
     }
   }
 }
