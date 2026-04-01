@@ -1,1 +1,1 @@
-export * from './lib/design-system/design-system';
+export default {};

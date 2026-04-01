@@ -1,1 +1,1 @@
-export * from './lib/analytics/analytics';
+export default {};
