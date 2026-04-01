@@ -28,7 +28,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/{projectRoot}",
+        "outputPath": "{workspaceRoot}/dist/{projectRoot}",
         "browser": "{projectRoot}/src/main.ts",
         "tsConfig": "{projectRoot}/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
@@ -67,7 +67,7 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
-      "outputs": ["dist/{projectRoot}"],
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "defaultConfiguration": "production",
       "options": {
         "project": "{projectRoot}/ng-package.json",
@@ -124,14 +124,14 @@
     },
     "@nx/js:release-publish": {
       "options": {
-        "packageRoot": "dist/{projectRoot}"
+        "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
       }
     },
     "@nx/web:file-server": {
       "continuous": true,
       "options": {
         "buildTarget": "{projectName}:build",
-        "staticFilePath": "dist/{projectRoot}/browser",
+        "staticFilePath": "{workspaceRoot}/dist/{projectRoot}/browser",
         "spa": true
       }
     }
