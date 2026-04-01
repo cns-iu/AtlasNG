@@ -1,18 +1,15 @@
 {
-    "nxConsole.generatorAllowlist": [
-        "@nx/angular:*",
-        "@nx/eslint:workspace-rule",
-        "@nx/workspace:*move"
-    ],
-    "nxConsole.generatorBlocklist": [
-        "@nx/angular:convert*",
-        "@nx/angular:component-test",
-        "@nx/angular:federate-module",
-        "@nx/angular:remote",
-        "@nx/angular:host",
-        "@nx/angular:ngrx*",
-        "@nx/angular:scam*",
-        "@nx/angular:setup*",
-        "@nx/angular:cypress*"
-    ]
+  "nxConsole.generatorAllowlist": ["@nx/angular:*", "@nx/eslint:workspace-rule", "@nx/workspace:*move"],
+  "nxConsole.generatorBlocklist": [
+    "@nx/angular:convert*",
+    "@nx/angular:component-test",
+    "@nx/angular:federate-module",
+    "@nx/angular:remote",
+    "@nx/angular:host",
+    "@nx/angular:ngrx*",
+    "@nx/angular:scam*",
+    "@nx/angular:setup*",
+    "@nx/angular:cypress*"
+  ],
+  "conventionalCommits.scopes": ["AtlasNG", "analytics", "cdk", "common", "core", "design-system"]
 }
