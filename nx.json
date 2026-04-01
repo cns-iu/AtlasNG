@@ -1,7 +1,12 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "analytics": false,
-  "plugins": [{ "plugin": "@nx/eslint/plugin", "options": {} }],
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {}
+    }
+  ],
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
@@ -13,7 +18,7 @@
       "!{projectRoot}/.storybook/**/*",
       "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "targetDefaults": {
     "@nx/angular:application": {
@@ -28,7 +33,12 @@
         "tsConfig": "{projectRoot}/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "styles": ["{projectRoot}/src/styles.scss"],
-        "assets": [{ "glob": "**/*", "input": "{projectRoot}/public" }]
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "{projectRoot}/public"
+          }
+        ]
       },
       "configurations": {
         "production": {
@@ -64,7 +74,9 @@
         "tsConfig": "{projectRoot}/tsconfig.lib.json"
       },
       "configurations": {
-        "production": { "tsConfig": "{projectRoot}/tsconfig.lib.prod.json" },
+        "production": {
+          "tsConfig": "{projectRoot}/tsconfig.lib.prod.json"
+        },
         "development": {}
       }
     },
@@ -72,8 +84,12 @@
       "continuous": true,
       "defaultConfiguration": "development",
       "configurations": {
-        "production": { "buildTarget": "{projectName}:build:production" },
-        "development": { "buildTarget": "{projectName}:build:development" }
+        "production": {
+          "buildTarget": "{projectName}:build:production"
+        },
+        "development": {
+          "buildTarget": "{projectName}:build:development"
+        }
       }
     },
     "@nx/angular:unit-test": {
@@ -81,12 +97,7 @@
       "inputs": ["default", "^production"],
       "options": {
         "coverage": true,
-        "coverageReporters": [
-          "html",
-          "lcovonly",
-          "json-summary",
-          "text-summary"
-        ],
+        "coverageReporters": ["html", "lcovonly", "json-summary", "text-summary"],
         "coverageThresholds": {
           "branches": 85,
           "functions": 85,
@@ -95,7 +106,12 @@
         },
         "watch": false
       },
-      "configurations": { "watch": { "continuous": true, "watch": true } }
+      "configurations": {
+        "watch": {
+          "continuous": true,
+          "watch": true
+        }
+      }
     },
     "@nx/eslint:lint": {
       "cache": true,
@@ -107,7 +123,9 @@
       ]
     },
     "@nx/js:release-publish": {
-      "options": { "packageRoot": "dist/{projectRoot}" }
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
     },
     "@nx/web:file-server": {
       "continuous": true,
@@ -132,7 +150,9 @@
       "displayBlock": true,
       "prefix": "ang"
     },
-    "@nx/angular:directive": { "prefix": "ang" },
+    "@nx/angular:directive": {
+      "prefix": "ang"
+    },
     "@nx/angular:library": {
       "linter": "eslint",
       "unitTestRunner": "vitest-angular",

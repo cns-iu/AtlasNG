@@ -27,9 +27,7 @@ Use `provideAtlasNg()` to configure the platform at application bootstrap:
 import { provideAtlasNg } from '@atlasng/core';
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideAtlasNg()
-  ]
+  providers: [provideAtlasNg()],
 });
 ```
 
@@ -38,4 +36,3 @@ bootstrapApplication(AppComponent, {
 ### TODO: Dependency Injection Tokens
 
 ### TODO: Error Handling
-

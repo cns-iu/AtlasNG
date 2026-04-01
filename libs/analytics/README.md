@@ -29,12 +29,7 @@ Each feature is enabled by passing a `withXyz(...)` function, where `Xyz` is the
 import { provideAnalytics, withErrorHandler, withDebugLogging } from '@your-org/analytics';
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideAnalytics(
-      withErrorHandler(),
-      withDebugLogging()
-    )
-  ]
+  providers: [provideAnalytics(withErrorHandler(), withDebugLogging())],
 });
 ```
 
