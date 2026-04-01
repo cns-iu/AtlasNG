@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          filter: tree:0
+          fetch-depth: 0
+
+      - name: Enable task distribution via Nx Cloud
+        run: npx nx@22 start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="lint,test,build"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set Nx SHAs
+        uses: nrwl/nx-set-shas@v5
+
+      - name: Check for un-formatted files
+        run: npx nx format:check
+
+      - name: Run lint, test, and build for affected projects
+        run: npx nx affected -t lint test build
+
+      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
+      - name: Fix CI issues
+        run: npx nx fix-ci
+        if: always()
