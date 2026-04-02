@@ -15,6 +15,7 @@
       "!{projectRoot}/tsconfig.spec.json",
       "!{projectRoot}/**/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.storybook.json",
       "!{projectRoot}/.storybook/**/*",
       "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
     ],
@@ -80,7 +81,40 @@
         "development": {}
       }
     },
-    "@nx/angular:dev-server": {
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "cache": true,
+      "inputs": ["default", "^production", "{projectRoot}/.storybook/**/*", "{projectRoot}/tsconfig.storybook.json"],
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "{workspaceRoot}/dist/storybook/{projectRoot}",
+        "configDir": "{projectRoot}/.storybook",
+        "browserTarget": "{projectName}:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.mjs"
+      ]
+    },
+    "nx-release-publish": {
+      "executor": "@nx/js:release-publish",
+      "options": {
+        "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
+      }
+    },
+    "serve": {
+      "executor": "@nx/angular:dev-server",
       "continuous": true,
       "defaultConfiguration": "development",
       "configurations": {
@@ -92,7 +126,47 @@
         }
       }
     },
-    "@nx/angular:unit-test": {
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "continuous": true,
+      "options": {
+        "buildTarget": "{projectName}:build",
+        "staticFilePath": "{workspaceRoot}/dist/{projectRoot}/browser",
+        "spa": true
+      }
+    },
+    "serve-static-storybook": {
+      "executor": "@nx/web:file-server",
+      "continuous": true,
+      "dependsOn": ["build-storybook"],
+      "options": {
+        "buildTarget": "{projectName}:build-storybook",
+        "staticFilePath": "{workspaceRoot}/dist/storybook/{projectRoot}",
+        "spa": true
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "{projectName}:build-storybook:ci"
+        }
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "continuous": true,
+      "options": {
+        "port": 4400,
+        "configDir": "{projectRoot}/.storybook",
+        "browserTarget": "{projectName}:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/angular:unit-test",
       "cache": true,
       "inputs": ["default", "^production"],
       "options": {
@@ -113,26 +187,10 @@
         }
       }
     },
-    "@nx/eslint:lint": {
-      "cache": true,
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore",
-        "{workspaceRoot}/eslint.config.mjs"
-      ]
-    },
-    "@nx/js:release-publish": {
+    "test-storybook": {
+      "executor": "nx:run-commands",
       "options": {
-        "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
-      }
-    },
-    "@nx/web:file-server": {
-      "continuous": true,
-      "options": {
-        "buildTarget": "{projectName}:build",
-        "staticFilePath": "{workspaceRoot}/dist/{projectRoot}/browser",
-        "spa": true
+        "command": "test-storybook -c {projectRoot}/.storybook --url=http://localhost:4400"
       }
     }
   },

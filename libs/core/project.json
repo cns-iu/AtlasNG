@@ -16,11 +16,7 @@
     "build": {
       "executor": "@nx/angular:package"
     },
-    "nx-release-publish": {
-      "executor": "@nx/js:release-publish"
-    },
-    "test": {
-      "executor": "@nx/angular:unit-test"
-    }
+    "test": {},
+    "nx-release-publish": {}
   }
 }
