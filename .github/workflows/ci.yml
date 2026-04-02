@@ -57,7 +57,6 @@ jobs:
       - name: Run lint, test, and build for affected projects
         run: npx nx affected -t lint test build
 
-      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
       - name: Fix CI issues
+        if: ${{ !cancelled() }}
         run: npx nx fix-ci
-        if: always()
