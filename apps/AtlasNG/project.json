@@ -4,19 +4,13 @@
   "projectType": "application",
   "prefix": "ang",
   "sourceRoot": "apps/AtlasNG/src",
-  "tags": [],
+  "tags": ["application"],
   "targets": {
     "build": {
       "executor": "@nx/angular:application"
     },
-    "serve": {
-      "executor": "@nx/angular:dev-server"
-    },
-    "test": {
-      "executor": "@nx/angular:unit-test"
-    },
-    "serve-static": {
-      "executor": "@nx/web:file-server"
-    }
+    "serve": {},
+    "serve-static": {},
+    "test": {}
   }
 }

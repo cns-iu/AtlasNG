@@ -16,11 +16,11 @@
     "build": {
       "executor": "@nx/angular:package"
     },
-    "nx-release-publish": {
-      "executor": "@nx/js:release-publish"
-    },
-    "test": {
-      "executor": "@nx/angular:unit-test"
-    }
+    "build-storybook": {},
+    "serve-static-storybook": {},
+    "storybook": {},
+    "test": {},
+    "test-storybook": {},
+    "nx-release-publish": {}
   }
 }

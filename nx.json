@@ -1,7 +1,12 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "analytics": false,
-  "plugins": [{ "plugin": "@nx/eslint/plugin", "options": {} }],
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {}
+    }
+  ],
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
@@ -10,10 +15,11 @@
       "!{projectRoot}/tsconfig.spec.json",
       "!{projectRoot}/**/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.storybook.json",
       "!{projectRoot}/.storybook/**/*",
       "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "targetDefaults": {
     "@nx/angular:application": {
@@ -23,12 +29,17 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/{projectRoot}",
+        "outputPath": "{workspaceRoot}/dist/{projectRoot}",
         "browser": "{projectRoot}/src/main.ts",
         "tsConfig": "{projectRoot}/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "styles": ["{projectRoot}/src/styles.scss"],
-        "assets": [{ "glob": "**/*", "input": "{projectRoot}/public" }]
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "{projectRoot}/public"
+          }
+        ]
       },
       "configurations": {
         "production": {
@@ -57,47 +68,37 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
-      "outputs": ["dist/{projectRoot}"],
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "defaultConfiguration": "production",
       "options": {
         "project": "{projectRoot}/ng-package.json",
         "tsConfig": "{projectRoot}/tsconfig.lib.json"
       },
       "configurations": {
-        "production": { "tsConfig": "{projectRoot}/tsconfig.lib.prod.json" },
+        "production": {
+          "tsConfig": "{projectRoot}/tsconfig.lib.prod.json"
+        },
         "development": {}
       }
     },
-    "@nx/angular:dev-server": {
-      "continuous": true,
-      "defaultConfiguration": "development",
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "cache": true,
+      "inputs": ["default", "^production", "{projectRoot}/.storybook/**/*", "{projectRoot}/tsconfig.storybook.json"],
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "{workspaceRoot}/dist/storybook/{projectRoot}",
+        "configDir": "{projectRoot}/.storybook",
+        "browserTarget": "{projectName}:build-storybook",
+        "compodoc": false
+      },
       "configurations": {
-        "production": { "buildTarget": "{projectName}:build:production" },
-        "development": { "buildTarget": "{projectName}:build:development" }
+        "ci": {
+          "quiet": true
+        }
       }
     },
-    "@nx/angular:unit-test": {
-      "cache": true,
-      "inputs": ["default", "^production"],
-      "options": {
-        "coverage": true,
-        "coverageReporters": [
-          "html",
-          "lcovonly",
-          "json-summary",
-          "text-summary"
-        ],
-        "coverageThresholds": {
-          "branches": 85,
-          "functions": 85,
-          "lines": 85,
-          "statements": 85
-        },
-        "watch": false
-      },
-      "configurations": { "watch": { "continuous": true, "watch": true } }
-    },
-    "@nx/eslint:lint": {
+    "lint": {
       "cache": true,
       "inputs": [
         "default",
@@ -106,15 +107,90 @@
         "{workspaceRoot}/eslint.config.mjs"
       ]
     },
-    "@nx/js:release-publish": {
-      "options": { "packageRoot": "dist/{projectRoot}" }
+    "nx-release-publish": {
+      "executor": "@nx/js:release-publish",
+      "options": {
+        "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
+      }
     },
-    "@nx/web:file-server": {
+    "serve": {
+      "executor": "@nx/angular:dev-server",
+      "continuous": true,
+      "defaultConfiguration": "development",
+      "configurations": {
+        "production": {
+          "buildTarget": "{projectName}:build:production"
+        },
+        "development": {
+          "buildTarget": "{projectName}:build:development"
+        }
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
       "continuous": true,
       "options": {
         "buildTarget": "{projectName}:build",
-        "staticFilePath": "dist/{projectRoot}/browser",
+        "staticFilePath": "{workspaceRoot}/dist/{projectRoot}/browser",
         "spa": true
+      }
+    },
+    "serve-static-storybook": {
+      "executor": "@nx/web:file-server",
+      "continuous": true,
+      "dependsOn": ["build-storybook"],
+      "options": {
+        "buildTarget": "{projectName}:build-storybook",
+        "staticFilePath": "{workspaceRoot}/dist/storybook/{projectRoot}",
+        "spa": true
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "{projectName}:build-storybook:ci"
+        }
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "continuous": true,
+      "options": {
+        "port": 4400,
+        "configDir": "{projectRoot}/.storybook",
+        "browserTarget": "{projectName}:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/angular:unit-test",
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "options": {
+        "coverage": true,
+        "coverageReporters": ["html", "lcovonly", "json-summary", "text-summary"],
+        "coverageThresholds": {
+          "branches": 85,
+          "functions": 85,
+          "lines": 85,
+          "statements": 85
+        },
+        "watch": false
+      },
+      "configurations": {
+        "watch": {
+          "continuous": true,
+          "watch": true
+        }
+      }
+    },
+    "test-storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "test-storybook -c {projectRoot}/.storybook --url=http://localhost:4400"
       }
     }
   },
@@ -132,7 +208,9 @@
       "displayBlock": true,
       "prefix": "ang"
     },
-    "@nx/angular:directive": { "prefix": "ang" },
+    "@nx/angular:directive": {
+      "prefix": "ang"
+    },
     "@nx/angular:library": {
       "linter": "eslint",
       "unitTestRunner": "vitest-angular",
