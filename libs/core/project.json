@@ -4,13 +4,6 @@
   "sourceRoot": "libs/core/src",
   "prefix": "ang",
   "projectType": "library",
-  "release": {
-    "version": {
-      "manifestRootsToUpdate": ["dist/{projectRoot}"],
-      "currentVersionResolver": "git-tag",
-      "fallbackCurrentVersionResolver": "disk"
-    }
-  },
   "tags": ["library"],
   "targets": {
     "build": {
