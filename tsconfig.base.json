@@ -21,11 +21,12 @@
     "useDefineForClassFields": true,
     "useUnknownInCatchVariables": true,
     "paths": {
-      "@atlasng/analytics": ["libs/analytics/src/index.ts"],
-      "@atlasng/cdk": ["libs/cdk/src/index.ts"],
-      "@atlasng/common": ["libs/common/src/index.ts"],
-      "@atlasng/core": ["libs/core/src/index.ts"],
-      "@atlasng/design-system": ["libs/design-system/src/index.ts"]
+      "@atlasng/analytics": ["./libs/analytics/src/index.ts"],
+      "@atlasng/analytics/events": ["./libs/analytics/events/src/index.ts"],
+      "@atlasng/cdk": ["./libs/cdk/src/index.ts"],
+      "@atlasng/common": ["./libs/common/src/index.ts"],
+      "@atlasng/core": ["./libs/core/src/index.ts"],
+      "@atlasng/design-system": ["./libs/design-system/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
