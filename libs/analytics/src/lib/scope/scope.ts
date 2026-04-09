@@ -40,15 +40,11 @@ function buildPath(parent: IEventScope | null, name: () => string): string {
 
 /**
  * Resolves the active scope by combining the inherited parent scope with
- * local scope entries registered in the current injector (if any).
+ * local scope entries registered in the current injector.
  */
 function buildEventScope(): IEventScope {
   const parentScope = inject(EVENT_SCOPE, { skipSelf: true });
-  const entries = inject(EVENT_SCOPE_ENTRIES, { self: true, optional: true });
-  if (!entries) {
-    return parentScope;
-  }
-
+  const entries = inject(EVENT_SCOPE_ENTRIES, { self: true });
   const names = entries.filter((entry) => typeof entry === 'string').reverse();
   const scope = entries.find((entry) => typeof entry !== 'string');
   return names.reduce((currentScope, name) => new StaticEventScope(name, currentScope), scope ?? parentScope);
