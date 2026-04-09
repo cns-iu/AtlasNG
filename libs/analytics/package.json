@@ -2,6 +2,7 @@
   "name": "@atlasng/analytics",
   "version": "0.0.1",
   "peerDependencies": {
+    "@angular/core": "^21.2.6",
     "type-fest": "^5.5.0"
   },
   "sideEffects": false
