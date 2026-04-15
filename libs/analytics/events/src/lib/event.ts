@@ -1,9 +1,9 @@
 import { GetTagMetadata, Simplify, Tagged } from 'type-fest';
 
-/** Type of an analytics event */
+/** Type of an analytics event. */
 export type AnalyticsEventType = Tagged<string, 'AnalyticsEventType'>;
 
-/** Category for an analytics event */
+/** Category for an analytics event. */
 export enum AnalyticsEventCategory {
   Necessary = 'necessary',
   Statistics = 'statistics',
@@ -11,14 +11,14 @@ export enum AnalyticsEventCategory {
   Marketing = 'marketing',
 }
 
-/** Payload for an analytics event */
+/** Payload for an analytics event. */
 export type AnalyticsEventPayload<T = object> = Simplify<
   T & { [key: string]: unknown; path?: string; trigger?: string; triggerData?: unknown }
 >;
 
-/** Analytics event definition */
+/** Analytics event definition. */
 export type AnalyticsEvent<P = AnalyticsEventPayload> = Tagged<
-  { type: AnalyticsEventType; category: AnalyticsEventCategory },
+  `${AnalyticsEventCategory}:${AnalyticsEventType}`,
   'AnalyticsEvent',
   P
 >;
@@ -27,7 +27,7 @@ export type AnalyticsEvent<P = AnalyticsEventPayload> = Tagged<
 export type GetAnalyticsEventPayload<E extends AnalyticsEvent> = GetTagMetadata<E, 'AnalyticsEvent'>;
 
 /**
- * Create a new analytics event
+ * Create a new analytics event.
  *
  * @param type Unique event type
  * @param category Event category
@@ -37,5 +37,19 @@ export function createAnalyticsEvent<P = AnalyticsEventPayload>(
   type: string,
   category: AnalyticsEventCategory,
 ): AnalyticsEvent<P> {
-  return { type: type as AnalyticsEventType, category } as AnalyticsEvent<P>;
+  return `${category}:${type}` as AnalyticsEvent<P>;
+}
+
+/**
+ * Get the category of an analytics event.
+ */
+export function getAnalyticsEventCategory<E extends AnalyticsEvent>(event: E): AnalyticsEventCategory {
+  return event.split(':')[0] as AnalyticsEventCategory;
+}
+
+/**
+ * Get the type of an analytics event.
+ */
+export function getAnalyticsEventType<E extends AnalyticsEvent>(event: E): AnalyticsEventType {
+  return event.split(':')[1] as AnalyticsEventType;
 }
