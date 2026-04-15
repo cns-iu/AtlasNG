@@ -94,6 +94,7 @@ export function provideEventScope(name: string): Provider[] {
       useFactory: buildEventScope,
     },
   ],
+  exportAs: 'angEventScope',
 })
 export class EventScope implements IEventScope {
   /** Scope name */
