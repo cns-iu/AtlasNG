@@ -220,6 +220,9 @@
       "publishable": true,
       "style": "scss",
       "tags": "library"
+    },
+    "@nx/angular:library-secondary-entry-point": {
+      "skipModule": true
     }
   },
   "release": {
