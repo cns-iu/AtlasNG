@@ -179,12 +179,22 @@
           "statements": 85
         },
         "watch": false
-      },
-      "configurations": {
-        "watch": {
-          "continuous": true,
-          "watch": true
-        }
+      }
+    },
+    "test-watch": {
+      "executor": "@nx/angular:unit-test",
+      "continuous": true,
+      "inputs": ["default", "^production"],
+      "options": {
+        "coverage": true,
+        "coverageReporters": ["html", "lcovonly", "json-summary", "text-summary"],
+        "coverageThresholds": {
+          "branches": 85,
+          "functions": 85,
+          "lines": 85,
+          "statements": 85
+        },
+        "watch": true
       }
     },
     "test-storybook": {

@@ -10,6 +10,7 @@
       "executor": "@nx/angular:package"
     },
     "test": {},
+    "test-watch": {},
     "nx-release-publish": {}
   }
 }
