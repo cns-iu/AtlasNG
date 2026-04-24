@@ -32,25 +32,25 @@ export class Analytics {
   private readonly backend = inject(ANALYTICS_BACKEND, { optional: true });
 
   /**
-   * Log a page view event.
+   * Track a page view event.
    *
    * @param payload Overrides for the default page view event properties
    * @param options Additional options to pass to the analytics backend
-   * @returns A promise that resolves when the page view event has been logged
+   * @returns A promise that resolves when the page view event has been tracked
    */
-  logPageView(payload?: PageViewAnalyticsEventPayload, options?: Record<string, unknown>): Promise<void> {
+  trackPageView(payload?: PageViewAnalyticsEventPayload, options?: Record<string, unknown>): Promise<void> {
     return this.backend?.page(payload, options) ?? Promise.resolve();
   }
 
   /**
-   * Log an analytics event.
+   * Track an analytics event.
    *
    * @param event Event name
    * @param payload Event payload
    * @param options Additional options to pass to the analytics backend
-   * @returns A promise that resolves when the analytics event has been logged
+   * @returns A promise that resolves when the analytics event has been tracked
    */
-  logEvent<E extends AnalyticsEvent>(
+  trackEvent<E extends AnalyticsEvent>(
     event: E,
     payload: GetAnalyticsEventPayload<E>,
     options?: Record<string, unknown>,

@@ -24,7 +24,7 @@ export class AnalyticsErrorHandler implements ErrorHandler {
       console.error('Unhandled error', error);
     }
 
-    this.analytics.logEvent(CoreEvents.Error, {
+    this.analytics.trackEvent(CoreEvents.Error, {
       message: 'Unhandled error',
       reason: error,
     });
