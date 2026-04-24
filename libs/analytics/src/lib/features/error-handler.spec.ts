@@ -10,7 +10,7 @@ describe('AnalyticsErrorHandler', () => {
     const analytics = TestBed.inject(Analytics);
     const handler = TestBed.inject(AnalyticsErrorHandler);
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const logEventSpy = vi.spyOn(analytics, 'logEvent').mockImplementation(() => Promise.resolve());
+    const logEventSpy = vi.spyOn(analytics, 'trackEvent').mockImplementation(() => Promise.resolve());
 
     return { handler, consoleErrorSpy, logEventSpy };
   }

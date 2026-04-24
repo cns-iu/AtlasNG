@@ -6,8 +6,8 @@ import { ANALYTICS_BACKEND } from './backend';
 describe('Analytics', () => {
   it('does nothing if no backend is available', async () => {
     const analytics = TestBed.inject(Analytics);
-    await expect(analytics.logPageView()).resolves.toBeUndefined();
-    await expect(analytics.logEvent(CoreEvents.Click, {})).resolves.toBeUndefined();
+    await expect(analytics.trackPageView()).resolves.toBeUndefined();
+    await expect(analytics.trackEvent(CoreEvents.Click, {})).resolves.toBeUndefined();
   });
 
   it('forwards events to the backend', async () => {
@@ -24,10 +24,10 @@ describe('Analytics', () => {
     });
     const analytics = TestBed.inject(Analytics);
 
-    await expect(analytics.logPageView(pageViewPayload, options)).resolves.toBeUndefined();
+    await expect(analytics.trackPageView(pageViewPayload, options)).resolves.toBeUndefined();
     expect(backend.page).toHaveBeenCalledWith(pageViewPayload, options);
 
-    await expect(analytics.logEvent(CoreEvents.Click, eventPayload, options)).resolves.toBeUndefined();
+    await expect(analytics.trackEvent(CoreEvents.Click, eventPayload, options)).resolves.toBeUndefined();
     expect(backend.track).toHaveBeenCalledWith(CoreEvents.Click, eventPayload, options);
   });
 });
