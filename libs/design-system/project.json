@@ -13,7 +13,6 @@
     "serve-static-storybook": {},
     "storybook": {},
     "test": {},
-    "test-watch": {},
     "test-storybook": {},
     "nx-release-publish": {}
   }
