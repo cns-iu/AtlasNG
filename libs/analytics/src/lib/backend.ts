@@ -19,5 +19,3 @@ export interface AnalyticsBackend {
  * Injection token for the analytics backend.
  */
 export const ANALYTICS_BACKEND = new InjectionToken<AnalyticsBackend>('ANALYTICS_BACKEND');
-
-
