@@ -1,4 +1,5 @@
 import { computed, Directive, forwardRef, inject, InjectionToken, input, Provider } from '@angular/core';
+import { ANALYTICS_CONFIG } from './analytics';
 
 /**
  * An analytics event scope for grouping events.
@@ -21,8 +22,10 @@ export interface IEventScope {
  */
 export const EVENT_SCOPE = new InjectionToken<IEventScope>('EVENT_SCOPE', {
   providedIn: 'root',
-  // TODO use the app name or similar as the root scope name
-  factory: () => new StaticEventScope('root', null),
+  factory: () => {
+    const { rootScope, appName } = inject(ANALYTICS_CONFIG);
+    return new StaticEventScope(rootScope ?? appName ?? '', null);
+  },
 });
 
 /**
@@ -102,7 +105,7 @@ export class EventScope implements IEventScope {
   /** Parent scope */
   readonly parentScope = inject(EVENT_SCOPE, { skipSelf: true });
   /** Fully qualified scope path */
-  readonly path = computed((): string => buildPath(this.parentScope, this.name));
+  readonly path = computed(() => buildPath(this.parentScope, this.name));
 }
 
 /**

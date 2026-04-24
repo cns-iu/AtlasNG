@@ -3,8 +3,6 @@ import { AnalyticsEvent, GetAnalyticsEventPayload, PageViewAnalyticsEventPayload
 
 /**
  * Analytics backend interface for handling analytics events.
- * Mirrors a subset of the methods provided by the {@link https://getanalytics.io/|analytics} library,
- * but can be implemented by any analytics backend.
  */
 export interface AnalyticsBackend {
   /** Log a page view event. */
