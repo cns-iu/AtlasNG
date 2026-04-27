@@ -1,5 +1,5 @@
 import { inject, Injectable, InjectionToken } from '@angular/core';
-import { AnalyticsEvent, GetAnalyticsEventPayload, PageViewAnalyticsEventPayload } from '@atlasng/analytics/events';
+import { AnalyticsEvent, AnalyticsEventPayloadFor, PageViewAnalyticsEventPayload } from '@atlasng/analytics/events';
 import { ANALYTICS_BACKEND } from './backend';
 
 /** Analytics configuration */
@@ -52,7 +52,7 @@ export class Analytics {
    */
   trackEvent<E extends AnalyticsEvent>(
     event: E,
-    payload: GetAnalyticsEventPayload<E>,
+    payload: AnalyticsEventPayloadFor<E>,
     options?: Record<string, unknown>,
   ): Promise<void> {
     return this.backend?.track(event, payload, options) ?? Promise.resolve();

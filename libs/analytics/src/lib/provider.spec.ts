@@ -6,6 +6,15 @@ import { ErrorHandler } from '@angular/core';
 import { CoreEvents } from '@atlasng/analytics/events';
 
 describe('provideAnalytics', () => {
+  function enableProdMode() {
+    const global = globalThis as Record<string, unknown>;
+    const originalNgDevMode = global['ngDevMode'];
+    global['ngDevMode'] = false;
+    return () => {
+      global['ngDevMode'] = originalNgDevMode;
+    };
+  }
+
   function createMockBackend(): AnalyticsBackend {
     return {
       page: vi.fn().mockResolvedValue(undefined),
@@ -24,7 +33,7 @@ describe('provideAnalytics', () => {
   it('should provide a global error handler', () => {
     const backend = createMockBackend();
     const providers = provideAnalytics(
-      {},
+      undefined,
       withGlobalErrorHandler(),
       withCustomBackend(() => backend),
     );
@@ -87,5 +96,13 @@ describe('provideAnalytics', () => {
     const setup = () => provideAnalytics({});
 
     expect(setup).toThrow();
+  });
+
+  it('should not check for backend misconfiguration when in prod mode', () => {
+    const restoreDevMode = enableProdMode();
+    const setup = () => provideAnalytics();
+
+    expect(setup).not.toThrow();
+    restoreDevMode();
   });
 });

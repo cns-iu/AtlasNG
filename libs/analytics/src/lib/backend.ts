@@ -1,5 +1,5 @@
 import { InjectionToken } from '@angular/core';
-import { AnalyticsEvent, GetAnalyticsEventPayload, PageViewAnalyticsEventPayload } from '@atlasng/analytics/events';
+import { AnalyticsEvent, AnalyticsEventPayloadFor, PageViewAnalyticsEventPayload } from '@atlasng/analytics/events';
 
 /**
  * Analytics backend interface for handling analytics events.
@@ -10,7 +10,7 @@ export interface AnalyticsBackend {
   /** Log an analytics event. */
   track<E extends AnalyticsEvent>(
     event: E,
-    payload: GetAnalyticsEventPayload<E>,
+    payload: AnalyticsEventPayloadFor<E>,
     options?: Record<string, unknown>,
   ): Promise<void>;
 }
