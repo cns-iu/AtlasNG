@@ -24,7 +24,7 @@ export type AnalyticsEvent<P = AnalyticsEventPayload> = Tagged<
 >;
 
 /** Get the payload type for a given analytics event */
-export type GetAnalyticsEventPayload<E extends AnalyticsEvent> = GetTagMetadata<E, 'AnalyticsEvent'>;
+export type AnalyticsEventPayloadFor<E extends AnalyticsEvent> = GetTagMetadata<E, 'AnalyticsEvent'>;
 
 /**
  * Create a new analytics event.

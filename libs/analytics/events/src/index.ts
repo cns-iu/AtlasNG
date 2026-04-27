@@ -6,6 +6,6 @@ export {
   getAnalyticsEventType,
   type AnalyticsEvent,
   type AnalyticsEventPayload,
+  type AnalyticsEventPayloadFor,
   type AnalyticsEventType,
-  type GetAnalyticsEventPayload,
 } from './lib/event';
