@@ -21,12 +21,10 @@ npm install @atlasng/analytics
 
 ### Configuration
 
-Use `provideAnalytics` to configure the analytics system. It accepts zero or more feature functions.
-
-Each feature is enabled by passing a `withXyz(...)` function, where `Xyz` is the feature name.
+Use `provideAnalytics` to configure the analytics system.
 
 ```ts
-import { provideAnalytics, withErrorHandler, withDebugLogging } from '@your-org/analytics';
+import { provideAnalytics, withErrorHandler, withDebugLogging } from '@atlasng/analytics';
 
 bootstrapApplication(AppComponent, {
   providers: [provideAnalytics(withErrorHandler(), withDebugLogging())],
