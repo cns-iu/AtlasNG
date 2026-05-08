@@ -2,5 +2,11 @@
   "name": "@atlasng/design-system",
   "version": "0.0.1",
   "peerDependencies": {},
+  "devDependencies": {
+    "@storybook/addon-a11y": "*",
+    "@storybook/addon-designs": "*",
+    "@storybook/addon-docs": "*",
+    "@storybook/addon-themes": "*"
+  },
   "sideEffects": false
 }
