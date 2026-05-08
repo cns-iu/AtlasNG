@@ -1,0 +1,36 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+@use '@angular/material' as mat;
+@use './cns/theme.scss' as cns-theme;
+@use './hra/theme.scss' as hra-theme;
+@use './wpp/theme.scss' as wpp-theme;
+
+$themes: (cns, hra, wpp);
+
+@each $name in $themes {
+  $variables: meta.module-variables('#{$name}-theme');
+  $theme: (
+    color: (
+        primary: map.get($variables, 'primary-palette'),
+        tertiary: map.get($variables, 'tertiary-palette'),
+      ),
+    typography: map.get($variables, 'typography'),
+    density: 0,
+  );
+  $overrides: ();
+
+  @each $key, $map in $variables {
+    @if (string.index($key, '-overrides')) {
+      $overrides: map.merge($overrides, map.get($variables, $key));
+    }
+  }
+
+  .#{$name}-light-theme {
+    @include mat.theme(map.set($theme, color, theme-type, light), $overrides);
+  }
+
+  .#{$name}-dark-theme {
+    @include mat.theme(map.set($theme, color, theme-type, dark), $overrides);
+  }
+}
