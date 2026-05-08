@@ -82,19 +82,19 @@ function toPx(value) {
 
 function toCornerValue(key, value) {
   if (key.endsWith('-top')) {
-    return `(${toPx(value)} ${toPx(value)} 0 0)`;
+    return `${toPx(value)} ${toPx(value)} 0 0`;
   }
 
   if (key.endsWith('-bottom')) {
-    return `(0 0 ${toPx(value)} ${toPx(value)})`;
+    return `0 0 ${toPx(value)} ${toPx(value)}`;
   }
 
   if (key.endsWith('-start')) {
-    return `(${toPx(value)} 0 0 ${toPx(value)})`;
+    return `${toPx(value)} 0 0 ${toPx(value)}`;
   }
 
   if (key.endsWith('-end')) {
-    return `(0 ${toPx(value)} ${toPx(value)} 0)`;
+    return `0 ${toPx(value)} ${toPx(value)} 0`;
   }
 
   return toPx(value);
