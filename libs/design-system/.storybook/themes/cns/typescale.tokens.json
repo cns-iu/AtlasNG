@@ -6,9 +6,7 @@
         "$value": "Metropolis",
         "$extensions": {
           "com.figma.variableId": "VariableID:14758:29597",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b4bc959038467ca14f1d7562e8cf05eedbf877b5/-1:-1",
@@ -24,9 +22,7 @@
         "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14758:29598",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e1f1521f7ecea153e319cc8cefd23c864519b5bb/-1:-1",
@@ -42,9 +38,7 @@
         "$value": "Medium Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29606",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:529bd714d71f7aa6b7efe29bb4da05661bbc00ae/-1:-1",
@@ -60,9 +54,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14758:29599",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -78,9 +70,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29607",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -96,9 +86,7 @@
         "$value": 46,
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29600",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -107,9 +95,7 @@
         "$value": 62,
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29601",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -118,9 +104,7 @@
         "$value": -1,
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29602",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -131,9 +115,7 @@
         "$value": "Metropolis",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33451",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b4bc959038467ca14f1d7562e8cf05eedbf877b5/-1:-1",
@@ -149,9 +131,7 @@
         "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33452",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e1f1521f7ecea153e319cc8cefd23c864519b5bb/-1:-1",
@@ -167,9 +147,7 @@
         "$value": "Medium Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33453",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:529bd714d71f7aa6b7efe29bb4da05661bbc00ae/-1:-1",
@@ -185,9 +163,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33454",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -203,9 +179,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33455",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -221,9 +195,7 @@
         "$value": 39,
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33456",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -232,9 +204,7 @@
         "$value": 54,
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33457",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -243,9 +213,7 @@
         "$value": -0.75,
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33458",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -256,9 +224,7 @@
         "$value": "Metropolis",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52730",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b4bc959038467ca14f1d7562e8cf05eedbf877b5/-1:-1",
@@ -274,9 +240,7 @@
         "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52731",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e1f1521f7ecea153e319cc8cefd23c864519b5bb/-1:-1",
@@ -292,9 +256,7 @@
         "$value": "Medium Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52732",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:529bd714d71f7aa6b7efe29bb4da05661bbc00ae/-1:-1",
@@ -310,9 +272,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52733",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -328,9 +288,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52734",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -346,9 +304,7 @@
         "$value": 36,
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52735",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -357,9 +313,7 @@
         "$value": 44,
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52736",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -368,9 +322,7 @@
         "$value": -0.5,
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52737",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -381,9 +333,7 @@
         "$value": "Metropolis",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47501",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b4bc959038467ca14f1d7562e8cf05eedbf877b5/-1:-1",
@@ -399,9 +349,7 @@
         "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47502",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e1f1521f7ecea153e319cc8cefd23c864519b5bb/-1:-1",
@@ -417,9 +365,7 @@
         "$value": "Medium Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47503",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:529bd714d71f7aa6b7efe29bb4da05661bbc00ae/-1:-1",
@@ -435,9 +381,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47504",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -453,9 +397,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47505",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -471,9 +413,7 @@
         "$value": 32,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47506",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -482,9 +422,7 @@
         "$value": 40,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47507",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -493,9 +431,7 @@
         "$value": -0.5,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47508",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -506,9 +442,7 @@
         "$value": "Metropolis",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47543",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b4bc959038467ca14f1d7562e8cf05eedbf877b5/-1:-1",
@@ -524,9 +458,7 @@
         "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47544",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e1f1521f7ecea153e319cc8cefd23c864519b5bb/-1:-1",
@@ -542,9 +474,7 @@
         "$value": "Medium Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47545",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:529bd714d71f7aa6b7efe29bb4da05661bbc00ae/-1:-1",
@@ -560,9 +490,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47546",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -578,9 +506,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47547",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -596,9 +522,7 @@
         "$value": 28,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47548",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -607,9 +531,7 @@
         "$value": 36,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47549",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -618,9 +540,7 @@
         "$value": -0.4000000059604645,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47550",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -631,9 +551,7 @@
         "$value": "Metropolis",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47551",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b4bc959038467ca14f1d7562e8cf05eedbf877b5/-1:-1",
@@ -649,9 +567,7 @@
         "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47552",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e1f1521f7ecea153e319cc8cefd23c864519b5bb/-1:-1",
@@ -667,9 +583,7 @@
         "$value": "Medium Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47553",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:529bd714d71f7aa6b7efe29bb4da05661bbc00ae/-1:-1",
@@ -685,9 +599,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47554",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -703,9 +615,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47555",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -721,9 +631,7 @@
         "$value": 24,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47556",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -732,9 +640,7 @@
         "$value": 32,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47557",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -743,9 +649,7 @@
         "$value": -0.20000000298023224,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47558",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -756,9 +660,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51320",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -774,9 +676,7 @@
         "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51321",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e1f1521f7ecea153e319cc8cefd23c864519b5bb/-1:-1",
@@ -792,9 +692,7 @@
         "$value": "Medium Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51322",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:529bd714d71f7aa6b7efe29bb4da05661bbc00ae/-1:-1",
@@ -810,9 +708,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51323",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -828,9 +724,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51324",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -846,9 +740,7 @@
         "$value": 22,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51325",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -857,9 +749,7 @@
         "$value": 28,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51326",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -868,9 +758,7 @@
         "$value": 0,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51327",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b2f6cbfabd32404bc951c5014fd4f944e3e71bc6/-1:-1",
             "targetVariableName": "Tracking/None",
@@ -887,9 +775,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51328",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -905,9 +791,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51329",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -923,9 +807,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51330",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -941,9 +823,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51331",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -959,9 +839,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51332",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -977,9 +855,7 @@
         "$value": 16,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51333",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -988,9 +864,7 @@
         "$value": 24,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51334",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -999,9 +873,7 @@
         "$value": 0.15000000596046448,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51335",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -1012,9 +884,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51336",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -1030,9 +900,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51337",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -1048,9 +916,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51338",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -1066,9 +932,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51339",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -1084,9 +948,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51340",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -1102,9 +964,7 @@
         "$value": 14,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51341",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1113,9 +973,7 @@
         "$value": 21,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51342",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1124,9 +982,7 @@
         "$value": 0.10000000149011612,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51343",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:7fdffc824b729fd31112602c995075851ca97583/-1:-1",
             "targetVariableName": "Tracking/Small",
@@ -1143,9 +999,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56617",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -1161,9 +1015,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56618",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -1179,9 +1031,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56619",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -1197,9 +1047,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56620",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -1215,9 +1063,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56621",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -1233,9 +1079,7 @@
         "$value": 14,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56622",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1244,9 +1088,7 @@
         "$value": 21,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56623",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1255,9 +1097,7 @@
         "$value": 0.10000000149011612,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56624",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -1268,9 +1108,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56625",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -1286,9 +1124,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56626",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -1304,9 +1140,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56627",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -1322,9 +1156,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56628",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -1340,9 +1172,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56629",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -1358,9 +1188,7 @@
         "$value": 12,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56630",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1369,9 +1197,7 @@
         "$value": 16,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56631",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1380,9 +1206,7 @@
         "$value": 0.5,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56632",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -1393,9 +1217,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56633",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -1411,9 +1233,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56634",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -1429,9 +1249,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56635",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -1447,9 +1265,7 @@
         "$value": "Bold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56636",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:3e7edf33aa19f07b628e3ddb3eeb0e2515d5e58f/-1:-1",
@@ -1465,9 +1281,7 @@
         "$value": "Bold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56637",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:e5dad058540f7040a0b985ffb242c533125a881a/-1:-1",
@@ -1483,9 +1297,7 @@
         "$value": 11,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56638",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1494,9 +1306,7 @@
         "$value": 16,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56639",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1505,9 +1315,7 @@
         "$value": 0.5,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56640",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -1518,9 +1326,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29608",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -1536,9 +1342,7 @@
         "$value": "Regular",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29609",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:6c08cd4633a1bfcf5a86f882e54ea887d36ff817/-1:-1",
@@ -1554,9 +1358,7 @@
         "$value": "Regular Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29610",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:9667ef4dd12df637641d56f5591681fb89e296cf/-1:-1",
@@ -1572,9 +1374,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29611",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -1590,9 +1390,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29612",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -1608,9 +1406,7 @@
         "$value": 16,
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29613",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1619,9 +1415,7 @@
         "$value": 24,
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29614",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1630,9 +1424,7 @@
         "$value": 0,
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29615",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b2f6cbfabd32404bc951c5014fd4f944e3e71bc6/-1:-1",
             "targetVariableName": "Tracking/None",
@@ -1647,9 +1439,7 @@
         "$value": 16,
         "$extensions": {
           "com.figma.variableId": "VariableID:14934:79483",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -1660,9 +1450,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33435",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -1678,9 +1466,7 @@
         "$value": "Regular",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33436",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:6c08cd4633a1bfcf5a86f882e54ea887d36ff817/-1:-1",
@@ -1696,9 +1482,7 @@
         "$value": "Regular Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33437",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:9667ef4dd12df637641d56f5591681fb89e296cf/-1:-1",
@@ -1714,9 +1498,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33438",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -1732,9 +1514,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33439",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -1750,9 +1530,7 @@
         "$value": 14,
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33440",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1761,9 +1539,7 @@
         "$value": 21,
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33441",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1772,9 +1548,7 @@
         "$value": 0.20000000298023224,
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33442",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1783,9 +1557,7 @@
         "$value": 14,
         "$extensions": {
           "com.figma.variableId": "VariableID:14934:79482",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -1796,9 +1568,7 @@
         "$value": "Nunito Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33443",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
@@ -1814,9 +1584,7 @@
         "$value": "Regular",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33444",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:6c08cd4633a1bfcf5a86f882e54ea887d36ff817/-1:-1",
@@ -1832,9 +1600,7 @@
         "$value": "Regular Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33445",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:9667ef4dd12df637641d56f5591681fb89e296cf/-1:-1",
@@ -1850,9 +1616,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33446",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -1868,9 +1632,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33447",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -1886,9 +1648,7 @@
         "$value": 12,
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33448",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1897,9 +1657,7 @@
         "$value": 18,
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33449",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1908,9 +1666,7 @@
         "$value": 0.4000000059604645,
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33450",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -1919,9 +1675,7 @@
         "$value": 12,
         "$extensions": {
           "com.figma.variableId": "VariableID:14934:79481",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       }
@@ -1932,9 +1686,7 @@
         "$value": "Roboto Mono",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:52989",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:26ea3d8415498901b85ad5deb5ee36cb2075995e/-1:-1",
@@ -1950,9 +1702,7 @@
         "$value": "Regular",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:52990",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:6c08cd4633a1bfcf5a86f882e54ea887d36ff817/-1:-1",
@@ -1968,9 +1718,7 @@
         "$value": "Regular Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:52991",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:9667ef4dd12df637641d56f5591681fb89e296cf/-1:-1",
@@ -1986,9 +1734,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:52992",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -2004,9 +1750,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:52993",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -2022,9 +1766,7 @@
         "$value": 16,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:52994",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -2033,9 +1775,7 @@
         "$value": 24,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:52995",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -2044,9 +1784,7 @@
         "$value": 0,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:52996",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b2f6cbfabd32404bc951c5014fd4f944e3e71bc6/-1:-1",
             "targetVariableName": "Tracking/None",
@@ -2063,9 +1801,7 @@
         "$value": "Roboto Mono",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53006",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:26ea3d8415498901b85ad5deb5ee36cb2075995e/-1:-1",
@@ -2081,9 +1817,7 @@
         "$value": "Regular",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53007",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:6c08cd4633a1bfcf5a86f882e54ea887d36ff817/-1:-1",
@@ -2099,9 +1833,7 @@
         "$value": "Regular Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53008",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:9667ef4dd12df637641d56f5591681fb89e296cf/-1:-1",
@@ -2117,9 +1849,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53009",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -2135,9 +1865,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53010",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -2153,9 +1881,7 @@
         "$value": 14,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53011",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -2164,9 +1890,7 @@
         "$value": 21,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53012",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -2175,9 +1899,7 @@
         "$value": 0,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53013",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:b2f6cbfabd32404bc951c5014fd4f944e3e71bc6/-1:-1",
             "targetVariableName": "Tracking/None",
@@ -2194,9 +1916,7 @@
         "$value": "Roboto Mono",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53015",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:26ea3d8415498901b85ad5deb5ee36cb2075995e/-1:-1",
@@ -2212,9 +1932,7 @@
         "$value": "Regular",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53016",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:6c08cd4633a1bfcf5a86f882e54ea887d36ff817/-1:-1",
@@ -2230,9 +1948,7 @@
         "$value": "Regular Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53017",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:9667ef4dd12df637641d56f5591681fb89e296cf/-1:-1",
@@ -2248,9 +1964,7 @@
         "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53018",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
@@ -2266,9 +1980,7 @@
         "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53019",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.type": "string",
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
@@ -2284,9 +1996,7 @@
         "$value": 12,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53020",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -2295,9 +2005,7 @@
         "$value": 18,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53021",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.isOverride": true
         }
       },
@@ -2306,9 +2014,7 @@
         "$value": 0.10000000149011612,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53022",
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
+          "com.figma.scopes": ["ALL_SCOPES"],
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:7fdffc824b729fd31112602c995075851ca97583/-1:-1",
             "targetVariableName": "Tracking/Small",
