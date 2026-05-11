@@ -10,8 +10,8 @@ $config: (
     text-size: token-utils.sys-token(body-small-size),
     text-weight: token-utils.sys-token(body-small-weight),
     text-line-height: token-utils.sys-token(body-small-line-height),
-    text-tracking: token-utils.sys-token(body-small-tracking)
-  )
+    text-tracking: token-utils.sys-token(body-small-tracking),
+  ),
 );
 
 @mixin overrides($overrides) {
