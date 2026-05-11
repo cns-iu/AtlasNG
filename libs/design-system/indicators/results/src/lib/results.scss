@@ -1,0 +1,15 @@
+:host {
+  --hra-results-indicator-height: 3.5rem;
+  font: var(--mat-sys-body-small);
+  letter-spacing: var(--mat-sys-body-small-tracking);
+  min-height: var(--hra-results-indicator-height);
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--mat-sys-surface-bright);
+  border: 0.0625rem solid var(--mat-sys-outline-variant);
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  padding: 0 1rem;
+}
