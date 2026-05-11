@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component, input, numberAttribute } from '@ang
  * End of Results Component
  */
 @Component({
-  selector: 'hra-end-of-results',
+  selector: 'ang-end-of-results',
   imports: [CommonModule],
   templateUrl: './end-of-results.component.html',
   styleUrl: './end-of-results.component.scss',
