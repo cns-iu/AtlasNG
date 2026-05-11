@@ -1,1 +1,1 @@
-export * from './lib/end-of-results.component';
+export * from './lib/end-of-results';
