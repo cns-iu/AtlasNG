@@ -9,7 +9,7 @@ import { ChangeDetectionStrategy, Component, input, numberAttribute } from '@ang
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Results {
-    /** Input for value */
+  /** Input for value */
   readonly value = input.required({ transform: numberAttribute });
   /** Input for total */
   readonly total = input.required({ transform: numberAttribute });
