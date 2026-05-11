@@ -1,0 +1,19 @@
+@use 'token-utils';
+
+$config: (
+  namespace: 'results',
+  tokens: (
+    color: token-utils.sys-token(on-surface-variant),
+    background-color: token-utils.sys-token(surface-bright),
+    border-color: token-utils.sys-token(outline-variant),
+    text-font: token-utils.sys-token(body-small-font),
+    text-size: token-utils.sys-token(body-small-size),
+    text-weight: token-utils.sys-token(body-small-weight),
+    text-line-height: token-utils.sys-token(body-small-line-height),
+    text-tracking: token-utils.sys-token(body-small-tracking)
+  )
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

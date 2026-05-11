@@ -1,15 +1,22 @@
+@use 'token-utils';
+@use './tokens' as *;
+
 :host {
   --hra-results-indicator-height: 3.5rem;
-  font: var(--mat-sys-body-small);
-  letter-spacing: var(--mat-sys-body-small-tracking);
-  min-height: var(--hra-results-indicator-height);
-  color: var(--mat-sys-on-surface-variant);
-  background: var(--mat-sys-surface-bright);
-  border: 0.0625rem solid var(--mat-sys-outline-variant);
 
   display: inline-flex;
   justify-content: center;
   align-items: center;
   border-radius: 0.5rem;
   padding: 0 1rem;
+
+  min-height: var(--hra-results-indicator-height);
+  font-family: token-utils.slot(text-font, $config);
+  font-size: token-utils.slot(text-size, $config);
+  font-weight: token-utils.slot(text-weight, $config);
+  line-height: token-utils.slot(text-line-height, $config);
+  letter-spacing: token-utils.slot(text-tracking, $config);
+  color: token-utils.slot(color, $config);
+  background-color: token-utils.slot(background-color, $config);
+  border: 1px solid token-utils.slot(border-color, $config);
 }
