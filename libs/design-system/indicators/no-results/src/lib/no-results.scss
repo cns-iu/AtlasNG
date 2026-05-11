@@ -1,0 +1,22 @@
+@use 'token-utils';
+@use './tokens' as *;
+
+:host {
+  display: block;
+
+  .indicator-text {
+    font-family: token-utils.slot(text-font, $config);
+    font-size: token-utils.slot(text-size, $config);
+    font-weight: token-utils.slot(text-weight, $config);
+    line-height: token-utils.slot(text-line-height, $config);
+    letter-spacing: token-utils.slot(text-tracking, $config);
+    color: token-utils.slot(color, $config);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  button {
+    display: block;
+    margin: 0 auto;
+  }
+}
