@@ -1,35 +1,40 @@
+@use 'token-utils';
+@use './tokens' as *;
+
 :host {
   display: flex;
   flex-direction: column;
-  width: 40rem;
-  gap: 2rem;
+  gap: 32px;
 
   .container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 0.75rem;
+    gap: 12px;
 
     .results-count,
     .end-message {
-      font: var(--mat-sys-body-medium);
-      letter-spacing: var(--mat-sys-body-medium-tracking);
-      color: var(--mat-sys-on-surface-variant);
-      background-color: var(--mat-sys-surface-bright);
-      border: 0.0625rem solid var(--mat-sys-outline-variant);
-
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
       min-height: 2.5rem;
       min-width: 5rem;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
+      padding: 8px 16px;
+      border-radius: token-utils.sys-slot(corner-small);
+
+      font-family: token-utils.slot(text-font, $config);
+      font-size: token-utils.slot(text-size, $config);
+      font-weight: token-utils.slot(text-weight, $config);
+      line-height: token-utils.slot(text-line-height, $config);
+      letter-spacing: token-utils.slot(text-tracking, $config);
+      color: token-utils.slot(color, $config);
+      background-color: token-utils.slot(background-color, $config);
+      border: 1px solid token-utils.slot(border-color, $config);
     }
 
-    @media (min-width: 40rem) {
+    @media (min-width: 640px) {
       flex-direction: row;
 
       .results-count,
