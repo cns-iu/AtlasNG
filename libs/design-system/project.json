@@ -11,13 +11,19 @@
     },
     "build-storybook": {
       "options": {
-        "styles": ["libs/design-system/.storybook/themes/all-themes.scss"]
+        "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/design-system/internal/scss"]
+        }
       }
     },
     "serve-static-storybook": {},
     "storybook": {
       "options": {
-        "styles": ["libs/design-system/.storybook/themes/all-themes.scss"]
+        "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/design-system/internal/scss"]
+        }
       }
     },
     "test": {},
