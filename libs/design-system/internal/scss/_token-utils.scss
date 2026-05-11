@@ -1,0 +1,59 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use './scss-utils';
+
+// Returns an angular material system token as a CSS variable name, e.g. sys-token(primary) => --mat-sys-primary
+@function sys-token($token) {
+  // TODO: Validate token exists in angular material tokens
+  @return --mat-sys-#{$token};
+}
+
+// Returns an angular material system token as a CSS variable,
+// e.g. sys-slot(primary) => var(--mat-sys-primary)
+@function sys-slot($token, $fallback: null) {
+  @return scss-utils.create-var(sys-token($token), $fallback);
+}
+
+// Returns a CSS variable name for a given token and namespace,
+// e.g. token(primary, button) => --atlasng-button-primary
+@function token($token, $namespace-or-config) {
+  $namespace: $namespace-or-config;
+  @if meta.type-of($namespace-or-config) == 'map' {
+    $namespace: map.get($namespace-or-config, namespace);
+  }
+
+  @return --atlasng-#{$namespace}-#{$token};
+}
+
+// Returns a CSS variable for a given token and namespace,
+// e.g. slot(primary, button) => var(--atlasng-button-primary, var(--mat-sys-primary))
+@function slot($token, $tokens-config, $fallback: null) {
+  $tokens: map.get($tokens-config, tokens);
+  @if not map.has-key($tokens, $token) {
+    @error "Token '#{$token}' does not exist. Configured tokens are: #{map.keys($tokens)}";
+  }
+
+  $sys-fallback: map.get($tokens, $token);
+  @if (scss-utils.is-css-var-name($sys-fallback)) {
+    $sys-fallback: scss-utils.create-var($sys-fallback, $fallback);
+  }
+
+  @return scss-utils.create-var(token($token, $tokens-config), $sys-fallback);
+}
+
+// Mixin to apply a map of token overrides as CSS variables to the current selector.
+@mixin apply-overrides($overrides, $tokens-config) {
+  $tokens: map.get($tokens-config, tokens);
+
+  @include scss-utils.current-selector-or-root() {
+    @each $token, $value in $overrides {
+      @if not map.has-key($tokens, $token) {
+        @error "Token '#{$token}' does not exist. Configured tokens are: #{map.keys($tokens)}";
+      }
+
+      @if $value != null {
+        #{token($token, $tokens-config)}: #{$value};
+      }
+    }
+  }
+}
