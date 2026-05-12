@@ -1,7 +1,13 @@
 {
   "name": "@atlasng/design-system",
   "version": "0.0.1",
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@angular/common": "^21.2.6",
+    "@angular/core": "^21.2.6",
+    "@angular/material": "^21.2.6",
+    "@angular/platform-browser": "^21.1.4",
+    "zod": "^4.1.3"
+  },
   "devDependencies": {
     "@storybook/addon-a11y": "*",
     "@storybook/addon-designs": "*",

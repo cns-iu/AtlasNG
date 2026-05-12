@@ -1,0 +1,13 @@
+@let socialData = data(); @if (socialData) {
+<a
+  mat-icon-button
+  hraFeature="social-media"
+  hraClickEvent
+  target="_blank"
+  rel="noopener noreferrer"
+  [attr.aria-label]="socialData.label"
+  [attr.href]="socialData.link"
+>
+  <mat-icon [svgIcon]="socialData.icon" />
+</a>
+}

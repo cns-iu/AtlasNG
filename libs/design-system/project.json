@@ -11,6 +11,13 @@
     },
     "build-storybook": {
       "options": {
+        "assets": [
+          {
+            "input": "libs/design-system/assets",
+            "glob": "**/*",
+            "output": "./assets"
+          }
+        ],
         "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
         "stylePreprocessorOptions": {
           "includePaths": ["libs/design-system/internal/scss"]
@@ -20,6 +27,13 @@
     "serve-static-storybook": {},
     "storybook": {
       "options": {
+        "assets": [
+          {
+            "input": "libs/design-system/assets",
+            "glob": "**/*",
+            "output": "./assets"
+          }
+        ],
         "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
         "stylePreprocessorOptions": {
           "includePaths": ["libs/design-system/internal/scss"]

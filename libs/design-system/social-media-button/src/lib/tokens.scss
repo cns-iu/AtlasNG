@@ -1,0 +1,13 @@
+@use 'token-utils';
+
+$config: (
+  namespace: 'social-media-button',
+  tokens: (
+    color: token-utils.sys-token(on-surface),
+    state-color: token-utils.sys-token(on-surface),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

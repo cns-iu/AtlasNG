@@ -1,0 +1,16 @@
+@use '@angular/material' as mat;
+@use 'token-utils';
+@use './tokens' as *;
+
+:host {
+  display: inline-block;
+
+  @include mat.icon-button-overrides(
+    (
+      icon-color: token-utils.slot(color, $config),
+      state-layer-color: token-utils.slot(state-color, $config),
+      pressed-state-layer-opacity: 0.1,
+      focus-state-layer-opacity: 0.1,
+    )
+  );
+}
