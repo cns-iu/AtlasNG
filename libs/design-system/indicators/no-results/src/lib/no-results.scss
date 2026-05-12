@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @use 'token-utils';
 @use './tokens' as *;
 
@@ -5,12 +6,12 @@
   display: block;
 
   .indicator-text {
+    color: token-utils.slot(text-color, $config);
     font-family: token-utils.slot(text-font, $config);
     font-size: token-utils.slot(text-size, $config);
     font-weight: token-utils.slot(text-weight, $config);
     line-height: token-utils.slot(text-line-height, $config);
     letter-spacing: token-utils.slot(text-tracking, $config);
-    color: token-utils.slot(color, $config);
     margin-bottom: 1.5rem;
     text-align: center;
   }
@@ -18,5 +19,17 @@
   button {
     display: block;
     margin: 0 auto;
+
+    @include mat.button-overrides(
+      (
+        filled-label-text-color: token-utils.slot(button-text-color, $config),
+        filled-container-color: token-utils.slot(button-background-color, $config),
+        filled-container-shape: token-utils.slot(button-border-radius, $config),
+        filled-label-text-font: token-utils.slot(button-text-font, $config),
+        filled-label-text-size: token-utils.slot(button-text-size, $config),
+        filled-label-text-weight: token-utils.slot(button-text-weight, $config),
+        filled-label-text-tracking: token-utils.slot(button-text-tracking, $config),
+      )
+    );
   }
 }
