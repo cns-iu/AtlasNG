@@ -4,7 +4,7 @@ import { EndOfResults } from './end-of-results';
 describe('EndOfResults', () => {
   it('should create', async () => {
     const result = await render(EndOfResults, {
-      componentInputs: {
+      inputs: {
         count: 2,
       },
     });
@@ -14,7 +14,7 @@ describe('EndOfResults', () => {
 
   it('should display the result count and end message', async () => {
     const { container } = await render(EndOfResults, {
-      componentInputs: {
+      inputs: {
         count: 5,
       },
     });
