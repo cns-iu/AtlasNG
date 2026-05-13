@@ -1,0 +1,39 @@
+export const SOCIALS = [
+  {
+    id: 'linkedin',
+    label: 'Connect with CNS on LinkedIn',
+    link: 'https://www.linkedin.com/company/cns-indiana-university-bloomington',
+  },
+  {
+    id: 'youtube',
+    label: 'Learn about CNS on YouTube',
+    link: 'https://www.youtube.com/@CNSCenter/',
+  },
+  {
+    id: 'instagram',
+    label: 'Connect with CNS on Instagram',
+    link: 'https://www.instagram.com/cns_at_iu/',
+  },
+  {
+    id: 'facebook',
+    label: 'Connect with CNS on Facebook',
+    link: 'https://www.facebook.com/cnscenter/',
+  },
+  {
+    id: 'github',
+    label: 'CNS GitHub',
+    link: 'https://github.com/hubmapconsortium/hra-ui',
+  },
+  {
+    id: 'bluesky',
+    label: 'Connect with CNS on Bluesky',
+    link: 'https://bsky.app/profile/cnscenter.bsky.social',
+  },
+  {
+    id: 'x',
+    label: 'Connect with CNS on X (formerly Twitter)',
+    link: 'https://twitter.com/cnscenter',
+  },
+];
+
+export const SOCIAL_IDS = SOCIALS.map(({ id }) => id);

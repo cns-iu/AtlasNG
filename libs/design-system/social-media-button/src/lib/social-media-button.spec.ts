@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { render, screen } from '@testing-library/angular';
+import { SOCIAL_IDS } from './social-media';
 import { SocialMediaButton } from './social-media-button';
-import { SOCIAL_IDS } from './static-data/parsed';
 
 describe('SocialMediaButton', () => {
   const providers = [provideHttpClient()];

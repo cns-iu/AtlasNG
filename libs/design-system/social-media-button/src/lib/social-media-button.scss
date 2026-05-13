@@ -18,4 +18,32 @@
     height: 1.5rem;
     background-color: token-utils.slot(color, $config);
   }
+
+  .instagram {
+    mask: url('icons/instagram.svg');
+  }
+
+  .facebook {
+    mask: url('icons/facebook.svg');
+  }
+
+  .linkedin {
+    mask: url('icons/linkedin.svg');
+  }
+
+  .github {
+    mask: url('icons/github.svg');
+  }
+
+  .bluesky {
+    mask: url('icons/bluesky.svg');
+  }
+
+  .x {
+    mask: url('icons/x.svg');
+  }
+
+  .youtube {
+    mask: url('icons/youtube.svg');
+  }
 }

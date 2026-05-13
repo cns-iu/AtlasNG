@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/angular';
+import { SOCIAL_IDS } from './social-media';
 import { SocialMediaButton } from './social-media-button';
-import { SOCIAL_IDS } from './static-data/parsed';
-import { SocialMedia } from './types/social-media.schema';
 
 const meta: Meta = {
   component: SocialMediaButton,
@@ -23,6 +22,6 @@ const meta: Meta = {
   },
 };
 export default meta;
-type Story = StoryObj<SocialMedia>;
+type Story = StoryObj;
 
 export const Default: Story = {};

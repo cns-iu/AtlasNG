@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { SOCIALS } from './static-data/parsed';
+import { SOCIALS } from './social-media';
 
 /**
  * Component for rendering a social media button based on the provided social media id.
@@ -22,13 +22,4 @@ export class SocialMediaButton {
 
   /** Social media button data */
   protected readonly data = computed(() => SOCIALS.find(({ id }) => id === this.id()));
-
-  /**
-   * Returns icon url for the given social media id.
-   * @param icon - Social media id to get the icon for
-   * @returns URL string for the social media icon
-   */
-  imageUrl(icon: string): string {
-    return `url(assets/icons/social/${icon}.svg)`;
-  }
 }
