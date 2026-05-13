@@ -9,6 +9,7 @@ on:
 permissions:
   actions: read
   contents: read
+  pull-requests: write
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -29,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Enable task distribution via Nx Cloud
-        run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="lint,test,build"
+        run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="lint,test,build,build-storybook"
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -38,25 +39,38 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit
 
       - name: Set Nx SHAs
         uses: nrwl/nx-set-shas@v5
 
-      - name: Validate current commit (last commit) with commitlint
-        if: github.event_name == 'push'
-        run: npx nx record -- commitlint --last
-
-      - name: Validate PR commits with commitlint
-        if: github.event_name == 'pull_request'
-        run: npx nx record -- commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+      - name: Validate commit message format
+        if: github.ref != 'refs/heads/main'
+        env:
+          COMMITLINT_FROM: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
+          COMMITLINT_TO: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
+        run: |
+          if [[ -n "$COMMITLINT_FROM" && -n "$COMMITLINT_TO" ]]; then
+            npx nx record -- commitlint --from $COMMITLINT_FROM --to $COMMITLINT_TO
+          else
+            npx nx record -- commitlint --last
+          fi
 
       - name: Check for un-formatted files
         run: npx nx record -- nx format:check
 
       - name: Run lint, test, and build for affected projects
-        run: npx nx affected -t lint test build
+        timeout-minutes: 30
+        run: npx nx affected -t lint test build build-storybook
 
       - name: Fix CI issues
-        if: ${{ !cancelled() }}
+        if: failure()
         run: npx nx fix-ci
+
+      - name: Deploy preview
+        if: github.event_name == 'pull_request' && !cancelled()
+        uses: ./.github/actions/deploy-preview
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}

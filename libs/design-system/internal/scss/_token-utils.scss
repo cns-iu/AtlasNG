@@ -22,7 +22,7 @@
     $namespace: map.get($namespace-or-config, namespace);
   }
 
-  @return --atlasng-#{$namespace}-#{$token};
+  @return --ang-#{$namespace}-#{$token};
 }
 
 // Returns a CSS variable for a given token and namespace,
