@@ -87,7 +87,7 @@
       "inputs": ["default", "^production", "{projectRoot}/.storybook/**/*", "{projectRoot}/tsconfig.storybook.json"],
       "outputs": ["{options.outputDir}"],
       "options": {
-        "outputDir": "{workspaceRoot}/dist/storybook/{projectRoot}",
+        "outputDir": "{workspaceRoot}/dist/storybook/{projectName}",
         "configDir": "{projectRoot}/.storybook",
         "browserTarget": "{projectName}:build-storybook",
         "compodoc": false
@@ -146,7 +146,7 @@
       "dependsOn": ["build-storybook"],
       "options": {
         "buildTarget": "{projectName}:build-storybook",
-        "staticFilePath": "{workspaceRoot}/dist/storybook/{projectRoot}",
+        "staticFilePath": "{workspaceRoot}/dist/storybook/{projectName}",
         "spa": true
       },
       "configurations": {
