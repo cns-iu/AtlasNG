@@ -1,22 +1,17 @@
 import * as z from 'zod';
 
-/** Social media id */
-export type SocialMediaId = SocialMedia['id'];
-
-/** Social media item */
-export type SocialMedia = z.infer<typeof SocialMediaSchema>;
 /** Schema for social media item */
 export const SocialMediaSchema = z
   .object({
-    id: z.string().brand<'SocialMediaId'>(),
+    id: z.string(),
     label: z.string(),
-    icon: z.string(),
     link: z.string(),
   })
   .meta({ id: 'SocialMedia' });
 
-/** Social media items */
-export type Socials = z.infer<typeof SocialsSchema>;
+/** Social media item */
+export type SocialMedia = z.infer<typeof SocialMediaSchema>;
+
 /** Schema for social media items */
 export const SocialsSchema = z
   .object({
@@ -26,3 +21,6 @@ export const SocialsSchema = z
   .meta({ id: 'Socials' });
 
 export default SocialsSchema;
+
+/** Social media items */
+export type Socials = z.infer<typeof SocialsSchema>;

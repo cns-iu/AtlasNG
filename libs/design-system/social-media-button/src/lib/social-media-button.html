@@ -8,6 +8,6 @@
   [attr.aria-label]="socialData.label"
   [attr.href]="socialData.link"
 >
-  <mat-icon [svgIcon]="socialData.icon" />
+  <div [style.mask]="imageUrl(socialData.id)" class="social icon"></div>
 </a>
 }

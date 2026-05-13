@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
-import { SocialMediaId } from './types/social-media.schema';
-import { SOCIAL_IDS, SOCIALS } from './static-data/parsed';
-import { DomSanitizer } from '@angular/platform-browser';
+import { MatIconModule } from '@angular/material/icon';
+import { SOCIALS } from './static-data/parsed';
 
 /**
  * Component for rendering a social media button based on the provided social media id.
@@ -18,32 +16,18 @@ import { DomSanitizer } from '@angular/platform-browser';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SocialMediaButton {
-  /** Registry for managing SVG icons */
-  readonly iconRegistry = inject(MatIconRegistry);
-
-  /** Sanitizer for handling security-related operations */
-  readonly sanitizer = inject(DomSanitizer);
-
   /** Social media to display */
-  readonly id = input.required<SocialMediaId>();
+  readonly id = input.required<string>();
 
   /** Social media button data */
   protected readonly data = computed(() => SOCIALS.find(({ id }) => id === this.id()));
 
-  constructor() {
-    this.registerIcons();
-  }
-
   /**
-   * Registers social icons
+   * Returns icon url for the given social media id.
+   * @param icon - Social media id to get the icon for
+   * @returns URL string for the social media icon
    */
-  private registerIcons(): void {
-    SOCIAL_IDS.forEach((id) => {
-      this.iconRegistry.addSvgIconInNamespace(
-        'social',
-        id,
-        this.sanitizer.bypassSecurityTrustResourceUrl(`assets/icons/social/${id}.svg`),
-      );
-    });
+  imageUrl(icon: string): string {
+    return `url(assets/icons/social/${icon}.svg)`;
   }
 }

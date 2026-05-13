@@ -26,14 +26,11 @@
         "label": {
           "type": "string"
         },
-        "icon": {
-          "type": "string"
-        },
         "link": {
           "type": "string"
         }
       },
-      "required": ["id", "label", "icon", "link"],
+      "required": ["id", "label", "link"],
       "additionalProperties": false
     }
   }
