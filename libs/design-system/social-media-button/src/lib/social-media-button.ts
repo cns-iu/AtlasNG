@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { SOCIALS } from './static-data/parsed';
 
 /**
@@ -10,7 +11,7 @@ import { SOCIALS } from './static-data/parsed';
  */
 @Component({
   selector: 'ang-social-media-button',
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule],
   templateUrl: './social-media-button.html',
   styleUrl: './social-media-button.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

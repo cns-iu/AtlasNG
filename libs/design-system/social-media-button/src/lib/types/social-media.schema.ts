@@ -20,7 +20,7 @@ export const SocialsSchema = z
   })
   .meta({ id: 'Socials' });
 
-export default SocialsSchema;
-
 /** Social media items */
 export type Socials = z.infer<typeof SocialsSchema>;
+
+export default SocialsSchema;
