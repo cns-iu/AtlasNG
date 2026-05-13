@@ -1,0 +1,43 @@
+@use '@angular/material' as mat;
+@use 'token-utils';
+@use './tokens' as *;
+
+mat-checkbox {
+  --mat-ripple-color: #{token-utils.slot(unselected-ripple-color, $config)};
+
+  &.mat-mdc-checkbox-checked {
+    --mat-ripple-color: #{token-utils.slot(selected-ripple-color, $config)};
+  }
+
+  @include mat.checkbox-overrides(
+    (
+      selected-pressed-state-layer-opacity: token-utils.slot(pressed-state-opacity, $config),
+      unselected-pressed-state-layer-opacity: token-utils.slot(pressed-state-opacity, $config),
+      unselected-focus-icon-color: token-utils.slot(unselected-focus-icon-color, $config),
+      unselected-pressed-state-layer-color: token-utils.slot(unselected-pressed-state-color, $config),
+      selected-pressed-state-layer-color: token-utils.slot(selected-pressed-state-color, $config),
+    )
+  );
+}
+
+mat-checkbox.ang-checkbox-error-variant {
+  --mat-ripple-color: #{token-utils.slot(error-state-color, $config)};
+
+  @include mat.checkbox-overrides(
+    (
+      selected-checkmark-color: token-utils.slot(error-check-color, $config),
+      unselected-focus-icon-color: token-utils.slot(error-background-color, $config),
+      unselected-hover-icon-color: token-utils.slot(error-background-color, $config),
+      unselected-icon-color: token-utils.slot(error-background-color, $config),
+      selected-focus-icon-color: token-utils.slot(error-background-color, $config),
+      selected-hover-icon-color: token-utils.slot(error-background-color, $config),
+      selected-icon-color: token-utils.slot(error-background-color, $config),
+      unselected-focus-state-layer-color: token-utils.slot(error-state-color, $config),
+      unselected-hover-state-layer-color: token-utils.slot(error-state-color, $config),
+      unselected-pressed-state-layer-color: token-utils.slot(error-state-color, $config),
+      selected-focus-state-layer-color: token-utils.slot(error-state-color, $config),
+      selected-hover-state-layer-color: token-utils.slot(error-state-color, $config),
+      selected-pressed-state-layer-color: token-utils.slot(error-state-color, $config),
+    )
+  );
+}

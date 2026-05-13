@@ -1,0 +1,23 @@
+@use 'token-utils';
+
+$config: (
+  namespace: 'checkbox',
+  tokens: (
+    unselected-focus-icon-color: token-utils.sys-token(on-surface-variant),
+    selected-pressed-state-color: token-utils.sys-token(primary),
+    unselected-pressed-state-color: token-utils.sys-token(on-surface-variant),
+    selected-ripple-color: token-utils.sys-token(on-surface),
+    unselected-ripple-color: token-utils.sys-token(primary),
+    check-color: token-utils.sys-token(on-primary),
+    background-color: token-utils.sys-token(primary),
+    state-color: token-utils.sys-token(primary),
+    error-check-color: token-utils.sys-token(on-error),
+    error-background-color: token-utils.sys-token(error),
+    error-state-color: token-utils.sys-token(error),
+    pressed-state-opacity: 0.1,
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
