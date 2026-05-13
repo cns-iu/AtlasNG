@@ -8,6 +8,7 @@
     "moduleResolution": "bundler",
     "lib": ["ES2023", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "declaration": true,
+    "experimentalDecorators": true,
     "importHelpers": true,
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
