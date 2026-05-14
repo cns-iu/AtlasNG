@@ -9,7 +9,7 @@ const meta: Meta = {
   parameters: {
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/design/gQEMLugLjweDvbsNNUVffD/HRA-Design-System-Repository?node-id=6791-24001&t=KSPA1HRCXrHUsgVn-4',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=1675-941',
     },
   },
   decorators: [
@@ -36,7 +36,7 @@ type Story = StoryObj;
 export const Default: Story = {
   render: (args) => ({
     template: `
-      <mat-checkbox [indeterminate]=${args['indeterminate']} [disabled]=${args['disabled']} angCheckbox></mat-checkbox>
+      <mat-checkbox [indeterminate]=${args['indeterminate']} [disabled]=${args['disabled']} angCheckbox><label>Option</label></mat-checkbox>
     `,
   }),
 };
@@ -44,7 +44,7 @@ export const Default: Story = {
 export const ErrorState: Story = {
   render: (args) => ({
     template: `
-      <mat-checkbox [indeterminate]=${args['indeterminate']} [disabled]=${args['disabled']} angCheckbox angCheckboxErrorVariant></mat-checkbox>
+      <mat-checkbox [indeterminate]=${args['indeterminate']} [disabled]=${args['disabled']} angCheckbox angCheckboxErrorVariant><label>Option</label></mat-checkbox>
     `,
   }),
 };
