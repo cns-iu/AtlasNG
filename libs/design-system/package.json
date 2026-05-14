@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/core": "^21.2.6",
+    "@angular/common": "^21.2.6",
+    "@angular/material": "^21.2.6",
     "@atlasng/cdk": "0.0.1"
   },
   "devDependencies": {
