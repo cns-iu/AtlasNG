@@ -1,9 +1,14 @@
 import { Meta, StoryObj } from '@storybook/angular';
 import { EndOfResults } from './end-of-results';
-
 const meta: Meta<EndOfResults> = {
   component: EndOfResults,
   title: 'Design System/End of Results',
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=5406-27037',
+    },
+  },
   args: {
     count: 2,
   },
