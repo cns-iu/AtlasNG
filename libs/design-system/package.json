@@ -2,7 +2,8 @@
   "name": "@atlasng/design-system",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/material": "^21.2.6"
+    "@angular/core": "^21.2.6",
+    "@atlasng/cdk": "0.0.1"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",

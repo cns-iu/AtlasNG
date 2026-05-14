@@ -36,7 +36,7 @@ type Story = StoryObj;
 export const Default: Story = {
   render: (args) => ({
     template: `
-      <mat-checkbox [indeterminate]=${args['indeterminate']} [disabled]=${args['disabled']}></mat-checkbox>
+      <mat-checkbox [indeterminate]=${args['indeterminate']} [disabled]=${args['disabled']} angCheckbox></mat-checkbox>
     `,
   }),
 };
@@ -44,7 +44,7 @@ export const Default: Story = {
 export const ErrorState: Story = {
   render: (args) => ({
     template: `
-      <mat-checkbox [indeterminate]=${args['indeterminate']} [disabled]=${args['disabled']} angCheckboxErrorVariant></mat-checkbox>
+      <mat-checkbox [indeterminate]=${args['indeterminate']} [disabled]=${args['disabled']} angCheckbox angCheckboxErrorVariant></mat-checkbox>
     `,
   }),
 };

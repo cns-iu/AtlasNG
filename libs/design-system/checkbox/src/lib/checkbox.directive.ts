@@ -1,10 +1,10 @@
 import { Directive, inject } from '@angular/core';
-import { StyleLoader } from 'libs/cdk/src/lib/style-loader';
+import { StyleLoader } from '@atlasng/cdk';
 import { CheckboxStylesComponent } from './checkbox-styles/checkbox-styles';
 
 /** Directive for Checkbox */
 @Directive({
-  selector: 'mat-checkbox',
+  selector: '[angCheckbox]',
 })
 export class CheckboxDirective {
   /** Injects the style loader */
