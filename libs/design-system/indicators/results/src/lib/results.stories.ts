@@ -7,7 +7,7 @@ const meta: Meta<Results> = {
   parameters: {
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/HRA-Components?node-id=2100-10720&t=DmEBvTGkDSWCMOf1-4',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=2100-10716',
     },
   },
 
