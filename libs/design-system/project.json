@@ -30,7 +30,11 @@
         }
       }
     },
-    "test": {},
+    "test": {
+      "options": {
+        "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"]
+      }
+    },
     "test-storybook": {},
     "nx-release-publish": {}
   }
