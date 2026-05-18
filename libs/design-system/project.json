@@ -9,6 +9,7 @@
     "build": {
       "executor": "@nx/angular:package"
     },
+    "build-compodoc": {},
     "build-storybook": {
       "options": {
         "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
@@ -17,6 +18,9 @@
         }
       }
     },
+    "compodoc": {},
+    "pre-build-storybook": {},
+    "pre-storybook": {},
     "serve-static-storybook": {},
     "storybook": {
       "options": {
