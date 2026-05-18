@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, numberAttribute } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 
 /**
@@ -13,12 +13,12 @@ import { MatDividerModule } from '@angular/material/divider';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EndOfResults {
-  /** Label text for results count */
+  /** Label text placed before the results count */
   readonly label = input('Results:');
 
-  /** Description text */
+  /** Description placed after the results count in it's own text box */
   readonly description = input('End of results');
 
-  /** Count of filtered results */
-  readonly count = input.required({ transform: numberAttribute });
+  /** Number of results */
+  readonly count = input.required<number>();
 }

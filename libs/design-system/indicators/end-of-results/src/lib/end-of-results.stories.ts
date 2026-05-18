@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/angular';
 import { EndOfResults } from './end-of-results';
+
 const meta: Meta<EndOfResults> = {
   component: EndOfResults,
   title: 'Design System/End of Results',
@@ -11,20 +12,6 @@ const meta: Meta<EndOfResults> = {
   },
   args: {
     count: 2,
-  },
-  argTypes: {
-    count: {
-      control: 'number',
-      description: 'Number of filtered results to display',
-    },
-    label: {
-      control: 'text',
-      description: 'Custom label for results count',
-    },
-    description: {
-      control: 'text',
-      description: 'Custom label for end message',
-    },
   },
 };
 
