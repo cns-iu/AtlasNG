@@ -172,7 +172,9 @@
       ],
       "outputs": ["{projectRoot}/.storybook/compodoc/documentation.json"],
       "options": {
-        "commands": ["npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json"],
+        "commands": [
+          "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal"
+        ],
         "cwd": "{projectRoot}"
       }
     },
@@ -183,7 +185,7 @@
         "commands": [
           "mkdir -p .storybook/compodoc",
           "echo 'null' > .storybook/compodoc/documentation.json",
-          "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --serve --watch"
+          "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal --serve --watch"
         ],
         "cwd": "{projectRoot}",
         "parallel": false
@@ -247,7 +249,6 @@
       "cache": true,
       "inputs": ["default", "^production"],
       "options": {
-        "include": ["../**/*.spec.ts"],
         "coverage": true,
         "coverageReporters": ["html", "lcovonly", "json-summary", "text-summary"],
         "coverageThresholds": {
