@@ -2,6 +2,8 @@
 @use 'sass:meta';
 @use 'sass:string';
 @use '@angular/material' as mat;
+@use '@fontsource/metropolis/500.css' as metropolis-500;
+@use '@fontsource-variable/nunito-sans' as nunito-sans;
 @use './cns/theme.scss' as cns-theme;
 @use './hra/theme.scss' as hra-theme;
 @use './wpp/theme.scss' as wpp-theme;
