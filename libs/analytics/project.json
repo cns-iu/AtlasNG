@@ -9,6 +9,8 @@
     "build": {
       "executor": "@nx/angular:package"
     },
+    "build-compodoc": {},
+    "compodoc": {},
     "test": {},
     "nx-release-publish": {}
   }
