@@ -3,7 +3,7 @@ import { EndOfResults } from './end-of-results';
 
 const meta: Meta<EndOfResults> = {
   component: EndOfResults,
-  title: 'Design System/End of Results',
+  title: 'Design System/Indicators/End of Results',
   parameters: {
     design: {
       type: 'figma',
