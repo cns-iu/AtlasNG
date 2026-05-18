@@ -32,10 +32,7 @@
     },
     "test": {
       "options": {
-        "include": [
-          "**/*.spec.ts",
-          "../!(src|.storybook)/**/*.spec.ts"
-        ]
+        "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"]
       }
     },
     "test-storybook": {},
