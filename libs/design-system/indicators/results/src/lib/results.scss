@@ -2,15 +2,13 @@
 @use './tokens' as *;
 
 :host {
-  --hra-results-indicator-height: 3.5rem;
-
   display: inline-flex;
   justify-content: center;
   align-items: center;
+  min-height: 3.5rem;
   border-radius: 0.5rem;
   padding: 0 1rem;
 
-  min-height: var(--hra-results-indicator-height);
   font-family: token-utils.slot(text-font, $config);
   font-size: token-utils.slot(text-size, $config);
   font-weight: token-utils.slot(text-weight, $config);

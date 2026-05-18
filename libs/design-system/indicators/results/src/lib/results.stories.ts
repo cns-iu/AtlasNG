@@ -10,22 +10,22 @@ const meta: Meta<Results> = {
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=2100-10716',
     },
   },
-
   args: {
     value: 100000,
     total: 100000,
-    description: 'Viewing',
   },
 };
+
 export default meta;
 type Story = StoryObj<Results>;
 
 export const Default: Story = {};
 
-export const DifferentCounts: Story = {
+export const WithPrefixAndSuffix: Story = {
   args: {
     value: 50000,
     total: 100000,
-    description: 'Viewing',
+    prefix: 'Viewing',
+    suffix: 'items',
   },
 };
