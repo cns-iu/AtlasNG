@@ -247,6 +247,7 @@
       "cache": true,
       "inputs": ["default", "^production"],
       "options": {
+        "include": ["../**/*.spec.ts"],
         "coverage": true,
         "coverageReporters": ["html", "lcovonly", "json-summary", "text-summary"],
         "coverageThresholds": {
