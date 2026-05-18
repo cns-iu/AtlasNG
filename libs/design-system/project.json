@@ -30,7 +30,12 @@
         }
       }
     },
-    "test": {},
+    "test": {
+      "options": {
+        "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"],
+        "setupFiles": ["{projectRoot}/src/test-setup.ts"]
+      }
+    },
     "test-storybook": {},
     "nx-release-publish": {}
   }

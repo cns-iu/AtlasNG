@@ -3,7 +3,7 @@ import { EndOfResults } from './end-of-results';
 
 const meta: Meta<EndOfResults> = {
   component: EndOfResults,
-  title: 'Design System/End of Results',
+  title: 'Design System/Indicators/End of Results',
   parameters: {
     design: {
       type: 'figma',
@@ -24,13 +24,7 @@ export const Default: Story = {
   },
 };
 
-export const ManyResults: Story = {
-  args: {
-    count: 150,
-  },
-};
-
-export const CustomLabels: Story = {
+export const WithCustomLabels: Story = {
   args: {
     count: 25,
     label: 'Total Found:',
@@ -38,14 +32,8 @@ export const CustomLabels: Story = {
   },
 };
 
-export const SingleResult: Story = {
+export const WithLargeCount: Story = {
   args: {
-    count: 1,
-  },
-};
-
-export const LargeNumber: Story = {
-  args: {
-    count: 44102,
+    count: 10044102,
   },
 };
