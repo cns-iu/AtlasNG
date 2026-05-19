@@ -1,4 +1,4 @@
-import { CommonModule, formatNumber } from '@angular/common';
+import { formatNumber } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, LOCALE_ID } from '@angular/core';
 
 /**
@@ -8,7 +8,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, LOCALE_ID 
  */
 @Component({
   selector: 'ang-results',
-  imports: [CommonModule],
   template: `{{ text() }}`,
   styleUrl: './results.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
