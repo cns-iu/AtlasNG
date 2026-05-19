@@ -3,19 +3,30 @@ import userEvent from '@testing-library/user-event';
 import { NoResults } from './no-results';
 
 describe('NoResults', () => {
-  it('should render the component', async () => {
-    await render(NoResults);
-  });
-
-  it('should emit clearFilters on button click', async () => {
-    const { fixture } = await render(NoResults);
-    let emitCount = 0;
-    fixture.componentInstance.clearFilters.subscribe(() => {
-      emitCount += 1;
+  it('should render description and label', async () => {
+    await render(NoResults, {
+      inputs: {
+        description: 'Custom no results message',
+        label: 'Custom label',
+      },
     });
 
-    await userEvent.click(screen.getByRole('button', { name: /clear filters/i }));
+    expect(screen.getByText('Custom no results message')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Custom label' })).toBeInTheDocument();
+  });
 
-    expect(emitCount).toBe(1);
+  it('should emit clearClick on button click', async () => {
+    const user = userEvent.setup();
+    const click = vi.fn();
+    await render(NoResults, {
+      on: {
+        clearClick: click,
+      },
+    });
+
+    const button = screen.getByRole('button', { name: /clear filters/i });
+    await user.click(button);
+
+    expect(click).toHaveBeenCalledOnce();
   });
 });

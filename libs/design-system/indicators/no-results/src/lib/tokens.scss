@@ -9,13 +9,6 @@ $config: (
     text-weight: token-utils.sys-token(body-large-weight),
     text-line-height: token-utils.sys-token(body-large-line-height),
     text-tracking: token-utils.sys-token(body-large-tracking),
-    button-background-color: token-utils.sys-token(primary-container),
-    button-text-color: token-utils.sys-token(on-primary-container),
-    button-text-font: token-utils.sys-token(label-large-font),
-    button-text-size: token-utils.sys-token(label-large-size),
-    button-text-weight: token-utils.sys-token(label-large-weight),
-    button-text-tracking: token-utils.sys-token(label-large-tracking),
-    button-border-radius: token-utils.sys-token(corner-extra-small),
   ),
 );
 

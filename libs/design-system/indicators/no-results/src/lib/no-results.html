@@ -1,2 +1,2 @@
-<div class="indicator-text">No results. Adjust filters or search again.</div>
-<button mat-flat-button (click)="clearFilters.emit()">Clear filters</button>
+<div class="description">{{ description() }}</div>
+<button matButton="filled" (click)="clearClick.emit()">{{ label() }}</button>
