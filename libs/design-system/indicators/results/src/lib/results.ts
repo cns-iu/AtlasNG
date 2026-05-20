@@ -7,12 +7,12 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, LOCALE_ID 
  * Example output: "Showing 5 of 120 results".
  */
 @Component({
-  selector: 'ang-results',
+  selector: 'ang-results-indicator',
   template: `{{ text() }}`,
   styleUrl: './results.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Results {
+export class ResultsIndicator {
   /** Current value to display (for example, number of visible results). */
   readonly value = input.required<number>();
 

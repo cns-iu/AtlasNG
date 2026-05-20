@@ -8,13 +8,13 @@ import { MatButtonModule } from '@angular/material/button';
  * consumers can wire to reset search or filter state.
  */
 @Component({
-  selector: 'ang-no-results',
+  selector: 'ang-no-results-indicator',
   imports: [MatButtonModule],
   templateUrl: './no-results.html',
   styleUrl: './no-results.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NoResults {
+export class NoResultsIndicator {
   /** Message shown above the action button. */
   readonly description = input('No results. Adjust filters or search again.');
 

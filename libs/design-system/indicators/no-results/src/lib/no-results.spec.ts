@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { NoResults } from './no-results';
+import { NoResultsIndicator } from './no-results';
 
-describe('NoResults', () => {
+describe('NoResultsIndicator', () => {
   it('should render description and label', async () => {
-    await render(NoResults, {
+    await render(NoResultsIndicator, {
       inputs: {
         description: 'Custom no results message',
         label: 'Custom label',
@@ -18,7 +18,7 @@ describe('NoResults', () => {
   it('should emit clearClick on button click', async () => {
     const user = userEvent.setup();
     const click = vi.fn();
-    await render(NoResults, {
+    await render(NoResultsIndicator, {
       on: {
         clearClick: click,
       },

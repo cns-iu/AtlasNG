@@ -1,9 +1,9 @@
 import { render } from '@testing-library/angular';
-import { EndOfResults } from './end-of-results';
+import { EndOfResultsIndicator } from './end-of-results';
 
-describe('EndOfResults', () => {
+describe('EndOfResultsIndicator', () => {
   it('should create', async () => {
-    const result = await render(EndOfResults, {
+    const result = await render(EndOfResultsIndicator, {
       inputs: {
         count: 2,
       },
@@ -13,7 +13,7 @@ describe('EndOfResults', () => {
   });
 
   it('should display the result count and end message', async () => {
-    const { container } = await render(EndOfResults, {
+    const { container } = await render(EndOfResultsIndicator, {
       inputs: {
         count: 5,
       },

@@ -2,16 +2,16 @@ import { registerLocaleData } from '@angular/common';
 import localeSv from '@angular/common/locales/sv';
 import { LOCALE_ID } from '@angular/core';
 import { ComponentInput, render } from '@testing-library/angular';
-import { Results } from './results';
+import { ResultsIndicator } from './results';
 
-describe('Results', () => {
+describe('ResultsIndicator', () => {
   const defaultInputs = {
     value: 5,
     total: 120,
   };
 
-  function setup(inputs: ComponentInput<Results> = {}, locale = 'en-US') {
-    return render(Results, {
+  function setup(inputs: ComponentInput<ResultsIndicator> = {}, locale = 'en-US') {
+    return render(ResultsIndicator, {
       inputs: {
         ...defaultInputs,
         ...inputs,

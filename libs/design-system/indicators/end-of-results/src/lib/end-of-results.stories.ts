@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { EndOfResults } from './end-of-results';
+import { EndOfResultsIndicator } from './end-of-results';
 
-const meta: Meta<EndOfResults> = {
-  component: EndOfResults,
+const meta: Meta<EndOfResultsIndicator> = {
+  component: EndOfResultsIndicator,
   title: 'Design System/Indicators/End of Results',
   parameters: {
     design: {
@@ -16,7 +16,7 @@ const meta: Meta<EndOfResults> = {
 };
 
 export default meta;
-type Story = StoryObj<EndOfResults>;
+type Story = StoryObj<EndOfResultsIndicator>;
 
 export const Default: Story = {
   args: {
