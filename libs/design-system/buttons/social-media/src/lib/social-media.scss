@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+@use 'token-utils';
+@use './tokens' as *;
+
+// Keep in sync with `DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS` in social-media.ts
+$builtin-icons: (instagram facebook linkedin github bluesky x youtube);
+
+:host {
+  display: inline-block;
+
+  .mask-icon {
+    height: 100%;
+    background-color: currentColor;
+
+    @each $icon in $builtin-icons {
+      &.#{$icon} {
+        mask: url('icons/#{$icon}.svg');
+      }
+    }
+  }
+}
