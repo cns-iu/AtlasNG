@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { SOCIAL_IDS } from './social-media';
-import { SocialMediaButton } from './social-media-button';
+import { DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS, SocialMediaButton } from './social-media';
 
-const meta: Meta = {
+const IDS = DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS.map((def) => def.id);
+
+const meta: Meta<SocialMediaButton> = {
   component: SocialMediaButton,
   title: 'Design System/Buttons/Social Media Button',
   parameters: {
@@ -12,16 +13,17 @@ const meta: Meta = {
     },
   },
   args: {
-    id: SOCIAL_IDS[0],
+    id: IDS[0],
   },
   argTypes: {
     id: {
       control: 'select',
-      options: SOCIAL_IDS,
+      options: IDS,
     },
   },
 };
+
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<SocialMediaButton>;
 
 export const Default: Story = {};

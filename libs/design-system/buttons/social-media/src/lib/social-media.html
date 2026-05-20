@@ -1,0 +1,8 @@
+@let def = resolvedDef();
+<a matIconButton target="_blank" [attr.aria-label]="def.label" [attr.href]="def.url">
+  @if (def.icon; as icon) {
+    <mat-icon [class]="def.classes" [svgIcon]="icon" />
+  } @else {
+    <div class="mask-icon" [class]="def.classes"></div>
+  }
+</a>

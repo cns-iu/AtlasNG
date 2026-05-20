@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { fn } from 'storybook/test';
 import { NoResults } from './no-results';
 
-const meta: Meta = {
+const meta: Meta<NoResults> = {
   component: NoResults,
   title: 'Design System/Indicators/No Results',
   parameters: {
@@ -17,7 +17,7 @@ const meta: Meta = {
 };
 
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<NoResults>;
 
 export const Default: Story = {};
 

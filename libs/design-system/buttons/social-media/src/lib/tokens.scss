@@ -2,10 +2,7 @@
 
 $config: (
   namespace: 'social-media-button',
-  tokens: (
-    color: token-utils.sys-token(on-surface),
-    state-color: token-utils.sys-token(on-surface),
-  ),
+  tokens: (),
 );
 
 @mixin overrides($overrides) {
