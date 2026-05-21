@@ -1,5 +1,5 @@
 {
-  "nxConsole.generatorAllowlist": ["@nx/angular:*", "@nx/eslint:workspace-rule", "@nx/workspace:*move"],
+  "nxConsole.generatorAllowlist": ["@nx/angular:*", "@nx/eslint:workspace-rule", "@nx/plugin:*", "@nx/workspace:*move"],
   "nxConsole.generatorBlocklist": [
     "@nx/angular:convert*",
     "@nx/angular:component-test",
@@ -9,7 +9,11 @@
     "@nx/angular:ngrx*",
     "@nx/angular:scam*",
     "@nx/angular:setup*",
-    "@nx/angular:cypress*"
+    "@nx/angular:cypress*",
+    "@nx/plugin:create-package",
+    "@nx/plugin:e2e-project",
+    "@nx/plugin:plugin-lint-checks"
   ],
-  "conventionalCommits.scopes": ["AtlasNG", "analytics", "cdk", "common", "core", "design-system"]
+  "conventionalCommits.scopes": ["AtlasNG", "analytics", "cdk", "common", "core", "design-system"],
+  "eslint.validate": ["json"]
 }

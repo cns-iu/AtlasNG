@@ -9,10 +9,33 @@
     "build": {
       "executor": "@nx/angular:package"
     },
-    "build-storybook": {},
+    "build-compodoc": {},
+    "build-storybook": {
+      "options": {
+        "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/design-system/internal/scss"]
+        }
+      }
+    },
+    "compodoc": {},
+    "pre-build-storybook": {},
+    "pre-storybook": {},
     "serve-static-storybook": {},
-    "storybook": {},
-    "test": {},
+    "storybook": {
+      "options": {
+        "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/design-system/internal/scss"]
+        }
+      }
+    },
+    "test": {
+      "options": {
+        "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"],
+        "setupFiles": ["{projectRoot}/src/test-setup.ts"]
+      }
+    },
     "test-storybook": {},
     "nx-release-publish": {}
   }

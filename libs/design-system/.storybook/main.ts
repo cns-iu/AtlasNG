@@ -1,11 +1,17 @@
 import type { StorybookConfig } from '@storybook/angular';
 
 const config: StorybookConfig = {
-  stories: ['../**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],
-  addons: [],
+  stories: ['../**/*.mdx', '../**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],
+  addons: ['@storybook/addon-a11y', '@storybook/addon-designs', '@storybook/addon-docs', '@storybook/addon-themes'],
   framework: {
     name: '@storybook/angular',
     options: {},
+  },
+  core: {
+    disableTelemetry: true,
+  },
+  docs: {
+    defaultName: 'Documentation',
   },
 };
 

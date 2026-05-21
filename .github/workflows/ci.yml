@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Enable task distribution via Nx Cloud
-        run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="lint,test,build,build-storybook"
+        run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="lint,test,build,build-compodoc,build-storybook"
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -61,14 +61,24 @@ jobs:
 
       - name: Run lint, test, and build for affected projects
         timeout-minutes: 30
-        run: npx nx affected -t lint test build build-storybook
+        run: npx nx affected -t lint test build build-compodoc build-storybook
 
       - name: Fix CI issues
         if: failure()
         run: npx nx fix-ci
 
-      - name: Deploy preview
+      - name: Check if build output exists
+        id: check-build
         if: github.event_name == 'pull_request' && !cancelled()
+        run: |
+          if [ -d "dist" ] && [ -n "$(ls -A "dist" 2>/dev/null)" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy preview
+        if: steps.check-build.outputs.exists == 'true' && !cancelled()
         uses: ./.github/actions/deploy-preview
         with:
           issue-number: ${{ github.event.pull_request.number }}
