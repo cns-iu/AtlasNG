@@ -1,6 +1,5 @@
-import { MatCheckbox } from '@angular/material/checkbox';
-import { argsToTemplate, Meta, StoryObj } from '@storybook/angular';
-import { fn } from 'storybook/test';
+import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 interface CustomizationControls {
   label?: string;
@@ -15,8 +14,6 @@ const meta: Meta<MatCheckbox & CustomizationControls> = {
     indeterminate: false,
     labelPosition: 'after',
     label: undefined,
-    change: fn(),
-    indeterminateChange: fn(),
   },
   argTypes: {
     checked: {
@@ -40,15 +37,12 @@ const meta: Meta<MatCheckbox & CustomizationControls> = {
       control: 'text',
       description: 'The label displayed next to the checkbox.',
     },
-    change: {
-      action: 'changed',
-      description: 'Event emitted when the checked state changes.',
-    },
-    indeterminateChange: {
-      action: 'indeterminate changed',
-      description: 'Event emitted when the indeterminate state changes.',
-    },
   },
+  decorators: [
+    moduleMetadata({
+      imports: [MatCheckboxModule],
+    }),
+  ],
   render: (args) => ({
     props: args,
     template: `<mat-checkbox ${argsToTemplate(args, { exclude: ['label'] })} aria-label="Sample Checkbox">

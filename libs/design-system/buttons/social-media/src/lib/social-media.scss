@@ -8,6 +8,14 @@ $builtin-icons: (instagram facebook linkedin github bluesky x youtube);
 :host {
   display: inline-block;
 
+  @include mat.icon-button-overrides(
+    (
+      icon-color: token-utils.slot(color, $config),
+      state-layer-color: token-utils.slot(color, $config),
+      disabled-state-layer-color: token-utils.slot(color, $config),
+    )
+  );
+
   .mask-icon {
     height: 100%;
     background-color: currentColor;
