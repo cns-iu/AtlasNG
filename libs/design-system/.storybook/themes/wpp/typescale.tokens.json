@@ -3,7 +3,7 @@
     "Display Large": {
       "Font": {
         "$type": "string",
-        "$value": "Metropolis",
+        "$value": "Montserrat",
         "$extensions": {
           "com.figma.variableId": "VariableID:14758:29597",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -18,7 +18,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Medium",
+        "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14758:29598",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -33,7 +33,7 @@
       },
       "Weight italic": {
         "$type": "string",
-        "$value": "Medium Italic",
+        "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29606",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -104,7 +104,7 @@
     "Display Medium": {
       "Font": {
         "$type": "string",
-        "$value": "Metropolis",
+        "$value": "Montserrat",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33451",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -119,7 +119,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Medium",
+        "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33452",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -134,7 +134,7 @@
       },
       "Weight italic": {
         "$type": "string",
-        "$value": "Medium Italic",
+        "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33453",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -205,7 +205,7 @@
     "Display Small": {
       "Font": {
         "$type": "string",
-        "$value": "Metropolis",
+        "$value": "Montserrat",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52730",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -220,7 +220,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Medium",
+        "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52731",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -235,7 +235,7 @@
       },
       "Weight italic": {
         "$type": "string",
-        "$value": "Medium Italic",
+        "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52732",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -306,7 +306,7 @@
     "Headline Large": {
       "Font": {
         "$type": "string",
-        "$value": "Metropolis",
+        "$value": "Montserrat",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47501",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -321,7 +321,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Medium",
+        "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47502",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -336,7 +336,7 @@
       },
       "Weight italic": {
         "$type": "string",
-        "$value": "Medium Italic",
+        "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47503",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -407,7 +407,7 @@
     "Headline Medium": {
       "Font": {
         "$type": "string",
-        "$value": "Metropolis",
+        "$value": "Montserrat",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47543",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -422,7 +422,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Medium",
+        "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47544",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -437,7 +437,7 @@
       },
       "Weight italic": {
         "$type": "string",
-        "$value": "Medium Italic",
+        "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47545",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -508,7 +508,7 @@
     "Headline Small": {
       "Font": {
         "$type": "string",
-        "$value": "Metropolis",
+        "$value": "Montserrat",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47551",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -523,7 +523,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Medium",
+        "$value": "Semibold",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47552",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -538,7 +538,7 @@
       },
       "Weight italic": {
         "$type": "string",
-        "$value": "Medium Italic",
+        "$value": "Semibold Italic",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47553",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -609,7 +609,7 @@
     "Title Large": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51320",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -716,7 +716,7 @@
     "Title Medium": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51328",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -817,7 +817,7 @@
     "Title Small": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51336",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -924,7 +924,7 @@
     "Label Large": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56617",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -1025,7 +1025,7 @@
     "Label Medium": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56625",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -1126,7 +1126,7 @@
     "Label Small": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56633",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -1227,7 +1227,7 @@
     "Body Large": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29608",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -1342,7 +1342,7 @@
     "Body Medium": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33435",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -1425,7 +1425,7 @@
       },
       "Line height": {
         "$type": "number",
-        "$value": 21,
+        "$value": 20,
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33441",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -1457,7 +1457,7 @@
     "Body Small": {
       "Font": {
         "$type": "string",
-        "$value": "Nunito Sans",
+        "$value": "Open Sans",
         "$extensions": {
           "com.figma.variableId": "VariableID:14761:33443",
           "com.figma.scopes": ["ALL_SCOPES"],
