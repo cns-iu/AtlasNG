@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 
 /**
  * Empty-state indicator shown when a results list has no matches.
@@ -9,10 +10,11 @@ import { MatButtonModule } from '@angular/material/button';
  */
 @Component({
   selector: 'ang-no-results-indicator',
-  imports: [MatButtonModule],
+  imports: [MatButtonModule, TrackClick],
   templateUrl: './no-results.html',
   styleUrl: './no-results.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [provideEventScope('no-results-indicator')],
 })
 export class NoResultsIndicator {
   /** Message shown above the action button. */
