@@ -1,14 +1,15 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { MatButton } from '@angular/material/button';
+import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 interface CustomizationControls {
-  icon?: string;
+  fontIcon?: string;
 }
 
-const meta: Meta<MatButton & CustomizationControls> = {
+const meta: Meta<MatIconButton & CustomizationControls> = {
   title: 'Design System/Buttons/Icon Button',
+  component: MatIconButton,
   parameters: {
     design: {
       type: 'figma',
@@ -16,10 +17,10 @@ const meta: Meta<MatButton & CustomizationControls> = {
     },
   },
   args: {
-    icon: 'more_vert',
+    fontIcon: 'more_vert',
   },
   argTypes: {
-    icon: {
+    fontIcon: {
       type: 'string',
     },
   },
@@ -31,14 +32,14 @@ const meta: Meta<MatButton & CustomizationControls> = {
   render: (args) => ({
     props: args,
     template: `
-      <button matIconButton>
-        <mat-icon>${args['icon']}</mat-icon>
+      <button matIconButton aria-label="Example icon button">
+        <mat-icon ${argsToTemplate(args)}></mat-icon>
       </button>
     `,
   }),
 };
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<MatIconButton & CustomizationControls>;
 
 export const Default: Story = {
   args: {},
