@@ -253,6 +253,7 @@
         "coverageInclude": ["{projectRoot}/**/*.ts"],
         "coverageExclude": [
           "{projectRoot}/**/index.ts",
+          "{projectRoot}/**/main.ts",
           "{projectRoot}/**/test-setup.ts",
           "{projectRoot}/.storybook/**/*.ts",
           "{projectRoot}/**/*.stories.ts"
