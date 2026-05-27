@@ -96,8 +96,8 @@ export function provideSocialMediaButtons(defs: SocialMediaButtonDef[]): Provide
   imports: [MatButtonModule, MatIconModule, TrackClick],
   templateUrl: './social-media.html',
   styleUrl: './social-media.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [provideEventScope('social-media-button')],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SocialMediaButton {
   /** Identifier used to resolve a definition from injected or built-in sets. */

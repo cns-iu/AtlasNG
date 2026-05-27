@@ -13,8 +13,8 @@ import { provideEventScope, TrackClick } from '@atlasng/analytics';
   imports: [MatButtonModule, TrackClick],
   templateUrl: './no-results.html',
   styleUrl: './no-results.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [provideEventScope('no-results-indicator')],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NoResultsIndicator {
   /** Message shown above the action button. */
