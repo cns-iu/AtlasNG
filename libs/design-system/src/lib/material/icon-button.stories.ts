@@ -1,4 +1,4 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { MatButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,7 +16,7 @@ const meta: Meta<MatButton & CustomizationControls> = {
     },
   },
   args: {
-    icon: 'search',
+    icon: 'more_vert',
   },
   argTypes: {
     icon: {
@@ -31,8 +31,8 @@ const meta: Meta<MatButton & CustomizationControls> = {
   render: (args) => ({
     props: args,
     template: `
-      <button mat-icon-button>
-        <mat-icon>${args['icon']}</mat-icon>
+      <button matIconButton>
+        <mat-icon>${argsToTemplate(args)}</mat-icon>
       </button>
     `,
   }),
