@@ -4,7 +4,7 @@ import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 interface CustomizationControls {
-  fontIcon?: string;
+  icon?: string;
 }
 
 const meta: Meta<MatIconButton & CustomizationControls> = {
@@ -17,10 +17,10 @@ const meta: Meta<MatIconButton & CustomizationControls> = {
     },
   },
   args: {
-    fontIcon: 'more_vert',
+    icon: 'more_vert',
   },
   argTypes: {
-    fontIcon: {
+    icon: {
       type: 'string',
     },
   },
@@ -32,8 +32,8 @@ const meta: Meta<MatIconButton & CustomizationControls> = {
   render: (args) => ({
     props: args,
     template: `
-      <button matIconButton aria-label="Example icon button">
-        <mat-icon ${argsToTemplate(args)}></mat-icon>
+      <button mat-icon-button aria-label="Example icon button" ${argsToTemplate(args, { include: [] })}>
+        <mat-icon class="material-symbols-rounded">{{ icon }}</mat-icon>
       </button>
     `,
   }),
