@@ -1,6 +1,11 @@
 {
   "name": "@atlasng/common",
   "version": "0.0.1",
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@angular/common": "^21.2.6",
+    "@angular/core": "^21.2.6",
+    "@angular/router": "^21.2.6",
+    "@atlasng/core": "0.0.1"
+  },
   "sideEffects": false
 }
