@@ -1,9 +1,13 @@
-import { applicationConfig, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { MatButtonModule } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-const meta: Meta = {
+interface CustomizationControls {
+  icon?: string;
+}
+
+const meta: Meta<MatButton & CustomizationControls> = {
   title: 'Design System/Buttons/Icon Button',
   parameters: {
     design: {
@@ -21,7 +25,7 @@ const meta: Meta = {
   },
   decorators: [
     moduleMetadata({
-      imports: [MatIconModule, MatButtonModule],
+      imports: [MatIconModule],
     }),
   ],
   render: (args) => ({
