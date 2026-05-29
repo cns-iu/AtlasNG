@@ -9,32 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface CustomizationControls {
   icon?: string;
-}
-
-@Component({
-  selector: 'ang-snackbar-demo',
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule],
-  standalone: true,
-  template: `
-    <button
-      mat-icon-button
-      type="button"
-      aria-label="Open snackbar"
-      matTooltip="Open snackbar"
-      (click)="openSnackbar()"
-    >
-      <mat-icon>{{ icon() }}</mat-icon>
-    </button>
-  `,
-})
-class SnackbarDemoComponent {
-  readonly icon = input('more_vert');
-
-  private readonly snackbar = inject(MatSnackBar);
-
-  openSnackbar(): void {
-    this.snackbar.open('Snackbar opened from icon button', 'Close', { duration: 3000 });
-  }
+  tooltip?: string;
 }
 
 @Component({
@@ -42,7 +17,7 @@ class SnackbarDemoComponent {
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule],
   standalone: true,
   template: `
-    <button mat-icon-button type="button" aria-label="Open menu" matTooltip="Open menu" [matMenuTriggerFor]="menu">
+    <button mat-icon-button type="button" aria-label="Open menu" [matTooltip]="tooltip()" [matMenuTriggerFor]="menu">
       <mat-icon>{{ icon() }}</mat-icon>
     </button>
 
@@ -64,6 +39,28 @@ class SnackbarDemoComponent {
 })
 class MenuDemoComponent {
   readonly icon = input('more_vert');
+  readonly tooltip = input();
+}
+
+@Component({
+  selector: 'ang-snackbar-demo',
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule],
+  standalone: true,
+  template: `
+    <button mat-icon-button type="button" aria-label="Open snackbar" [matTooltip]="tooltip()" (click)="openSnackbar()">
+      <mat-icon>{{ icon() }}</mat-icon>
+    </button>
+  `,
+})
+class SnackbarDemoComponent {
+  readonly icon = input('more_vert');
+  readonly tooltip = input();
+
+  private readonly snackbar = inject(MatSnackBar);
+
+  openSnackbar(): void {
+    this.snackbar.open('Snackbar opened from icon button', 'Close', { duration: 3000 });
+  }
 }
 
 const meta: Meta<CustomizationControls> = {
@@ -74,35 +71,47 @@ const meta: Meta<CustomizationControls> = {
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=24-876',
     },
   },
-  args: {
-    icon: 'more_vert',
-  },
-  argTypes: {
-    icon: {
-      type: 'string',
-    },
-  },
   decorators: [
     moduleMetadata({
-      imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, MatSnackBarModule],
+      imports: [MatButtonModule, MatIconModule, MatTooltipModule],
     }),
   ],
-};
-export default meta;
-type Story = StoryObj<CustomizationControls>;
-
-export const Default: Story = {
+  args: {
+    icon: 'more_vert',
+    tooltip: 'Icon button tooltip',
+  },
   render: (args) => ({
     props: args,
     template: `
-      <a mat-icon-button aria-label="Example icon button" ${argsToTemplate(args)} matTooltip="Tooltip text">
+      <a mat-icon-button aria-label="Example icon button" ${argsToTemplate(args, { exclude: ['tooltip'] })} [matTooltip]="tooltip">
         <mat-icon>${args.icon}</mat-icon>
       </a>
     `,
   }),
 };
+export default meta;
+type Story = StoryObj<CustomizationControls>;
 
-export const WithMenu: Story = {
+export const Default: Story = {};
+
+export const AppsButton: Story = {
+  args: {
+    icon: 'apps',
+    tooltip: 'Apps',
+  },
+};
+export const HelpButton: Story = {
+  args: {
+    icon: 'help',
+    tooltip: 'Help & documentation',
+  },
+};
+
+export const MenuButton: Story = {
+  args: {
+    icon: 'menu',
+    tooltip: 'Menu',
+  },
   render: (args) => ({
     props: args,
     template: `
@@ -115,6 +124,10 @@ export const WithMenu: Story = {
 };
 
 export const WithSnackbar: Story = {
+  args: {
+    icon: 'exclamation_mark',
+    tooltip: 'Open snackbar',
+  },
   render: (args) => ({
     props: args,
     template: `
