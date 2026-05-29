@@ -38,7 +38,7 @@ interface CustomizationControls {
   `,
 })
 class MenuDemoComponent {
-  readonly icon = input<string>();
+  readonly icon = input<string>('');
   readonly tooltip = input<string>();
 }
 
@@ -53,7 +53,7 @@ class MenuDemoComponent {
   `,
 })
 class SnackbarDemoComponent {
-  readonly icon = input<string>();
+  readonly icon = input<string>('');
   readonly tooltip = input<string>();
 
   private readonly snackbar = inject(MatSnackBar);
