@@ -1,6 +1,6 @@
 @if (anchor()) {
   <span class="link-container">
-    <a mat-icon-button class="link" aria-label="Link to this heading" [attr.href]="'#' + anchor()">
+    <a mat-icon-button class="link" aria-label="Link to this heading" [attr.href]="`#${anchor()}`">
       <mat-icon class="icon">link</mat-icon>
     </a>
   </span>
