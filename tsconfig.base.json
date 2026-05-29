@@ -28,7 +28,12 @@
       "@atlasng/common": ["./libs/common/src/index.ts"],
       "@atlasng/core": ["./libs/core/src/index.ts"],
       "@atlasng/design-system": ["./libs/design-system/src/index.ts"],
-      "@atlasng/design-system/indicators/end-of-results": ["libs/design-system/indicators/end-of-results/src/index.ts"]
+      "@atlasng/design-system/buttons/social-media": ["./libs/design-system/buttons/social-media/src/index.ts"],
+      "@atlasng/design-system/indicators/end-of-results": [
+        "./libs/design-system/indicators/end-of-results/src/index.ts"
+      ],
+      "@atlasng/design-system/indicators/no-results": ["./libs/design-system/indicators/no-results/src/index.ts"],
+      "@atlasng/design-system/indicators/results": ["./libs/design-system/indicators/results/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
