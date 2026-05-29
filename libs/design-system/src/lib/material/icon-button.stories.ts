@@ -13,8 +13,8 @@ interface CustomizationControls {
 
 @Component({
   selector: 'ang-snackbar-demo',
-  standalone: true,
   imports: [MatButtonModule, MatIconModule, MatTooltipModule],
+  standalone: true,
   template: `
     <button
       mat-icon-button
@@ -28,7 +28,7 @@ interface CustomizationControls {
   `,
 })
 class SnackbarDemoComponent {
-  icon = input('more_vert');
+  readonly icon = input('more_vert');
 
   private readonly snackbar = inject(MatSnackBar);
 
@@ -39,8 +39,8 @@ class SnackbarDemoComponent {
 
 @Component({
   selector: 'ang-menu-demo',
-  standalone: true,
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule],
+  standalone: true,
   template: `
     <button mat-icon-button type="button" aria-label="Open menu" matTooltip="Open menu" [matMenuTriggerFor]="menu">
       <mat-icon>{{ icon() }}</mat-icon>
@@ -63,7 +63,7 @@ class SnackbarDemoComponent {
   `,
 })
 class MenuDemoComponent {
-  icon = input('more_vert');
+  readonly icon = input('more_vert');
 }
 
 const meta: Meta<CustomizationControls> = {
