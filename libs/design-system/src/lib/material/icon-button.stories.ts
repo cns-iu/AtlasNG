@@ -4,7 +4,7 @@ import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angul
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface CustomizationControls {
@@ -39,7 +39,7 @@ interface CustomizationControls {
 })
 class MenuDemoComponent {
   readonly icon = input('more_vert');
-  readonly tooltip = input();
+  readonly tooltip = input<string>();
 }
 
 @Component({
@@ -54,7 +54,7 @@ class MenuDemoComponent {
 })
 class SnackbarDemoComponent {
   readonly icon = input('more_vert');
-  readonly tooltip = input();
+  readonly tooltip = input<string>();
 
   private readonly snackbar = inject(MatSnackBar);
 
@@ -100,10 +100,24 @@ export const AppsButton: Story = {
     tooltip: 'Apps',
   },
 };
+
 export const HelpButton: Story = {
   args: {
     icon: 'help',
     tooltip: 'Help & documentation',
+  },
+};
+
+export const TuneButton: Story = {
+  args: {
+    icon: 'tune',
+    tooltip: 'Filters',
+  },
+  argTypes: {
+    tooltip: {
+      control: 'select',
+      options: ['Filters', 'Filter & customize'],
+    },
   },
 };
 
