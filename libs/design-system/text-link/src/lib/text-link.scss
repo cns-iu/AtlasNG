@@ -1,0 +1,35 @@
+@use 'token-utils';
+@use './tokens';
+
+.ang-text-link {
+  display: inline-flex;
+  align-items: center;
+  color: token-utils.slot(color, tokens.$config);
+  text-decoration: underline;
+  font-weight: 600;
+
+  &:focus-visible {
+    outline: solid 2px token-utils.slot(color, tokens.$config);
+    outline-offset: 1px;
+  }
+
+  .ang-text-link--icons {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    overflow-y: visible;
+    height: 0;
+
+    &:not(:empty) {
+      margin-left: token-utils.slot(icon-offset, tokens.$config);
+    }
+
+    .material-icons,
+    mat-icon,
+    [matButtonIcon] {
+      width: token-utils.slot(icon-size, tokens.$config);
+      height: token-utils.slot(icon-size, tokens.$config);
+      font-size: token-utils.slot(icon-size, tokens.$config);
+    }
+  }
+}

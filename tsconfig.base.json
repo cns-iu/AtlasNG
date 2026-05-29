@@ -33,7 +33,8 @@
         "./libs/design-system/indicators/end-of-results/src/index.ts"
       ],
       "@atlasng/design-system/indicators/no-results": ["./libs/design-system/indicators/no-results/src/index.ts"],
-      "@atlasng/design-system/indicators/results": ["./libs/design-system/indicators/results/src/index.ts"]
+      "@atlasng/design-system/indicators/results": ["./libs/design-system/indicators/results/src/index.ts"],
+      "@atlasng/design-system/text-link": ["./libs/design-system/text-link/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
