@@ -17,8 +17,8 @@ interface CustomizationControls {
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule],
   standalone: true,
   template: `
-    <button mat-icon-button type="button" aria-label="Open menu" [matTooltip]="tooltip()" [matMenuTriggerFor]="menu">
-      <mat-icon>{{ icon() }}</mat-icon>
+    <button mat-icon-button type="button" [aria-label]="tooltip()" [matTooltip]="tooltip()" [matMenuTriggerFor]="menu">
+      <mat-icon [fontIcon]="icon()"></mat-icon>
     </button>
 
     <mat-menu #menu="matMenu">
@@ -38,7 +38,7 @@ interface CustomizationControls {
   `,
 })
 class MenuDemoComponent {
-  readonly icon = input('more_vert');
+  readonly icon = input<string>();
   readonly tooltip = input<string>();
 }
 
@@ -47,13 +47,13 @@ class MenuDemoComponent {
   imports: [MatButtonModule, MatIconModule, MatTooltipModule],
   standalone: true,
   template: `
-    <button mat-icon-button type="button" aria-label="Open snackbar" [matTooltip]="tooltip()" (click)="openSnackbar()">
-      <mat-icon>{{ icon() }}</mat-icon>
+    <button mat-icon-button type="button" [aria-label]="tooltip()" [matTooltip]="tooltip()" (click)="openSnackbar()">
+      <mat-icon [fontIcon]="icon()"></mat-icon>
     </button>
   `,
 })
 class SnackbarDemoComponent {
-  readonly icon = input('more_vert');
+  readonly icon = input<string>();
   readonly tooltip = input<string>();
 
   private readonly snackbar = inject(MatSnackBar);
@@ -76,15 +76,22 @@ const meta: Meta<CustomizationControls> = {
       imports: [MatButtonModule, MatIconModule, MatTooltipModule],
     }),
   ],
-  args: {
-    icon: 'more_vert',
-    tooltip: 'Icon button tooltip',
+  argTypes: {
+    icon: {
+      control: 'select',
+      description: 'The name of the Material icon to display inside the button.',
+      options: ['more_vert', 'apps', 'help', 'tune', 'menu', 'exclamation_mark'],
+    },
+    tooltip: {
+      control: 'text',
+      description: 'The tooltip text displayed when hovering over the button.',
+    },
   },
   render: (args) => ({
     props: args,
     template: `
       <a mat-icon-button aria-label="Example icon button" ${argsToTemplate(args, { exclude: ['tooltip'] })} [matTooltip]="tooltip">
-        <mat-icon>${args.icon}</mat-icon>
+        <mat-icon fontIcon="${args.icon}"></mat-icon>
       </a>
     `,
   }),
@@ -92,32 +99,10 @@ const meta: Meta<CustomizationControls> = {
 export default meta;
 type Story = StoryObj<CustomizationControls>;
 
-export const Default: Story = {};
-
-export const AppsButton: Story = {
+export const Default: Story = {
   args: {
-    icon: 'apps',
-    tooltip: 'Apps',
-  },
-};
-
-export const HelpButton: Story = {
-  args: {
-    icon: 'help',
-    tooltip: 'Help & documentation',
-  },
-};
-
-export const TuneButton: Story = {
-  args: {
-    icon: 'tune',
-    tooltip: 'Filters',
-  },
-  argTypes: {
-    tooltip: {
-      control: 'select',
-      options: ['Filters', 'Filter & customize'],
-    },
+    icon: 'more_vert',
+    tooltip: 'Icon button tooltip',
   },
 };
 
