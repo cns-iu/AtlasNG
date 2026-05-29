@@ -1,6 +1,7 @@
 import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { TrackClick } from '@atlasng/analytics';
 
 const STYLES = [
   `button {
@@ -22,7 +23,7 @@ const meta: Meta = {
   },
   decorators: [
     moduleMetadata({
-      imports: [MatButtonModule, MatIconModule],
+      imports: [MatButtonModule, MatIconModule, TrackClick],
     }),
   ],
 };
@@ -33,7 +34,7 @@ type Story = StoryObj;
 export const Text: Story = {
   render: () => ({
     template: `
-      <button matButton>Text</button>
+      <button matButton angTrackClick>Text</button>
     `,
     styles: STYLES,
   }),
@@ -42,7 +43,7 @@ export const Text: Story = {
 export const TextWithIcon: Story = {
   render: () => ({
     template: `
-      <button matButton>
+      <button matButton angTrackClick>
         <mat-icon>download</mat-icon>
         Text
       </button>
@@ -54,7 +55,7 @@ export const TextWithIcon: Story = {
 export const Filled: Story = {
   render: () => ({
     template: `
-      <button matButton="filled">Filled</button>
+      <button matButton="filled" angTrackClick>Filled</button>
     `,
     styles: STYLES,
   }),
@@ -63,7 +64,7 @@ export const Filled: Story = {
 export const Outlined: Story = {
   render: () => ({
     template: `
-      <button matButton="outlined">Outlined</button>
+      <button matButton="outlined" angTrackClick>Outlined</button>
     `,
     styles: STYLES,
   }),
@@ -72,7 +73,7 @@ export const Outlined: Story = {
 export const Tonal: Story = {
   render: () => ({
     template: `
-      <button matButton="tonal">Tonal</button>
+      <button matButton="tonal" angTrackClick>Tonal</button>
     `,
     styles: STYLES,
   }),
