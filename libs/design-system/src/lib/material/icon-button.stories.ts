@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TrackClick } from '@atlasng/analytics';
 
 interface CustomizationControls {
   icon?: string;
@@ -14,11 +15,18 @@ interface CustomizationControls {
 
 @Component({
   selector: 'ang-menu-demo',
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, TrackClick],
   standalone: true,
   template: `
-    <button mat-icon-button type="button" [aria-label]="tooltip()" [matTooltip]="tooltip()" [matMenuTriggerFor]="menu">
-      <mat-icon [fontIcon]="icon()"></mat-icon>
+    <button
+      matIconButton
+      angTrackClick
+      type="button"
+      [aria-label]="tooltip()"
+      [matTooltip]="tooltip()"
+      [matMenuTriggerFor]="menu"
+    >
+      <mat-icon [fontIcon]="icon()" />
     </button>
 
     <mat-menu #menu="matMenu">
@@ -44,11 +52,18 @@ class MenuDemoComponent {
 
 @Component({
   selector: 'ang-snackbar-demo',
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, TrackClick],
   standalone: true,
   template: `
-    <button mat-icon-button type="button" [aria-label]="tooltip()" [matTooltip]="tooltip()" (click)="openSnackbar()">
-      <mat-icon [fontIcon]="icon()"></mat-icon>
+    <button
+      matIconButton
+      angTrackClick
+      type="button"
+      [aria-label]="tooltip()"
+      [matTooltip]="tooltip()"
+      (click)="openSnackbar()"
+    >
+      <mat-icon [fontIcon]="icon()" />
     </button>
   `,
 })
@@ -73,7 +88,7 @@ const meta: Meta<CustomizationControls> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [MatButtonModule, MatIconModule, MatTooltipModule],
+      imports: [MatButtonModule, MatIconModule, MatTooltipModule, TrackClick],
     }),
   ],
   argTypes: {
@@ -90,7 +105,7 @@ const meta: Meta<CustomizationControls> = {
   render: (args) => ({
     props: args,
     template: `
-      <a mat-icon-button aria-label="Example icon button" ${argsToTemplate(args, { exclude: ['tooltip'] })} [matTooltip]="tooltip">
+      <a matIconButton angTrackClick aria-label="Example icon button" ${argsToTemplate(args, { exclude: ['tooltip'] })} [matTooltip]="tooltip">
         <mat-icon fontIcon="${args.icon}"></mat-icon>
       </a>
     `,
@@ -114,7 +129,7 @@ export const MenuButton: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <ang-menu-demo ${argsToTemplate(args)}></ang-menu-demo>
+      <ang-menu-demo ${argsToTemplate(args)} />
     `,
     moduleMetadata: {
       imports: [MenuDemoComponent],
@@ -130,7 +145,7 @@ export const WithSnackbar: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <ang-snackbar-demo ${argsToTemplate(args)}></ang-snackbar-demo>
+      <ang-snackbar-demo ${argsToTemplate(args)} />
     `,
     moduleMetadata: {
       imports: [SnackbarDemoComponent],

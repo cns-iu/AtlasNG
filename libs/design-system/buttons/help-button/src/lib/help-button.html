@@ -1,9 +1,22 @@
 @if (menu(); as menuRef) {
-  <button mat-icon-button aria-label="help button" matTooltip="Help & documentation" [matMenuTriggerFor]="menuRef">
+  <button
+    matIconButton
+    angTrackClick
+    aria-label="help button"
+    matTooltip="Help & documentation"
+    [matMenuTriggerFor]="menuRef"
+  >
     <mat-icon fontIcon="help" />
   </button>
 } @else {
-  <a mat-icon-button target="_blank" aria-label="help button" matTooltip="Help & documentation" [attr.href]="link()">
+  <a
+    matIconButton
+    angTrackClick
+    target="_blank"
+    aria-label="help button"
+    matTooltip="Help & documentation"
+    [attr.href]="link()"
+  >
     <mat-icon fontIcon="help" />
   </a>
 }
