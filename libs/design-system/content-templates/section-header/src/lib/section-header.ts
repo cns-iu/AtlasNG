@@ -6,14 +6,14 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector:
     // eslint-disable-next-line @angular-eslint/component-selector
-    `h1[ang-section-link], h2[ang-section-link], h3[ang-section-link],
-    h4[ang-section-link], h5[ang-section-link], h6[ang-section-link]`,
+    `h1[ang-section-header], h2[ang-section-header], h3[ang-section-header],
+    h4[ang-section-header], h5[ang-section-header], h6[ang-section-header]`,
   imports: [MatDividerModule, MatIconModule, MatButtonModule],
-  templateUrl: './section-link.html',
-  styleUrl: './section-link.scss',
+  templateUrl: './section-header.html',
+  styleUrl: './section-header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SectionLink {
+export class SectionHeader {
   /** Anchor for href */
   readonly anchor = input<string>();
 

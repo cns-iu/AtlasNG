@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { SectionLink } from './section-link';
+import { SectionHeader } from './section-header';
 
 interface ExtraArgs {
   level: number;
@@ -12,9 +12,9 @@ function clampLevel(level: number): number {
   return level;
 }
 
-const meta: Meta<SectionLink & ExtraArgs> = {
-  component: SectionLink,
-  title: 'Design System/Content Templates/Section Link',
+const meta: Meta<SectionHeader & ExtraArgs> = {
+  component: SectionHeader,
+  title: 'Design System/Content Templates/Section Header',
   parameters: {
     design: {
       type: 'figma',
@@ -33,7 +33,7 @@ const meta: Meta<SectionLink & ExtraArgs> = {
     },
     content: {
       control: 'text',
-      description: 'The text content of the section link.',
+      description: 'The text content of the section header.',
     },
     underlined: {
       control: 'boolean',
@@ -42,15 +42,15 @@ const meta: Meta<SectionLink & ExtraArgs> = {
   },
   render: (args) => ({
     props: args,
-    styles: ['[ang-section-link] { margin: 0 2rem; }'],
-    template: `<h${clampLevel(args.level)} ang-section-link anchor="${args.anchor}" underlined="${args.underlined}">
+    styles: ['[ang-section-header] { margin: 0 2rem; }'],
+    template: `<h${clampLevel(args.level)} ang-section-header anchor="${args.anchor}" underlined="${args.underlined}">
         Heading ${clampLevel(args.level)} ${args.content}
       </h${clampLevel(args.level)}>`,
   }),
 };
 
 export default meta;
-type Story = StoryObj<SectionLink & ExtraArgs>;
+type Story = StoryObj<SectionHeader & ExtraArgs>;
 
 export const Default: Story = {};
 
