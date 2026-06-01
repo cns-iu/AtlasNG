@@ -1,81 +1,25 @@
-import { Component, inject, input } from '@angular/core';
-import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TrackClick } from '@atlasng/analytics';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { fn } from 'storybook/test';
 
 interface CustomizationControls {
   icon?: string;
   tooltip?: string;
 }
 
-@Component({
-  selector: 'ang-menu-demo',
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, TrackClick],
-  standalone: true,
-  template: `
-    <button
-      matIconButton
-      angTrackClick
-      type="button"
-      [aria-label]="tooltip()"
-      [matTooltip]="tooltip()"
-      [matMenuTriggerFor]="menu"
+function buttonTemplate(menuVar = 'null'): string {
+  return `
+    <button matIconButton type="button"
+      [matTooltip]="tooltip"
+      [matMenuTriggerFor]="${menuVar}"
+      (click)="onClick()"
     >
-      <mat-icon [fontIcon]="icon()" />
+      <mat-icon [fontIcon]="icon" />
     </button>
-
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item type="button">
-        <mat-icon>edit</mat-icon>
-        <span>Edit</span>
-      </button>
-      <button mat-menu-item type="button">
-        <mat-icon>share</mat-icon>
-        <span>Share</span>
-      </button>
-      <button mat-menu-item type="button">
-        <mat-icon>delete</mat-icon>
-        <span>Delete</span>
-      </button>
-    </mat-menu>
-  `,
-})
-class MenuDemoComponent {
-  readonly icon = input<string>('');
-  readonly tooltip = input<string>();
-}
-
-@Component({
-  selector: 'ang-snackbar-demo',
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule, TrackClick],
-  standalone: true,
-  template: `
-    <button
-      matIconButton
-      angTrackClick
-      type="button"
-      [aria-label]="tooltip()"
-      [matTooltip]="tooltip()"
-      (click)="openSnackbar()"
-    >
-      <mat-icon [fontIcon]="icon()" />
-    </button>
-  `,
-})
-class SnackbarDemoComponent {
-  readonly icon = input<string>('');
-  readonly tooltip = input<string>();
-
-  private readonly snackbar = inject(MatSnackBar);
-
-  openSnackbar(): void {
-    this.snackbar.open('Snackbar opened from icon button', 'Close', { duration: 3000 });
-  }
+  `;
 }
 
 const meta: Meta<CustomizationControls> = {
@@ -86,11 +30,6 @@ const meta: Meta<CustomizationControls> = {
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=24-876',
     },
   },
-  decorators: [
-    moduleMetadata({
-      imports: [MatButtonModule, MatIconModule, MatTooltipModule, TrackClick],
-    }),
-  ],
   argTypes: {
     icon: {
       control: 'select',
@@ -102,13 +41,17 @@ const meta: Meta<CustomizationControls> = {
       description: 'The tooltip text displayed when hovering over the button.',
     },
   },
+  decorators: [
+    moduleMetadata({
+      imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule],
+    }),
+  ],
   render: (args) => ({
-    props: args,
-    template: `
-      <a matIconButton angTrackClick aria-label="Example icon button" ${argsToTemplate(args, { exclude: ['tooltip'] })} [matTooltip]="tooltip">
-        <mat-icon fontIcon="${args.icon}"></mat-icon>
-      </a>
-    `,
+    props: {
+      ...args,
+      onClick: fn().mockName('buttonClick'),
+    },
+    template: buttonTemplate(),
   }),
 };
 export default meta;
@@ -121,7 +64,7 @@ export const Default: Story = {
   },
 };
 
-export const MenuButton: Story = {
+export const WithMenu: Story = {
   args: {
     icon: 'menu',
     tooltip: 'Menu',
@@ -129,26 +72,22 @@ export const MenuButton: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <ang-menu-demo ${argsToTemplate(args)} />
-    `,
-    moduleMetadata: {
-      imports: [MenuDemoComponent],
-    },
-  }),
-};
+      ${buttonTemplate('menu')}
 
-export const WithSnackbar: Story = {
-  args: {
-    icon: 'exclamation_mark',
-    tooltip: 'Open snackbar',
-  },
-  render: (args) => ({
-    props: args,
-    template: `
-      <ang-snackbar-demo ${argsToTemplate(args)} />
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item type="button">
+          <mat-icon>edit</mat-icon>
+          <span>Edit</span>
+        </button>
+        <button mat-menu-item type="button">
+          <mat-icon>share</mat-icon>
+          <span>Share</span>
+        </button>
+        <button mat-menu-item type="button">
+          <mat-icon>delete</mat-icon>
+          <span>Delete</span>
+        </button>
+      </mat-menu>
     `,
-    moduleMetadata: {
-      imports: [SnackbarDemoComponent],
-    },
   }),
 };
