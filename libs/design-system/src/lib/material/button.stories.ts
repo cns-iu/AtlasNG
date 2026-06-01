@@ -1,6 +1,5 @@
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TrackClick } from '@atlasng/analytics';
 import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
 
 const STYLES = [
@@ -14,7 +13,7 @@ const STYLES = [
 ];
 
 const meta: Meta = {
-  title: 'Design System/Buttons/Standard Buttons',
+  title: 'Material/Buttons',
   parameters: {
     design: {
       type: 'figma',
@@ -23,7 +22,7 @@ const meta: Meta = {
   },
   decorators: [
     moduleMetadata({
-      imports: [MatButtonModule, MatIconModule, TrackClick],
+      imports: [MatButtonModule, MatIconModule],
     }),
   ],
 };
@@ -34,7 +33,7 @@ type Story = StoryObj;
 export const Text: Story = {
   render: () => ({
     template: `
-      <button matButton angTrackClick>Text</button>
+      <button matButton>Text</button>
     `,
     styles: STYLES,
   }),
@@ -43,7 +42,7 @@ export const Text: Story = {
 export const TextWithIcon: Story = {
   render: () => ({
     template: `
-      <button matButton angTrackClick>
+      <button matButton>
         <mat-icon fontIcon="download" style="width: 24px; height: 24px; fontSize: 24px;" />
         Text
       </button>
@@ -55,7 +54,7 @@ export const TextWithIcon: Story = {
 export const Filled: Story = {
   render: () => ({
     template: `
-      <button matButton="filled" angTrackClick>Filled</button>
+      <button matButton="filled">Filled</button>
     `,
     styles: STYLES,
   }),
@@ -64,7 +63,7 @@ export const Filled: Story = {
 export const Outlined: Story = {
   render: () => ({
     template: `
-      <button matButton="outlined" angTrackClick>Outlined</button>
+      <button matButton="outlined">Outlined</button>
     `,
     styles: STYLES,
   }),
@@ -73,7 +72,7 @@ export const Outlined: Story = {
 export const Tonal: Story = {
   render: () => ({
     template: `
-      <button matButton="tonal" angTrackClick>Tonal</button>
+      <button matButton="tonal">Tonal</button>
     `,
     styles: STYLES,
   }),
