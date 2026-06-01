@@ -44,7 +44,7 @@ export const TextWithIcon: Story = {
   render: () => ({
     template: `
       <button matButton angTrackClick>
-        <mat-icon fontIcon="download" />
+        <mat-icon fontIcon="download" style="width: 24px; height: 24px; fontSize: 24px;" />
         Text
       </button>
     `,
