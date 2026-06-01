@@ -14,6 +14,5 @@
     "@nx/plugin:e2e-project",
     "@nx/plugin:plugin-lint-checks"
   ],
-  "conventionalCommits.scopes": ["AtlasNG", "analytics", "cdk", "common", "core", "design-system"],
-  "eslint.validate": ["json"]
+  "conventionalCommits.scopes": ["AtlasNG", "analytics", "cdk", "common", "core", "design-system"]
 }
