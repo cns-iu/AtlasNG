@@ -1,1 +1,17 @@
-<p>breadcrumbs works!</p>
+<nav class="navigation">
+  <ol class="crumbs">
+    @for (crumb of crumbs(); track $index) {
+      <li class="crumb">
+        @if (crumb.route) {
+          <a angTextLink class="label" [angAnyLink]="crumb.route">{{ crumb.name }}</a>
+        } @else {
+          <span class="label">{{ crumb.name }}</span>
+        }
+
+        @if (!$last) {
+          <div class="separator">/</div>
+        }
+      </li>
+    }
+  </ol>
+</nav>

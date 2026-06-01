@@ -1,3 +1,35 @@
+@use 'token-utils';
+@use './tokens' as *;
+
 :host {
   display: block;
+
+  .navigation .crumbs {
+    display: flex;
+    align-items: center;
+    list-style-type: none;
+    margin: 0;
+    padding: 0.125rem 0;
+    white-space: nowrap;
+    font: token-utils.slot(font, $config);
+
+    .crumb {
+      display: flex;
+      vertical-align: middle;
+      align-items: center;
+      color: token-utils.slot(crumb-color, $config);
+    }
+
+    .crumb:last-child {
+      text-wrap: auto;
+      color: token-utils.slot(last-crumb-color, $config);
+    }
+
+    .separator {
+      padding: 0 0.25rem;
+      width: 0.5rem;
+      text-align: center;
+      user-select: none;
+    }
+  }
 }
