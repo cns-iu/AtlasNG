@@ -1,4 +1,4 @@
-import { argsToTemplate, Meta, StoryObj } from '@storybook/angular';
+import { Meta, StoryObj } from '@storybook/angular';
 import { DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS, SocialMediaButton } from './social-media';
 
 const IDS = DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS.map((def) => def.id);
