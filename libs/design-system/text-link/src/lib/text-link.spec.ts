@@ -1,5 +1,5 @@
 import { FocusMonitor } from '@angular/cdk/a11y';
-import { Component, effect, viewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { render, screen } from '@testing-library/angular';
 import { TextLink } from './text-link';
 

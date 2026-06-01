@@ -1,4 +1,4 @@
-export { AnyLink } from './lib/any-link/any-link';
+export { AnyLink, type AnyLinkCommand } from './lib/any-link/any-link';
 export {
   LinkHandler,
   RouterlessLinkHandler,
