@@ -1,7 +1,7 @@
-import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TrackClick } from '@atlasng/analytics';
+import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
 
 const STYLES = [
   `button {
@@ -44,7 +44,7 @@ export const TextWithIcon: Story = {
   render: () => ({
     template: `
       <button matButton angTrackClick>
-        <mat-icon>download</mat-icon>
+        <mat-icon fontIcon="download" />
         Text
       </button>
     `,
