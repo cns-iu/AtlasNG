@@ -11,8 +11,11 @@ import {
 } from '@angular/core';
 import type { ActivatedRoute, Params, QueryParamsHandling, UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
-import { LinkAttributes, LinkHandler } from './link-handler';
+import { LinkAttributes, LinkCommand, LinkHandler } from './link-handler';
 import { commandAttribute, isAnchorLikeElement, isUrlTree, safeMerge } from './utils';
+
+/** Valid types for the link command input. */
+export type AnyLinkCommand = string | readonly unknown[] | UrlTree | LinkCommand | null | undefined;
 
 /**
  * Generic navigation directive that works with both internal Angular routes and external URLs.
