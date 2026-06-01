@@ -24,13 +24,27 @@ const meta: Meta<SectionLink & ExtraArgs> = {
   args: {
     level: 1,
     anchor: 'anchor',
-    underlined: false,
+    content: 'Content Text',
+  },
+  argTypes: {
+    level: {
+      control: { type: 'number', min: 1, max: 6 },
+      description: 'The heading level (1-6) to determine the appropriate HTML tag.',
+    },
+    content: {
+      control: 'text',
+      description: 'The text content of the section link.',
+    },
+    underlined: {
+      control: 'boolean',
+      description: 'Whether to display the underline.',
+    },
   },
   render: (args) => ({
     props: args,
     styles: ['[ang-section-link] { margin: 0 2rem; }'],
     template: `<h${clampLevel(args.level)} ang-section-link anchor="${args.anchor}" underlined="${args.underlined}">
-        ${args.content}
+        Heading ${clampLevel(args.level)} ${args.content}
       </h${clampLevel(args.level)}>`,
   }),
 };
@@ -38,25 +52,10 @@ const meta: Meta<SectionLink & ExtraArgs> = {
 export default meta;
 type Story = StoryObj<SectionLink & ExtraArgs>;
 
-export const Default: Story = {
-  render: (args) => ({
-    props: args,
-    styles: ['[ang-section-link] { margin: 0 2rem; }'],
-    template: `<h${clampLevel(args.level)} ang-section-link anchor="${args.anchor}" underlined="${args.underlined}">
-        Heading ${clampLevel(args.level)}
-      </h${clampLevel(args.level)}>`,
-  }),
-};
+export const Default: Story = {};
 
 export const LongText: Story = {
   args: {
     content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris.',
-  },
-};
-
-export const Underlined: Story = {
-  args: {
-    content: 'Underlined Section Link',
-    underlined: true,
   },
 };

@@ -18,5 +18,5 @@ export class SectionLink {
   readonly anchor = input<string>();
 
   /** Whether to display the underline */
-  readonly underlined = input(false, { transform: booleanAttribute });
+  readonly underlined = input(true, { transform: booleanAttribute });
 }
