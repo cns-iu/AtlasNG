@@ -1,8 +1,7 @@
-import { Meta, StoryObj } from '@storybook/angular';
-
 import { MatIconModule } from '@angular/material/icon';
-import { Help } from './help';
 import { MatMenuModule } from '@angular/material/menu';
+import { Meta, StoryObj } from '@storybook/angular';
+import { Help } from './help';
 
 const meta: Meta<Help> = {
   title: 'Design System/Buttons/Help',

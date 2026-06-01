@@ -14,8 +14,8 @@ import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { LinkAttributes, LinkCommand, LinkHandler } from './link-handler';
 import { commandAttribute, isAnchorLikeElement, isUrlTree, safeMerge } from './utils';
 
-/** Re-exported type for external usage with `AnyLink`. */
-export type AnyLinkCommand = LinkCommand | UrlTree | string | readonly unknown[] | null | undefined;
+/** Valid types for the link command input. */
+export type AnyLinkCommand = string | readonly unknown[] | UrlTree | LinkCommand | null | undefined;
 
 /**
  * Generic navigation directive that works with both internal Angular routes and external URLs.

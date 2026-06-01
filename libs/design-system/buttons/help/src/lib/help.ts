@@ -6,18 +6,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 
+/**
+ * Display a help icon button that either opens a menu or a link in a new tab.
+ */
 @Component({
   selector: 'ang-help',
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, TrackClick, AnyLink],
   templateUrl: './help.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-/**
- * Help button component used in the design system.
- *
- * Supports either a direct link target or an attached menu for help and
- * documentation actions.
- */
 export class Help {
   /** Optional menu attached to the help button trigger. */
   readonly menu = input<MatMenuPanel<unknown>>();
