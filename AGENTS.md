@@ -27,8 +27,8 @@
 - Stack: Nx 22 + Angular 21 monorepo, package manager is npm (`package.json` has no workspace manager override).
 - Use `npx nx` for local commands in this repo (matches existing README examples and avoids global CLI drift).
 - Primary projects:
-	- `AtlasNG` (application)
-	- `analytics`, `cdk`, `common`, `core`, `design-system` (publishable libraries)
+  - `AtlasNG` (application)
+  - `analytics`, `cdk`, `common`, `core`, `design-system` (publishable libraries)
 
 ## High-Value Commands
 
@@ -43,14 +43,14 @@
 ## Project-Specific Workflows
 
 - Design-system Storybook:
-	- Dev: `npx nx storybook design-system`
-	- Static build: `npx nx build-storybook design-system`
-	- Storybook tests: `npx nx test-storybook design-system`
+  - Dev: `npx nx storybook design-system`
+  - Static build: `npx nx build-storybook design-system`
+  - Storybook tests: `npx nx test-storybook design-system`
 - Compodoc for libraries:
-	- Build docs: `npx nx build-compodoc <project>`
-	- Live docs: `npx nx compodoc <project>`
+  - Build docs: `npx nx build-compodoc <project>`
+  - Live docs: `npx nx compodoc <project>`
 - Local npm registry target exists at workspace root:
-	- `npx nx local-registry @atlasng/monorepo`
+  - `npx nx local-registry @atlasng/monorepo`
 
 ## Testing Expectations
 
@@ -66,11 +66,11 @@
 
 - Repo overview and standard commands: [README.md](README.md)
 - Library docs:
-	- [libs/analytics/README.md](libs/analytics/README.md)
-	- [libs/cdk/README.md](libs/cdk/README.md)
-	- [libs/common/README.md](libs/common/README.md)
-	- [libs/core/README.md](libs/core/README.md)
-	- [libs/design-system/README.md](libs/design-system/README.md)
+  - [libs/analytics/README.md](libs/analytics/README.md)
+  - [libs/cdk/README.md](libs/cdk/README.md)
+  - [libs/common/README.md](libs/common/README.md)
+  - [libs/core/README.md](libs/core/README.md)
+  - [libs/design-system/README.md](libs/design-system/README.md)
 
 ## Documentation Expectations
 
