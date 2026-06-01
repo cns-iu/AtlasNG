@@ -18,14 +18,7 @@ interface CustomizationControls {
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, TrackClick],
   standalone: true,
   template: `
-    <button
-      matIconButton
-      angTrackClick
-      type="button"
-      [aria-label]="tooltip()"
-      [matTooltip]="tooltip()"
-      [matMenuTriggerFor]="menu"
-    >
+    <button matIconButton angTrackClick [aria-label]="tooltip()" [matTooltip]="tooltip()" [matMenuTriggerFor]="menu">
       <mat-icon [fontIcon]="icon()" />
     </button>
 
@@ -105,9 +98,16 @@ const meta: Meta<CustomizationControls> = {
   render: (args) => ({
     props: args,
     template: `
-      <a matIconButton angTrackClick aria-label="Example icon button" ${argsToTemplate(args, { exclude: ['tooltip'] })} [matTooltip]="tooltip">
-        <mat-icon fontIcon="${args.icon}"></mat-icon>
-      </a>
+      <button
+        matIconButton
+        angTrackClick
+        type="button"
+        aria-label="Example icon button"
+        ${argsToTemplate(args, { exclude: ['tooltip'] })}
+        [matTooltip]="tooltip"
+      >
+        <mat-icon [fontIcon]="icon" />
+      </button>
     `,
   }),
 };
