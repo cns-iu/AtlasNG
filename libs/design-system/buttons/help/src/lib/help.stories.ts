@@ -1,30 +1,18 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, StoryObj } from '@storybook/angular';
 
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule, MatMenuPanel } from '@angular/material/menu';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { HelpButton } from './help-button';
+import { Help } from './help';
+import { MatMenuModule } from '@angular/material/menu';
 
-interface CustomizationControls {
-  menu?: MatMenuPanel<unknown>;
-  link?: string;
-}
-
-const meta: Meta<HelpButton & CustomizationControls> = {
-  title: 'Design System/Buttons/Help Button',
-  component: HelpButton,
+const meta: Meta<Help> = {
+  title: 'Design System/Buttons/Help',
+  component: Help,
   parameters: {
     design: {
       type: 'figma',
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=24-876',
     },
   },
-  decorators: [
-    moduleMetadata({
-      imports: [MatButtonModule, MatIconModule, MatTooltipModule],
-    }),
-  ],
   argTypes: {
     link: {
       control: 'text',
@@ -33,7 +21,7 @@ const meta: Meta<HelpButton & CustomizationControls> = {
   },
 };
 export default meta;
-type Story = StoryObj<HelpButton & CustomizationControls>;
+type Story = StoryObj<Help>;
 
 export const HelpLink: Story = {
   args: {
@@ -44,7 +32,7 @@ export const HelpLink: Story = {
 export const HelpMenu: Story = {
   render: () => ({
     template: `
-    <ang-help-button [menu]="menu"/>
+    <ang-help [menu]="menu"/>
 
     <mat-menu #menu="matMenu">
       <button mat-menu-item type="button">
@@ -58,7 +46,7 @@ export const HelpMenu: Story = {
     </mat-menu>
   `,
     moduleMetadata: {
-      imports: [HelpButton, MatMenuModule],
+      imports: [MatMenuModule, MatIconModule],
     },
   }),
 };

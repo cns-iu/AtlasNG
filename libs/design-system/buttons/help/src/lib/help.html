@@ -2,7 +2,7 @@
   <button
     matIconButton
     angTrackClick
-    aria-label="help button"
+    aria-label="Open help menu"
     matTooltip="Help & documentation"
     [matMenuTriggerFor]="menuRef"
   >
@@ -12,10 +12,10 @@
   <a
     matIconButton
     angTrackClick
-    target="_blank"
-    aria-label="help button"
+    aria-label="Open help page in a new tab"
     matTooltip="Help & documentation"
-    [attr.href]="link()"
+    target="_blank"
+    [angAnyLink]="link()"
   >
     <mat-icon fontIcon="help" />
   </a>
