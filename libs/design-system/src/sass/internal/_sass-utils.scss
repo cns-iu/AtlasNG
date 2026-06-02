@@ -28,13 +28,16 @@
 }
 
 // Creates a color with opacity,
-// e.g. color-with-opacity(--mat-sys-primary, 0.5) => color-mix(in srgb, var(--mat-sys-primary) 50%, transparent)
+// e.g. color-with-opacity(--mat-sys-primary, 50%) => color-mix(in srgb, var(--mat-sys-primary) 50%, transparent)
 @function color-with-opacity($color, $opacity) {
   @if (is-css-var-name($color)) {
     $color: var($color);
   }
 
-  @if (meta.type-of($opacity) == number and $opacity < 1) {
+  @if (is-css-var-name($opacity)) {
+    $opacity: 'calc(var(#{$opacity}) * 100%)';
+  } @else if (meta.type-of($opacity) == number and $opacity < 1) {
+    @warn 'Opacity value #{$opacity} is less than 1. Prefer using a percentage (e.g. "50%").';
     $opacity: '#{$opacity * 100}%';
   }
 
