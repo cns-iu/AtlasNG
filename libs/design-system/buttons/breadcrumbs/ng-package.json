@@ -2,6 +2,6 @@
   "lib": {
     "cssUrl": "inline",
     "entryFile": "src/index.ts",
-    "styleIncludePaths": ["../../internal/scss"]
+    "styleIncludePaths": ["../../src/sass"]
   }
 }
