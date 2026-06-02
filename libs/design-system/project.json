@@ -14,7 +14,7 @@
       "options": {
         "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/design-system/internal/scss"]
+          "includePaths": ["libs/design-system/scss"]
         }
       }
     },
@@ -26,7 +26,7 @@
       "options": {
         "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/design-system/internal/scss"]
+          "includePaths": ["libs/design-system/scss"]
         }
       }
     },
