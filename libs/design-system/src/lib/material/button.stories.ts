@@ -1,18 +1,15 @@
-import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { MatButtonAppearance, MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
 
-const STYLES = [
-  `button {
-    --mat-button-text-label-text-color: var(--mat-sys-on-primary-container);
-    --mat-button-text-state-layer-color: var(--mat-sys-on-primary-container);
-    --mat-button-outlined-label-text-color: var(--mat-sys-on-surface-variant);
-    --mat-button-outlined-state-layer-color: var(--mat-sys-on-surface-variant);
-    --mat-button-outlined-ripple-color: color-mix(in srgb, var(--mat-sys-on-surface-variant) calc(var(--mat-sys-pressed-state-layer-opacity) * 100%), transparent)
-  }`,
-];
+interface CustomizationArgs {
+  appearance: MatButtonAppearance;
+  icon?: string;
+  disabled: boolean;
+}
 
-const meta: Meta = {
+const meta: Meta<CustomizationArgs> = {
   title: 'Material/Buttons',
   parameters: {
     design: {
@@ -20,60 +17,66 @@ const meta: Meta = {
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=5-842',
     },
   },
+  args: {
+    appearance: 'text',
+    disabled: false,
+  },
+  argTypes: {
+    appearance: {
+      control: { type: 'select' },
+      description: 'The appearance of the button.',
+      options: ['text', 'filled', 'outlined', 'tonal'],
+    },
+    icon: {
+      control: { type: 'text' },
+      description: 'The icon to display in the button.',
+    },
+    disabled: {
+      control: { type: 'boolean' },
+      description: 'Whether the button is disabled.',
+    },
+  },
   decorators: [
     moduleMetadata({
-      imports: [MatButtonModule, MatIconModule],
+      imports: [CommonModule, MatButtonModule, MatIconModule],
     }),
   ],
+  render: (args) => ({
+    props: args,
+    template: `
+      <button [matButton]="appearance" [disabled]="disabled">
+        <mat-icon [fontIcon]="icon" [style.display]="icon ? null : 'none'" />
+        {{ appearance | titlecase }}
+      </button>
+    `,
+  }),
 };
 
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<CustomizationArgs>;
 
-export const Text: Story = {
-  render: () => ({
-    template: `
-      <button matButton>Text</button>
-    `,
-    styles: STYLES,
-  }),
-};
+export const Text: Story = {};
 
 export const TextWithIcon: Story = {
-  render: () => ({
-    template: `
-      <button matButton>
-        <mat-icon fontIcon="download" style="width: 24px; height: 24px; fontSize: 24px;" />
-        Text
-      </button>
-    `,
-    styles: STYLES,
-  }),
+  args: {
+    icon: 'download',
+  },
 };
 
 export const Filled: Story = {
-  render: () => ({
-    template: `
-      <button matButton="filled">Filled</button>
-    `,
-    styles: STYLES,
-  }),
+  args: {
+    appearance: 'filled',
+  },
 };
 
 export const Outlined: Story = {
-  render: () => ({
-    template: `
-      <button matButton="outlined">Outlined</button>
-    `,
-    styles: STYLES,
-  }),
+  args: {
+    appearance: 'outlined',
+  },
 };
 
 export const Tonal: Story = {
-  render: () => ({
-    template: `
-      <button matButton="tonal">Tonal</button>
-    `,
-    styles: STYLES,
-  }),
+  args: {
+    appearance: 'tonal',
+  },
 };
