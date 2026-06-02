@@ -6,6 +6,7 @@
 @use './hra/theme' as hra-theme;
 @use './wpp/theme' as wpp-theme;
 @use './fonts';
+@use '../../src/sass/index' as ds;
 
 $themes: (cns, hra, wpp);
 
@@ -35,3 +36,5 @@ $themes: (cns, hra, wpp);
     @include mat.theme(map.set($theme, color, theme-type, dark), $overrides);
   }
 }
+
+@include ds.mat-all-defaults;
