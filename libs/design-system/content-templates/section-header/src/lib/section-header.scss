@@ -43,32 +43,32 @@ $color-config: (
   display: block;
   margin: 0;
 
-  .link-container {
+  .ang-section-header-link-container {
     display: inline-block;
     vertical-align: top;
     height: 0;
     line-height: 1;
 
-    .link {
+    .ang-section-header-link {
       position: relative;
       margin-left: calc(-2.5rem - 5px);
 
-      .icon {
+      .ang-section-header-icon {
         visibility: hidden;
       }
 
-      &:focus-visible .icon {
+      &:focus-visible .ang-section-header-icon {
         visibility: visible;
       }
     }
   }
 
-  .content {
+  .ang-section-header-content {
     display: inline-block;
     color: map.get($color-config, text-color);
   }
 
-  &:hover .link-container .link .icon {
+  &:hover .ang-section-header-link-container .ang-section-header-link .ang-section-header-icon {
     visibility: visible;
   }
 
@@ -77,7 +77,7 @@ $color-config: (
   }
 
   @media (max-width: 639.9999px) {
-    .link-container {
+    .ang-section-header-link-container {
       display: none;
     }
   }
@@ -86,7 +86,7 @@ $color-config: (
     &h#{$level} {
       font: map.get($config, font);
 
-      .link-container .link {
+      .ang-section-header-link-container .ang-section-header-link {
         top: map.get($config, link-offset);
       }
 
