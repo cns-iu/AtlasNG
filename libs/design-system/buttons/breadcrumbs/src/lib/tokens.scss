@@ -3,8 +3,7 @@
 $config: (
   namespace: 'breadcrumbs',
   tokens: (
-    crumb-color: token-utils.sys-token(on-surface),
-    last-crumb-color: token-utils.sys-token(on-surface-variant),
+    crumb-variant: token-utils.sys-token(on-surface-variant),
     font: token-utils.sys-token(body-medium),
   ),
 );

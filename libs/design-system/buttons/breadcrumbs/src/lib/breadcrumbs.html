@@ -1,17 +1,15 @@
 <nav class="navigation">
-  <ol class="crumbs">
+  <div class="crumbs">
     @for (crumb of crumbs(); track $index) {
-      <li class="crumb">
-        @if (crumb.route) {
-          <a angTextLink class="label" [angAnyLink]="crumb.route">{{ crumb.name }}</a>
-        } @else {
-          <span class="label">{{ crumb.name }}</span>
-        }
+      @if (crumb.route) {
+        <a angTextLink class="crumb" [angAnyLink]="crumb.route">{{ crumb.name }}</a>
+      } @else {
+        <span class="crumb">{{ crumb.name }}</span>
+      }
 
-        @if (!$last) {
-          <div class="separator">/</div>
-        }
-      </li>
+      @if (!$last) {
+        <span class="separator">/</span>
+      }
     }
-  </ol>
+  </div>
 </nav>
