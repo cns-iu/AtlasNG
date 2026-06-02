@@ -1,6 +1,11 @@
 {
   "name": "@atlasng/design-system",
   "version": "0.0.1",
+  "exports": {
+    ".": {
+      "sass": "./sass/_index.scss"
+    }
+  },
   "peerDependencies": {
     "@angular/cdk": "^21.2.6",
     "@angular/common": "^21.2.6",
