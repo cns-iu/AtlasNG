@@ -1,0 +1,16 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@use './internal/token-utils';
+
+$button-defaults: (
+  text-label-text-color: token-utils.sys-slot(on-primary-container),
+  text-state-layer-color: token-utils.sys-slot(on-primary-container),
+);
+
+@mixin button-defaults {
+  @include mat.button-overrides($button-defaults);
+}
+
+@mixin all-defaults {
+  @include button-defaults;
+}

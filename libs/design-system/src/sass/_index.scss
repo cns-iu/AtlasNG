@@ -1,0 +1,3 @@
+// Mixins (and variables) for applying AtlasNG defaults to Angular Material components
+// in cases where we use different tokens than the Material defaults.
+@forward './mat-defaults' as mat-*;
