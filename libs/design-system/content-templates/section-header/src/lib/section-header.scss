@@ -1,5 +1,5 @@
 @use 'sass:map';
-@use 'token-utils';
+@use 'internal/token-utils';
 
 $level-configs: (
   1: (
