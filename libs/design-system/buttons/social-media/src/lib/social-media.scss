@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use 'token-utils';
+@use 'internal/token-utils';
 @use './tokens' as *;
 
 // Keep in sync with `DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS` in social-media.ts
