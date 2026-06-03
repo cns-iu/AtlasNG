@@ -9,3 +9,4 @@ export {
   type RouterlessLinkHandlerContext,
 } from './lib/any-link/link-handler';
 export { RouterLinkHandler, type RouterLinkHandlerContext } from './lib/any-link/router-link-handler';
+export { ID_GENERATOR_OPTIONS, IdGenerator, type IdGeneratorOptions } from './lib/id-generator';
