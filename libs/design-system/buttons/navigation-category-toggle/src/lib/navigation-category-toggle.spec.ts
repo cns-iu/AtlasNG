@@ -29,7 +29,7 @@ describe('NavigationCategoryToggle', () => {
     expect(toggle).toBeTruthy();
 
     const text = toggle?.querySelector('.ang-navigation-category-toggle-text');
-    const icon = toggle?.querySelector('.ang-navigation-category-togglet-icon');
+    const icon = toggle?.querySelector('.ang-navigation-category-toggle-icon');
 
     expect(text).toBeTruthy();
     expect(icon).toBeTruthy();
@@ -47,7 +47,7 @@ describe('NavigationCategoryToggle', () => {
 
     expect(toggle).toBeTruthy();
 
-    const icon = toggle?.querySelector('.ang-navigation-category-togglet-icon');
+    const icon = toggle?.querySelector('.ang-navigation-category-toggle-icon');
 
     expect(icon).toHaveAttribute('data-mat-icon-name', 'expand_more');
 
@@ -66,6 +66,6 @@ describe('NavigationCategoryToggle', () => {
     expect(toggle).toBeTruthy();
     expect(toggle).toHaveAttribute('href');
     expect(toggle?.getAttribute('href')).toContain('/products');
-    expect(toggle?.querySelector('.ang-navigation-category-togglet-icon')).not.toBeInTheDocument();
+    expect(toggle?.querySelector('.ang-navigation-category-toggle-icon')).not.toBeInTheDocument();
   });
 });
