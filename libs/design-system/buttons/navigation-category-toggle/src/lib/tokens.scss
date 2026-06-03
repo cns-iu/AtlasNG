@@ -1,0 +1,10 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'social-media-button',
+  tokens: (),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
