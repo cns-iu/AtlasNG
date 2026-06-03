@@ -5,7 +5,6 @@
   display: block;
 
   .ang-breadcrumbs-crumbs {
-    display: contents;
     list-style-type: none;
     margin: 0;
     padding: 0.125rem 0;
@@ -16,22 +15,20 @@
     line-height: token-utils.slot(text-line-height, $config);
     letter-spacing: token-utils.slot(text-tracking, $config);
 
-    .ang-breadcrumbs-label {
-      text-decoration-thickness: 1px;
-      text-underline-offset: 0.125rem;
-    }
-
     .ang-breadcrumbs-crumb {
-      display: inline;
-    }
+      display: contents;
 
-    .ang-breadcrumbs-separator {
-      display: inline-block;
-      padding: 0 0.25rem;
-      width: 9px;
-      text-align: center;
-      user-select: none;
-      color: token-utils.slot(separator-color, $config);
+      .ang-breadcrumbs-label {
+        text-underline-offset: 0.125rem;
+      }
+
+      .ang-breadcrumbs-separator {
+        display: inline-block;
+        padding: 0 0.375rem;
+        text-align: center;
+        user-select: none;
+        color: token-utils.slot(separator-color, $config);
+      }
     }
   }
 }

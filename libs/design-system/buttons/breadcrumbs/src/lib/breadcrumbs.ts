@@ -19,7 +19,7 @@ export interface BreadcrumbItem {
 })
 export class Breadcrumbs {
   /** Crumbs to display */
-  readonly items = input<BreadcrumbItem[]>([]);
+  readonly items = input.required<BreadcrumbItem[]>();
 
   /** Separator to display between crumbs */
   readonly separator = input<string>('/');
