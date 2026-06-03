@@ -11,9 +11,9 @@ const meta: Meta<Breadcrumbs> = {
     },
   },
   args: {
-    crumbs: [{ name: 'Home', route: '/' }, { name: 'Label', route: '/products' }, { name: 'Label' }],
+    items: [{ name: 'Home', command: '/' }, { name: 'Products', command: '/products' }, { name: 'Current Page' }],
+    separator: '/',
   },
-  argTypes: {},
 };
 
 export default meta;

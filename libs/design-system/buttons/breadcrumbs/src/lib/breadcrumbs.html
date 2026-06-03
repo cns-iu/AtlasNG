@@ -1,15 +1,17 @@
-<nav class="navigation">
-  <div class="crumbs">
-    @for (crumb of crumbs(); track $index) {
-      @if (crumb.route) {
-        <a angTextLink class="crumb" [angAnyLink]="crumb.route">{{ crumb.name }}</a>
-      } @else {
-        <span class="crumb">{{ crumb.name }}</span>
-      }
+<nav class="ang-breadcrumbs-navigation" aria-label="Breadcrumb">
+  <ol class="ang-breadcrumbs-crumbs">
+    @for (crumb of items(); track $index) {
+      <li class="ang-breadcrumbs-crumb" [aria-current]="$last ? 'page' : null">
+        @if (crumb.command) {
+          <a angTextLink class="ang-breadcrumbs-label" [angAnyLink]="crumb.command">{{ crumb.name }}</a>
+        } @else {
+          <span class="ang-breadcrumbs-label">{{ crumb.name }}</span>
+        }
 
-      @if (!$last) {
-        <span class="separator">/</span>
-      }
+        @if (!$last) {
+          <span class="ang-breadcrumbs-separator" aria-hidden="true">{{ separator() }}</span>
+        }
+      </li>
     }
-  </div>
+  </ol>
 </nav>
