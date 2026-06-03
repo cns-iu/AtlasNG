@@ -1,1 +1,18 @@
-<p>navigation-category-toggle works!</p>
+<a
+  matButton
+  angTrackClick
+  class="ang-navigation-category-toggle-button"
+  target="_blank"
+  disableRipple
+  [attr.href]="link()"
+  (click)="toggled.set(!toggled())"
+>
+  <span class="ang-navigation-category-toggle-text"><ng-content /></span>
+  @if (!link()) {
+    <mat-icon
+      iconPositionEnd
+      class="ang-navigation-category-togglet-icon"
+      [fontIcon]="toggled() ? 'expand_less' : 'expand_more'"
+    />
+  }
+</a>

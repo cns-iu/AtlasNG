@@ -10,11 +10,19 @@ const meta: Meta<NavigationCategoryToggle> = {
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=2101-11132',
     },
   },
-  args: {},
-  argTypes: {},
+  render: (args) => ({
+    props: args,
+    template: `<ang-navigation-category-toggle [link]="link">Label</ang-navigation-category-toggle>`,
+  }),
 };
 
 export default meta;
 type Story = StoryObj<NavigationCategoryToggle>;
 
 export const Default: Story = {};
+
+export const WithLink: Story = {
+  args: {
+    link: 'https://example.com',
+  },
+};

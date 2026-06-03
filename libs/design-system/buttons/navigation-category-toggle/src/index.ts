@@ -1,1 +1,1 @@
-import { NavigationCategoryToggle } from './lib/navigation-category-toggle';
+export { NavigationCategoryToggle } from './lib/navigation-category-toggle';
