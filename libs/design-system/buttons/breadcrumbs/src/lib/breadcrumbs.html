@@ -11,7 +11,7 @@
             >{{ crumb.name }}</a
           >
         } @else {
-          <span class="ang-breadcrumbs-label">{{ crumb.name }}</span>
+          <span class="ang-breadcrumbs-label" [aria-current]="$last ? 'page' : null">{{ crumb.name }}</span>
         }
 
         @if (!$last) {
