@@ -1,0 +1,21 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'cookie-banner',
+  tokens: (
+    title-font: token-utils.sys-token(title-medium-font),
+    title-line-height: token-utils.sys-token(title-medium-line-height),
+    title-size: token-utils.sys-token(title-medium-size),
+    title-tracking: token-utils.sys-token(title-medium-tracking),
+    title-weight: token-utils.sys-token(title-medium-weight),
+    description-font: token-utils.sys-token(body-large-font),
+    description-line-height: token-utils.sys-token(body-large-line-height),
+    description-size: token-utils.sys-token(body-large-size),
+    description-tracking: token-utils.sys-token(body-large-tracking),
+    description-weight: token-utils.sys-token(body-large-weight),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

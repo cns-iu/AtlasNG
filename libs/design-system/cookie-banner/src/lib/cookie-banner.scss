@@ -1,0 +1,134 @@
+@use 'internal/breakpoints';
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+$container-padding: 24px;
+$container-gap: 32px;
+$subcontainer-gap: 16px;
+$content-max-width: 716px;
+$action-min-width: 188px;
+
+.ang-cookie-banner {
+  display: block;
+
+  .ang-cookie-banner-container {
+    display: flex;
+    flex-direction: column;
+    gap: $container-gap;
+    padding: $container-padding;
+    z-index: 1000;
+  }
+
+  .ang-cookie-banner-animate-enter {
+    animation: ang-cookie-banner-enter-animation 1s ease-in forwards;
+  }
+
+  .ang-cookie-banner-animate-leave {
+    animation: ang-cookie-banner-leave-animation 1s ease-out forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ang-cookie-banner-animate-enter,
+    .ang-cookie-banner-animate-leave {
+      animation: none;
+    }
+  }
+
+  .ang-cookie-banner-content {
+    display: flex;
+    flex-direction: column;
+    max-width: $content-max-width;
+    margin: 0 auto;
+    gap: $subcontainer-gap;
+  }
+
+  .ang-cookie-banner-title {
+    margin: 0;
+    font-family: token-utils.slot('title-font', $config);
+    font-size: token-utils.slot('title-size', $config);
+    font-weight: token-utils.slot('title-weight', $config);
+    line-height: token-utils.slot('title-line-height', $config);
+    letter-spacing: token-utils.slot('title-tracking', $config);
+  }
+
+  .ang-cookie-banner-description {
+    margin: 0;
+    flex: auto;
+    font-family: token-utils.slot('description-font', $config);
+    font-size: token-utils.slot('description-size', $config);
+    font-weight: token-utils.slot('description-weight', $config);
+    line-height: token-utils.slot('description-line-height', $config);
+    letter-spacing: token-utils.slot('description-tracking', $config);
+  }
+
+  .ang-cookie-banner-privacy-policy {
+    height: 48px;
+    font-family: token-utils.slot('description-font', $config);
+    font-size: token-utils.slot('description-size', $config);
+    line-height: token-utils.slot('description-line-height', $config);
+    letter-spacing: token-utils.slot('description-tracking', $config);
+  }
+
+  .ang-cookie-banner-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $subcontainer-gap;
+  }
+
+  .ang-cookie-banner-action {
+    flex: 1 1 $action-min-width;
+    min-width: $action-min-width;
+  }
+
+  @include breakpoints.breakpoint(medium, $mode: gte) {
+    $content-margin: 24px;
+    $actions-width: 320px;
+    $actions-margin-left: 16px;
+
+    .ang-cookie-banner-container {
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    .ang-cookie-banner-content {
+      max-width: $content-max-width - 2 * $content-margin;
+      margin: 0 $content-margin;
+    }
+
+    .ang-cookie-banner-actions {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      flex: 0 0 auto;
+      width: $actions-width - $actions-margin-left;
+      margin-left: $actions-margin-left;
+    }
+
+    .ang-cookie-banner-action {
+      flex: auto;
+    }
+  }
+}
+
+@keyframes ang-cookie-banner-enter-animation {
+  from {
+    opacity: 0;
+    transform: translateY(calc(100% + env(safe-area-inset-bottom)));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ang-cookie-banner-leave-animation {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(calc(100% + env(safe-area-inset-bottom)));
+  }
+}
