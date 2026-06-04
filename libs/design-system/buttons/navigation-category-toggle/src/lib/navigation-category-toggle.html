@@ -1,10 +1,10 @@
-<a
+<button
   matButton
   angTrackClick
   class="ang-navigation-category-toggle-button"
   target="_blank"
   disableRipple
-  [attr.href]="link()"
+  [angAnyLink]="link()"
   (click)="toggled.set(!toggled())"
 >
   <span class="ang-navigation-category-toggle-text"><ng-content /></span>
@@ -15,4 +15,4 @@
       [fontIcon]="toggled() ? 'expand_less' : 'expand_more'"
     />
   }
-</a>
+</button>

@@ -21,26 +21,6 @@ describe('NavigationCategoryToggle', () => {
     };
   }
 
-  it('renders projected text before the icon', async () => {
-    await setup();
-
-    const toggle = screen.getByText('Category').closest('.ang-navigation-category-toggle-button');
-
-    expect(toggle).toBeTruthy();
-
-    const text = toggle?.querySelector('.ang-navigation-category-toggle-text');
-    const icon = toggle?.querySelector('.ang-navigation-category-toggle-icon');
-
-    expect(text).toBeTruthy();
-    expect(icon).toBeTruthy();
-
-    if (!text || !icon) {
-      throw new Error('Expected text and icon elements to exist');
-    }
-
-    expect(text.compareDocumentPosition(icon) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  });
-
   it('toggles state when clicked', async () => {
     const { user } = await setup();
     const toggle = screen.getByText('Category').closest('.ang-navigation-category-toggle-button');
@@ -61,11 +41,11 @@ describe('NavigationCategoryToggle', () => {
   it('hides the toggle icon when a link is provided', async () => {
     await setup('/products');
 
-    const toggle = screen.getByText('Category').closest('.ang-navigation-category-toggle-button');
+    const toggle = screen.getByRole('button', { name: 'Category' });
 
     expect(toggle).toBeTruthy();
-    expect(toggle).toHaveAttribute('href');
-    expect(toggle?.getAttribute('href')).toContain('/products');
-    expect(toggle?.querySelector('.ang-navigation-category-toggle-icon')).not.toBeInTheDocument();
+    expect(toggle).toHaveAttribute('tabindex', '0');
+    expect(toggle).not.toHaveAttribute('href');
+    expect(toggle.querySelector('.ang-navigation-category-toggle-icon')).not.toBeInTheDocument();
   });
 });

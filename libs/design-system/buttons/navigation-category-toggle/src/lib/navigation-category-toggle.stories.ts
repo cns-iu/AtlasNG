@@ -21,7 +21,7 @@ type Story = StoryObj<NavigationCategoryToggle>;
 
 export const Default: Story = {};
 
-export const WithLink: Story = {
+export const AsLink: Story = {
   args: {
     link: 'https://example.com',
   },

@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TrackClick } from '@atlasng/analytics';
-import { AnyLinkCommand } from '@atlasng/common';
+import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 
 @Component({
   selector: 'ang-navigation-category-toggle',
-  imports: [MatButtonModule, MatIconModule, TrackClick],
+  imports: [MatButtonModule, MatIconModule, AnyLink, TrackClick],
   templateUrl: './navigation-category-toggle.html',
   styleUrl: './navigation-category-toggle.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
