@@ -1,6 +1,7 @@
 import { MatButton } from '@angular/material/button';
 import { TextLink } from '@atlasng/design-system/text-link';
-import { Meta, moduleMetadata, StoryObj, argsToTemplate } from '@storybook/angular';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { expect, waitFor } from 'storybook/test';
 import {
   CookieBanner,
   CookieBannerAction,
@@ -8,7 +9,6 @@ import {
   CookieBannerLogo,
   CookieBannerTitle,
 } from './cookie-banner';
-import { expect, waitFor } from 'storybook/test';
 
 const TOGGLE_BUTTONS = `
   <div style="display: flex; gap: 16px; padding: 16px; border-bottom: 1px solid black;">
@@ -38,14 +38,7 @@ const meta: Meta<CookieBanner> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [
-        CookieBannerLogo,
-        CookieBannerTitle,
-        CookieBannerDescription,
-        CookieBannerAction,
-        MatButton,
-        TextLink,
-      ],
+      imports: [CookieBannerLogo, CookieBannerTitle, CookieBannerDescription, CookieBannerAction, MatButton, TextLink],
     }),
   ],
   render: (args) => ({
