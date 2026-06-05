@@ -1,0 +1,18 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'breadcrumbs',
+  tokens: (
+    crumb-color: token-utils.sys-token(on-surface-variant),
+    separator-color: token-utils.sys-token(on-surface-variant),
+    text-font: token-utils.sys-token(body-medium-font),
+    text-size: token-utils.sys-token(body-medium-size),
+    text-weight: 600,
+    text-line-height: token-utils.sys-token(body-medium-line-height),
+    text-tracking: token-utils.sys-token(body-medium-tracking),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

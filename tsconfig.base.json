@@ -28,6 +28,7 @@
       "@atlasng/common": ["./libs/common/src/index.ts"],
       "@atlasng/core": ["./libs/core/src/index.ts"],
       "@atlasng/design-system": ["./libs/design-system/src/index.ts"],
+      "@atlasng/design-system/buttons/breadcrumbs": ["./libs/design-system/buttons/breadcrumbs/src/index.ts"],
       "@atlasng/design-system/buttons/help": ["./libs/design-system/buttons/help/src/index.ts"],
       "@atlasng/design-system/buttons/social-media": ["./libs/design-system/buttons/social-media/src/index.ts"],
       "@atlasng/design-system/indicators/end-of-results": [
