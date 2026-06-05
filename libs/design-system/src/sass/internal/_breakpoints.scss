@@ -4,6 +4,8 @@
 
 $_breakpoint-min: 0px;
 $_breakpoint-max: 1000000px;
+$_breakpoint-keywords: ('boundary');
+$_breakpoint-boundary-modes: ('open', 'open-start', 'open-end', 'closed');
 
 $breakpoints: (
   x-small: (
@@ -28,22 +30,19 @@ $breakpoints: (
   ),
 );
 
-$_breakpoint-keywords: ('mode');
-$_breakpoint-modes: ('between', 'lte', 'gte');
-
-// Create a media query for the given breakpoint(s) and mode (default: 'between').
+// Create a media query for the given breakpoint(s) and boundary mode (default: 'closed').
 @mixin breakpoint($breakpoint, $args...) {
   $keywords: meta.keywords($args);
   $invalid-keywords: map.remove($keywords, $_breakpoint-keywords...);
   $breakpoint-keys: list.join(($breakpoint), $args);
-  $mode: map.get($keywords, 'mode');
+  $boundary-mode: map.get($keywords, 'boundary') or 'closed';
 
   @if list.length($invalid-keywords) != 0 {
     @error 'Invalid keyword arguments: #{map.keys($invalid-keywords)}.';
   }
 
-  @if $mode != null and list.index($_breakpoint-modes, $mode) == null {
-    @error 'Invalid mode: #{$mode}. Valid modes are: #{$_breakpoint-modes}.';
+  @if not list.index($_breakpoint-boundary-modes, $boundary-mode) {
+    @error 'Invalid boundary mode: #{$boundary-mode}. Valid boundary modes are: #{$_breakpoint-boundary-modes}.';
   }
 
   @each $key in $breakpoint-keys {
@@ -54,7 +53,7 @@ $_breakpoint-modes: ('between', 'lte', 'gte');
 
   $ranges: _select-ranges($breakpoint-keys);
   $ranges: _merge-adjacent-ranges($ranges);
-  $ranges: _trim-boundaries($ranges, $mode);
+  $ranges: _trim-boundaries($ranges, $boundary-mode);
   $queries: ();
   @each $range in $ranges {
     $queries: list.append($queries, _range-to-query($range), $separator: comma);
@@ -65,6 +64,7 @@ $_breakpoint-modes: ('between', 'lte', 'gte');
       @content;
     }
   } @else {
+    @warn 'Breakpoints cover the entire range of possible widths. This is likely a mistake, please check the specified breakpoints and boundary mode.';
     @content;
   }
 }
@@ -108,22 +108,16 @@ $_breakpoint-modes: ('between', 'lte', 'gte');
   @return $merged;
 }
 
-@function _trim-boundaries($ranges, $mode) {
+@function _trim-boundaries($ranges, $boundary-mode) {
   $length: list.length($ranges);
   $first: list.nth($ranges, 1);
   $last: list.nth($ranges, $length);
 
-  @if $mode == 'lte' {
-    $first: list.set-nth($first, 1, null);
-  } @else if $mode == 'gte' {
-    $last: list.set-nth($last, 2, null);
-  }
-
-  @if list.nth($first, 1) == $_breakpoint-min {
+  @if list.index(('open', 'open-start'), $boundary-mode) or list.nth($first, 1) == $_breakpoint-min {
     $first: list.set-nth($first, 1, null);
   }
 
-  @if list.nth($last, 2) == $_breakpoint-max {
+  @if list.index(('open', 'open-end'), $boundary-mode) or list.nth($last, 2) == $_breakpoint-max {
     $last: list.set-nth($last, 2, null);
   }
 
@@ -134,8 +128,7 @@ $_breakpoint-modes: ('between', 'lte', 'gte');
       @return ();
     }
 
-    $first: ($min, $max);
-    $last: $first;
+    @return list.append((), ($min, $max));
   }
 
   $ranges: list.set-nth($ranges, 1, $first);

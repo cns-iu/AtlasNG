@@ -80,7 +80,7 @@ $action-min-width: 188px;
     min-width: $action-min-width;
   }
 
-  @include breakpoints.breakpoint(medium, $mode: gte) {
+  @include breakpoints.breakpoint(medium, $boundary: 'open-end') {
     $content-margin: 24px;
     $actions-width: 320px;
     $actions-margin-left: 16px;

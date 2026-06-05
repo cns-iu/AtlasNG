@@ -38,7 +38,15 @@ const meta: Meta<CookieBanner> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [CookieBannerLogo, CookieBannerTitle, CookieBannerDescription, CookieBannerAction, MatButton, TextLink],
+      imports: [
+        CookieBanner,
+        CookieBannerLogo,
+        CookieBannerTitle,
+        CookieBannerDescription,
+        CookieBannerAction,
+        MatButton,
+        TextLink,
+      ],
     }),
   ],
   render: (args) => ({
