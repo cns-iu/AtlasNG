@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use '../tokens' as *;
+
+:host {
+  display: block;
+
+  @include mat.button-overrides(
+    (
+      text-container-height: 3rem,
+      text-label-text-color: token-utils.slot(label-color, $config),
+      text-icon-spacing: 0.125rem,
+      text-label-text-font: token-utils.slot(label-font, $config),
+      text-label-text-size: token-utils.slot(label-font-size, $config),
+      text-label-text-tracking: token-utils.slot(label-letter-spacing, $config),
+      text-label-text-weight: token-utils.slot(label-font-weight, $config),
+      text-with-icon-horizontal-padding: 0.75rem,
+      text-state-layer-color: transparent,
+    )
+  );
+
+  @include mat.icon-overrides(
+    (
+      color: token-utils.slot(icon-color, $config),
+    )
+  );
+
+  .ang-navigation-toggle-button {
+    &:focus-visible {
+      outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
+    }
+
+    :is(&.selected, &:hover, &:active, &:focus) {
+      .ang-navigation-toggle-text {
+        text-decoration: underline;
+        text-underline-offset: 0.25rem;
+        text-decoration-thickness: 0.125rem;
+        text-decoration-color: token-utils.slot(underline-color, $config);
+      }
+    }
+
+    .ang-navigation-toggle-icon {
+      height: 1.25rem;
+      width: 1.25rem;
+      font-size: 1.25rem;
+    }
+  }
+}
