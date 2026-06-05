@@ -1,1 +1,1 @@
-export { NavigationToggle } from '../../navigation-toggle/src/lib/navigation-toggle';
+export { NavigationToggle } from './lib/navigation-toggle';
