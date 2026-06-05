@@ -1,1 +1,19 @@
-<p>footer works!</p>
+<a class="ang-footer-logo" target="_self">
+  <img alt="App Logo" [src]="logoUrl()" />
+</a>
+<div class="ang-footer-socials">
+  @for (social of socials(); track social) {
+    <ang-social-media-button [id]="social" />
+  }
+  <button matIconButton type="button">
+    <mat-icon fontIcon="mail" />
+  </button>
+</div>
+<div class="ang-footer-privacy">
+  <button matButton>Privacy Policy</button>
+  <button matButton>Privacy Preferences</button>
+</div>
+<span class="ang-footer-copyright">
+  © {{ fullYear }} <a class="ang-footer-link" angTextLink target="_blank" [href]="orgLink()">{{ orgName() }}</a
+  >.
+</span>

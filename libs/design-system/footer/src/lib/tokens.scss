@@ -2,7 +2,12 @@
 
 $config: (
   namespace: 'footer',
-  tokens: (),
+  tokens: (
+    background-color: token-utils.sys-token(surface-variant),
+    color: token-utils.sys-token(on-surface-variant),
+    privacy-font: token-utils.sys-token(label-medium),
+    font: token-utils.sys-token(body-small),
+  ),
 );
 
 @mixin overrides($overrides) {
