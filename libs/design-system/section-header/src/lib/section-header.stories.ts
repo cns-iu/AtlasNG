@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/angular';
+import { argsToTemplate, Meta, StoryObj } from '@storybook/angular';
 import { SectionHeader } from './section-header';
 
 interface ExtraArgs {
@@ -6,15 +6,9 @@ interface ExtraArgs {
   content: string;
 }
 
-function clampLevel(level: number): number {
-  level = Math.max(level, 1);
-  level = Math.min(level, 6);
-  return level;
-}
-
 const meta: Meta<SectionHeader & ExtraArgs> = {
   component: SectionHeader,
-  title: 'Design System/Content Templates/Section Header',
+  title: 'Design System/Section Header',
   parameters: {
     design: {
       type: 'figma',
@@ -25,11 +19,16 @@ const meta: Meta<SectionHeader & ExtraArgs> = {
     level: 1,
     anchor: 'anchor',
     content: 'Content Text',
+    underlined: true,
   },
   argTypes: {
     level: {
       control: { type: 'number', min: 1, max: 6 },
       description: 'The heading level (1-6) to determine the appropriate HTML tag.',
+    },
+    anchor: {
+      control: 'text',
+      description: 'The anchor ID for the section header link.',
     },
     content: {
       control: 'text',
@@ -42,10 +41,10 @@ const meta: Meta<SectionHeader & ExtraArgs> = {
   },
   render: (args) => ({
     props: args,
-    styles: ['[ang-section-header] { margin: 0 2rem; }'],
-    template: `<h${clampLevel(args.level)} ang-section-header anchor="${args.anchor}" underlined="${args.underlined}">
-        Heading ${clampLevel(args.level)} ${args.content}
-      </h${clampLevel(args.level)}>`,
+    styles: ['[angSectionHeader] { margin: 0 2rem; }'],
+    template: `<h${args.level} angSectionHeader ${argsToTemplate(args, { exclude: ['content', 'level'] })}>
+        Heading ${args.level} ${args.content}
+      </h${args.level}>`,
   }),
 };
 

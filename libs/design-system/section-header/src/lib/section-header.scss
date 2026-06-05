@@ -44,10 +44,14 @@ $color-config: (
   margin: 0;
 
   .ang-section-header-link-container {
-    display: inline-block;
+    display: none;
     vertical-align: top;
     height: 0;
     line-height: 1;
+
+    @media (min-width: 640px) {
+      display: inline-block;
+    }
 
     .ang-section-header-link {
       position: relative;
@@ -74,12 +78,6 @@ $color-config: (
 
   mat-divider {
     border-color: map.get($color-config, divider-color);
-  }
-
-  @media (max-width: 639.9999px) {
-    .ang-section-header-link-container {
-      display: none;
-    }
   }
 
   @each $level, $config in $level-configs {
