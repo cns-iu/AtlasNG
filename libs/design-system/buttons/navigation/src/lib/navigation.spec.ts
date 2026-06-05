@@ -13,7 +13,7 @@ describe('Navigation', () => {
       },
     });
 
-    const button = screen.getByRole('button', { name: 'Go to Docs' });
+    const button = screen.getByRole('link', { name: 'Go to Docs' });
 
     return {
       user,
