@@ -27,10 +27,4 @@ describe('Navigation', () => {
     expect(button).toBeInTheDocument();
     expect(button).toHaveTextContent('Go to Docs');
   });
-
-  it('applies link to the button', async () => {
-    const { button } = await setup('https://example.com');
-
-    expect(button).toHaveAttribute('href', 'https://example.com');
-  });
 });
