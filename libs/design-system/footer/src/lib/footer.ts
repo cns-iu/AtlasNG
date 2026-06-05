@@ -16,7 +16,7 @@ export class Footer {
   readonly socials = input<string[]>();
   readonly logoUrl = input<string>();
   readonly orgName = input<string>();
+  readonly email = input<string>();
   readonly orgLink = input<AnyLinkCommand>();
-
   readonly fullYear = new Date().getFullYear();
 }

@@ -5,9 +5,11 @@
   @for (social of socials(); track social) {
     <ang-social-media-button [id]="social" />
   }
-  <button matIconButton type="button">
-    <mat-icon fontIcon="mail" />
-  </button>
+  @if (email()) {
+    <a matIconButton type="button" [href]="`mailto:${email()}`">
+      <mat-icon fontIcon="mail" />
+    </a>
+  }
 </div>
 <div class="ang-footer-privacy">
   <button matButton>Privacy Policy</button>

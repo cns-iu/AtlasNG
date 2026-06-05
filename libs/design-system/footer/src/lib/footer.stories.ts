@@ -9,6 +9,7 @@ const meta: Meta = {
     socials: ['linkedin', 'youtube', 'instagram', 'facebook', 'github', 'bluesky', 'x'],
     orgName: 'Whole Person Physiome',
     orgLink: 'https://www.cns.edu',
+    email: 'info@cns.edu',
   },
 };
 
