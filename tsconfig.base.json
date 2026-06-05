@@ -29,8 +29,9 @@
       "@atlasng/core": ["./libs/core/src/index.ts"],
       "@atlasng/design-system": ["./libs/design-system/src/index.ts"],
       "@atlasng/design-system/buttons/help": ["./libs/design-system/buttons/help/src/index.ts"],
-      "@atlasng/design-system/buttons/navigation-category-toggle": [
-        "./libs/design-system/buttons/navigation-category-toggle/src/index.ts"
+      "@atlasng/design-system/buttons/navigation": ["./libs/design-system/buttons/navigation/src/index.ts"],
+      "@atlasng/design-system/buttons/navigation-toggle": [
+        "./libs/design-system/buttons/navigation-toggle/src/index.ts"
       ],
       "@atlasng/design-system/buttons/social-media": ["./libs/design-system/buttons/social-media/src/index.ts"],
       "@atlasng/design-system/indicators/end-of-results": [

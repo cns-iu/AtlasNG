@@ -3,7 +3,7 @@ import { NavigationToggle } from './navigation-toggle';
 
 const meta: Meta<NavigationToggle> = {
   component: NavigationToggle,
-  title: 'Design System/Buttons/Navigation/Navigation Toggle',
+  title: 'Design System/Buttons/Navigation Toggle',
   parameters: {
     design: {
       type: 'figma',

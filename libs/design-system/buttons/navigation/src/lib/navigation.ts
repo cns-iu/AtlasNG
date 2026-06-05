@@ -12,5 +12,5 @@ import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 })
 export class Navigation {
   /** The link to navigate to */
-  readonly link = input<AnyLinkCommand | null>(null);
+  readonly link = input<AnyLinkCommand>();
 }

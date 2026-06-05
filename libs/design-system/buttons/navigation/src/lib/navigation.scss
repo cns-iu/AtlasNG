@@ -4,6 +4,7 @@
 
 :host {
   display: block;
+  width: fit-content;
 
   @include mat.button-overrides(
     (
@@ -24,7 +25,7 @@
       outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
     }
 
-    :is(&:hover, &:active, &:focus) {
+    :is(&:hover, &:active, &:focus-visible) {
       .ang-navigation-text {
         text-decoration: underline;
         text-underline-offset: 0.25rem;

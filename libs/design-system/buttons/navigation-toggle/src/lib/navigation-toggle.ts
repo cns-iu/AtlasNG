@@ -10,11 +10,11 @@ import { TrackClick } from '@atlasng/analytics';
   styleUrl: './navigation-toggle.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[attr.selected]': 'selected()',
-    '(click)': 'selected.set(!selected())',
+    '[class.ang-navigation-toggle-selected]': 'selected()',
+    '(click)': 'selected.update(s => !s)',
   },
 })
 export class NavigationToggle {
   /** Whether the button is currently selected */
-  readonly selected = model<boolean>(false);
+  readonly selected = model(false);
 }
