@@ -1,0 +1,10 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'footer',
+  tokens: (),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
