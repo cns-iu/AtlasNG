@@ -77,6 +77,7 @@ const baseConfig = [
       'no-shadow': 'error',
       'no-template-curly-in-string': 'warn',
       'no-throw-literal': 'error',
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       yoda: 'warn',
     },
   },
@@ -86,12 +87,14 @@ const baseConfig = [
       // Disable eslint rules that interfere with typescript rules
       'no-empty-function': 'off',
       'no-shadow': 'off',
+      "no-unused-vars": 'off',
 
       '@typescript-eslint/array-type': 'error',
       '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
       '@typescript-eslint/no-empty-function': ['error', { allow: ['arrowFunctions', 'constructors'] }],
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/no-shadow': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
 ];
