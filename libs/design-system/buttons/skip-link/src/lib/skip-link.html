@@ -1,0 +1,7 @@
+@if (selector()) {
+  <a matButton class="ang-skip-link" [attr.href]="selector()">
+    {{ label() }}
+  </a>
+} @else {
+  <ng-content />
+}
