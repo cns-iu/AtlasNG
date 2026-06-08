@@ -13,7 +13,7 @@ import {
   castArray,
   isAnchorLikeElement,
   isUrlTree,
-  tryParseAbsoluteUrl
+  tryParseAbsoluteUrl,
 } from './utils';
 
 /**

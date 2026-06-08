@@ -87,7 +87,7 @@ const baseConfig = [
       // Disable eslint rules that interfere with typescript rules
       'no-empty-function': 'off',
       'no-shadow': 'off',
-      "no-unused-vars": 'off',
+      'no-unused-vars': 'off',
 
       '@typescript-eslint/array-type': 'error',
       '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
