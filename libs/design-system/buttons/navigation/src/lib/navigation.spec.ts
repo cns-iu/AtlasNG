@@ -1,19 +1,16 @@
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { Navigation } from './navigation';
+import { NavigationButton } from './navigation';
 
-describe('Navigation', () => {
-  async function setup(link: string | null = null) {
+describe('NavigationButton', () => {
+  async function setup() {
     const user = userEvent.setup();
 
-    await render(`<ang-navigation [link]="link">Go to Docs</ang-navigation>`, {
-      imports: [Navigation],
-      componentProperties: {
-        link,
-      },
+    await render(`<ang-navigation-button>Go to Docs</ang-navigation-button>`, {
+      imports: [NavigationButton],
     });
 
-    const button = screen.getByRole('link', { name: 'Go to Docs' });
+    const button = screen.getByText('Go to Docs');
 
     return {
       user,

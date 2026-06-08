@@ -1,9 +1,9 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { Navigation } from './navigation';
+import { NavigationButton } from './navigation';
 
-const meta: Meta<Navigation> = {
-  component: Navigation,
-  title: 'Design System/Buttons/Navigation',
+const meta: Meta<NavigationButton> = {
+  component: NavigationButton,
+  title: 'Design System/Buttons/Navigation Button',
   parameters: {
     design: {
       type: 'figma',
@@ -15,11 +15,11 @@ const meta: Meta<Navigation> = {
   },
   render: (args) => ({
     props: args,
-    template: `<ang-navigation [link]="link">Label</ang-navigation>`,
+    template: `<ang-navigation-button [link]="link">Label</ang-navigation-button>`,
   }),
 };
 
 export default meta;
-type Story = StoryObj<Navigation>;
+type Story = StoryObj<NavigationButton>;
 
 export const Default: Story = {};

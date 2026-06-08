@@ -1,1 +1,1 @@
-export { Navigation } from './lib/navigation';
+export { NavigationButton } from './lib/navigation';
