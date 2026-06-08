@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TrackClick } from '@atlasng/analytics';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 
 @Component({
   selector: 'ang-navigation-toggle',
   imports: [MatButtonModule, MatIconModule, TrackClick],
   templateUrl: './navigation-toggle.html',
   styleUrl: './navigation-toggle.scss',
+  providers: [provideEventScope('navigation-toggle')],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.ang-navigation-toggle-selected]': 'selected()',
