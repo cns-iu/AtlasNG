@@ -8,7 +8,13 @@ import {
   UrlTree,
 } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
-import { castArray, isAnchorLikeElement, isUrlTree } from './utils';
+import {
+  applyQueryParamsAndFragmentToUrl,
+  castArray,
+  isAnchorLikeElement,
+  isUrlTree,
+  tryParseAbsoluteUrl
+} from './utils';
 
 /**
  * Command input for link preparation.
@@ -160,6 +166,7 @@ export class RouterlessLinkHandler extends LinkHandler<RouterlessLinkHandlerCont
   ): PreparedLink<RouterlessLinkHandlerContext> {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (command.relativeTo) {
+        // eslint-disable-next-line no-console
         console.warn('The "relativeTo" option is not supported by RouterlessLinkHandler.');
       }
     }
@@ -188,14 +195,17 @@ export class RouterlessLinkHandler extends LinkHandler<RouterlessLinkHandlerCont
   ): boolean {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (options.skipLocationChange) {
+        // eslint-disable-next-line no-console
         console.warn('The "skipLocationChange" option is not supported by RouterlessLinkHandler.');
       }
 
       if (options.state) {
+        // eslint-disable-next-line no-console
         console.warn('The "state" option is not supported by RouterlessLinkHandler.');
       }
 
       if (options.browserUrl) {
+        // eslint-disable-next-line no-console
         console.warn('The "browserUrl" option is not supported by RouterlessLinkHandler.');
       }
     }
@@ -232,6 +242,12 @@ export class RouterlessLinkHandler extends LinkHandler<RouterlessLinkHandlerCont
    * @returns External URL ready for navigation.
    */
   protected serializeCommand(command: LinkCommand): string {
+    const absoluteUrl = tryParseAbsoluteUrl(command.command);
+    if (absoluteUrl) {
+      applyQueryParamsAndFragmentToUrl(absoluteUrl, command);
+      return absoluteUrl.toString();
+    }
+
     const urlTree = this.commandToUrlTree(command);
     const url = this.serializer.serialize(urlTree);
     return this.location.prepareExternalUrl(url);
@@ -293,6 +309,7 @@ export class RouterlessLinkHandler extends LinkHandler<RouterlessLinkHandlerCont
           path = String(part.segmentPath);
         } else {
           if ('outlets' in part && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+            // eslint-disable-next-line no-console
             console.warn('Outlets in command arrays are not supported by RouterlessLinkHandler and will be skipped.');
           }
 

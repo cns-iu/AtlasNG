@@ -69,17 +69,26 @@ export function castArray<T>(value: T | T[]): T[] {
 }
 
 /**
- * Returns whether a string can be parsed as an absolute URL.
+ * Attempts to parse an absolute URL from a command-like value.
  *
- * @param value URL string to validate.
- * @returns `true` when `URL` can parse the value; otherwise `false`.
+ * Supports raw string input and single-item command arrays used by link handlers.
+ * Relative paths and non-string values return `null`.
+ *
+ * @param value Potential absolute URL value.
+ * @returns Parsed `URL` instance when successful; otherwise `null`.
  */
-export function canParseUrl(value: string): boolean {
+export function tryParseAbsoluteUrl(value: unknown): URL | null {
+  if (Array.isArray(value) && value.length === 1) {
+    value = value[0];
+  }
+  if (typeof value !== 'string') {
+    return null;
+  }
+
   try {
-    new URL(value);
-    return true;
+    return new URL(value);
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -119,4 +128,29 @@ export function safeMerge<T, U>(target: T, source: U): T & U {
   }
 
   return result;
+}
+
+/**
+ * Applies query params and fragment options from a link command onto an URL.
+ *
+ * @param url URL instance to mutate.
+ * @param command Link command containing query/fragment options.
+ */
+export function applyQueryParamsAndFragmentToUrl(url: URL, command: LinkCommand): void {
+  if (!command.queryParamsHandling && command.queryParams) {
+    url.search = '';
+  }
+  if (command.queryParamsHandling !== 'preserve' && command.queryParams) {
+    for (const [key, value] of Object.entries(command.queryParams)) {
+      const values = castArray(value);
+      url.searchParams.delete(key);
+      for (const v of values) {
+        url.searchParams.append(key, v);
+      }
+    }
+  }
+
+  if (!command.preserveFragment && command.fragment !== undefined) {
+    url.hash = command.fragment;
+  }
 }
