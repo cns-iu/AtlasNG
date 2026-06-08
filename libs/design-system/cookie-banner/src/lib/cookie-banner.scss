@@ -10,6 +10,7 @@ $action-min-width: 188px;
 
 .ang-cookie-banner {
   display: block;
+  overflow-y: hidden;
 
   .ang-cookie-banner-container {
     display: flex;
@@ -98,13 +99,12 @@ $action-min-width: 188px;
     .ang-cookie-banner-actions {
       flex-direction: column;
       flex-wrap: nowrap;
-      flex: 0 0 auto;
       width: $actions-width - $actions-margin-left;
       margin-left: $actions-margin-left;
     }
 
     .ang-cookie-banner-action {
-      flex: auto;
+      flex: unset;
     }
   }
 }
