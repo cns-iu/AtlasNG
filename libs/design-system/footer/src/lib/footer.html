@@ -1,21 +1,70 @@
-<a class="ang-footer-logo" target="_self">
+<div class="ang-footer-top">
+  <a class="ang-footer-logo" target="_self">
+    <img alt="App Logo" [src]="logoUrl()" />
+  </a>
+  <div class="ang-footer-socials">
+    <div class="row-1">
+      @for (social of socials(); track [$index, social]) {
+        @if ($index < 4) {
+          <ang-social-media-button [id]="social" />
+        }
+      }
+    </div>
+
+    <div class="row-2">
+      @for (social of socials(); track [$index, social]) {
+        @if ($index >= 4) {
+          <ang-social-media-button [id]="social" />
+        }
+      }
+      @if (email()) {
+        <a class="ang-footer-mail-icon" matIconButton type="button" [href]="`mailto:${email()}`">
+          <mat-icon fontIcon="mail" />
+        </a>
+      }
+    </div>
+  </div>
+</div>
+<div class="ang-footer-bottom">
+  <div class="ang-footer-privacy">
+    <button matButton>Privacy Policy</button>
+    <button matButton>Privacy Preferences</button>
+  </div>
+  <span class="ang-footer-copyright">
+    © {{ fullYear }} <a class="ang-footer-link" angTextLink target="_blank" [href]="orgLink()">{{ orgName() }}</a
+    >.
+  </span>
+</div>
+
+<a class="ang-footer-logo desktop" target="_self">
   <img alt="App Logo" [src]="logoUrl()" />
 </a>
-<div class="ang-footer-socials">
-  @for (social of socials(); track social) {
-    <ang-social-media-button [id]="social" />
-  }
-  @if (email()) {
-    <a matIconButton type="button" [href]="`mailto:${email()}`">
-      <mat-icon fontIcon="mail" />
-    </a>
-  }
+<div class="ang-footer-socials desktop">
+  <div class="row-1">
+    @for (social of socials(); track [$index, social]) {
+      @if ($index < 4) {
+        <ang-social-media-button [id]="social" />
+      }
+    }
+  </div>
+  <div class="row-2">
+    @for (social of socials(); track [$index, social]) {
+      @if ($index >= 4) {
+        <ang-social-media-button [id]="social" />
+      }
+    }
+    @if (email()) {
+      <a class="ang-footer-mail-icon" matIconButton type="button" [href]="`mailto:${email()}`">
+        <mat-icon fontIcon="mail" />
+      </a>
+    }
+  </div>
 </div>
-<div class="ang-footer-privacy">
+<div class="ang-footer-privacy desktop">
   <button matButton>Privacy Policy</button>
   <button matButton>Privacy Preferences</button>
 </div>
-<span class="ang-footer-copyright">
+<span class="ang-footer-copyright desktop">
   © {{ fullYear }} <a class="ang-footer-link" angTextLink target="_blank" [href]="orgLink()">{{ orgName() }}</a
   >.
 </span>
