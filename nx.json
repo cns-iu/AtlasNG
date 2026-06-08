@@ -316,7 +316,10 @@
       "preVersionCommand": "npx nx run-many -t build --projects=tag:library",
       "manifestRootsToUpdate": [
         "{projectRoot}",
-        { "path": "{workspaceRoot}/dist/{projectRoot}", "preserveLocalDependencyProtocols": false }
+        {
+          "path": "{workspaceRoot}/dist/{projectRoot}",
+          "preserveLocalDependencyProtocols": false
+        }
       ],
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk"
