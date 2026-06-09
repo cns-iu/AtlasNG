@@ -1,5 +1,15 @@
 {
   "name": "@atlasng/labs",
   "version": "0.0.1",
-  "sideEffects": false
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/core": "^21.2.6",
+    "@angular/material": "^21.2.6"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "*",
+    "@storybook/addon-designs": "*",
+    "@storybook/addon-docs": "*",
+    "@storybook/addon-themes": "*"
+  }
 }
