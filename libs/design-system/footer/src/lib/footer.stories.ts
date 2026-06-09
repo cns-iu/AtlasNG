@@ -15,7 +15,7 @@ const meta: Meta = {
     socials: ['linkedin', 'youtube', 'instagram', 'facebook', 'github', 'bluesky', 'x'],
     orgName: '[Name with hyperlink]',
     orgLink: 'https://www.example.com',
-    email: 'info@cns.edu',
+    email: 'example@gmail.com',
   },
 };
 

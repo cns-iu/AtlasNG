@@ -4,9 +4,12 @@ $config: (
   namespace: 'footer',
   tokens: (
     background-color: token-utils.sys-token(surface-variant),
-    color: token-utils.sys-token(on-surface-variant),
-    privacy-font: token-utils.sys-token(label-medium),
-    font: token-utils.sys-token(body-small),
+    privacy-font-family: token-utils.sys-token(label-medium-font),
+    privacy-font-size: token-utils.sys-token(label-medium-size),
+    privacy-letter-spacing: 0.2px,
+    privacy-font-weight: token-utils.sys-token(label-medium-weight),
+    copyright-color: token-utils.sys-token(on-surface-variant),
+    copyright-font: token-utils.sys-token(body-small),
   ),
 );
 

@@ -1,31 +1,45 @@
-<div class="ang-footer-top">
-  <a class="ang-footer-logo" target="_self">
+<div class="ang-footer-mobile">
+  <div class="ang-footer-top">
+    <ng-container [ngTemplateOutlet]="logoSocials" />
+  </div>
+  <div class="ang-footer-bottom">
+    <ng-container [ngTemplateOutlet]="privacyCopyright" />
+  </div>
+</div>
+
+<div class="ang-footer-desktop">
+  <ng-container [ngTemplateOutlet]="logoSocials" />
+  <ng-container [ngTemplateOutlet]="privacyCopyright" />
+</div>
+
+<ng-template #logoSocials>
+  <a class="ang-footer-logo" target="_blank" [href]="orgLink()">
     <img alt="App Logo" [src]="logoUrl()" />
   </a>
   <div class="ang-footer-socials">
-    <div class="row-1">
+    <div class="ang-footer-socials-row-1">
       @for (social of socials(); track [$index, social]) {
         @if ($index < 4) {
-          <ang-social-media-button [id]="social" />
+          <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
         }
       }
     </div>
-
-    <div class="row-2">
+    <div class="ang-footer-socials-row-2">
       @for (social of socials(); track [$index, social]) {
         @if ($index >= 4) {
-          <ang-social-media-button [id]="social" />
+          <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
         }
       }
       @if (email()) {
-        <a class="ang-footer-mail-icon" matIconButton type="button" [href]="`mailto:${email()}`">
+        <a class="ang-footer-social-icon" matIconButton type="button" [href]="`mailto:${email()}`">
           <mat-icon fontIcon="mail" />
         </a>
       }
     </div>
   </div>
-</div>
-<div class="ang-footer-bottom">
+</ng-template>
+
+<ng-template #privacyCopyright>
   <div class="ang-footer-privacy">
     <button matButton>Privacy Policy</button>
     <button matButton>Privacy Preferences</button>
@@ -34,37 +48,4 @@
     © {{ fullYear }} <a class="ang-footer-link" angTextLink target="_blank" [href]="orgLink()">{{ orgName() }}</a
     >.
   </span>
-</div>
-
-<a class="ang-footer-logo desktop" target="_self">
-  <img alt="App Logo" [src]="logoUrl()" />
-</a>
-<div class="ang-footer-socials desktop">
-  <div class="row-1">
-    @for (social of socials(); track [$index, social]) {
-      @if ($index < 4) {
-        <ang-social-media-button [id]="social" />
-      }
-    }
-  </div>
-  <div class="row-2">
-    @for (social of socials(); track [$index, social]) {
-      @if ($index >= 4) {
-        <ang-social-media-button [id]="social" />
-      }
-    }
-    @if (email()) {
-      <a class="ang-footer-mail-icon" matIconButton type="button" [href]="`mailto:${email()}`">
-        <mat-icon fontIcon="mail" />
-      </a>
-    }
-  </div>
-</div>
-<div class="ang-footer-privacy desktop">
-  <button matButton>Privacy Policy</button>
-  <button matButton>Privacy Preferences</button>
-</div>
-<span class="ang-footer-copyright desktop">
-  © {{ fullYear }} <a class="ang-footer-link" angTextLink target="_blank" [href]="orgLink()">{{ orgName() }}</a
-  >.
-</span>
+</ng-template>

@@ -50,6 +50,7 @@ describe('Footer', () => {
     expect(orgLink).toHaveAttribute('href', 'https://www.cns.edu');
 
     const year = new Date().getFullYear();
-    expect(screen.getByText(new RegExp(`© ${year}`))).toBeInTheDocument();
+    const copyrightBlocks = screen.getAllByText(new RegExp(`© ${year}`));
+    expect(copyrightBlocks.length).toBeGreaterThan(0);
   });
 });
