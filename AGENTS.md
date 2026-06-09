@@ -71,6 +71,7 @@
   - [libs/common/README.md](libs/common/README.md)
   - [libs/core/README.md](libs/core/README.md)
   - [libs/design-system/README.md](libs/design-system/README.md)
+  - [libs/labs/README.md](libs/labs/README.md)
 
 ## Documentation Expectations
 
