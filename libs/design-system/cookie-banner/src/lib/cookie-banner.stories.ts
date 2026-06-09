@@ -5,13 +5,14 @@ import { expect, waitFor } from 'storybook/test';
 import {
   CookieBanner,
   CookieBannerAction,
+  CookieBannerContainer,
   CookieBannerDescription,
   CookieBannerLogo,
   CookieBannerTitle,
 } from './cookie-banner';
 
 const TOGGLE_BUTTONS = `
-  <div style="display: flex; gap: 16px; padding: 16px; border-bottom: 1px solid black;">
+  <div style="display: flex; gap: 16px; padding: 16px; border-bottom: 1px solid #1C1B1E;">
     <button matButton="filled" (click)="banner.open()">Open banner</button>
     <button matButton="filled" (click)="banner.close()">Close banner</button>
   </div>
@@ -44,6 +45,7 @@ const meta: Meta<CookieBanner> = {
         CookieBannerTitle,
         CookieBannerDescription,
         CookieBannerAction,
+        CookieBannerContainer,
         MatButton,
         TextLink,
       ],
@@ -54,7 +56,7 @@ const meta: Meta<CookieBanner> = {
     template: `
       ${TOGGLE_BUTTONS}
 
-      <ang-cookie-banner ${argsToTemplate(args)} #banner />
+      <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner />
     `,
   }),
 };
@@ -70,7 +72,7 @@ export const CustomContent: Story = {
     template: `
       ${TOGGLE_BUTTONS}
 
-      <ang-cookie-banner ${argsToTemplate(args)} #banner>
+      <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner>
         <ang-cookie-banner-title>Wow, a custom title!</ang-cookie-banner-title>
         <ang-cookie-banner-description>
           This cookie banner has custom content. You can put whatever you want in here, like
@@ -83,19 +85,46 @@ export const CustomContent: Story = {
   }),
 };
 
+export const EmbeddedContainer: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      ${TOGGLE_BUTTONS}
+
+      <div angCookieBannerContainer style="height: 100px; border-bottom: 1px solid #1C1B1E;">
+        <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner />
+      </div>
+
+      <p>Additional content after "embedded" cookie banner.</p>
+    `,
+  }),
+};
+
+export const ScrollableContainer: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      ${TOGGLE_BUTTONS}
+      <div style="height: 150vh;"></div>
+
+      <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner />
+    `,
+  }),
+};
+
 export const Animations: Story = {
   play: async ({ canvas, userEvent }) => {
-    const headerText = 'Manage your privacy preferences';
+    const banner = canvas.getByTestId('cookie-banner');
     const openButton = canvas.getByRole('button', { name: 'Open banner' });
     const closeButton = canvas.getByRole('button', { name: 'Close banner' });
 
     // Verify banner appears immediately, i.e. no enter animation
-    await expect(canvas.queryByText(headerText)).toBeInTheDocument();
+    await expect(banner).toBeVisible();
 
     await userEvent.click(closeButton);
-    await waitFor(() => expect(canvas.queryByText(headerText)).not.toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(() => expect(banner).not.toBeVisible(), { timeout: 2000 });
 
     await userEvent.click(openButton);
-    await waitFor(() => expect(canvas.queryByText(headerText)).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(() => expect(banner).toBeVisible(), { timeout: 2000 });
   },
 };

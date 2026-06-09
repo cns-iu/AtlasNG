@@ -8,31 +8,45 @@ $subcontainer-gap: 16px;
 $content-max-width: 716px;
 $action-min-width: 188px;
 
+body.ang-cookie-banner-container {
+  overflow-y: auto;
+  padding-bottom: var(--ang-cookie-banner-spacing, 0px);
+  scroll-padding-bottom: var(--ang-cookie-banner-spacing, 0px);
+
+  .ang-cookie-banner {
+    position: fixed;
+  }
+}
+
+.ang-cookie-banner-container:not(body) {
+  position: relative;
+  overflow-y: hidden;
+  padding-bottom: var(--ang-cookie-banner-spacing, 0px);
+  scroll-padding-bottom: var(--ang-cookie-banner-spacing, 0px);
+
+  --ang-cookie-banner-opened-offset: 175%;
+  --ang-cookie-banner-closed-offset: 150%;
+
+  .ang-cookie-banner {
+    position: absolute;
+  }
+}
+
 .ang-cookie-banner {
   display: block;
+  inset: auto 0 0;
   overflow-y: hidden;
+  z-index: 1000;
+  background-color: token-utils.slot('container-color', $config);
+  border-top-left-radius: token-utils.slot('container-shape', $config);
+  border-top-right-radius: token-utils.slot('container-shape', $config);
+  box-shadow: token-utils.slot('container-elevation', $config);
 
-  .ang-cookie-banner-container {
+  .ang-cookie-banner-section {
     display: flex;
     flex-direction: column;
     gap: $container-gap;
     padding: $container-padding;
-    z-index: 1000;
-  }
-
-  .ang-cookie-banner-animate-enter {
-    animation: ang-cookie-banner-enter-animation 1s ease-in forwards;
-  }
-
-  .ang-cookie-banner-animate-leave {
-    animation: ang-cookie-banner-leave-animation 1s ease-out forwards;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .ang-cookie-banner-animate-enter,
-    .ang-cookie-banner-animate-leave {
-      animation: none;
-    }
   }
 
   .ang-cookie-banner-content {
@@ -45,6 +59,7 @@ $action-min-width: 188px;
 
   .ang-cookie-banner-title {
     margin: 0;
+    color: token-utils.slot('title-color', $config);
     font-family: token-utils.slot('title-font', $config);
     font-size: token-utils.slot('title-size', $config);
     font-weight: token-utils.slot('title-weight', $config);
@@ -55,6 +70,7 @@ $action-min-width: 188px;
   .ang-cookie-banner-description {
     margin: 0;
     flex: auto;
+    color: token-utils.slot('description-color', $config);
     font-family: token-utils.slot('description-font', $config);
     font-size: token-utils.slot('description-size', $config);
     font-weight: token-utils.slot('description-weight', $config);
@@ -64,6 +80,7 @@ $action-min-width: 188px;
 
   .ang-cookie-banner-privacy-policy {
     height: 48px;
+    color: token-utils.slot('privacy-policy-color', $config);
     font-family: token-utils.slot('description-font', $config);
     font-size: token-utils.slot('description-size', $config);
     line-height: token-utils.slot('description-line-height', $config);
@@ -86,7 +103,7 @@ $action-min-width: 188px;
     $actions-width: 320px;
     $actions-margin-left: 16px;
 
-    .ang-cookie-banner-container {
+    .ang-cookie-banner-section {
       flex-direction: row;
       justify-content: center;
     }
@@ -109,10 +126,39 @@ $action-min-width: 188px;
   }
 }
 
-@keyframes ang-cookie-banner-enter-animation {
+@media (prefers-reduced-motion: no-preference) {
+  .ang-cookie-banner.ang-cookie-banner-opened {
+    animation: ang-cookie-banner-opened 1s ease-in forwards;
+  }
+
+  .ang-cookie-banner.ang-cookie-banner-closed {
+    animation: ang-cookie-banner-closed 1s ease-out forwards;
+  }
+
+  .ang-cookie-banner-container.ang-cookie-banner-opened {
+    animation: ang-cookie-banner-container-opened 1s ease-in forwards;
+  }
+
+  .ang-cookie-banner-container.ang-cookie-banner-closed {
+    animation: ang-cookie-banner-container-closed 1s ease-out forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ang-cookie-banner.ang-cookie-banner-closed {
+    display: none;
+  }
+
+  .ang-cookie-banner.ang-cookie-banner-closed {
+    padding-bottom: 0;
+    scroll-padding-bottom: 0;
+  }
+}
+
+@keyframes ang-cookie-banner-opened {
   from {
     opacity: 0;
-    transform: translateY(calc(100% + env(safe-area-inset-bottom)));
+    transform: translateY(calc(var(--ang-cookie-banner-opened-offset, 100%) + env(safe-area-inset-bottom)));
   }
 
   to {
@@ -121,14 +167,39 @@ $action-min-width: 188px;
   }
 }
 
-@keyframes ang-cookie-banner-leave-animation {
+@keyframes ang-cookie-banner-closed {
   from {
     opacity: 1;
     transform: translateY(0);
   }
 
   to {
+    display: none;
     opacity: 0;
-    transform: translateY(calc(100% + env(safe-area-inset-bottom)));
+    transform: translateY(calc(var(--ang-cookie-banner-closed-offset, 100%) + env(safe-area-inset-bottom)));
+  }
+}
+
+@keyframes ang-cookie-banner-container-opened {
+  from {
+    padding-bottom: 0;
+    scroll-padding-bottom: 0;
+  }
+
+  to {
+    padding-bottom: var(--ang-cookie-banner-spacing, 0px);
+    scroll-padding-bottom: var(--ang-cookie-banner-spacing, 0px);
+  }
+}
+
+@keyframes ang-cookie-banner-container-closed {
+  from {
+    padding-bottom: var(--ang-cookie-banner-spacing, 0px);
+    scroll-padding-bottom: var(--ang-cookie-banner-spacing, 0px);
+  }
+
+  to {
+    padding-bottom: 0;
+    scroll-padding-bottom: 0;
   }
 }
