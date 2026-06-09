@@ -74,7 +74,7 @@ describe('browser tokens', () => {
   });
 
   it('RESIZE_OBSERVER should return the ResizeObserver constructor when available', () => {
-    const fakeResizeObserver = {} as typeof ResizeObserver;
+    const fakeResizeObserver = class {} as unknown as typeof ResizeObserver;
     const fakeWindow = { ResizeObserver: fakeResizeObserver } as unknown as Window;
 
     TestBed.configureTestingModule({
