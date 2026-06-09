@@ -2,10 +2,7 @@
   "name": "@atlasng/labs",
   "version": "0.0.1",
   "sideEffects": false,
-  "peerDependencies": {
-    "@angular/core": "^21.2.6",
-    "@angular/material": "^21.2.6"
-  },
+  "peerDependencies": {},
   "devDependencies": {
     "@storybook/addon-a11y": "*",
     "@storybook/addon-designs": "*",
