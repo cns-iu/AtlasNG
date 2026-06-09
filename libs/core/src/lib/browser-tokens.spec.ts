@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { CUSTOM_ELEMENT_REGISTRY, DOCUMENT, LOCATION, WINDOW } from './browser-tokens';
+import { CUSTOM_ELEMENT_REGISTRY, DOCUMENT, LOCATION, RESIZE_OBSERVER, WINDOW } from './browser-tokens';
 
 describe('browser tokens', () => {
   function configureDocument(document: Document): void {
@@ -71,5 +71,26 @@ describe('browser tokens', () => {
     });
 
     expect(TestBed.inject(CUSTOM_ELEMENT_REGISTRY)).toBeUndefined();
+  });
+
+  it('RESIZE_OBSERVER should return the ResizeObserver constructor when available', () => {
+    const fakeResizeObserver = {} as typeof ResizeObserver;
+    const fakeWindow = { ResizeObserver: fakeResizeObserver } as unknown as Window;
+
+    TestBed.configureTestingModule({
+      providers: [{ provide: WINDOW, useValue: fakeWindow }],
+    });
+
+    expect(TestBed.inject(RESIZE_OBSERVER)).toBe(fakeResizeObserver);
+  });
+
+  it('RESIZE_OBSERVER should return undefined when the ResizeObserver is missing', () => {
+    const fakeWindow = {} as Window;
+
+    TestBed.configureTestingModule({
+      providers: [{ provide: WINDOW, useValue: fakeWindow }],
+    });
+
+    expect(TestBed.inject(RESIZE_OBSERVER)).toBeUndefined();
   });
 });

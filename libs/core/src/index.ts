@@ -1,1 +1,1 @@
-export { CUSTOM_ELEMENT_REGISTRY, DOCUMENT, LOCATION, WINDOW } from './lib/browser-tokens';
+export { CUSTOM_ELEMENT_REGISTRY, DOCUMENT, LOCATION, RESIZE_OBSERVER, WINDOW } from './lib/browser-tokens';
