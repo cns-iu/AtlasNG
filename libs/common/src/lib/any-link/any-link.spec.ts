@@ -4,7 +4,6 @@ import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { AnyLink } from './any-link';
 import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from './link-handler';
-import { TestBed } from '@angular/core/testing';
 
 class MockLinkHandler extends LinkHandler {
   readonly prepareLink = vi.fn(

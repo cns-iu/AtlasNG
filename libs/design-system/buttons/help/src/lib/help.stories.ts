@@ -1,11 +1,11 @@
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Meta, StoryObj } from '@storybook/angular';
-import { Help } from './help';
+import { HelpButton } from './help';
 
-const meta: Meta<Help> = {
+const meta: Meta<HelpButton> = {
   title: 'Design System/Buttons/Help',
-  component: Help,
+  component: HelpButton,
   parameters: {
     design: {
       type: 'figma',
@@ -20,7 +20,7 @@ const meta: Meta<Help> = {
   },
 };
 export default meta;
-type Story = StoryObj<Help>;
+type Story = StoryObj<HelpButton>;
 
 export const HelpLink: Story = {
   args: {
@@ -31,7 +31,7 @@ export const HelpLink: Story = {
 export const HelpMenu: Story = {
   render: () => ({
     template: `
-    <ang-help [menu]="menu"/>
+    <ang-help-button [menu]="menu"/>
 
     <mat-menu #menu="matMenu">
       <button mat-menu-item type="button">

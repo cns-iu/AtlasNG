@@ -1,0 +1,12 @@
+{
+  "name": "@atlasng/labs",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "peerDependencies": {},
+  "devDependencies": {
+    "@storybook/addon-a11y": "*",
+    "@storybook/addon-designs": "*",
+    "@storybook/addon-docs": "*",
+    "@storybook/addon-themes": "*"
+  }
+}

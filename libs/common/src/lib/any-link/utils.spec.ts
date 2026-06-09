@@ -1,6 +1,6 @@
 import type { UrlTree } from '@angular/router';
 import {
-  canParseUrl,
+  applyQueryParamsAndFragmentToUrl,
   castArray,
   commandAttribute,
   isAnchorElement,
@@ -8,9 +8,12 @@ import {
   isAnchorLikeElement,
   isUrlTree,
   safeMerge,
+  tryParseAbsoluteUrl,
 } from './utils';
 
 describe('any-link utils', () => {
+  const BASE_URL = 'https://example.com/path';
+
   describe('isAnchorElement', () => {
     it('returns true for anchor and area elements', () => {
       const anchor = { tagName: 'A' } as Element;
@@ -131,14 +134,29 @@ describe('any-link utils', () => {
     });
   });
 
-  describe('canParseUrl', () => {
-    it('returns true for absolute URLs', () => {
-      expect(canParseUrl('https://example.com/path?x=1#hash')).toBe(true);
+  describe('tryParseAbsoluteUrl', () => {
+    it('returns a URL instance for absolute URL strings', () => {
+      const parsed = tryParseAbsoluteUrl(`${BASE_URL}?x=1#hash`);
+
+      expect(parsed).toBeInstanceOf(URL);
+      expect(parsed?.toString()).toBe(`${BASE_URL}?x=1#hash`);
     });
 
-    it('returns false for invalid or relative URLs', () => {
-      expect(canParseUrl('not a url')).toBe(false);
-      expect(canParseUrl('/relative/path')).toBe(false);
+    it('returns a URL instance for single-value command arrays', () => {
+      const parsed = tryParseAbsoluteUrl([BASE_URL]);
+
+      expect(parsed).toBeInstanceOf(URL);
+      expect(parsed?.toString()).toBe(BASE_URL);
+    });
+
+    it('returns null for relative URLs, invalid URLs, and non-string values', () => {
+      expect(tryParseAbsoluteUrl('/relative/path')).toBeNull();
+      expect(tryParseAbsoluteUrl('not a url')).toBeNull();
+      expect(tryParseAbsoluteUrl([BASE_URL, 'https://example.org'])).toBeNull();
+      expect(tryParseAbsoluteUrl(['../relative/path'])).toBeNull();
+      expect(tryParseAbsoluteUrl(123)).toBeNull();
+      expect(tryParseAbsoluteUrl(undefined)).toBeNull();
+      expect(tryParseAbsoluteUrl(null)).toBeNull();
     });
   });
 
@@ -182,6 +200,47 @@ describe('any-link utils', () => {
 
       expect(result).not.toBe(target);
       expect(target).toEqual({ a: 1 });
+    });
+  });
+
+  describe('applyQueryParamsAndFragmentToUrl', () => {
+    it('replaces query params and fragment by default', () => {
+      const url = new URL(`${BASE_URL}?existing=1#old`);
+
+      applyQueryParamsAndFragmentToUrl(url, {
+        command: `${BASE_URL}?existing=1#old`,
+        queryParams: { next: '2' },
+        fragment: 'new',
+      });
+
+      expect(url.toString()).toBe(`${BASE_URL}?next=2#new`);
+    });
+
+    it('merges query params when queryParamsHandling is merge', () => {
+      const url = new URL(`${BASE_URL}?existing=1&keep=2#old`);
+
+      applyQueryParamsAndFragmentToUrl(url, {
+        command: `${BASE_URL}?existing=1&keep=2#old`,
+        queryParamsHandling: 'merge',
+        queryParams: {
+          existing: '3',
+          add: ['a', 'b'],
+        },
+      });
+
+      expect(url.toString()).toBe(`${BASE_URL}?keep=2&existing=3&add=a&add=b#old`);
+    });
+
+    it('preserves fragment when preserveFragment is true', () => {
+      const url = new URL(`${BASE_URL}#old`);
+
+      applyQueryParamsAndFragmentToUrl(url, {
+        command: `${BASE_URL}#old`,
+        fragment: 'new',
+        preserveFragment: true,
+      });
+
+      expect(url.toString()).toBe(`${BASE_URL}#old`);
     });
   });
 });
