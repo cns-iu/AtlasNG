@@ -133,6 +133,7 @@ export class CookieBannerContainer {
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-cookie-banner',
+    '(animationend)': 'handleAnimationEnd($event)',
   },
 })
 export class CookieBanner {
@@ -235,6 +236,17 @@ export class CookieBanner {
   }
 
   /**
+   * Handles the end of an animation event.
+   *
+   * @param event The animation event.
+   */
+  protected handleAnimationEnd(event: AnimationEvent): void {
+    if (event.animationName === 'ang-cookie-banner-closed') {
+      this.renderer.setStyle(this.el, 'display', 'none');
+    }
+  }
+
+  /**
    * Registers container-level classes/styles and ensures they are removed on destroy.
    */
   private initializeContainer(): void {
@@ -275,6 +287,7 @@ export class CookieBanner {
     renderer.removeClass(containerEl, CLOSED_CLASS);
     renderer.removeClass(el, OPENED_CLASS);
     renderer.removeClass(el, CLOSED_CLASS);
+    renderer.removeStyle(el, 'display');
     renderer.addClass(containerEl, classes);
     renderer.addClass(el, classes);
   }

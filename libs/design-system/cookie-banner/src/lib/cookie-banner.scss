@@ -169,6 +169,7 @@ body.ang-cookie-banner-container {
 
 @keyframes ang-cookie-banner-closed {
   from {
+    display: block;
     opacity: 1;
     transform: translateY(0);
   }
