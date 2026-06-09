@@ -13,6 +13,8 @@ import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
 import { RouterLinkHandler } from './router-link-handler';
 
 describe('RouterLinkHandler', () => {
+  const BASE_URL = 'https://example.com/page';
+
   let handler: RouterLinkHandler;
   let router: {
     createUrlTree: ReturnType<typeof vi.fn>;
@@ -99,7 +101,7 @@ describe('RouterLinkHandler', () => {
       configureTestingModule();
 
       const link = handler.prepareLink({
-        command: 'https://example.com/page?existing=1#old',
+        command: `${BASE_URL}?existing=1#old`,
         queryParamsHandling: 'merge',
         queryParams: {
           existing: '2',
@@ -108,7 +110,7 @@ describe('RouterLinkHandler', () => {
         fragment: 'next',
       });
 
-      expect(link.href).toBe('https://example.com/page?existing=2&extra=a&extra=b#next');
+      expect(link.href).toBe(`${BASE_URL}?existing=2&extra=a&extra=b#next`);
       expect(link.handlerContext.urlTree).toBeUndefined();
     });
 
@@ -116,23 +118,23 @@ describe('RouterLinkHandler', () => {
       configureTestingModule();
 
       const link = handler.prepareLink({
-        command: 'https://example.com/page?existing=1',
+        command: `${BASE_URL}?existing=1`,
         queryParams: { param: 'value' },
       });
 
-      expect(link.href).toBe('https://example.com/page?param=value');
+      expect(link.href).toBe(`${BASE_URL}?param=value`);
     });
 
     it('should keep the original fragment when preserveFragment is true', () => {
       configureTestingModule();
 
       const link = handler.prepareLink({
-        command: 'https://example.com/page#old',
+        command: `${BASE_URL}#old`,
         preserveFragment: true,
         fragment: 'new',
       });
 
-      expect(link.href).toBe('https://example.com/page#old');
+      expect(link.href).toBe(`${BASE_URL}#old`);
     });
 
     it('should use UrlTree commands directly', () => {
@@ -181,7 +183,7 @@ describe('RouterLinkHandler', () => {
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
       handler.prepareLink({
-        command: 'https://example.com/page',
+        command: `${BASE_URL}`,
         relativeTo: {} as ActivatedRoute,
       });
 
@@ -197,7 +199,7 @@ describe('RouterLinkHandler', () => {
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
       handler.prepareLink({
-        command: 'https://example.com/page',
+        command: `${BASE_URL}`,
         relativeTo: {} as ActivatedRoute,
       });
 

@@ -11,6 +11,8 @@ import {
 } from './link-handler';
 
 describe('RouterlessLinkHandler', () => {
+  const BASE_URL = 'https://example.com/privacy';
+
   let handler: RouterlessLinkHandler;
   let browserLocation: { assign: ReturnType<typeof vi.fn>; replace: ReturnType<typeof vi.fn> };
   let angularLocation: {
@@ -82,7 +84,7 @@ describe('RouterlessLinkHandler', () => {
   });
 
   describe('prepareLink', () => {
-    it('should serialize absolute commands into external URLs', () => {
+    it('should serialize route commands into external URLs', () => {
       configureTestingModule();
 
       const attributes: LinkAttributes = { rel: 'noopener', target: '_blank' };
@@ -91,6 +93,30 @@ describe('RouterlessLinkHandler', () => {
       expect(link.href).toBe('/base/next');
       expect(link.attributes).toEqual(attributes);
       expect(link.handlerContext.isAnchorLikeElement).toBe(false);
+    });
+
+    it('should preserve absolute URL commands', () => {
+      configureTestingModule();
+
+      const link = handler.prepareLink({ command: `${BASE_URL}` });
+
+      expect(link.href).toBe(BASE_URL);
+    });
+
+    it('should apply query params and fragment options to absolute URL commands', () => {
+      configureTestingModule();
+
+      const link = handler.prepareLink({
+        command: `${BASE_URL}?existing=1#old`,
+        queryParamsHandling: 'merge',
+        queryParams: {
+          existing: '2',
+          add: ['a', 'b'],
+        },
+        fragment: 'new',
+      });
+
+      expect(link.href).toBe(`${BASE_URL}?existing=2&add=a&add=b#new`);
     });
 
     it('should resolve relative commands and preserve query params and fragment when configured', () => {
