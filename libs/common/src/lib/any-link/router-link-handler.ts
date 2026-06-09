@@ -8,7 +8,7 @@ import {
   RouterlessLinkHandler,
   RouterlessLinkHandlerContext,
 } from './link-handler';
-import { canParseUrl, castArray, isUrlTree } from './utils';
+import { castArray, isUrlTree, tryParseAbsoluteUrl } from './utils';
 
 /**
  * Context for router link handling.
@@ -32,7 +32,7 @@ export class RouterLinkHandler extends RouterlessLinkHandler implements LinkHand
   /** Angular Router instance used to build and execute route-based navigation. */
   protected readonly router = inject(Router);
 
-  /** Centralized Angular error handler for async navigation failures. */
+  /** Angular error handler for reporting navigation failures. */
   protected readonly errorHandler = inject(ErrorHandler);
 
   /**
@@ -50,30 +50,25 @@ export class RouterLinkHandler extends RouterlessLinkHandler implements LinkHand
     attributes?: LinkAttributes,
     injector?: Injector,
   ): PreparedLink<RouterLinkHandlerContext> {
-    let href: string;
-    let urlTree: UrlTree | undefined;
-
-    if (typeof command.command === 'string' && canParseUrl(command.command)) {
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        if (command.relativeTo) {
-          console.warn('The "relativeTo" option is not supported for absolute URLs in RouterLinkHandler.');
-        }
+    if (tryParseAbsoluteUrl(command.command)) {
+      if (command.relativeTo && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+        // eslint-disable-next-line no-console
+        console.warn('The "relativeTo" option is not supported for absolute URLs in RouterLinkHandler.');
       }
 
-      const url = new URL(command.command);
-      this.applyQueryParamsAndFragment(url, command);
-      href = url.toString();
-    } else {
-      if (isUrlTree(command.command)) {
-        urlTree = command.command;
-      } else {
-        const relativeTo = command.relativeTo ?? injector?.get(ActivatedRoute, null);
-        urlTree = this.router.createUrlTree(castArray(command.command), { ...command, relativeTo });
-      }
-
-      const url = this.router.serializeUrl(urlTree);
-      href = this.location.prepareExternalUrl(url);
+      return super.prepareLink({ ...command, relativeTo: undefined }, element, attributes, injector);
     }
+
+    let urlTree: UrlTree | undefined;
+    if (isUrlTree(command.command)) {
+      urlTree = command.command;
+    } else {
+      const relativeTo = command.relativeTo ?? injector?.get(ActivatedRoute, null);
+      urlTree = this.router.createUrlTree(castArray(command.command), { ...command, relativeTo });
+    }
+
+    const url = this.router.serializeUrl(urlTree);
+    const href = this.location.prepareExternalUrl(url);
 
     return {
       href,
@@ -123,30 +118,5 @@ export class RouterLinkHandler extends RouterlessLinkHandler implements LinkHand
     });
 
     return !isAnchorLikeElement;
-  }
-
-  /**
-   * Applies query-param and fragment options from a link command onto an absolute URL.
-   *
-   * @param url Absolute URL instance to mutate.
-   * @param command Link command containing query/fragment options.
-   */
-  private applyQueryParamsAndFragment(url: URL, command: LinkCommand): void {
-    if (!command.queryParamsHandling && command.queryParams) {
-      url.search = '';
-    }
-    if (command.queryParamsHandling !== 'preserve' && command.queryParams) {
-      for (const [key, value] of Object.entries(command.queryParams)) {
-        const values = castArray(value);
-        url.searchParams.delete(key);
-        for (const v of values) {
-          url.searchParams.append(key, v);
-        }
-      }
-    }
-
-    if (!command.preserveFragment && command.fragment !== undefined) {
-      url.hash = command.fragment;
-    }
   }
 }

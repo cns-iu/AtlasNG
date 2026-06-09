@@ -8,7 +8,7 @@ export { DOCUMENT };
 /**
  * Injection token for the global {@link Window} object.
  */
-export const WINDOW = new InjectionToken<Window>('WINDOW', {
+export const WINDOW = new InjectionToken<Window & typeof globalThis>('WINDOW', {
   providedIn: 'root',
   factory: () => {
     const document = inject(DOCUMENT);
@@ -47,3 +47,18 @@ export const CUSTOM_ELEMENT_REGISTRY = new InjectionToken<CustomElementRegistry 
     },
   },
 );
+
+/**
+ * Injection token for the browser {@link ResizeObserver} API, when available.
+ */
+export const RESIZE_OBSERVER = new InjectionToken<typeof ResizeObserver | undefined>('RESIZE_OBSERVER', {
+  providedIn: 'root',
+  factory: () => {
+    const window = inject(WINDOW);
+    if (typeof window.ResizeObserver === 'function') {
+      return window.ResizeObserver;
+    }
+
+    return undefined;
+  },
+});

@@ -1,0 +1,36 @@
+<section class="ang-cookie-banner-section" [attr.aria-labelledby]="titleId()">
+  <ng-content select="ang-cookie-banner-logo, [angCookieBannerLogo]" />
+
+  <div class="ang-cookie-banner-content">
+    <ng-content select="ang-cookie-banner-title, [angCookieBannerTitle]">
+      <h2 class="ang-cookie-banner-title" [id]="titleId()">Manage your privacy preferences</h2>
+    </ng-content>
+
+    <ng-content>
+      <p class="ang-cookie-banner-description">
+        Cookies and similar technologies are used to play videos and to improve this website.
+      </p>
+    </ng-content>
+
+    @if (privacyPolicy(); as policy) {
+      <a angTextLink class="ang-cookie-banner-privacy-policy" target="_blank" [angAnyLink]="policy">
+        Privacy policy
+        <mat-icon fontIcon="arrow_right_alt" />
+      </a>
+    }
+  </div>
+
+  <div class="ang-cookie-banner-actions">
+    <ng-content select="ang-cookie-banner-action, [angCookieBannerAction]">
+      <button matButton="filled" angTrackClick class="ang-cookie-banner-action" (click)="handleClick(allowAll)">
+        Allow all
+      </button>
+      <button matButton="filled" angTrackClick class="ang-cookie-banner-action" (click)="handleClick(allowNecessary)">
+        Allow necessary only
+      </button>
+      <button matButton="outlined" angTrackClick class="ang-cookie-banner-action" (click)="handleClick(customize)">
+        Customize
+      </button>
+    </ng-content>
+  </div>
+</section>

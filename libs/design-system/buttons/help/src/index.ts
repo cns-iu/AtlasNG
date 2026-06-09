@@ -1,1 +1,1 @@
-export { Help } from './lib/help';
+export { HelpButton } from './lib/help';

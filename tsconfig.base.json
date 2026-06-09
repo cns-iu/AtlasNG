@@ -35,6 +35,7 @@
         "./libs/design-system/buttons/navigation-toggle/src/index.ts"
       ],
       "@atlasng/design-system/buttons/social-media": ["./libs/design-system/buttons/social-media/src/index.ts"],
+      "@atlasng/design-system/cookie-banner": ["./libs/design-system/cookie-banner/src/index.ts"],
       "@atlasng/design-system/indicators/end-of-results": [
         "./libs/design-system/indicators/end-of-results/src/index.ts"
       ],
