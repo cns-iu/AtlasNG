@@ -1,0 +1,9 @@
+<button matButton angTrackClick class="ang-navigation-toggle-button" disableRipple>
+  <span class="ang-navigation-toggle-text"><ng-content /></span>
+
+  <mat-icon
+    iconPositionEnd
+    class="ang-navigation-toggle-icon"
+    [fontIcon]="selected() ? 'expand_less' : 'expand_more'"
+  />
+</button>
