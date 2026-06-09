@@ -1,0 +1,13 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'youtube-player',
+  tokens: (
+    enable-cookies-color: token-utils.sys-token(on-surface-variant),
+    enable-cookies-font: token-utils.sys-token(body-medium),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

@@ -1,0 +1,47 @@
+@use 'internal/token-utils';
+@use './tokens';
+
+:host {
+  display: block;
+  position: relative;
+
+  youtube-player {
+    display: block;
+  }
+
+  ::ng-deep youtube-player {
+    youtube-player-placeholder,
+    iframe {
+      width: 100% !important;
+      aspect-ratio: 16 / 9 !important;
+      height: unset !important;
+    }
+  }
+
+  .thumbnail-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  .enable-cookies-message,
+  .enable-cookies-button {
+    font: token-utils.slot(enable-cookies-font, tokens.$config);
+    color: token-utils.slot(enable-cookies-color, tokens.$config);
+  }
+
+  .enable-cookies-message {
+    margin-top: 0.5rem;
+  }
+
+  .enable-cookies-button {
+    font-weight: 600;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
