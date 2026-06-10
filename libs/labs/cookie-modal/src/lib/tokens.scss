@@ -1,8 +1,13 @@
+@use 'internal/sass-utils';
 @use 'internal/token-utils';
 
 $config: (
   namespace: 'ang-cookie-modal',
   tokens: (
+    container-color: token-utils.sys-token(surface-bright),
+    container-elevation-shadow: 0px 12px 32px 24px sass-utils.color-with-opacity(token-utils.sys-token(tertiary), 24%),
+    container-shape: token-utils.sys-token(corner-small),
+    divider-color: token-utils.sys-token(outline-variant),
     border-color: token-utils.sys-token(outline-variant),
     border-radius: token-utils.sys-token(corner-medium),
     title-color: token-utils.sys-token(on-surface),

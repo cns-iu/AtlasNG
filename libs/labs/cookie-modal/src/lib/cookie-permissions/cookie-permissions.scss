@@ -14,7 +14,7 @@
   .ang-cookie-permissions--divider {
     @include mat.divider-overrides(
       (
-        color: token-utils.slot(border-color, $config),
+        color: token-utils.slot(divider-color, $config),
       )
     );
   }

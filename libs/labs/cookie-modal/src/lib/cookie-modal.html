@@ -1,6 +1,16 @@
-<h2 matDialogTitle class="ang-cookie-modal--header">
-  <!-- <h2>Cookie Policy</h2> -->
-</h2>
+<div matDialogTitle class="ang-cookie-modal--header">
+  <div class="ang-cookie-modal--logo">
+    <!-- TODO -->
+  </div>
+
+  @if (!disableClose) {
+    <button matIconButton matDialogClose aria-label="Close cookie consent modal">
+      <mat-icon fontIcon="close" />
+    </button>
+  }
+</div>
+
+<mat-divider />
 
 <mat-tab-group matDialogContent class="ang-cookie-modal--tabs" [(selectedIndex)]="activeTab">
   <mat-tab label="Consent">
@@ -18,14 +28,22 @@
   </mat-tab>
 </mat-tab-group>
 
+<mat-divider />
+
 <div matDialogActions class="ang-cookie-modal--actions" align="center">
-  <button matButton="filled" matDialogClose="TODO">Allow necessary only</button>
+  <button matButton="filled" class="ang-cookie-modal--actions-action" [matDialogClose]="allowNecessaryPermissions">
+    Allow necessary only
+  </button>
 
   @if (activeTab() === 0) {
-    <button matButton="outlined" (click)="activeTab.set(1)">Customize</button>
+    <button matButton="outlined" class="ang-cookie-modal--actions-action" (click)="activeTab.set(1)">Customize</button>
   } @else {
-    <button matButton="filled" matDialogClose="TODO">Allow Selection</button>
+    <button matButton="filled" class="ang-cookie-modal--actions-action" [matDialogClose]="permissions()">
+      Allow Selection
+    </button>
   }
 
-  <button matButton="filled" matDialogClose="TODO">Allow all</button>
+  <button matButton="filled" class="ang-cookie-modal--actions-action" [matDialogClose]="allowAllPermissions">
+    Allow all
+  </button>
 </div>

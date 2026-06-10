@@ -1,4 +1,4 @@
-<h3 class="ang-cookie-permission-item--header">
+<div class="ang-cookie-permission-item--header">
   <button
     matButton
     class="ang-cookie-permission-item--toggle"
@@ -13,11 +13,12 @@
 
   <mat-slide-toggle
     class="ang-cookie-permission-item--state"
+    [aria-label]="stateLabel()"
     [checked]="enabled()"
     [disabled]="info().required ?? false"
     (change)="enabled.set($event.checked)"
   />
-</h3>
+</div>
 
 <p class="ang-cookie-permission-item--description">{{ info().description }}</p>
 

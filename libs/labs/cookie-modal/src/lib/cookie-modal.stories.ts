@@ -1,9 +1,10 @@
 import { Component, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Meta, StoryObj } from '@storybook/angular';
-import { CookieModal, CookieModalData } from './cookie-modal';
 import { AnalyticsEventCategory, AnalyticsEventCategoryPermissions } from '@atlasng/analytics/events';
+import { Meta, StoryObj } from '@storybook/angular';
+import 'storybook/test';
+import { CookieModal, CookieModalData } from './cookie-modal';
 
 const DEFAULT_PERMISSIONS: AnalyticsEventCategoryPermissions = {
   [AnalyticsEventCategory.Necessary]: true,
@@ -26,7 +27,6 @@ class CookieModalStoryComponent {
 
   open(): void {
     this.ref = this.dialog.open(CookieModal, {
-      // width: '400px',
       data: {
         activeTab: this.activeTab(),
         permissions: this.permissions(),
@@ -46,4 +46,9 @@ const meta: Meta<CookieModalStoryComponent> = {
 export default meta;
 type Story = StoryObj<CookieModalStoryComponent>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvas, userEvent }) => {
+    const openButton = canvas.getByRole('button', { name: 'Open Cookie Modal' });
+    await userEvent.click(openButton);
+  },
+};

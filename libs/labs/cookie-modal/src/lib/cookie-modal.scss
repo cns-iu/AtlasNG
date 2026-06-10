@@ -2,18 +2,50 @@
 @use 'internal/token-utils';
 @use 'tokens' as *;
 
-:host {
-  display: block;
+.ang-cookie-modal--panel {
+  @include mat.dialog-overrides(
+    (
+      actions-padding: 16px 20px,
+      container-color: token-utils.slot(container-color, $config),
+      container-elevation-shadow: token-utils.slot(container-elevation-shadow, $config),
+      container-shape: token-utils.slot(container-shape, $config),
+      container-max-width: 748px,
+      container-min-width: 320px,
+      headline-padding: 16px 20px,
+      with-actions-content-padding: 0,
+    )
+  );
+}
+
+.ang-cookie-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+
+  .ang-cookie-modal--header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
   .ang-cookie-modal--tabs {
     @include mat.tabs-overrides(
       (
-        divider-color: token-utils.slot(border-color, $config),
+        divider-color: token-utils.slot(divider-color, $config),
       )
     );
   }
 
   .ang-cookie-modal--content {
     margin: 16px 24px;
+  }
+
+  .ang-cookie-modal--actions {
+    gap: 12px;
+  }
+
+  .ang-cookie-modal--actions-action {
+    flex: 1 1 200px;
+    margin-left: 0 !important;
   }
 }

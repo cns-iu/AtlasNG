@@ -1,5 +1,5 @@
 import { CdkAccordionItem } from '@angular/cdk/accordion';
-import { ChangeDetectionStrategy, Component, inject, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -39,6 +39,10 @@ export class CookiePermissionItem {
 
   protected readonly toggleId = inject(IdGenerator).getId('ang-cookie-permission-item--header-toggle');
   protected readonly bodyId = inject(IdGenerator).getId('ang-cookie-permission-item--body');
+
+  protected readonly stateLabel = computed(() => {
+    return `${this.enabled() ? 'Disallow' : 'Allow'} ${this.info().title.toLowerCase()} cookies`;
+  });
 
   protected get expanded(): boolean {
     return this.accordionItem.expanded;
