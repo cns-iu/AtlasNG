@@ -1,0 +1,14 @@
+<cdk-accordion class="ang-cookie-permissions--list">
+  @for (item of info(); track item.category) {
+    <ang-cookie-permission-item
+      [info]="item"
+      [enabled]="permissions()[item.category]"
+      [providers]="providers()[item.category] ?? []"
+      (enabledChange)="updatePermissions(item.category, $event)"
+    />
+
+    @if (!$last) {
+      <mat-divider class="ang-cookie-permissions--divider" />
+    }
+  }
+</cdk-accordion>

@@ -1,0 +1,21 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'ang-cookie-modal',
+  tokens: (
+    border-color: token-utils.sys-token(outline-variant),
+    border-radius: token-utils.sys-token(corner-medium),
+    title-color: token-utils.sys-token(on-surface),
+    title-font: token-utils.sys-token(title-small-font),
+    title-line-height: token-utils.sys-token(title-small-line-height),
+    title-size: token-utils.sys-token(title-small-size),
+    title-tracking: token-utils.sys-token(title-small-tracking),
+    title-weight: token-utils.sys-token(title-small-weight),
+    description-color: token-utils.sys-token(on-surface-variant),
+    description-font: token-utils.sys-token(body-medium-font),
+    description-line-height: token-utils.sys-token(body-medium-line-height),
+    description-size: token-utils.sys-token(body-medium-size),
+    description-tracking: token-utils.sys-token(body-medium-tracking),
+    description-weight: token-utils.sys-token(body-medium-weight),
+  ),
+);

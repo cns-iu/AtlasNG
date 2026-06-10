@@ -5,6 +5,7 @@ export {
   getAnalyticsEventCategory,
   getAnalyticsEventType,
   type AnalyticsEvent,
+  type AnalyticsEventCategoryPermissions,
   type AnalyticsEventPayload,
   type AnalyticsEventPayloadFor,
   type AnalyticsEventType,

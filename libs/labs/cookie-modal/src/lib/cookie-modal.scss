@@ -1,0 +1,19 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use 'tokens' as *;
+
+:host {
+  display: block;
+
+  .ang-cookie-modal--tabs {
+    @include mat.tabs-overrides(
+      (
+        divider-color: token-utils.slot(border-color, $config),
+      )
+    );
+  }
+
+  .ang-cookie-modal--content {
+    margin: 16px 24px;
+  }
+}

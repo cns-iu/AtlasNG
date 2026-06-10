@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use '../tokens' as *;
+
+:host {
+  display: block;
+
+  .ang-cookie-permissions--list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ang-cookie-permissions--divider {
+    @include mat.divider-overrides(
+      (
+        color: token-utils.slot(border-color, $config),
+      )
+    );
+  }
+}

@@ -1,0 +1,76 @@
+@use '@angular/material' as mat;
+@use 'internal/sass-utils';
+@use 'internal/token-utils';
+@use '../tokens' as *;
+
+:host {
+  display: block;
+
+  .ang-cookie-permission-item--header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    margin: 0;
+  }
+
+  .ang-cookie-permission-item--toggle {
+    @include mat.button-overrides(
+      (
+        text-container-height: 48px,
+        text-container-shape: token-utils.sys-token(corner-none),
+        text-icon-spacing: 20px,
+        text-label-text-color: token-utils.slot(title-color, $config),
+        text-state-layer-color: token-utils.slot(title-color, $config),
+        text-ripple-color: sass-utils.color-with-opacity(
+            token-utils.slot(title-color, $config),
+            token-utils.sys-token(pressed-state-layer-opacity)
+          ),
+        text-label-text-font: token-utils.slot(title-font, $config),
+        text-label-text-size: token-utils.slot(title-size, $config),
+        text-label-text-weight: token-utils.slot(title-weight, $config),
+        text-label-text-tracking: token-utils.slot(title-tracking, $config),
+      )
+    );
+  }
+
+  .ang-cookie-permission-item--toggle-icon {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .ang-cookie-permission-item--description {
+    margin: 8px 0 16px;
+    color: token-utils.slot(description-color, $config);
+    font-family: token-utils.slot(description-font, $config);
+    font-size: token-utils.slot(description-size, $config);
+    font-weight: token-utils.slot(description-weight, $config);
+    line-height: token-utils.slot(description-line-height, $config);
+    letter-spacing: token-utils.slot(description-tracking, $config);
+  }
+
+  .ang-cookie-permission-item--body {
+    display: grid;
+    grid-template-rows: 0fr;
+    grid-template-columns: 100%;
+    transition: grid-template-rows 225ms cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .ang-cookie-permission-item--body-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    visibility: hidden;
+    transition: visibility 190ms linear;
+  }
+
+  .ang-cookie-permission-item--body-expanded {
+    grid-template-rows: 1fr;
+  }
+
+  .ang-cookie-permission-item--body-expanded .ang-cookie-permission-item--body-content {
+    visibility: visible;
+  }
+}

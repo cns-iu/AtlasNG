@@ -1,0 +1,21 @@
+@for (provider of providers(); track $index) {
+  @let id = idGenerator.getId('ang-providers-list');
+
+  <div class="ang-provider-list--card">
+    <h4 class="ang-provider-list--label" [attr.id]="id">{{ provider.label }}</h4>
+    <a
+      class="ang-provider-list--link"
+      angTextLink
+      target="_blank"
+      [angAnyLink]="provider.href"
+      [attr.aria-labelledby]="id"
+    >
+      <span>Learn more about this provider</span>
+      <mat-icon fontIcon="open_in_new" />
+    </a>
+  </div>
+} @empty {
+  <div class="ang-provider-list--card">
+    <p class="ang-provider-list--empty-text">We do not use cookies or technology of this type</p>
+  </div>
+}

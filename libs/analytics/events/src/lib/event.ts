@@ -11,6 +11,9 @@ export enum AnalyticsEventCategory {
   Marketing = 'marketing',
 }
 
+/** Permissions for each analytics event category. */
+export type AnalyticsEventCategoryPermissions = Record<AnalyticsEventCategory, boolean>;
+
 /** Payload for an analytics event. */
 export type AnalyticsEventPayload<T = object> = Simplify<
   T & { [key: string]: unknown; path?: string; trigger?: string; triggerData?: unknown }

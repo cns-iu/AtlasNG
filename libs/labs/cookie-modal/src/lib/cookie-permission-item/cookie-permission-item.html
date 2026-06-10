@@ -1,0 +1,37 @@
+<h3 class="ang-cookie-permission-item--header">
+  <button
+    matButton
+    class="ang-cookie-permission-item--toggle"
+    [attr.id]="toggleId"
+    [attr.aria-expanded]="expanded"
+    [attr.aria-controls]="bodyId"
+    (click)="toggle()"
+  >
+    <mat-icon class="ang-cookie-permission-item--toggle-icon" [fontIcon]="expanded ? 'remove' : 'add'" />
+    <span class="ang-cookie-permission-item--title">{{ info().title }}</span>
+  </button>
+
+  <mat-slide-toggle
+    class="ang-cookie-permission-item--state"
+    [checked]="enabled()"
+    [disabled]="info().required ?? false"
+    (change)="enabled.set($event.checked)"
+  />
+</h3>
+
+<p class="ang-cookie-permission-item--description">{{ info().description }}</p>
+
+<div
+  class="ang-cookie-permission-item--body"
+  [class.ang-cookie-permission-item--body-expanded]="expanded"
+  [attr.inert]="expanded ? null : ''"
+>
+  <div
+    class="ang-cookie-permission-item--body-content"
+    role="region"
+    [attr.id]="bodyId"
+    [attr.aria-labelledby]="toggleId"
+  >
+    <ang-providers-list [providers]="providers()" />
+  </div>
+</div>
