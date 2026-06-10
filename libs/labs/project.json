@@ -33,10 +33,7 @@
     "test": {
       "options": {
         "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"],
-        "setupFiles": ["{projectRoot}/src/test-setup.ts"],
-        "stylePreprocessorOptions": {
-          "includePaths": ["libs/labs/src/sass", "libs/design-system/src/sass"]
-        }
+        "setupFiles": ["{projectRoot}/src/test-setup.ts"]
       }
     },
     "test-storybook": {},
