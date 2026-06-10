@@ -1,0 +1,7 @@
+{
+  "lib": {
+    "cssUrl": "inline",
+    "entryFile": "src/index.ts",
+    "styleIncludePaths": ["../src/sass"]
+  }
+}
