@@ -1,1 +1,3 @@
-describe('CookiePermissionItem', () => {});
+describe('CookiePermissionItem', () => {
+  it.todo('should create');
+});
