@@ -1,6 +1,8 @@
 <div matDialogTitle class="ang-cookie-modal--header">
   <div class="ang-cookie-modal--logo">
-    <!-- TODO -->
+    @if (logoSrc) {
+      <img [attr.src]="logoSrc" [attr.alt]="logoLabel ?? 'Logo'" />
+    }
   </div>
 
   @if (!disableClose) {

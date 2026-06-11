@@ -24,8 +24,11 @@
 
   .ang-cookie-modal--header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+  }
+
+  .ang-cookie-modal--logo {
+    height: 40px;
   }
 
   .ang-cookie-modal--tabs {

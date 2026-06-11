@@ -15,6 +15,8 @@ import { CookiePermissionProvidersByCategory } from './provider-list/provider-li
 export interface CookieModalData {
   activeTab?: number;
   permissions: AnalyticsEventCategoryPermissions;
+  logoSrc?: string;
+  logoLabel?: string;
   providers?: CookiePermissionProvidersByCategory;
 }
 
@@ -37,10 +39,12 @@ export class CookieModal {
 
   protected readonly activeTab = signal(this.data.activeTab ?? 0);
   protected readonly permissions = signal(this.data.permissions);
+  protected readonly logoSrc = this.data.logoSrc;
+  protected readonly logoLabel = this.data.logoLabel;
   protected readonly providers = this.data.providers ?? {};
 
-  protected allowAllPermissions = ALLOW_ALL_ANALYTICS_EVENT_CATEGORY_PERMISSIONS;
-  protected allowNecessaryPermissions = ALLOW_NECESSARY_ANALYTICS_EVENT_CATEGORY_PERMISSIONS;
+  protected readonly allowAllPermissions = ALLOW_ALL_ANALYTICS_EVENT_CATEGORY_PERMISSIONS;
+  protected readonly allowNecessaryPermissions = ALLOW_NECESSARY_ANALYTICS_EVENT_CATEGORY_PERMISSIONS;
 
   protected get disableClose(): boolean {
     return this.dialogRef.disableClose ?? false;

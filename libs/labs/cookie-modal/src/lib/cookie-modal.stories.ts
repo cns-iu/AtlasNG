@@ -18,8 +18,10 @@ const DEFAULT_PERMISSIONS: AnalyticsEventCategoryPermissions = {
   template: `<button matButton="filled" (click)="open()">Open Cookie Modal</button>`,
 })
 class CookieModalStoryComponent {
-  readonly activeTab = input<number>();
+  readonly logoSrc = input<string>();
+  readonly logoLabel = input<string>();
   readonly permissions = input<AnalyticsEventCategoryPermissions>(DEFAULT_PERMISSIONS);
+  readonly activeTab = input<number>();
   readonly result = output<unknown>();
 
   private readonly dialog = inject(MatDialog);
@@ -28,8 +30,10 @@ class CookieModalStoryComponent {
   open(): void {
     this.ref = this.dialog.open(CookieModal, {
       data: {
-        activeTab: this.activeTab(),
+        logoSrc: this.logoSrc(),
+        logoLabel: this.logoLabel(),
         permissions: this.permissions(),
+        activeTab: this.activeTab(),
       } satisfies CookieModalData,
     });
 
