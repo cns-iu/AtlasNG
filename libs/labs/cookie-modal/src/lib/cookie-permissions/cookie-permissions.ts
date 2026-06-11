@@ -5,6 +5,9 @@ import { AnalyticsEventCategory, AnalyticsEventCategoryPermissions } from '@atla
 import { CookiePermissionInfo, CookiePermissionItem } from '../cookie-permission-item/cookie-permission-item';
 import { CookiePermissionProvidersByCategory } from '../provider-list/provider-list';
 
+/**
+ * Default cookie category descriptions shown in the permissions tab.
+ */
 const DEFAULT_INFO: CookiePermissionInfo[] = [
   {
     category: AnalyticsEventCategory.Necessary,
@@ -35,6 +38,9 @@ const DEFAULT_INFO: CookiePermissionInfo[] = [
   },
 ];
 
+/**
+ * Displays the cookie permission categories and updates selected permission state.
+ */
 @Component({
   selector: 'ang-cookie-permissions',
   imports: [CdkAccordionModule, MatDividerModule, CookiePermissionItem],
@@ -46,10 +52,27 @@ const DEFAULT_INFO: CookiePermissionInfo[] = [
   },
 })
 export class CookiePermissions {
+  /**
+   * Mutable cookie permission state shared with the parent modal.
+   */
   readonly permissions = model.required<AnalyticsEventCategoryPermissions>();
+
+  /**
+   * Category metadata rendered as accordion items.
+   */
   readonly info = input(DEFAULT_INFO);
+
+  /**
+   * Providers grouped by cookie category.
+   */
   readonly providers = input<CookiePermissionProvidersByCategory>({});
 
+  /**
+   * Updates a single cookie category permission in the current state.
+   *
+   * @param category The cookie category to update.
+   * @param value The new enabled state for the category.
+   */
   protected updatePermissions(category: AnalyticsEventCategory, value: boolean): void {
     this.permissions.update((currentPermissions) => ({
       ...currentPermissions,
