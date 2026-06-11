@@ -2,6 +2,8 @@
   <button
     matButton
     class="ang-cookie-permission-item--toggle"
+    angEventScope="toggle"
+    angTrackClick
     [attr.id]="toggleId"
     [attr.aria-expanded]="expanded"
     [attr.aria-controls]="bodyId"
@@ -13,6 +15,7 @@
 
   <mat-slide-toggle
     class="ang-cookie-permission-item--state"
+    angEventScope="state-toggle"
     [aria-label]="stateLabel()"
     [checked]="enabled()"
     [disabled]="info().required ?? false"
@@ -29,6 +32,7 @@
 >
   <div
     class="ang-cookie-permission-item--body-content"
+    angEventScope="providers"
     role="region"
     [attr.id]="bodyId"
     [attr.aria-labelledby]="toggleId"

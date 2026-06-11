@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import {
   ALLOW_ALL_ANALYTICS_EVENT_CATEGORY_PERMISSIONS,
   ALLOW_NECESSARY_ANALYTICS_EVENT_CATEGORY_PERMISSIONS,
@@ -52,9 +53,19 @@ export type CookieModalResult = AnalyticsEventCategoryPermissions | undefined;
  */
 @Component({
   selector: 'ang-cookie-modal',
-  imports: [MatButtonModule, MatDialogModule, MatDivider, MatIconModule, MatTabsModule, CookiePermissions],
+  imports: [
+    MatButtonModule,
+    MatDialogModule,
+    MatDivider,
+    MatIconModule,
+    MatTabsModule,
+    CookiePermissions,
+    EventScope,
+    TrackClick,
+  ],
   templateUrl: './cookie-modal.html',
   styleUrl: './cookie-modal.scss',
+  providers: [provideEventScope('cookie-modal')],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {

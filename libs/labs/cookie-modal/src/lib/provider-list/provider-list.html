@@ -1,7 +1,7 @@
 @for (provider of providers(); track $index) {
   @let id = idGenerator.getId('ang-providers-list');
 
-  <div class="ang-provider-list--card">
+  <div class="ang-provider-list--card" [angEventScope]="provider.label.toLowerCase()">
     <span class="ang-provider-list--label" [attr.id]="id">{{ provider.label }}</span>
     <a
       class="ang-provider-list--link"

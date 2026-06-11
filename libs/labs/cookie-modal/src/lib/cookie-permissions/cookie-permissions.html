@@ -1,6 +1,7 @@
 <cdk-accordion class="ang-cookie-permissions--list">
   @for (item of info(); track item.category) {
     <ang-cookie-permission-item
+      [angEventScope]="item.category.toLowerCase()"
       [info]="item"
       [enabled]="permissions()[item.category]"
       [providers]="providers()[item.category] ?? []"

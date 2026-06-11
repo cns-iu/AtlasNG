@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { EventScope } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { AnyLink, IdGenerator } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/text-link';
@@ -29,7 +30,7 @@ export type CookiePermissionProvidersByCategory = Partial<Record<AnalyticsEventC
  */
 @Component({
   selector: 'ang-providers-list',
-  imports: [MatIconModule, AnyLink, TextLink],
+  imports: [MatIconModule, AnyLink, TextLink, EventScope],
   templateUrl: './provider-list.html',
   styleUrl: './provider-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, model } fr
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { EventScope, TrackClick } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { IdGenerator } from '@atlasng/common';
 import { CookiePermissionProvider, ProviderList } from '../provider-list/provider-list';
@@ -37,7 +38,7 @@ export interface CookiePermissionInfo {
  */
 @Component({
   selector: 'ang-cookie-permission-item',
-  imports: [MatButtonModule, MatIconModule, MatSlideToggleModule, ProviderList],
+  imports: [MatButtonModule, MatIconModule, MatSlideToggleModule, ProviderList, EventScope, TrackClick],
   templateUrl: './cookie-permission-item.html',
   styleUrl: './cookie-permission-item.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
