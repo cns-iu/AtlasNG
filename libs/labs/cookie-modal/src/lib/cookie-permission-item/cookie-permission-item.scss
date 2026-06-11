@@ -18,7 +18,6 @@
     @include mat.button-overrides(
       (
         text-container-height: 48px,
-        text-container-shape: token-utils.sys-token(corner-none),
         text-icon-spacing: 20px,
         text-label-text-color: token-utils.slot(title-color, $config),
         text-state-layer-color: token-utils.slot(title-color, $config),
