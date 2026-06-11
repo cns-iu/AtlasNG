@@ -10,10 +10,7 @@ describe('CookiePermissionItem', () => {
     description: 'Preference cookies remember your choices.',
   };
 
-  async function setup(options?: {
-    info?: CookiePermissionInfo;
-    enabled?: boolean;
-  }) {
+  async function setup(options?: { info?: CookiePermissionInfo; enabled?: boolean }) {
     const user = userEvent.setup();
     const result = await render(CookiePermissionItem, {
       inputs: {
