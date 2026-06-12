@@ -1,0 +1,13 @@
+@if (hasCookiesEnabled()) {
+  <youtube-player [videoId]="videoId()" [playerVars]="{ rel: 0, showinfo: 0 }" [disableCookies]="true" #player />
+} @else {
+  <div class="youtube-thumbnail-container">
+    <a target="_blank" rel="noopener noreferrer" [attr.href]="videoUrl()">
+      <img class="thumbnail-image" [attr.src]="thumbnailUrl()" [attr.alt]="`YouTube video thumbnail for ${label()}`" />
+    </a>
+    <div class="enable-cookies-message">
+      <button class="enable-cookies-button" (click)="enableCookies.emit()">Enable cookies</button>
+      to watch videos
+    </div>
+  </div>
+}
