@@ -22,7 +22,5 @@
 
 ### ❤️ Thank You
 
-- axdanbol @axdanbol
-- Daniel Bolin
-- edlu77 @edlu77
+- Daniel Bolin @axdanbol
 - Edward Lu @edlu77
