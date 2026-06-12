@@ -1,53 +1,34 @@
-<div class="ang-footer-mobile">
-  <div class="ang-footer-top">
-    <ng-container [ngTemplateOutlet]="logoSocials" />
+<a class="ang-footer-logo" target="_blank" [angAnyLink]="orgLink()">
+  <img [attr.alt]="logoAlt()" [src]="logoUrl()" />
+</a>
+<div class="ang-footer-socials">
+  <div class="ang-footer-socials-row-1">
+    @for (social of socials(); track [$index, social]) {
+      @if ($index < 4) {
+        <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
+      }
+    }
   </div>
-  <div class="ang-footer-bottom">
-    <ng-container [ngTemplateOutlet]="privacyCopyright" />
+  <div class="ang-footer-socials-row-2">
+    @for (social of socials(); track [$index, social]) {
+      @if ($index >= 4) {
+        <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
+      }
+    }
+    @if (email()) {
+      <ang-social-media-button
+        class="ang-footer-social-icon"
+        [def]="{ id: 'mail', label: 'Email', url: `mailto:${email()}`, fontIcon: 'mail' }"
+      />
+    }
   </div>
 </div>
-
-<div class="ang-footer-desktop">
-  <ng-container [ngTemplateOutlet]="logoSocials" />
-  <ng-container [ngTemplateOutlet]="privacyCopyright" />
+<div class="ang-footer-privacy">
+  <button matButton (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
+  <button matButton (click)="openPrivacyPreferences.emit()">Privacy Preferences</button>
 </div>
-
-<ng-template #logoSocials>
-  <a class="ang-footer-logo" target="_blank" [angAnyLink]="orgLink()">
-    <img [attr.alt]="logoAlt()" [src]="logoUrl()" />
-  </a>
-  <div class="ang-footer-socials">
-    <div class="ang-footer-socials-row-1">
-      @for (social of socials(); track [$index, social]) {
-        @if ($index < 4) {
-          <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
-        }
-      }
-    </div>
-    <div class="ang-footer-socials-row-2">
-      @for (social of socials(); track [$index, social]) {
-        @if ($index >= 4) {
-          <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
-        }
-      }
-      @if (email()) {
-        <ang-social-media-button
-          class="ang-footer-social-icon"
-          [def]="{ id: 'mail', label: 'Email', url: `mailto:${email()}`, fontIcon: 'mail' }"
-        />
-      }
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #privacyCopyright>
-  <div class="ang-footer-privacy">
-    <button matButton (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
-    <button matButton (click)="openPrivacyPreferences.emit()">Privacy Preferences</button>
-  </div>
-  <span class="ang-footer-copyright">
-    © {{ copyrightYear() }}
-    <a class="ang-footer-link" angTextLink target="_blank" [angAnyLink]="orgLink()">{{ orgName() }}</a
-    >.
-  </span>
-</ng-template>
+<span class="ang-footer-copyright">
+  © {{ copyrightYear() }}
+  <a class="ang-footer-link" angTextLink target="_blank" [angAnyLink]="orgLink()">{{ orgName() }}</a
+  >.
+</span>

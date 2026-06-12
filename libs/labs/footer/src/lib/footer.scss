@@ -13,44 +13,31 @@
     )
   );
 
-  .ang-footer-mobile,
-  .ang-footer-desktop {
-    background: token-utils.slot(background-color, $config);
-  }
-
-  .ang-footer-desktop {
-    display: none;
-  }
-
-  .ang-footer-mobile {
-    display: flex;
-    flex-direction: column;
-    padding: 2.5rem 1.25rem;
-    min-width: 20rem;
-
-    .ang-footer-top {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .ang-footer-bottom {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      column-gap: 2.5rem;
-      row-gap: 0.5rem;
-    }
-  }
+  display: grid;
+  grid-template-areas:
+    'logo'
+    'socials'
+    'privacy'
+    'copyright';
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 0.5rem;
+  padding: 2.5rem 1.25rem;
+  min-width: 20rem;
+  background: token-utils.slot(background-color, $config);
 
   .ang-footer-logo {
+    grid-area: logo;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 3rem;
   }
 
   .ang-footer-socials {
+    grid-area: socials;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
     padding: 0.75rem 0.75rem 1rem;
 
@@ -69,7 +56,10 @@
   .ang-footer-privacy {
     grid-area: privacy;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
+    column-gap: 0.25rem;
 
     button {
       text-wrap: nowrap;
@@ -84,6 +74,7 @@
     text-wrap: nowrap;
     align-content: center;
     height: 3rem;
+    text-align: center;
 
     .ang-footer-link {
       --ang-text-link-button-color: token-utils.slot(copyright-color, $config);
@@ -93,21 +84,20 @@
   }
 
   @media (min-width: 960px) {
-    .ang-footer-desktop {
-      display: grid;
-      grid-template-areas:
-        'logo      socials   privacy  '
-        'copyright copyright copyright';
-      grid-template-columns: auto 1fr auto;
-      padding: 2.5rem;
-    }
-
-    .ang-footer-mobile {
-      display: none;
-    }
+    grid-template-areas:
+      'logo      socials   privacy  '
+      'copyright copyright copyright';
+    grid-template-columns: auto 1fr auto;
+    padding: 2.5rem;
+    row-gap: 0;
 
     .ang-footer-socials {
+      align-items: flex-end;
       padding: 0 0.75rem;
+    }
+
+    .ang-footer-copyright {
+      text-align: left;
     }
   }
 }

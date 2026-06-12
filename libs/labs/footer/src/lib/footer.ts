@@ -30,7 +30,8 @@ export class Footer {
   readonly orgLink = input<AnyLinkCommand>();
   /** Year used for copyright purposes. */
   readonly copyrightYear = input<number>(new Date().getFullYear());
-
+  /** An event emitted when the privacy policy link is clicked. */
   readonly openPrivacyPolicy = output();
+  /** An event emitted when the privacy preferences link is clicked. */
   readonly openPrivacyPreferences = output();
 }
