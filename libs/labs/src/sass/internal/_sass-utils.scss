@@ -1,0 +1,45 @@
+@use 'sass:meta';
+@use 'sass:string';
+
+// Apply style to current selector if exists, otherwise apply to root (html)
+@mixin current-selector-or-root($root: html) {
+  @if & {
+    @content;
+  } @else {
+    #{$root} {
+      @content;
+    }
+  }
+}
+
+// Checks if a value is a CSS variable name, e.g. --mat-sys-primary
+@function is-css-var-name($value) {
+  @return meta.type-of($value) == string and string.index($value, '--') == 1;
+}
+
+// Creates a CSS variable with an optional fallback,
+// e.g. create-var(--mat-sys-primary, #fff) => var(--mat-sys-primary, #fff)
+@function create-var($name, $fallback: null) {
+  @if ($fallback) {
+    @return var($name, $fallback);
+  } @else {
+    @return var($name);
+  }
+}
+
+// Creates a color with opacity,
+// e.g. color-with-opacity(--mat-sys-primary, 50%) => color-mix(in srgb, var(--mat-sys-primary) 50%, transparent)
+@function color-with-opacity($color, $opacity) {
+  @if (is-css-var-name($color)) {
+    $color: var($color);
+  }
+
+  @if (is-css-var-name($opacity)) {
+    $opacity: 'calc(var(#{$opacity}) * 100%)';
+  } @else if (meta.type-of($opacity) == number and $opacity < 1) {
+    @warn 'Opacity value #{$opacity} is less than 1. Prefer using a percentage (e.g. "50%").';
+    $opacity: '#{$opacity * 100}%';
+  }
+
+  @return color-mix(in srgb, #{$color} #{$opacity}, transparent);
+}

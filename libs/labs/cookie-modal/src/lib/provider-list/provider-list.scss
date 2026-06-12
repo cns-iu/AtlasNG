@@ -1,0 +1,35 @@
+@use 'internal/token-utils';
+@use '../tokens' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .ang-provider-list--card {
+    padding: 12px 16px;
+    border: 1px solid token-utils.slot(border-color, $config);
+    border-radius: token-utils.slot(border-radius, $config);
+  }
+
+  .ang-provider-list--label {
+    margin: 0 0 4px;
+    color: token-utils.slot(title-color, $config);
+    font-family: token-utils.slot(title-font, $config);
+    font-size: token-utils.slot(title-size, $config);
+    font-weight: token-utils.slot(title-weight, $config);
+    line-height: token-utils.slot(title-line-height, $config);
+    letter-spacing: token-utils.slot(title-tracking, $config);
+  }
+
+  .ang-provider-list--link,
+  .ang-provider-list--empty-text {
+    margin: 0;
+    color: token-utils.slot(description-color, $config);
+    font-family: token-utils.slot(description-font, $config);
+    font-size: token-utils.slot(description-size, $config);
+    font-weight: token-utils.slot(description-weight, $config);
+    line-height: token-utils.slot(description-line-height, $config);
+    letter-spacing: token-utils.slot(description-tracking, $config);
+  }
+}
