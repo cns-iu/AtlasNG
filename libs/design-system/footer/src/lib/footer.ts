@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AnyLinkCommand } from '@atlasng/common';
+import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media';
 import { TextLink } from '@atlasng/design-system/text-link';
 
@@ -11,7 +11,7 @@ import { TextLink } from '@atlasng/design-system/text-link';
  */
 @Component({
   selector: 'ang-footer',
-  imports: [CommonModule, MatButtonModule, MatIconModule, SocialMediaButton, TextLink],
+  imports: [CommonModule, MatButtonModule, MatIconModule, SocialMediaButton, TextLink, AnyLink],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,12 +21,16 @@ export class Footer {
   readonly socials = input<string[]>();
   /** The URL of the organization's logo. */
   readonly logoUrl = input<string>();
+  readonly logoAlt = input<string>();
   /** The name of the organization. */
   readonly orgName = input<string>();
   /** The email address for contact purposes. */
   readonly email = input<string>();
   /** A command for navigating to the organization's link. */
   readonly orgLink = input<AnyLinkCommand>();
-  /** The current year, used for copyright purposes. */
-  readonly fullYear = new Date().getFullYear();
+  /** Year used for copyright purposes. */
+  readonly copyrightYear = input<number>(new Date().getFullYear());
+
+  readonly openPrivacyPolicy = output();
+  readonly openPrivacyPreferences = output();
 }

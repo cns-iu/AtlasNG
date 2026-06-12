@@ -2,6 +2,8 @@
 <a matIconButton angTrackClick target="_blank" [attr.aria-label]="def.label" [attr.href]="def.url">
   @if (def.icon; as icon) {
     <mat-icon [class]="def.classes" [svgIcon]="icon" />
+  } @else if (def.fontIcon; as icon) {
+    <mat-icon [class]="def.classes" [fontIcon]="icon" />
   } @else {
     <div class="mask-icon" [class]="def.classes"></div>
   }

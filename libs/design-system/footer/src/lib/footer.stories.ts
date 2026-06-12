@@ -12,6 +12,7 @@ const meta: Meta = {
   },
   args: {
     logoUrl: 'assets/placeholder.svg',
+    logoAlt: 'Organization Logo',
     socials: ['linkedin', 'youtube', 'instagram', 'facebook', 'github', 'bluesky', 'x'],
     orgName: '[Name with hyperlink]',
     orgLink: 'https://www.example.com',
