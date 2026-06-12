@@ -4,7 +4,7 @@ import { YoutubePlayer } from './youtube-player';
 
 const meta: Meta<YoutubePlayer> = {
   component: YoutubePlayer,
-  title: 'Design System/YouTube Player',
+  title: 'Labs/YouTube Player',
   args: {
     videoId: 'pzUFmDhQEO8',
     label: 'Example YouTube Video',

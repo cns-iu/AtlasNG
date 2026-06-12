@@ -2,8 +2,19 @@
   "name": "@atlasng/labs",
   "version": "0.0.1",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "sass": "./sass/_index.scss"
+    }
+  },
   "peerDependencies": {
-    "@angular/youtube-player": "^21.2.6"
+    "@angular/cdk": "^21.2.6",
+    "@angular/core": "^21.2.6",
+    "@angular/material": "^21.2.6",
+    "@angular/youtube-player": "^21.2.6",
+    "@atlasng/analytics": "0.0.1",
+    "@atlasng/common": "0.0.1",
+    "@atlasng/design-system": "0.0.1"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",
