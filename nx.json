@@ -312,6 +312,7 @@
     }
   },
   "release": {
+    "projects": ["libs/*"],
     "version": {
       "preVersionCommand": "npx nx run-many -t build --projects=tag:library",
       "manifestRootsToUpdate": [
@@ -322,7 +323,8 @@
         }
       ],
       "currentVersionResolver": "git-tag",
-      "fallbackCurrentVersionResolver": "disk"
+      "fallbackCurrentVersionResolver": "disk",
+      "preserveMatchingDependencyRanges": ["dependencies", "devDependencies", "optionalDependencies"]
     }
   },
   "nxCloudId": "69cd387c25091c3aa561c48c"
