@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { Footer } from './footer';
 
 const meta: Meta = {
-  title: 'Design System/Footer',
+  title: 'Labs/Footer',
   component: Footer,
   parameters: {
     design: {
