@@ -12,6 +12,7 @@ describe('Footer', () => {
     return render(Footer, {
       inputs: {
         logoUrl: '/assets/wpp.svg',
+        logoAlt: 'App Logo',
         socials: ['linkedin', 'youtube', 'instagram'],
         orgName: 'Whole Person Physiome',
         orgLink: 'https://www.cns.edu',
@@ -47,10 +48,9 @@ describe('Footer', () => {
     await setup();
 
     const orgLink = screen.getByRole('link', { name: 'Whole Person Physiome' });
-    expect(orgLink).toHaveAttribute('href', 'https://www.cns.edu');
+    expect(orgLink).toHaveAttribute('href', 'https://www.cns.edu/');
 
     const year = new Date().getFullYear();
-    const copyrightBlocks = screen.getAllByText(new RegExp(`© ${year}`));
-    expect(copyrightBlocks.length).toBeGreaterThan(0);
+    expect(screen.getByText(new RegExp(`© ${year}`))).toBeInTheDocument();
   });
 });

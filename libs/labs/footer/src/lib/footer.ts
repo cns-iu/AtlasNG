@@ -21,6 +21,7 @@ export class Footer {
   readonly socials = input<string[]>();
   /** The URL of the organization's logo. */
   readonly logoUrl = input<string>();
+  /** The alt text for the organization's logo. */
   readonly logoAlt = input<string>();
   /** The name of the organization. */
   readonly orgName = input<string>();
