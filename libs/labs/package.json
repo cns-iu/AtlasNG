@@ -2,7 +2,9 @@
   "name": "@atlasng/labs",
   "version": "0.0.1",
   "sideEffects": false,
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@angular/youtube-player": "^21.2.6"
+  },
   "devDependencies": {
     "@storybook/addon-a11y": "*",
     "@storybook/addon-designs": "*",

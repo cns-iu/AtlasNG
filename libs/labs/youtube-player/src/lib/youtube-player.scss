@@ -28,7 +28,11 @@
 
   .enable-cookies-message,
   .enable-cookies-button {
-    font: token-utils.slot(enable-cookies-font, tokens.$config);
+    font-family: token-utils.slot(enable-cookies-font-family, tokens.$config);
+    font-size: token-utils.slot(enable-cookies-font-size, tokens.$config);
+    font-weight: token-utils.slot(enable-cookies-font-weight, tokens.$config);
+    line-height: token-utils.slot(enable-cookies-line-height, tokens.$config);
+    letter-spacing: token-utils.slot(enable-cookies-tracking, tokens.$config);
     color: token-utils.slot(enable-cookies-color, tokens.$config);
   }
 

@@ -13,8 +13,7 @@
     "@angular/material": "^21.2.6",
     "@atlasng/analytics": "^0.0.1",
     "@atlasng/common": "^0.0.1",
-    "@atlasng/core": "^0.0.1",
-    "@angular/youtube-player": "^21.2.6"
+    "@atlasng/core": "^0.0.1"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",
