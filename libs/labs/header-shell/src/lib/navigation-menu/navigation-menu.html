@@ -1,0 +1,10 @@
+<mat-accordion displayMode="flat">
+  @for (item of navigationItems(); track item.id) {
+    <a matButton class="ang-navigation-menu-link" [angAnyLink]="item.link">
+      @if (item.icon) {
+        <mat-icon class="ang-navigation-menu-icon" [fontIcon]="item.icon" />
+      }
+      {{ item.label }}
+    </a>
+  }
+</mat-accordion>

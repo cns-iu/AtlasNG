@@ -1,2 +1,3 @@
 @forward '../../cookie-modal/src/lib/tokens' as cookie-modal-* show cookie-modal-overrides;
+@forward '../../header-shell/src/lib/tokens' as header-shell-* show header-shell-overrides;
 @forward '../../youtube-player/src/lib/tokens' as youtube-player-* show youtube-player-overrides;

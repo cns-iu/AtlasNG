@@ -1,13 +1,27 @@
-import { MatMenuModule } from '@angular/material/menu';
-import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { HeaderShell } from './header-shell';
-import { NavigationToggle } from '@atlasng/design-system/buttons/navigation-toggle';
-import { NavigationButton } from '@atlasng/design-system/buttons/navigation';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { HeaderShell, HeaderShellNavigationItem } from './header-shell';
+import { NavigationMenu } from './navigation-menu/navigation-menu';
 
-const meta: Meta<HeaderShell> = {
-  title: 'Design System/Header Shell',
+const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
+  { id: 'link-1', label: 'Link 1', link: '/link-1', icon: 'home' },
+  { id: 'link-2', label: 'Link 2', link: '/link-2', icon: 'info' },
+  { id: 'link-3', label: 'Link 3', link: '/link-3', icon: 'settings' },
+  { id: 'link-4', label: 'Link 4', link: '/link-4', icon: 'help' },
+];
+
+const APP_MENU_ITEMS: HeaderShellNavigationItem[] = [
+  { id: 'app-link-1', label: 'App Link 1', link: '/app-link-1' },
+  { id: 'app-link-2', label: 'App Link 2', link: '/app-link-2' },
+];
+
+interface WithMenuItems {
+  navLeft?: HeaderShellNavigationItem[];
+  navRight?: HeaderShellNavigationItem[];
+}
+
+const meta: Meta<HeaderShell & WithMenuItems> = {
+  title: 'Labs/Header Shell',
   component: HeaderShell,
   parameters: {
     design: {
@@ -18,104 +32,54 @@ const meta: Meta<HeaderShell> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [MatMenuModule, NavigationToggle, NavigationButton, MatSidenavModule, MatFormFieldModule],
+      imports: [MatSidenavModule, NavigationMenu],
     }),
   ],
   args: {
     logoLink: '/',
     logoUrl: 'assets/placeholder.svg',
-    // hasLocalNavigation: true,
+    hasLocalNavigation: true,
     localNavigationIcon: 'menu',
-    navigationItems: [
-      { id: 'link-1', label: 'Link 1', link: '/link-1' },
-      { id: 'link-2', label: 'Link 2', link: '/link-2' },
-      { id: 'link-3', label: 'Link 3', link: '/link-3' },
-      { id: 'link-4', label: 'Link 4', link: '/link-4' },
-      { id: 'link-5', label: 'Link 5', menu: undefined },
-    ],
-    // iconActions: [
-    //   { id: 'notify', icon: 'notifications', ariaLabel: 'Notifications', tooltip: 'Notifications' },
-    //   { id: 'alerts', icon: 'info', ariaLabel: 'Alerts', tooltip: 'Alerts' },
-    // ],
+    navLeft: NAVIGATION_ITEMS,
+    navRight: APP_MENU_ITEMS,
   },
-  // argTypes: {
-  //   hasLocalNavigation: {
-  //     control: 'boolean',
-  //     description: 'Whether to show the local navigation toggle button.',
-  //   },
-  // },
   render: (args) => ({
     props: args,
     template: `
-      <mat-menu #linkFiveMenu="matMenu">
-        <button mat-menu-item type="button">Link 5A</button>
-        <button mat-menu-item type="button">Link 5B</button>
-      </mat-menu>
-
       <ang-header-shell
-        ${argsToTemplate(args)}
-        [navigationItems]="[
-          navigationItems[0],
-          navigationItems[1],
-          navigationItems[2],
-          navigationItems[3],
-          { ...navigationItems[4], menu: linkFiveMenu }
-        ]"
-        (localNavigationToggle)="sidenav.toggle()"
-        (appsMenuToggle)="appsSidenav.toggle()"
+        ${argsToTemplate(args, { exclude: ['navLeft', 'navRight'] })}
+        [localNavigationExpanded]="menuLeft.opened"
+        (localNavigationToggle)="menuLeft.toggle()"
+        (appsMenuToggle)="menuRight.toggle()"
       >
       </ang-header-shell>
 
-      <mat-sidenav-container class="example-container" hasBackdrop>
-        <mat-sidenav mode="over" #sidenav>
-          @for (item of navigationItems; track item.id) {
-            @if (item.menu) {
-              <ang-navigation-toggle
-                [selected]="openedNavigationMenuId() === item.id"
-                [matMenuTriggerFor]="item.menu"
-                [matTooltip]="item.tooltip"
-                (menuOpened)="openNavigationMenu(item.id)"
-                (menuClosed)="closeNavigationMenu(item.id)"
-              >
-                {{ item.label }}
-              </ang-navigation-toggle>
-            } @else {
-              <ang-navigation-button [link]="item.link">
-                {{ item.label }}
-              </ang-navigation-button>
-            }
-          }
-        </mat-sidenav>
+      <mat-drawer-container class="example-container" hasBackdrop>
+        <mat-drawer mode="over" position="start" #menuLeft>
+          <ang-navigation-menu [navigationItems]="navLeft"></ang-navigation-menu>
+        </mat-drawer>
+        <mat-drawer mode="over" position="end" #menuRight>
+          <ang-navigation-menu [navigationItems]="navRight"></ang-navigation-menu>
+        </mat-drawer>
 
-        <mat-sidenav mode="over" #appsSidenav position="end">
-          <button mat-menu-item type="button">AtlasNG</button>
-          <button mat-menu-item type="button">Insights</button>
-          <button mat-menu-item type="button">Resources</button>
-
-        </mat-sidenav>
-        <mat-sidenav-content>
-          Test
-        </mat-sidenav-content>
-      </mat-sidenav-container>
+        <mat-drawer-content>
+          <div class="content">
+            Test
+          </div>
+        </mat-drawer-content>
+      </mat-drawer-container>
     `,
-    styles: [`mat-sidenav-content { height: 140vh; }`],
+    styles: [`mat-drawer-content { height: calc(100vh - 3.5rem); } .content { padding: 1rem; }`],
   }),
 };
 
 export default meta;
-type Story = StoryObj<HeaderShell>;
+type Story = StoryObj<HeaderShell & WithMenuItems>;
 
 export const Default: Story = {};
 
 export const WithHelp: Story = {
   args: {
     helpLink: '/docs/header-shell',
-    // iconActions: [
-    //   { id: 'notify', icon: 'notifications', ariaLabel: 'Notifications', tooltip: 'Notifications' },
-    //   { id: 'alerts', icon: 'info', ariaLabel: 'Alerts', tooltip: 'Alerts' },
-    //   { id: 'history', icon: 'history', ariaLabel: 'History', tooltip: 'History' },
-    //   { id: 'bookmark', icon: 'bookmark', ariaLabel: 'Bookmarks', tooltip: 'Bookmarks' },
-    //   { id: 'flag', icon: 'flag', ariaLabel: 'Flags', tooltip: 'Flags' },
-    // ],
   },
 };

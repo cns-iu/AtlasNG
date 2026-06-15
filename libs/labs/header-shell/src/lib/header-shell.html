@@ -1,22 +1,17 @@
-<header class="ang-header-shell" #bar>
-  <div class="ang-header-shell-left" #left>
-    <!-- @if (hasLocalNavigation()) { -->
-    <button
-      matIconButton
-      angTrackClick
-      type="button"
-      class="ang-header-shell-menu-button"
-      [attr.aria-label]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
-      (click)="localNavigationToggle.emit()"
-    >
-      <mat-icon [fontIcon]="localNavigationIcon()" />
-    </button>
-    <!-- } -->
-
-    <!-- <a matButton angTrackClick class="ang-header-shell-logo" aria-label="Go to homepage" [angAnyLink]="logoLink()">
-      <ng-content select="[angHeaderShellLogo]">Logo</ng-content>
-    </a> -->
-
+<header class="ang-header-shell">
+  <div class="ang-header-shell-left">
+    @if (hasLocalNavigation()) {
+      <button
+        matIconButton
+        angTrackClick
+        type="button"
+        class="ang-header-shell-menu-button"
+        [attr.aria-label]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
+        (click)="localNavigationToggle.emit()"
+      >
+        <mat-icon [fontIcon]="localNavigationIcon()" />
+      </button>
+    }
     <a
       class="ang-header-shell-logo"
       aria-label="Go to homepage"
@@ -26,147 +21,23 @@
     >
       <img alt="App Logo" [src]="logoUrl()" />
     </a>
-
-    <span class="ang-header-shell-divider" aria-hidden="true"></span>
+    <mat-divider vertical class="ang-header-shell-divider" />
   </div>
 
-  <nav class="ang-header-shell-desktop-nav" aria-label="Primary navigation" #desktopNav>
+  <nav class="ang-header-shell-desktop-nav" aria-label="Primary navigation">
     @for (item of navigationItems(); track item.id) {
-      @if (item.menu) {
-        <ang-navigation-toggle
-          angTrackClick
-          [selected]="openedNavigationMenuId() === item.id"
-          [matMenuTriggerFor]="item.menu"
-          [matTooltip]="item.tooltip"
-          (menuOpened)="openNavigationMenu(item.id)"
-          (menuClosed)="closeNavigationMenu(item.id)"
-        >
-          {{ item.label }}
-        </ang-navigation-toggle>
-      } @else {
-        <ang-navigation-button [link]="item.link">
-          {{ item.label }}
-        </ang-navigation-button>
-      }
+      <ang-navigation-button [link]="item.link">
+        {{ item.label }}
+      </ang-navigation-button>
     }
   </nav>
 
-  <!-- <nav class="ang-header-shell-mobile-nav" aria-label="Primary navigation" #mobileNav>
-    @if (mobileNavigationMenu(); as mobileMenuRef) {
-      <ang-navigation-toggle
-        angTrackClick
-        [selected]="mobileNavigationExpanded()"
-        [matMenuTriggerFor]="mobileMenuRef"
-        [matTooltip]="mobileNavigationLabel()"
-        (menuOpened)="mobileNavigationExpanded.set(true)"
-        (menuClosed)="mobileNavigationExpanded.set(false)"
-      >
-        {{ mobileNavigationLabel() }}
-      </ang-navigation-toggle>
-    } @else {
-      @if (navigationItems().length > 0) {
-        @if (navigationItems()[0].menu; as firstMenu) {
-          <ang-navigation-toggle
-            angTrackClick
-            [selected]="openedNavigationMenuId() === navigationItems()[0].id"
-            [matMenuTriggerFor]="firstMenu"
-            [matTooltip]="navigationItems()[0].tooltip"
-            (menuOpened)="openNavigationMenu(navigationItems()[0].id)"
-            (menuClosed)="closeNavigationMenu(navigationItems()[0].id)"
-          >
-            {{ navigationItems()[0].label }}
-          </ang-navigation-toggle>
-        } @else {
-          <ang-navigation-button [link]="navigationItems()[0].link">
-            {{ navigationItems()[0].label }}
-          </ang-navigation-button>
-        }
-      }
-    }
-  </nav> -->
-
   <div class="ang-header-shell-right">
-    <!-- @for (action of iconActions(); track action.id) {
-      @if (action.menu) {
-        <button
-          matIconButton
-          angTrackClick
-          type="button"
-          class="ang-header-shell-icon-button"
-          [attr.aria-label]="action.ariaLabel"
-          [matTooltip]="action.tooltip"
-          [matMenuTriggerFor]="action.menu"
-        >
-          <mat-icon [fontIcon]="action.icon" />
-        </button>
-      } @else if (action.link) {
-        <a
-          matIconButton
-          angTrackClick
-          class="ang-header-shell-icon-button"
-          [attr.aria-label]="action.ariaLabel"
-          [matTooltip]="action.tooltip"
-          [angAnyLink]="action.link"
-        >
-          <mat-icon [fontIcon]="action.icon" />
-        </a>
-      } @else {
-        <button
-          matIconButton
-          angTrackClick
-          type="button"
-          class="ang-header-shell-icon-button"
-          [attr.aria-label]="action.ariaLabel"
-          [matTooltip]="action.tooltip"
-          (click)="emitIconActionClick(action)"
-        >
-          <mat-icon [fontIcon]="action.icon" />
-        </button>
-      }
-    } -->
-
     @if (helpLink()) {
-      <div class="ang-header-shell-right-fixed" #rightFixed>
+      <div class="ang-header-shell-right-fixed">
         <ang-help-button [link]="helpLink()" />
       </div>
     }
-
-    <!-- @if (hasOverflowActions()) {
-      <div class="ang-header-shell-overflow-actions">
-        <button
-          matIconButton
-          angTrackClick
-          type="button"
-          class="ang-header-shell-icon-button"
-          aria-label="Open more actions"
-          matTooltip="More"
-          [matMenuTriggerFor]="overflowMenu"
-        >
-          <mat-icon fontIcon="more_vert" />
-        </button>
-
-        <mat-menu #overflowMenu="matMenu">
-          @for (action of overflowIconActions(); track action.id) {
-            @if (action.menu) {
-              <button mat-menu-item type="button" [matMenuTriggerFor]="action.menu">
-                <mat-icon [fontIcon]="action.icon" />
-                <span>{{ action.ariaLabel }}</span>
-              </button>
-            } @else if (action.link) {
-              <a mat-menu-item [angAnyLink]="action.link">
-                <mat-icon [fontIcon]="action.icon" />
-                <span>{{ action.ariaLabel }}</span>
-              </a>
-            } @else {
-              <button mat-menu-item type="button" (click)="emitIconActionClick(action)">
-                <mat-icon [fontIcon]="action.icon" />
-                <span>{{ action.ariaLabel }}</span>
-              </button>
-            }
-          }
-        </mat-menu>
-      </div>
-    } -->
 
     <div class="ang-header-shell-apps">
       <button

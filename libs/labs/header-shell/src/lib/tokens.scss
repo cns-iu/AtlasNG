@@ -5,11 +5,12 @@ $config: (
   namespace: 'header-shell',
   tokens: (
     container-color: sass-utils.color-with-opacity(token-utils.sys-token(surface-variant), 80%),
-    border-color: token-utils.sys-token(outline-variant),
     logo-background-color: token-utils.sys-token(surface-container-high),
     logo-color: token-utils.sys-token(on-surface),
     icon-color: token-utils.sys-token(on-surface-variant),
     focus-outline-color: token-utils.sys-token(on-surface),
+    outline-radius: token-utils.sys-token(corner-small),
+    divider-color: token-utils.sys-token(outline),
   ),
 );
 
