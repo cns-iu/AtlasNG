@@ -22,6 +22,8 @@ export interface SocialMediaButtonDef {
   classes?: string | string[];
   /** Svg icon name registered with `MatIconRegistry` to render within the button. */
   icon?: string;
+  /** Optional font icon to be used instead of an SVG icon. */
+  fontIcon?: string;
 }
 
 /** DI token for optional application-specific button definitions. */

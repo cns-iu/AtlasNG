@@ -15,6 +15,8 @@ const APP_MENU_ITEMS: HeaderShellNavigationItem[] = [
   { id: 'app-link-2', label: 'App Link 2', link: '/app-link-2' },
 ];
 
+const SOCIAL_MEDIA_IDS = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x'];
+
 interface WithMenuItems {
   navRight?: HeaderShellNavigationItem[];
   email?: string;
@@ -42,13 +44,14 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
     localNavigationIcon: 'menu',
     navigationItems: NAVIGATION_ITEMS,
     navRight: APP_MENU_ITEMS,
-    email: 'example@gmail.com',
   },
   render: (args) => ({
     props: {
       ...args,
       leftMenuOpen: false,
       rightMenuOpen: false,
+      socialMediaIds: SOCIAL_MEDIA_IDS,
+      email: 'example@gmail.com',
     },
     template: `
       <ang-header-shell
@@ -60,11 +63,23 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
       </ang-header-shell>
 
       <mat-drawer-container class="example-container" hasBackdrop>
-        <mat-drawer mode="over" position="start" [opened]="leftMenuOpen" (openedChange)="leftMenuOpen = $event">
-          <ang-navigation-menu [navigationItems]="navigationItems" [email]="email"></ang-navigation-menu>
+        <mat-drawer
+          mode="over"
+          position="start"
+          [autoFocus]="false"
+          [opened]="leftMenuOpen"
+          (openedChange)="leftMenuOpen = $event"
+        >
+          <ang-navigation-menu [navigationItems]="navigationItems" [email]="email" [socialMediaIds]="socialMediaIds"></ang-navigation-menu>
         </mat-drawer>
-        <mat-drawer mode="over" position="end" [opened]="rightMenuOpen" (openedChange)="rightMenuOpen = $event">
-          <ang-navigation-menu [navigationItems]="navRight" [email]="email"></ang-navigation-menu>
+        <mat-drawer
+          mode="over"
+          position="end"
+          [autoFocus]="false"
+          [opened]="rightMenuOpen"
+          (openedChange)="rightMenuOpen = $event"
+        >
+          <ang-navigation-menu [navigationItems]="navRight" [email]="email" [socialMediaIds]="socialMediaIds"></ang-navigation-menu>
         </mat-drawer>
 
         <mat-drawer-content>

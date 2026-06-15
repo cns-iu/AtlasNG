@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, input, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,6 +23,9 @@ export interface HeaderShellNavigationItem {
   tooltip?: string;
   icon?: string;
 }
+
+/** Screen size breakpoint to disable desktop navigation (px). */
+const DESKTOP_BREAKPOINT = 960;
 
 /**
  * Sticky page header shell with responsive desktop/mobile navigation and dynamic icon action overflow.
@@ -50,14 +53,12 @@ export interface HeaderShellNavigationItem {
     '(window:resize)': 'closeLocalNavigationOnDesktop()',
   },
 })
-export class HeaderShell implements OnInit {
+export class HeaderShell {
   /** Homepage destination used by the logo button. */
   readonly logoLink = input<AnyLinkCommand>('/');
 
   /** Image source URL used for the logo. */
   readonly logoUrl = input();
-
-  readonly email = input<string>();
 
   /** Optional help link destination when the help button acts as a link. */
   readonly helpLink = input<AnyLinkCommand>();
@@ -76,17 +77,17 @@ export class HeaderShell implements OnInit {
   /** Emits each time the local navigation toggle button is pressed. */
   readonly localNavigationToggle = output();
 
+  /** Emits each time the apps menu toggle button is pressed. */
   readonly appsMenuToggle = output();
 
-  ngOnInit(): void {
-    this.closeLocalNavigationOnDesktop();
-  }
-
+  /**
+   * Closes the local navigation menu if the window is resized above the desktop breakpoint
+   * @returns local navigation on desktop
+   */
   protected closeLocalNavigationOnDesktop(): void {
-    if (!this.hasLocalNavigation() || window.innerWidth <= 960) {
+    if (!this.hasLocalNavigation() || window.innerWidth <= DESKTOP_BREAKPOINT) {
       return;
     }
-
     this.localNavigationExpanded.set(false);
   }
 }

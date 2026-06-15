@@ -11,13 +11,14 @@
   </mat-accordion>
 
   <div class="ang-navigation-menu-social" aria-label="Social media links">
-    @for (id of socialMediaIds; track id) {
+    @for (id of socialMediaIds(); track id) {
       <ang-social-media-button class="ang-footer-social-icon" [id]="id" />
     }
     @if (email()) {
-      <a class="ang-footer-social-icon" matIconButton type="button" [href]="`mailto:${email()}`">
-        <mat-icon fontIcon="email" />
-      </a>
+      <ang-social-media-button
+        class="ang-footer-social-icon"
+        [def]="{ id: 'mail', label: 'Email', url: `mailto:${email()}`, fontIcon: 'mail' }"
+      />
     }
   </div>
 </div>

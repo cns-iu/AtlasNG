@@ -57,10 +57,24 @@
     overflow: hidden;
 
     .ang-footer-social-icon {
+      @include mat.icon-button-overrides(
+        (
+          icon-color: token-utils.slot(icon-color, $config),
+          state-layer-color: token-utils.slot(icon-color, $config),
+        )
+      );
+
       height: 2.5rem;
       width: 2.5rem;
       min-width: 0;
-      --ang-social-media-button-color: token-utils.slot(icon-color, $config);
     }
   }
+}
+
+::ng-deep mat-drawer {
+  --mat-sidenav-container-width: 20rem;
+}
+
+::ng-deep mat-drawer-content {
+  height: calc(100vh - 3.5rem);
 }

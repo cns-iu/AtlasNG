@@ -36,7 +36,7 @@ describe('HeaderShell', () => {
           <button mat-menu-item type="button">App One</button>
         </mat-menu>
 
-        <ang-header-shell [appsMenu]="appsMenu" />
+        <ang-header-shell />
       `,
       {
         imports: [HeaderShell, MatMenuModule],
@@ -53,7 +53,7 @@ describe('HeaderShell', () => {
           <button mat-menu-item type="button">App One</button>
         </mat-menu>
 
-        <ang-header-shell [appsMenu]="appsMenu" />
+        <ang-header-shell />
       `,
       {
         imports: [HeaderShell, MatMenuModule],
@@ -71,7 +71,7 @@ describe('HeaderShell', () => {
           <button mat-menu-item type="button">App One</button>
         </mat-menu>
 
-        <ang-header-shell [appsMenu]="appsMenu" helpLink="/docs" />
+        <ang-header-shell helpLink="/docs" />
       `,
       {
         imports: [HeaderShell, MatMenuModule],
@@ -86,16 +86,17 @@ describe('HeaderShell', () => {
 
     await render(
       `
-        <mat-menu #appsMenu="matMenu">
-          <button mat-menu-item type="button">App One</button>
-        </mat-menu>
-
         <ang-header-shell
-          [appsMenu]="appsMenu"
+          [hasLocalNavigation]="true"
+          [localNavigationExpanded]="expanded"
+          (localNavigationToggle)="expanded = !expanded"
         />
       `,
       {
         imports: [HeaderShell, MatMenuModule],
+        componentProperties: {
+          expanded: false,
+        },
       },
     );
 
@@ -114,7 +115,6 @@ describe('HeaderShell', () => {
         </mat-menu>
 
         <ang-header-shell
-          [appsMenu]="appsMenu"
           [navigationItems]="[
             { id: 'one', label: 'Section One', link: '/one' },
             { id: 'two', label: 'Section Two', link: '/two' }

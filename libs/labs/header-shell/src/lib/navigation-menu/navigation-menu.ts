@@ -7,6 +7,9 @@ import { AnyLink } from '@atlasng/common';
 import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media';
 import { HeaderShellNavigationItem } from '../header-shell';
 
+/**
+ * Menu used for navigation interactions across breakpoints, apps, and brands.
+ */
 @Component({
   selector: 'ang-navigation-menu',
   imports: [MatIconModule, MatSidenavModule, MatButtonModule, MatExpansionModule, AnyLink, SocialMediaButton],
@@ -15,9 +18,12 @@ import { HeaderShellNavigationItem } from '../header-shell';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationMenu {
-  readonly navigationItems = input<HeaderShellNavigationItem[]>([]);
+  /** Navigation items rendered in the desktop rail and mobile fallback. */
+  readonly navigationItems = input<HeaderShellNavigationItem[]>();
 
+  /** Optional email used for the contact button in the menu. */
   readonly email = input<string>();
 
-  protected readonly socialMediaIds = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x'];
+  /** List of supported social media IDs. */
+  protected readonly socialMediaIds = input(['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x']);
 }

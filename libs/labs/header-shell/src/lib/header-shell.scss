@@ -95,11 +95,3 @@
     }
   }
 }
-
-::ng-deep mat-drawer {
-  --mat-sidenav-container-width: 320px;
-}
-
-::ng-deep mat-drawer-content {
-  height: calc(100vh - 3.5rem);
-}
