@@ -66,7 +66,6 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
         <mat-drawer
           mode="over"
           position="start"
-          [autoFocus]="false"
           [opened]="leftMenuOpen"
           (openedChange)="leftMenuOpen = $event"
         >
@@ -75,7 +74,6 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
         <mat-drawer
           mode="over"
           position="end"
-          [autoFocus]="false"
           [opened]="rightMenuOpen"
           (openedChange)="rightMenuOpen = $event"
         >
