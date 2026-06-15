@@ -45,21 +45,25 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
     email: 'example@gmail.com',
   },
   render: (args) => ({
-    props: args,
+    props: {
+      ...args,
+      leftMenuOpen: false,
+      rightMenuOpen: false,
+    },
     template: `
       <ang-header-shell
         ${argsToTemplate(args, { exclude: ['navRight'] })}
-        [localNavigationExpanded]="menuLeft.opened"
-        (localNavigationToggle)="menuLeft.toggle()"
-        (appsMenuToggle)="menuRight.toggle()"
+        [(localNavigationExpanded)]="leftMenuOpen"
+        (localNavigationToggle)="leftMenuOpen = !leftMenuOpen; rightMenuOpen = false"
+        (appsMenuToggle)="rightMenuOpen = !rightMenuOpen; leftMenuOpen = false"
       >
       </ang-header-shell>
 
       <mat-drawer-container class="example-container" hasBackdrop>
-        <mat-drawer mode="over" position="start" #menuLeft>
+        <mat-drawer mode="over" position="start" [opened]="leftMenuOpen" (openedChange)="leftMenuOpen = $event">
           <ang-navigation-menu [navigationItems]="navigationItems" [email]="email"></ang-navigation-menu>
         </mat-drawer>
-        <mat-drawer mode="over" position="end" #menuRight>
+        <mat-drawer mode="over" position="end" [opened]="rightMenuOpen" (openedChange)="rightMenuOpen = $event">
           <ang-navigation-menu [navigationItems]="navRight" [email]="email"></ang-navigation-menu>
         </mat-drawer>
 
@@ -70,7 +74,7 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
         </mat-drawer-content>
       </mat-drawer-container>
     `,
-    styles: [`mat-drawer-content { height: calc(100vh - 3.5rem); } .content { padding: 1rem; }`],
+    styles: [`mat-drawer-content { height: calc(100vh - 3.5rem); background: #F6F7F8 } .content { padding: 1rem; }`],
   }),
 };
 

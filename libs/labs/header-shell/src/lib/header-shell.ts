@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, input, model, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -46,8 +46,11 @@ export interface HeaderShellNavigationItem {
   styleUrl: './header-shell.scss',
   providers: [provideEventScope('header-shell')],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:resize)': 'closeLocalNavigationOnDesktop()',
+  },
 })
-export class HeaderShell {
+export class HeaderShell implements OnInit {
   /** Homepage destination used by the logo button. */
   readonly logoLink = input<AnyLinkCommand>('/');
 
@@ -74,4 +77,16 @@ export class HeaderShell {
   readonly localNavigationToggle = output();
 
   readonly appsMenuToggle = output();
+
+  ngOnInit(): void {
+    this.closeLocalNavigationOnDesktop();
+  }
+
+  protected closeLocalNavigationOnDesktop(): void {
+    if (!this.hasLocalNavigation() || window.innerWidth <= 960) {
+      return;
+    }
+
+    this.localNavigationExpanded.set(false);
+  }
 }

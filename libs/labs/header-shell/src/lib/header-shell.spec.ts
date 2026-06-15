@@ -4,6 +4,31 @@ import userEvent from '@testing-library/user-event';
 import { HeaderShell } from './header-shell';
 
 describe('HeaderShell', () => {
+  it('closes local navigation when the viewport grows beyond 960px', async () => {
+    const originalWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: 959 });
+
+    try {
+      await render(HeaderShell, {
+        inputs: {
+          hasLocalNavigation: true,
+          localNavigationExpanded: true,
+        },
+      });
+
+      expect(screen.getByRole('button', { name: 'Collapse local navigation' })).toBeInTheDocument();
+
+      Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: 961 });
+      window.dispatchEvent(new Event('resize'));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Expand local navigation' })).toBeInTheDocument();
+      });
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: originalWidth });
+    }
+  });
+
   it('renders app switcher button by default', async () => {
     await render(
       `
