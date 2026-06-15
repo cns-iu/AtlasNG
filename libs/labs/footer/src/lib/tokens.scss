@@ -6,10 +6,15 @@ $config: (
     background-color: token-utils.sys-token(surface-variant),
     privacy-font-family: token-utils.sys-token(label-medium-font),
     privacy-font-size: token-utils.sys-token(label-medium-size),
-    privacy-letter-spacing: 0.2px,
     privacy-font-weight: token-utils.sys-token(label-medium-weight),
+    privacy-line-height: token-utils.sys-token(label-medium-line-height),
+    privacy-letter-spacing: 0.2px,
     copyright-color: token-utils.sys-token(on-surface-variant),
-    copyright-font: token-utils.sys-token(body-small),
+    copyright-font: token-utils.sys-token(body-small-font),
+    copyright-font-size: token-utils.sys-token(body-small-size),
+    copyright-font-weight: token-utils.sys-token(body-small-weight),
+    copyright-line-height: token-utils.sys-token(body-small-line-height),
+    copyright-letter-spacing: token-utils.sys-token(body-small-tracking),
   ),
 );
 

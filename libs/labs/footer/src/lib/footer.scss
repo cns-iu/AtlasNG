@@ -19,10 +19,9 @@
     'socials'
     'privacy'
     'copyright';
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: 1fr;
   row-gap: 0.5rem;
   padding: 2.5rem 1.25rem;
-  min-width: 20rem;
   background: token-utils.slot(background-color, $config);
 
   .ang-footer-logo {
@@ -35,17 +34,10 @@
 
   .ang-footer-socials {
     grid-area: socials;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(4, max-content);
     justify-content: center;
     padding: 0.75rem 0.75rem 1rem;
-
-    .ang-footer-socials-row-1,
-    .ang-footer-socials-row-2 {
-      flex-wrap: nowrap;
-      display: flex;
-    }
 
     .ang-footer-social-icon {
       height: 2.5rem;
@@ -69,17 +61,21 @@
   .ang-footer-copyright {
     grid-area: copyright;
     display: block;
-    color: token-utils.slot(copyright-color, $config);
-    font: token-utils.slot(copyright-font, $config);
     text-wrap: nowrap;
     align-content: center;
     height: 3rem;
     text-align: center;
+    color: token-utils.slot(copyright-color, $config);
+    font-family: token-utils.slot(copyright-font, $config);
+    font-size: token-utils.slot(copyright-font-size, $config);
+    font-weight: token-utils.slot(copyright-font-weight, $config);
+    letter-spacing: token-utils.slot(copyright-letter-spacing, $config);
+    line-height: token-utils.slot(copyright-line-height, $config);
 
     .ang-footer-link {
-      --ang-text-link-button-color: token-utils.slot(copyright-color, $config);
       font-weight: 400;
       text-decoration: none;
+      --ang-text-link-button-color: token-utils.slot(copyright-color, $config);
     }
   }
 
@@ -92,7 +88,9 @@
     row-gap: 0;
 
     .ang-footer-socials {
-      align-items: flex-end;
+      grid-auto-columns: max-content;
+      grid-auto-flow: column;
+      grid-template-columns: none;
       padding: 0 0.75rem;
     }
 

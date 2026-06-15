@@ -2,26 +2,15 @@
   <img [attr.alt]="logoAlt()" [src]="logoUrl()" />
 </a>
 <div class="ang-footer-socials">
-  <div class="ang-footer-socials-row-1">
-    @for (social of socials(); track [$index, social]) {
-      @if ($index < 4) {
-        <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
-      }
-    }
-  </div>
-  <div class="ang-footer-socials-row-2">
-    @for (social of socials(); track [$index, social]) {
-      @if ($index >= 4) {
-        <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
-      }
-    }
-    @if (email()) {
-      <ang-social-media-button
-        class="ang-footer-social-icon"
-        [def]="{ id: 'mail', label: 'Email', url: `mailto:${email()}`, fontIcon: 'mail' }"
-      />
-    }
-  </div>
+  @for (social of socials(); track social) {
+    <ang-social-media-button class="ang-footer-social-icon" [id]="social" />
+  }
+  @if (email()) {
+    <ang-social-media-button
+      class="ang-footer-social-icon"
+      [def]="{ id: 'mail', label: 'Email', url: `mailto:${email()}`, fontIcon: 'mail' }"
+    />
+  }
 </div>
 <div class="ang-footer-privacy">
   <button matButton (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
