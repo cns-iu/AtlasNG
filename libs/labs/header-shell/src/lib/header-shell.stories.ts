@@ -16,8 +16,8 @@ const APP_MENU_ITEMS: HeaderShellNavigationItem[] = [
 ];
 
 interface WithMenuItems {
-  navLeft?: HeaderShellNavigationItem[];
   navRight?: HeaderShellNavigationItem[];
+  email?: string;
 }
 
 const meta: Meta<HeaderShell & WithMenuItems> = {
@@ -40,14 +40,15 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
     logoUrl: 'assets/placeholder.svg',
     hasLocalNavigation: true,
     localNavigationIcon: 'menu',
-    navLeft: NAVIGATION_ITEMS,
+    navigationItems: NAVIGATION_ITEMS,
     navRight: APP_MENU_ITEMS,
+    email: 'example@gmail.com',
   },
   render: (args) => ({
     props: args,
     template: `
       <ang-header-shell
-        ${argsToTemplate(args, { exclude: ['navLeft', 'navRight'] })}
+        ${argsToTemplate(args, { exclude: ['navRight'] })}
         [localNavigationExpanded]="menuLeft.opened"
         (localNavigationToggle)="menuLeft.toggle()"
         (appsMenuToggle)="menuRight.toggle()"
@@ -56,10 +57,10 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
 
       <mat-drawer-container class="example-container" hasBackdrop>
         <mat-drawer mode="over" position="start" #menuLeft>
-          <ang-navigation-menu [navigationItems]="navLeft"></ang-navigation-menu>
+          <ang-navigation-menu [navigationItems]="navigationItems" [email]="email"></ang-navigation-menu>
         </mat-drawer>
         <mat-drawer mode="over" position="end" #menuRight>
-          <ang-navigation-menu [navigationItems]="navRight"></ang-navigation-menu>
+          <ang-navigation-menu [navigationItems]="navRight" [email]="email"></ang-navigation-menu>
         </mat-drawer>
 
         <mat-drawer-content>

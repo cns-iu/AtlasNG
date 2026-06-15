@@ -11,6 +11,9 @@ $config: (
     focus-outline-color: token-utils.sys-token(on-surface),
     outline-radius: token-utils.sys-token(corner-small),
     divider-color: token-utils.sys-token(outline),
+    menu-button-text-color: token-utils.sys-token(on-surface),
+    menu-container-color: token-utils.sys-token(surface-container),
+    menu-state-layer-color: token-utils.sys-token(primary-container),
   ),
 );
 

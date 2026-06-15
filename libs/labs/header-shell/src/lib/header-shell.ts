@@ -54,6 +54,8 @@ export class HeaderShell {
   /** Image source URL used for the logo. */
   readonly logoUrl = input();
 
+  readonly email = input<string>();
+
   /** Optional help link destination when the help button acts as a link. */
   readonly helpLink = input<AnyLinkCommand>();
 

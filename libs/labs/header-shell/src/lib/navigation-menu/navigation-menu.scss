@@ -1,7 +1,66 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use '../tokens' as *;
+
 :host {
-  display: block;
+  @include mat.button-overrides(
+    (
+      text-container-height: 3rem,
+      text-icon-spacing: 1rem,
+      text-label-text-color: token-utils.slot(menu-button-text-color, $config),
+      text-state-layer-color: token-utils.slot(menu-state-layer-color, $config),
+      text-focus-state-layer-opacity: 1,
+      text-hover-state-layer-opacity: 1,
+    )
+  );
+
+  @include mat.icon-overrides(
+    (
+      color: token-utils.slot(icon-color, $config),
+    )
+  );
+
+  .ang-navigation-menu {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+    background-color: token-utils.slot(menu-container-color, $config);
+  }
+
+  .ang-navigation-menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+  }
 
   .ang-navigation-menu-link {
     width: 100%;
+    justify-content: flex-start;
+  }
+
+  .ang-navigation-menu-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  .ang-navigation-menu-social {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid token-utils.slot(divider-color, $config);
+    overflow: hidden;
+
+    .ang-footer-social-icon {
+      height: 2.5rem;
+      width: 2.5rem;
+      min-width: 0;
+      --ang-social-media-button-color: token-utils.slot(icon-color, $config);
+    }
   }
 }
