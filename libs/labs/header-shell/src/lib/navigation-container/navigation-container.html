@@ -3,12 +3,14 @@
     <ang-navigation-menu [navigationItems]="navigationItems()" [email]="email()" [socialMediaIds]="socialMediaIds()" />
   </mat-drawer>
 
-  <mat-drawer class="right" mode="over" position="end" [opened]="rightMenuOpen()" (openedChange)="rightMenuOpen.set($event)">
-    <ang-navigation-menu
-      [navigationItems]="navRight()"
-      [email]="email()"
-      [socialMediaIds]="socialMediaIds()"
-    />
+  <mat-drawer
+    class="right"
+    mode="over"
+    position="end"
+    [opened]="rightMenuOpen()"
+    (openedChange)="rightMenuOpen.set($event)"
+  >
+    <ang-navigation-menu [navigationItems]="navRight()" [email]="email()" [socialMediaIds]="socialMediaIds()" />
   </mat-drawer>
 
   <mat-drawer-content>
