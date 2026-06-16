@@ -25,5 +25,5 @@ export class NavigationMenu {
   readonly email = input<string>();
 
   /** List of supported social media IDs. */
-  readonly socialMediaIds = input<string[]>();
+  readonly socialMediaIds = input(['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x']);
 }
