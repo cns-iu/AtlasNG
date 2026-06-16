@@ -5,11 +5,7 @@ import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
-import {
-  ALLOW_ALL_ANALYTICS_EVENT_CATEGORY_PERMISSIONS,
-  ALLOW_NECESSARY_ANALYTICS_EVENT_CATEGORY_PERMISSIONS,
-  AnalyticsEventCategoryPermissions,
-} from '@atlasng/analytics/events';
+import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { CookiePermissions } from './cookie-permissions/cookie-permissions';
 import { CookiePermissionProvidersByCategory } from './provider-list/provider-list';
 
@@ -25,7 +21,7 @@ export interface CookieModalData {
   /**
    * Initial analytics permissions.
    */
-  permissions: AnalyticsEventCategoryPermissions;
+  permissions: AnalyticsPermissions;
 
   /**
    * Optional logo image source.
@@ -46,7 +42,7 @@ export interface CookieModalData {
 /**
  * Result returned when the cookie modal closes.
  */
-export type CookieModalResult = AnalyticsEventCategoryPermissions | undefined;
+export type CookieModalResult = AnalyticsPermissions | undefined;
 
 /**
  * Dialog component used to review and update cookie permissions.
@@ -111,12 +107,12 @@ export class CookieModal {
   /**
    * Predefined permission state that enables every category.
    */
-  protected readonly allowAllPermissions = ALLOW_ALL_ANALYTICS_EVENT_CATEGORY_PERMISSIONS;
+  protected readonly allowAllPermissions = AnalyticsPermissions.FULL;
 
   /**
    * Predefined permission state that enables only required categories.
    */
-  protected readonly allowNecessaryPermissions = ALLOW_NECESSARY_ANALYTICS_EVENT_CATEGORY_PERMISSIONS;
+  protected readonly allowNecessaryPermissions = AnalyticsPermissions.DEFAULT;
 
   /**
    * Indicates whether the modal backdrop close action is disabled.

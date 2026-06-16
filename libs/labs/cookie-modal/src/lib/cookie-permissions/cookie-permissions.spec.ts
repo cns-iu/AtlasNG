@@ -1,24 +1,18 @@
-import { AnalyticsEventCategory, AnalyticsEventCategoryPermissions } from '@atlasng/analytics/events';
+import { AnalyticsEventCategory } from '@atlasng/analytics/events';
+import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { CookiePermissions } from './cookie-permissions';
 
 describe('CookiePermissions', () => {
-  const basePermissions: AnalyticsEventCategoryPermissions = {
-    [AnalyticsEventCategory.Necessary]: true,
-    [AnalyticsEventCategory.Preferences]: false,
-    [AnalyticsEventCategory.Statistics]: false,
-    [AnalyticsEventCategory.Marketing]: false,
-  };
-
   async function setup(options?: {
-    permissions?: AnalyticsEventCategoryPermissions;
+    permissions?: AnalyticsPermissions;
     providers?: Partial<Record<AnalyticsEventCategory, { label: string; href: string }[]>>;
   }) {
     const user = userEvent.setup();
     const result = await render(CookiePermissions, {
       inputs: {
-        permissions: options?.permissions ?? basePermissions,
+        permissions: options?.permissions ?? AnalyticsPermissions.DEFAULT,
         providers: options?.providers ?? {},
       },
     });
