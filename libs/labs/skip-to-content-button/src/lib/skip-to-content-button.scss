@@ -1,0 +1,67 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+
+  @include mat.button-overrides(
+    (
+      text-container-height: 3.5rem,
+      text-icon-spacing: 0.75rem,
+      text-with-icon-horizontal-padding: 20px,
+      text-icon-offset: 0rem,
+      text-label-text-color: token-utils.slot(color, $config),
+      text-label-text-font: token-utils.slot(font-family, $config),
+      text-label-text-size: token-utils.slot(font-size, $config),
+      text-label-text-weight: token-utils.slot(font-weight, $config),
+      text-label-text-tracking: token-utils.slot(tracking, $config),
+    )
+  );
+
+  .link {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    opacity: 0;
+    clip-path: inset(50%);
+  }
+
+  &:active,
+  &:focus,
+  &:focus-within {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+
+    .link:focus,
+    .link:focus-visible {
+      top: 3rem;
+      transform: translateX(-50%);
+      z-index: 2000;
+      opacity: 1;
+      background-color: token-utils.slot(background-color, $config);
+      border: 4px solid token-utils.slot(border-color, $config);
+      box-shadow: 0px 0.3125rem 1rem 0px token-utils.slot(shadow-color, $config);
+      clip-path: none;
+    }
+  }
+
+  .ang-skip-to-content-button-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.5rem;
+    color: token-utils.slot(icon-color, $config);
+  }
+}

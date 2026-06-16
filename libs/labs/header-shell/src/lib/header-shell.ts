@@ -10,6 +10,7 @@ import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 import { HelpButton } from '@atlasng/design-system/buttons/help';
 import { NavigationButton } from '@atlasng/design-system/buttons/navigation';
+import { SkipToContentButton } from '@atlasng/labs/skip-to-content-button';
 
 /** Navigation item rendered in the shell navigation rail. */
 export interface HeaderShellNavigationItem {
@@ -44,6 +45,7 @@ const DESKTOP_BREAKPOINT = 960;
     MatSidenavModule,
     MatFormFieldModule,
     MatDividerModule,
+    SkipToContentButton,
   ],
   templateUrl: './header-shell.html',
   styleUrl: './header-shell.scss',
