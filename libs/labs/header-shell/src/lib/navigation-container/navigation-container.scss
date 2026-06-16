@@ -8,6 +8,8 @@
   }
 
   mat-drawer {
+    --ang-drawer-background-color: #{token-utils.slot(menu-container-color, $config)};
+
     overflow-x: hidden;
     border-color: token-utils.slot(drawer-border-color, $config);
     border-style: solid;
@@ -16,18 +18,13 @@
     @include mat.sidenav-overrides(
       (
         container-width: 20rem,
-        container-background-color: token-utils.slot(menu-container-color, $config),
+        container-background-color: var(--ang-drawer-background-color),
       )
     );
 
     &.right {
+      --ang-drawer-background-color: #{token-utils.slot(menu-container-color-right, $config)};
       border-width: 1px 0px 1px 1px;
-
-      @include mat.sidenav-overrides(
-        (
-          container-background-color: token-utils.slot(menu-container-color-right, $config),
-        )
-      );
     }
   }
 }

@@ -9,8 +9,6 @@
       text-icon-spacing: 1rem,
       text-label-text-color: token-utils.slot(menu-button-text-color, $config),
       text-state-layer-color: token-utils.slot(menu-state-layer-color, $config),
-      text-focus-state-layer-opacity: 1,
-      text-hover-state-layer-opacity: 1,
     )
   );
 
@@ -33,6 +31,7 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 1.5rem;
+    background-color: var(--ang-drawer-background-color);
   }
 
   .ang-navigation-menu-links {
@@ -47,6 +46,15 @@
   .ang-navigation-menu-link {
     width: 100%;
     justify-content: flex-start;
+
+    &:active {
+      @include mat.button-overrides(
+        (
+          text-state-layer-color: token-utils.slot(menu-state-layer-color-active, $config),
+          text-pressed-state-layer-opacity: 1,
+        )
+      );
+    }
   }
 
   .ang-navigation-menu-icon {
@@ -65,7 +73,7 @@
     overflow: hidden;
     position: absolute;
     bottom: 0;
-    background: token-utils.slot(menu-container-color, $config);
+    background-color: inherit;
 
     .ang-footer-social-icon {
       height: 2.5rem;
