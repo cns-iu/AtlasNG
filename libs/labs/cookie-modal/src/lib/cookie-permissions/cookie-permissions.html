@@ -3,7 +3,7 @@
     <ang-cookie-permission-item
       [angEventScope]="item.category.toLowerCase()"
       [info]="item"
-      [enabled]="permissions()[item.category]"
+      [enabled]="permissions().isCategoryEnabled(item.category)"
       [providers]="providers()[item.category] ?? []"
       (enabledChange)="updatePermissions(item.category, $event)"
     />

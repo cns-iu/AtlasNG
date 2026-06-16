@@ -1,14 +1,8 @@
-import { AnalyticsEventCategory, AnalyticsEventCategoryPermissions } from '@atlasng/analytics/events';
+import { AnalyticsEventCategory } from '@atlasng/analytics/events';
+import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { Meta, StoryObj } from '@storybook/angular';
 import { CookiePermissionProvidersByCategory } from '../provider-list/provider-list';
 import { CookiePermissions } from './cookie-permissions';
-
-const DEFAULT_PERMISSIONS: AnalyticsEventCategoryPermissions = {
-  [AnalyticsEventCategory.Necessary]: true,
-  [AnalyticsEventCategory.Preferences]: false,
-  [AnalyticsEventCategory.Statistics]: false,
-  [AnalyticsEventCategory.Marketing]: false,
-};
 
 const DEFAULT_PROVIDERS: CookiePermissionProvidersByCategory = {
   [AnalyticsEventCategory.Marketing]: [
@@ -27,7 +21,7 @@ const meta: Meta<CookiePermissions> = {
   title: 'Labs/Cookie Modal/Cookie Permissions',
   component: CookiePermissions,
   args: {
-    permissions: DEFAULT_PERMISSIONS,
+    permissions: AnalyticsPermissions.DEFAULT,
     providers: DEFAULT_PROVIDERS,
   },
 };

@@ -1,7 +1,7 @@
 import { ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { CoreEvents } from '@atlasng/analytics/events';
-import { PermissionsManager } from '@atlasng/analytics/permissions';
+import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
 import {
@@ -9,7 +9,7 @@ import {
   withCustomBackend,
   withDefaultBackend,
   withGlobalErrorHandler,
-  withPermissionsManagerConfiguration,
+  withPermissionsConfig,
 } from './provider';
 
 describe('provideAnalytics', () => {
@@ -118,7 +118,7 @@ describe('provideAnalytics', () => {
     const providers = provideAnalytics(
       {},
       withCustomBackend(() => backend),
-      withPermissionsManagerConfiguration({
+      withPermissionsConfig({
         changeEventName: false,
         storage: false,
         storageKey: 'custom-permissions-key',
@@ -128,7 +128,7 @@ describe('provideAnalytics', () => {
 
     TestBed.configureTestingModule({ providers: [providers] });
 
-    const manager = TestBed.inject(PermissionsManager);
+    const manager = TestBed.inject(AnalyticsPermissionsManager);
     expect(manager.config.changeEventName).toBe(false);
     expect(manager.config.storage).toBe(false);
     expect(manager.config.storageKey).toBe('custom-permissions-key');

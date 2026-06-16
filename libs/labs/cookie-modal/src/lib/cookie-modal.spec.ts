@@ -1,27 +1,16 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { MatDialogHarness, MatTestDialogOpener } from '@angular/material/dialog/testing';
-import {
-  ALLOW_ALL_ANALYTICS_EVENT_CATEGORY_PERMISSIONS,
-  ALLOW_NECESSARY_ANALYTICS_EVENT_CATEGORY_PERMISSIONS,
-  AnalyticsEventCategory,
-  AnalyticsEventCategoryPermissions,
-} from '@atlasng/analytics/events';
+import { AnalyticsEventCategory } from '@atlasng/analytics/events';
+import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { render, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { CookieModal, CookieModalData, CookieModalResult } from './cookie-modal';
 
 describe('CookieModal', () => {
-  const basePermissions: AnalyticsEventCategoryPermissions = {
-    [AnalyticsEventCategory.Necessary]: true,
-    [AnalyticsEventCategory.Preferences]: false,
-    [AnalyticsEventCategory.Statistics]: false,
-    [AnalyticsEventCategory.Marketing]: false,
-  };
-
   async function setup(config?: MatDialogConfig<CookieModalData>) {
     const data: CookieModalData = {
-      permissions: basePermissions,
+      permissions: AnalyticsPermissions.DEFAULT,
       ...config?.data,
     };
 
@@ -71,7 +60,7 @@ describe('CookieModal', () => {
     await user.click(allowAllButton);
 
     await waitFor(() => {
-      expect(opener.closedResult).toEqual(ALLOW_ALL_ANALYTICS_EVENT_CATEGORY_PERMISSIONS);
+      expect(opener.closedResult).toEqual(AnalyticsPermissions.FULL);
     });
   });
 
@@ -86,11 +75,9 @@ describe('CookieModal', () => {
     const allowSelectionButton = screen.getByRole('button', { name: 'Allow Selection' });
     await user.click(allowSelectionButton);
 
+    const result = AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Preferences);
     await waitFor(() => {
-      expect(opener.closedResult).toEqual({
-        ...basePermissions,
-        [AnalyticsEventCategory.Preferences]: true,
-      });
+      expect(opener.closedResult).toEqual(result);
     });
   });
 
@@ -113,7 +100,7 @@ describe('CookieModal', () => {
     await user.click(allowNecessaryButton);
 
     await waitFor(() => {
-      expect(opener.closedResult).toEqual(ALLOW_NECESSARY_ANALYTICS_EVENT_CATEGORY_PERMISSIONS);
+      expect(opener.closedResult).toEqual(AnalyticsPermissions.DEFAULT);
     });
   });
 });

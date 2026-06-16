@@ -1,11 +1,11 @@
 import { DestroyRef, inject, Injectable, InjectionToken, Provider, signal } from '@angular/core';
 import { LOCAL_STORAGE, WINDOW } from '@atlasng/core';
-import { Permissions } from './permissions';
+import { AnalyticsPermissions } from './permissions';
 
 /**
- * Configuration for {@link PermissionsManager}.
+ * Configuration for {@link AnalyticsPermissionsManager}.
  */
-export interface PermissionsManagerConfig {
+export interface AnalyticsPermissionsManagerConfig {
   /**
    * Name of the custom browser event used to broadcast permission changes.
    * Set to `false` to disable custom-event synchronization.
@@ -29,21 +29,24 @@ export interface PermissionsManagerConfig {
   storageEvents?: boolean;
 }
 
-/** Injection token for {@link PermissionsManagerConfig}. */
-const PERMISSIONS_CONFIG = new InjectionToken<PermissionsManagerConfig>('PERMISSIONS_CONFIG', {
-  providedIn: 'root',
-  factory: () => ({}),
-});
+/** Injection token for {@link AnalyticsPermissionsManagerConfig}. */
+const ANALYTICS_PERMISSIONS_CONFIG = new InjectionToken<AnalyticsPermissionsManagerConfig>(
+  'ANALYTICS_PERMISSIONS_CONFIG',
+  {
+    providedIn: 'root',
+    factory: () => ({}),
+  },
+);
 
 /**
- * Provides configuration for {@link PermissionsManager}.
+ * Provides configuration for {@link AnalyticsPermissionsManager}.
  *
  * @param config Partial manager configuration.
  * @returns Angular provider entry for the config token.
  */
-export function providePermissionsManagerConfig(config: PermissionsManagerConfig): Provider {
+export function provideAnalyticsPermissionsManagerConfig(config: AnalyticsPermissionsManagerConfig): Provider {
   return {
-    provide: PERMISSIONS_CONFIG,
+    provide: ANALYTICS_PERMISSIONS_CONFIG,
     useValue: config,
   };
 }
@@ -53,8 +56,8 @@ export function providePermissionsManagerConfig(config: PermissionsManagerConfig
  *
  * @returns A fully populated manager configuration object.
  */
-function injectPermissionsManagerConfigWithDefaults(): Required<PermissionsManagerConfig> {
-  const config = inject(PERMISSIONS_CONFIG);
+function injectAnalyticsPermissionsManagerConfigWithDefaults(): Required<AnalyticsPermissionsManagerConfig> {
+  const config = inject(ANALYTICS_PERMISSIONS_CONFIG);
   return {
     changeEventName: config.changeEventName ?? 'atlasng:analytics:permissions-change',
     storage: config.storage ?? inject(LOCAL_STORAGE) ?? false,
@@ -73,15 +76,15 @@ function injectPermissionsManagerConfigWithDefaults(): Required<PermissionsManag
 @Injectable({
   providedIn: 'root',
 })
-export class PermissionsManager {
+export class AnalyticsPermissionsManager {
   /** Window abstraction used for browser event wiring. */
   readonly #window = inject(WINDOW);
 
   /** Resolved manager configuration with defaults applied. */
-  readonly config = injectPermissionsManagerConfigWithDefaults();
+  readonly config = injectAnalyticsPermissionsManagerConfigWithDefaults();
 
   /** Writable permission state signal. */
-  readonly #permissions = signal(Permissions.DEFAULT);
+  readonly #permissions = signal(AnalyticsPermissions.DEFAULT);
 
   /** Current permissions. */
   readonly permissions = this.#permissions.asReadonly();
@@ -97,7 +100,7 @@ export class PermissionsManager {
    *
    * @param permissions Permissions to set.
    */
-  setPermissions(permissions: Permissions): void {
+  setPermissions(permissions: AnalyticsPermissions): void {
     this.#permissions.set(permissions);
     this.#broadcastPermissionsChange();
     this.syncToStorage();
@@ -105,12 +108,12 @@ export class PermissionsManager {
 
   /** Sets the default permissions preset. */
   setDefaultPermissions(): void {
-    this.setPermissions(Permissions.DEFAULT);
+    this.setPermissions(AnalyticsPermissions.DEFAULT);
   }
 
   /** Sets the full permissions preset. */
   setFullPermissions(): void {
-    this.setPermissions(Permissions.FULL);
+    this.setPermissions(AnalyticsPermissions.FULL);
   }
 
   /**
@@ -146,7 +149,7 @@ export class PermissionsManager {
     }
 
     const storedPermissions = storage.getItem(storageKey) ?? '';
-    const newPermissions = Permissions.tryFromJSON(storedPermissions);
+    const newPermissions = AnalyticsPermissions.tryFromJSON(storedPermissions);
     if (!newPermissions) {
       return false;
     }
@@ -207,7 +210,7 @@ export class PermissionsManager {
 
     if (typeof value === 'string') {
       this.#permissions.update((current) => {
-        const newPermissions = Permissions.tryFromJSON(value, current);
+        const newPermissions = AnalyticsPermissions.tryFromJSON(value, current);
         return newPermissions ?? current;
       });
     }

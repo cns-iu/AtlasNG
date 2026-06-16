@@ -1,17 +1,10 @@
 import { Component, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { AnalyticsEventCategory, AnalyticsEventCategoryPermissions } from '@atlasng/analytics/events';
+import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { Meta, StoryObj } from '@storybook/angular';
 import 'storybook/test';
 import { CookieModal, CookieModalData } from './cookie-modal';
-
-const DEFAULT_PERMISSIONS: AnalyticsEventCategoryPermissions = {
-  [AnalyticsEventCategory.Necessary]: true,
-  [AnalyticsEventCategory.Preferences]: false,
-  [AnalyticsEventCategory.Statistics]: false,
-  [AnalyticsEventCategory.Marketing]: false,
-};
 
 @Component({
   imports: [MatButtonModule],
@@ -20,7 +13,7 @@ const DEFAULT_PERMISSIONS: AnalyticsEventCategoryPermissions = {
 class CookieModalStoryComponent {
   readonly logoSrc = input<string>();
   readonly logoLabel = input<string>();
-  readonly permissions = input<AnalyticsEventCategoryPermissions>(DEFAULT_PERMISSIONS);
+  readonly permissions = input(AnalyticsPermissions.DEFAULT);
   readonly activeTab = input<number>();
   readonly result = output<unknown>();
 

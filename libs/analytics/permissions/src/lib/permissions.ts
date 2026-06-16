@@ -29,27 +29,27 @@ const REQUIRED_CATEGORY_PERMISSIONS: Pick<CategoryPermissions, AnalyticsEventCat
  * Immutable analytics permission state.
  *
  * Instances behave like value objects: every mutation-style method returns a new
- * {@link Permissions} instance instead of changing the current one.
+ * {@link AnalyticsPermissions} instance instead of changing the current one.
  */
-export class Permissions {
-  /** Lazily initialized cache for {@link Permissions.DEFAULT}. */
-  static #default: Permissions | undefined;
+export class AnalyticsPermissions {
+  /** Lazily initialized cache for {@link AnalyticsPermissions.DEFAULT}. */
+  static #default: AnalyticsPermissions | undefined;
 
-  /** Lazily initialized cache for {@link Permissions.FULL}. */
-  static #full: Permissions | undefined;
+  /** Lazily initialized cache for {@link AnalyticsPermissions.FULL}. */
+  static #full: AnalyticsPermissions | undefined;
 
   /**
    * Default analytics permissions.
    */
-  static get DEFAULT(): Permissions {
-    return (this.#default ??= new Permissions(DEFAULT_CATEGORY_PERMISSIONS));
+  static get DEFAULT(): AnalyticsPermissions {
+    return (this.#default ??= new AnalyticsPermissions(DEFAULT_CATEGORY_PERMISSIONS));
   }
 
   /**
    * All analytics permissions enabled.
    */
-  static get FULL(): Permissions {
-    return (this.#full ??= new Permissions(FULL_CATEGORY_PERMISSIONS));
+  static get FULL(): AnalyticsPermissions {
+    return (this.#full ??= new AnalyticsPermissions(FULL_CATEGORY_PERMISSIONS));
   }
 
   /** The internal permission state. */
@@ -91,7 +91,7 @@ export class Permissions {
    * @param category The category to enable.
    * @returns A new permissions value object.
    */
-  enableCategory(category: AnalyticsEventCategory): Permissions {
+  enableCategory(category: AnalyticsEventCategory): AnalyticsPermissions {
     return this.#updateCategories({ [category]: true });
   }
 
@@ -101,7 +101,7 @@ export class Permissions {
    * @param category The category to disable.
    * @returns A new permissions value object.
    */
-  disableCategory(category: AnalyticsEventCategory): Permissions {
+  disableCategory(category: AnalyticsEventCategory): AnalyticsPermissions {
     return this.#updateCategories({ [category]: false });
   }
 
@@ -111,9 +111,20 @@ export class Permissions {
    * @param category The category to toggle.
    * @returns A new permissions value object.
    */
-  toggleCategory(category: AnalyticsEventCategory): Permissions {
+  toggleCategory(category: AnalyticsEventCategory): AnalyticsPermissions {
     const current = this.#permissions[category];
     return this.#updateCategories({ [category]: !current });
+  }
+
+  /**
+   * Returns a copy with the given category set to the specified enabled state.
+   *
+   * @param category The category to update.
+   * @param enabled The new enabled state for the category.
+   * @returns A new permissions value object.
+   */
+  setCategory(category: AnalyticsEventCategory, enabled: boolean): AnalyticsPermissions {
+    return this.#updateCategories({ [category]: enabled });
   }
 
   /**
@@ -122,8 +133,8 @@ export class Permissions {
    * @param updates Partial category updates to apply.
    * @returns A new permissions value object.
    */
-  #updateCategories(updates: Partial<CategoryPermissions>): Permissions {
-    return new Permissions({ ...this.#permissions, ...updates, ...REQUIRED_CATEGORY_PERMISSIONS });
+  #updateCategories(updates: Partial<CategoryPermissions>): AnalyticsPermissions {
+    return new AnalyticsPermissions({ ...this.#permissions, ...updates, ...REQUIRED_CATEGORY_PERMISSIONS });
   }
 
   /**
@@ -132,7 +143,7 @@ export class Permissions {
    * @param other The permissions value to compare.
    * @returns Whether both values contain the same category flags.
    */
-  equals(other: Permissions): boolean {
+  equals(other: AnalyticsPermissions): boolean {
     const categories = Object.values(AnalyticsEventCategory);
     return categories.every((category) => this.#permissions[category] === other.#permissions[category]);
   }
@@ -144,7 +155,7 @@ export class Permissions {
    * @param defaultPermissions Optional fallback permissions for missing categories.
    * @returns A new permissions value object.
    */
-  static fromJSON(json: string, defaultPermissions?: Permissions): Permissions {
+  static fromJSON(json: string, defaultPermissions?: AnalyticsPermissions): AnalyticsPermissions {
     const parsed = JSON.parse(json);
     if (typeof parsed !== 'object' || parsed === null) {
       throw new Error('Invalid AnalyticsPermissions JSON');
@@ -160,7 +171,7 @@ export class Permissions {
       return acc;
     }, basePermissions);
 
-    return new Permissions(permissions);
+    return new AnalyticsPermissions(permissions);
   }
 
   /**
@@ -170,9 +181,9 @@ export class Permissions {
    * @param defaultPermissions Optional fallback permissions for missing categories.
    * @returns The parsed permissions, or `undefined` when parsing fails.
    */
-  static tryFromJSON(json: string, defaultPermissions?: Permissions): Permissions | undefined {
+  static tryFromJSON(json: string, defaultPermissions?: AnalyticsPermissions): AnalyticsPermissions | undefined {
     try {
-      return Permissions.fromJSON(json, defaultPermissions);
+      return AnalyticsPermissions.fromJSON(json, defaultPermissions);
     } catch {
       return undefined;
     }

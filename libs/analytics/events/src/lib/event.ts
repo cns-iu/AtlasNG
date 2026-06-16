@@ -11,9 +11,6 @@ export enum AnalyticsEventCategory {
   Marketing = 'marketing',
 }
 
-/** Permissions for each analytics event category. */
-export type AnalyticsEventCategoryPermissions = Record<AnalyticsEventCategory, boolean>;
-
 /** Payload for an analytics event. */
 export type AnalyticsEventPayload<T = object> = Simplify<
   T & { [key: string]: unknown; path?: string; trigger?: string; triggerData?: unknown }
@@ -28,22 +25,6 @@ export type AnalyticsEvent<P = AnalyticsEventPayload> = Tagged<
 
 /** Get the payload type for a given analytics event */
 export type AnalyticsEventPayloadFor<E extends AnalyticsEvent> = GetTagMetadata<E, 'AnalyticsEvent'>;
-
-/** Permissions that allow all analytics event categories. */
-export const ALLOW_ALL_ANALYTICS_EVENT_CATEGORY_PERMISSIONS: AnalyticsEventCategoryPermissions = {
-  [AnalyticsEventCategory.Necessary]: true,
-  [AnalyticsEventCategory.Statistics]: true,
-  [AnalyticsEventCategory.Preferences]: true,
-  [AnalyticsEventCategory.Marketing]: true,
-};
-
-/** Permissions that only allow necessary analytics event categories. */
-export const ALLOW_NECESSARY_ANALYTICS_EVENT_CATEGORY_PERMISSIONS: AnalyticsEventCategoryPermissions = {
-  [AnalyticsEventCategory.Necessary]: true,
-  [AnalyticsEventCategory.Statistics]: false,
-  [AnalyticsEventCategory.Preferences]: false,
-  [AnalyticsEventCategory.Marketing]: false,
-};
 
 /**
  * Create a new analytics event.
