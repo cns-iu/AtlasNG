@@ -1,5 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { CUSTOM_ELEMENT_REGISTRY, DOCUMENT, LOCATION, RESIZE_OBSERVER, WINDOW } from './browser-tokens';
+import {
+  CUSTOM_ELEMENT_REGISTRY,
+  DOCUMENT,
+  LOCAL_STORAGE,
+  LOCATION,
+  RESIZE_OBSERVER,
+  SESSION_STORAGE,
+  WINDOW,
+} from './browser-tokens';
 
 describe('browser tokens', () => {
   function configureDocument(document: Document): void {
@@ -8,89 +16,162 @@ describe('browser tokens', () => {
     });
   }
 
+  function createStorage(): Storage {
+    return {
+      length: 0,
+      clear: vi.fn(),
+      getItem: vi.fn(),
+      key: vi.fn(),
+      removeItem: vi.fn(),
+      setItem: vi.fn(),
+    } as unknown as Storage;
+  }
+
   afterEach(() => {
     TestBed.resetTestingModule();
     vi.unstubAllGlobals();
   });
 
-  it('WINDOW should return DOCUMENT.defaultView when available', () => {
-    const fakeWindow = {} as Window;
-    const fakeDocument = { defaultView: fakeWindow } as unknown as Document;
+  describe('WINDOW', () => {
+    it('should return DOCUMENT.defaultView when available', () => {
+      const fakeWindow = {} as Window;
+      const fakeDocument = { defaultView: fakeWindow } as unknown as Document;
 
-    configureDocument(fakeDocument);
+      configureDocument(fakeDocument);
 
-    expect(TestBed.inject(WINDOW)).toBe(fakeWindow);
-  });
-
-  it('WINDOW should fall back to the global window when DOCUMENT.defaultView is missing', () => {
-    const fakeWindow = {} as Window;
-    const fakeDocument = { defaultView: undefined } as unknown as Document;
-
-    vi.stubGlobal('window', fakeWindow);
-    configureDocument(fakeDocument);
-
-    expect(TestBed.inject(WINDOW)).toBe(fakeWindow);
-  });
-
-  it('WINDOW should throw when DOCUMENT.defaultView and global window are unavailable', () => {
-    const fakeDocument = { defaultView: undefined } as unknown as Document;
-
-    vi.stubGlobal('window', undefined);
-    configureDocument(fakeDocument);
-
-    expect(() => TestBed.inject(WINDOW)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: No global "window" object available.]`,
-    );
-  });
-
-  it('LOCATION should return DOCUMENT.location', () => {
-    const fakeLocation = { href: 'https://atlasng.dev' } as Location;
-    const fakeDocument = { location: fakeLocation } as unknown as Document;
-
-    configureDocument(fakeDocument);
-
-    expect(TestBed.inject(LOCATION)).toBe(fakeLocation);
-  });
-
-  it('CUSTOM_ELEMENT_REGISTRY should return window.customElements when available', () => {
-    const fakeRegistry = {} as CustomElementRegistry;
-    const fakeWindow = { customElements: fakeRegistry } as unknown as Window;
-
-    TestBed.configureTestingModule({
-      providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      expect(TestBed.inject(WINDOW)).toBe(fakeWindow);
     });
 
-    expect(TestBed.inject(CUSTOM_ELEMENT_REGISTRY)).toBe(fakeRegistry);
-  });
+    it('should fall back to the global window when DOCUMENT.defaultView is missing', () => {
+      const fakeWindow = {} as Window;
+      const fakeDocument = { defaultView: undefined } as unknown as Document;
 
-  it('CUSTOM_ELEMENT_REGISTRY should return undefined when window.customElements is missing', () => {
-    const fakeWindow = {} as Window;
+      vi.stubGlobal('window', fakeWindow);
+      configureDocument(fakeDocument);
 
-    TestBed.configureTestingModule({
-      providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      expect(TestBed.inject(WINDOW)).toBe(fakeWindow);
     });
 
-    expect(TestBed.inject(CUSTOM_ELEMENT_REGISTRY)).toBeUndefined();
+    it('should throw when DOCUMENT.defaultView and global window are unavailable', () => {
+      const fakeDocument = { defaultView: undefined } as unknown as Document;
+
+      vi.stubGlobal('window', undefined);
+      configureDocument(fakeDocument);
+
+      expect(() => TestBed.inject(WINDOW)).toThrowErrorMatchingInlineSnapshot(
+        `[Error: No global "window" object available.]`,
+      );
+    });
   });
 
-  it('RESIZE_OBSERVER should return the ResizeObserver constructor when available', () => {
-    const fakeResizeObserver = class {} as unknown as typeof ResizeObserver;
-    const fakeWindow = { ResizeObserver: fakeResizeObserver } as unknown as Window;
+  describe('LOCATION', () => {
+    it('should return DOCUMENT.location', () => {
+      const fakeLocation = { href: 'https://atlasng.dev' } as Location;
+      const fakeDocument = { location: fakeLocation } as unknown as Document;
 
-    TestBed.configureTestingModule({
-      providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      configureDocument(fakeDocument);
+
+      expect(TestBed.inject(LOCATION)).toBe(fakeLocation);
     });
-
-    expect(TestBed.inject(RESIZE_OBSERVER)).toBe(fakeResizeObserver);
   });
 
-  it('RESIZE_OBSERVER should return undefined when the ResizeObserver is missing', () => {
-    const fakeWindow = {} as Window;
+  describe('CUSTOM_ELEMENT_REGISTRY', () => {
+    it('should return window.customElements when available', () => {
+      const fakeRegistry = {} as CustomElementRegistry;
+      const fakeWindow = { customElements: fakeRegistry } as unknown as Window;
 
-    TestBed.configureTestingModule({
-      providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(CUSTOM_ELEMENT_REGISTRY)).toBe(fakeRegistry);
     });
 
-    expect(TestBed.inject(RESIZE_OBSERVER)).toBeUndefined();
+    it('should return undefined when window.customElements is missing', () => {
+      const fakeWindow = {} as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(CUSTOM_ELEMENT_REGISTRY)).toBeUndefined();
+    });
+  });
+
+  describe('RESIZE_OBSERVER', () => {
+    it('should return the ResizeObserver constructor when available', () => {
+      const fakeResizeObserver = class {} as unknown as typeof ResizeObserver;
+      const fakeWindow = { ResizeObserver: fakeResizeObserver } as unknown as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(RESIZE_OBSERVER)).toBe(fakeResizeObserver);
+    });
+
+    it('should return undefined when the ResizeObserver is missing', () => {
+      const fakeWindow = {} as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(RESIZE_OBSERVER)).toBeUndefined();
+    });
+  });
+
+  describe('LOCAL_STORAGE', () => {
+    it('should return window.localStorage when available', () => {
+      const fakeStorage = createStorage();
+      const fakeWindow = { localStorage: fakeStorage } as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(LOCAL_STORAGE)).toBe(fakeStorage);
+    });
+
+    it('should return undefined when window.localStorage is unavailable', () => {
+      const fakeWindow = {
+        get localStorage() {
+          throw new Error('storage unavailable');
+        },
+      } as unknown as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(LOCAL_STORAGE)).toBeUndefined();
+    });
+  });
+
+  describe('SESSION_STORAGE', () => {
+    it('should return window.sessionStorage when available', () => {
+      const fakeStorage = createStorage();
+      const fakeWindow = { sessionStorage: fakeStorage } as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(SESSION_STORAGE)).toBe(fakeStorage);
+    });
+
+    it('should return undefined when window.sessionStorage is unavailable', () => {
+      const fakeWindow = {
+        get sessionStorage() {
+          throw new Error('storage unavailable');
+        },
+      } as unknown as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(SESSION_STORAGE)).toBeUndefined();
+    });
   });
 });

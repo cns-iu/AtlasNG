@@ -1,4 +1,5 @@
 import { DOCUMENT, inject, InjectionToken } from '@angular/core';
+import { isStorageAvailable } from './utils';
 
 /**
  * Re-export of Angular's platform-agnostic document token.
@@ -60,5 +61,29 @@ export const RESIZE_OBSERVER = new InjectionToken<typeof ResizeObserver | undefi
     }
 
     return undefined;
+  },
+});
+
+/**
+ * Injection token for the browser {@link localStorage} API, when available.
+ */
+export const LOCAL_STORAGE = new InjectionToken<Storage | undefined>('LOCAL_STORAGE', {
+  providedIn: 'root',
+  factory: () => {
+    const window = inject(WINDOW);
+    const getStorage = () => window.localStorage;
+    return isStorageAvailable(getStorage) ? getStorage() : undefined;
+  },
+});
+
+/**
+ * Injection token for the browser {@link sessionStorage} API, when available.
+ */
+export const SESSION_STORAGE = new InjectionToken<Storage | undefined>('SESSION_STORAGE', {
+  providedIn: 'root',
+  factory: () => {
+    const window = inject(WINDOW);
+    const getStorage = () => window.sessionStorage;
+    return isStorageAvailable(getStorage) ? getStorage() : undefined;
   },
 });
