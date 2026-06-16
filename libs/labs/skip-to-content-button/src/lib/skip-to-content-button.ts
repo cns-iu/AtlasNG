@@ -3,6 +3,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AnyLink } from '@atlasng/common';
 
+/**
+ * Button that allows users to skip directly to the main content of the page,
+ * improving accessibility and user experience for keyboard and assistive technology users.
+ * The button becomes visible when focused and is hidden off-screen otherwise.
+ * When activated, it navigates to the specified anchor ID on the page.
+ */
 @Component({
   selector: 'ang-skip-to-content-button',
   imports: [MatButtonModule, MatIconModule, AnyLink],

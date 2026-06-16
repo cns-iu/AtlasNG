@@ -1,21 +1,36 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { render, screen } from '@testing-library/angular';
 import { SkipToContentButton } from './skip-to-content-button';
 
 describe('SkipToContentButton', () => {
-  let component: SkipToContentButton;
-  let fixture: ComponentFixture<SkipToContentButton>;
+  it('renders with default label', async () => {
+    await render(SkipToContentButton, {
+      inputs: {
+        anchorId: 'main-content',
+      },
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [SkipToContentButton],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(SkipToContentButton);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
+    expect(screen.getByText('Skip to main content')).toBeInTheDocument();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with custom label', async () => {
+    await render(SkipToContentButton, {
+      inputs: {
+        anchorId: 'main-content',
+        label: 'Skip to content area',
+      },
+    });
+
+    expect(screen.getByText('Skip to content area')).toBeInTheDocument();
+  });
+
+  it('creates a link with correct anchor navigation', async () => {
+    await render(SkipToContentButton, {
+      inputs: {
+        anchorId: 'page-main',
+      },
+    });
+
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', '/page-main');
   });
 });

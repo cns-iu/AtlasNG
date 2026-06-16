@@ -71,6 +71,7 @@ export class HeaderShell {
   /** Icon used by the local-left navigation toggle trigger. */
   readonly localNavigationIcon = input<'menu' | 'tune'>('menu');
 
+  /** Whether the page has local navigation enabled. */
   readonly hasLocalNavigation = input(false);
 
   /** Current local navigation open/closed state. */

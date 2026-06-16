@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { NavigationMenu } from '../navigation-menu/navigation-menu';
 import { HeaderShellNavigationItem } from '../header-shell';
-import { CommonModule } from '@angular/common';
+import { NavigationMenu } from '../navigation-menu/navigation-menu';
 
 @Component({
   selector: 'ang-navigation-container',
-  imports: [CommonModule, MatSidenavModule, NavigationMenu],
+  imports: [MatSidenavModule, NavigationMenu],
   templateUrl: './navigation-container.html',
   styleUrl: './navigation-container.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
