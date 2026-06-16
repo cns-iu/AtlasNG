@@ -2,7 +2,8 @@ import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { EventScope } from '@atlasng/analytics';
-import { AnalyticsEventCategory, AnalyticsEventCategoryPermissions } from '@atlasng/analytics/events';
+import { AnalyticsEventCategory } from '@atlasng/analytics/events';
+import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { CookiePermissionInfo, CookiePermissionItem } from '../cookie-permission-item/cookie-permission-item';
 import { CookiePermissionProvidersByCategory } from '../provider-list/provider-list';
 
@@ -56,7 +57,7 @@ export class CookiePermissions {
   /**
    * Mutable cookie permission state shared with the parent modal.
    */
-  readonly permissions = model.required<AnalyticsEventCategoryPermissions>();
+  readonly permissions = model.required<AnalyticsPermissions>();
 
   /**
    * Category metadata rendered as accordion items.
@@ -75,9 +76,6 @@ export class CookiePermissions {
    * @param value The new enabled state for the category.
    */
   protected updatePermissions(category: AnalyticsEventCategory, value: boolean): void {
-    this.permissions.update((currentPermissions) => ({
-      ...currentPermissions,
-      [category]: value,
-    }));
+    this.permissions.update((current) => current.setCategory(category, value));
   }
 }
