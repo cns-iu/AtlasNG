@@ -16,6 +16,9 @@ import { HeaderShellNavigationItem } from '../header-shell';
   templateUrl: './navigation-menu.html',
   styleUrl: './navigation-menu.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.right]': 'position() === "end"',
+  },
 })
 export class NavigationMenu {
   /** Navigation items rendered in the desktop rail and mobile fallback. */
@@ -24,6 +27,8 @@ export class NavigationMenu {
   /** Optional email used for the contact button in the menu. */
   readonly email = input<string>();
 
+  readonly position = input<'start' | 'end'>('start');
+
   /** List of supported social media IDs. */
-  protected readonly socialMediaIds = input(['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x']);
+  readonly socialMediaIds = input(['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x']);
 }

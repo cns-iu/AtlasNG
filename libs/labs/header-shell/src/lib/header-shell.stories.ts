@@ -1,7 +1,6 @@
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { HeaderShell, HeaderShellNavigationItem } from './header-shell';
-import { NavigationMenu } from './navigation-menu/navigation-menu';
+import { NavigationContainer } from './navigation-container/navigation-container';
 
 const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
   { id: 'link-1', label: 'Link 1', link: '/link-1', icon: 'home' },
@@ -34,7 +33,7 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [MatSidenavModule, NavigationMenu],
+      imports: [NavigationContainer],
     }),
   ],
   args: {
@@ -56,38 +55,25 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
     template: `
       <ang-header-shell
         ${argsToTemplate(args, { exclude: ['navRight'] })}
-        [(localNavigationExpanded)]="leftMenuOpen"
-        (localNavigationToggle)="leftMenuOpen = !leftMenuOpen; rightMenuOpen = false"
-        (appsMenuToggle)="rightMenuOpen = !rightMenuOpen; leftMenuOpen = false"
+        [localNavigationExpanded]="navigation.leftMenuOpen()"
+        (localNavigationToggle)="navigation.localNavigationToggle()"
+        (appsMenuToggle)="navigation.appsMenuToggle()"
       >
       </ang-header-shell>
 
-      <mat-drawer-container class="example-container" hasBackdrop>
-        <mat-drawer
-          mode="over"
-          position="start"
-          [opened]="leftMenuOpen"
-          (openedChange)="leftMenuOpen = $event"
-        >
-          <ang-navigation-menu [navigationItems]="navigationItems" [email]="email" [socialMediaIds]="socialMediaIds"></ang-navigation-menu>
-        </mat-drawer>
-        <mat-drawer
-          mode="over"
-          position="end"
-          [opened]="rightMenuOpen"
-          (openedChange)="rightMenuOpen = $event"
-        >
-          <ang-navigation-menu [navigationItems]="navRight" [email]="email" [socialMediaIds]="socialMediaIds"></ang-navigation-menu>
-        </mat-drawer>
-
-        <mat-drawer-content>
-          <div class="content">
-            Test
-          </div>
-        </mat-drawer-content>
-      </mat-drawer-container>
+      <ang-navigation-container
+        [navigationItems]="navigationItems"
+        [navRight]="navRight"
+        [email]="email"
+        [socialMediaIds]="socialMediaIds"
+        #navigation
+      >
+        <div class="content">
+          Test
+        </div>
+      </ang-navigation-container>
     `,
-    styles: [`mat-drawer-content { height: calc(100vh - 3.5rem); background: #F6F7F8 } .content { padding: 1rem; }`],
+    styles: [`.content { padding: 1rem; background: #f6f7f8; }`],
   }),
 };
 

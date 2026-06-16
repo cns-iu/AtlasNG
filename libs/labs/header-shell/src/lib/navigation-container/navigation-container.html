@@ -1,0 +1,18 @@
+<mat-drawer-container class="example-container" hasBackdrop>
+  <mat-drawer mode="over" position="start" [opened]="leftMenuOpen()" (openedChange)="leftMenuOpen.set($event)">
+    <ang-navigation-menu [navigationItems]="navigationItems()" [email]="email()" [socialMediaIds]="socialMediaIds()" />
+  </mat-drawer>
+
+  <mat-drawer mode="over" position="end" [opened]="rightMenuOpen()" (openedChange)="rightMenuOpen.set($event)">
+    <ang-navigation-menu
+      position="end"
+      [navigationItems]="navRight()"
+      [email]="email()"
+      [socialMediaIds]="socialMediaIds()"
+    />
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <ng-content />
+  </mat-drawer-content>
+</mat-drawer-container>

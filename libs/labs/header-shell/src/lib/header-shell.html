@@ -6,6 +6,7 @@
         angTrackClick
         type="button"
         class="ang-header-shell-menu-button"
+        [matTooltip]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
         [attr.aria-label]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
         (click)="localNavigationToggle.emit()"
       >

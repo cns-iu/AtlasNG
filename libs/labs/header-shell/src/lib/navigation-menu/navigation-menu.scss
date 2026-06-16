@@ -29,6 +29,12 @@
     background-color: token-utils.slot(menu-container-color, $config);
   }
 
+  &.right {
+    .ang-navigation-menu {
+      background-color: token-utils.slot(menu-container-color-right, $config);
+    }
+  }
+
   .ang-navigation-menu-links {
     display: flex;
     flex-direction: column;
