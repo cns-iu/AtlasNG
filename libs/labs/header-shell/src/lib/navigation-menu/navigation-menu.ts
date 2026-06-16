@@ -7,6 +7,9 @@ import { AnyLink } from '@atlasng/common';
 import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media';
 import { HeaderShellNavigationItem } from '../header-shell';
 
+/** Supported social media IDs */
+const SOCIAL_MEDIA_IDS = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x'];
+
 /**
  * Menu used for navigation interactions across breakpoints, apps, and brands.
  */
@@ -25,5 +28,5 @@ export class NavigationMenu {
   readonly email = input<string>();
 
   /** List of supported social media IDs. */
-  readonly socialMediaIds = input(['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x']);
+  readonly socialMediaIds = input<string[]>(SOCIAL_MEDIA_IDS);
 }

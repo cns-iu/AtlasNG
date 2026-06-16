@@ -21,7 +21,7 @@ export class NavigationContainer {
   /** Email for the contact button. */
   readonly email = input<string>();
   /** List of supported social media IDs. */
-  readonly socialMediaIds = input<string[]>();
+  readonly socialMediaIds = input<string[]>([]);
 
   /** Opened state of the left navigation menu. */
   readonly leftMenuOpen = model(false);
