@@ -34,6 +34,8 @@
     flex-direction: column;
     gap: 0.25rem;
     padding: 1rem;
+    z-index: 0;
+    padding-bottom: 5rem;
   }
 
   .ang-navigation-menu-link {
@@ -55,6 +57,9 @@
     padding: 0.5rem 0;
     border-top: 1px solid token-utils.slot(divider-color, $config);
     overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    background: token-utils.slot(menu-container-color, $config);
 
     .ang-footer-social-icon {
       @include mat.icon-button-overrides(
