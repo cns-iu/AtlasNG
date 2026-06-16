@@ -1,5 +1,5 @@
 import { AnalyticsEventCategory, createAnalyticsEvent } from '@atlasng/analytics/events';
-import { Permissions } from './permissions';
+import { AnalyticsPermissions } from './permissions';
 
 describe('Permissions', () => {
   const defaultPermissions = {
@@ -17,12 +17,12 @@ describe('Permissions', () => {
   };
 
   it('exposes the default and full permission sets', () => {
-    expect(Permissions.DEFAULT.toJSON()).toEqual(defaultPermissions);
-    expect(Permissions.FULL.toJSON()).toEqual(fullPermissions);
+    expect(AnalyticsPermissions.DEFAULT.toJSON()).toEqual(defaultPermissions);
+    expect(AnalyticsPermissions.FULL.toJSON()).toEqual(fullPermissions);
   });
 
   it('treats updates as immutable copies and keeps necessary permissions enabled', () => {
-    const base = new Permissions();
+    const base = new AnalyticsPermissions();
 
     const enabledStatistics = base.enableCategory(AnalyticsEventCategory.Statistics);
     const disabledNecessary = enabledStatistics.disableCategory(AnalyticsEventCategory.Necessary);
@@ -34,12 +34,12 @@ describe('Permissions', () => {
     expect(disabledNecessary.isCategoryEnabled(AnalyticsEventCategory.Necessary)).toBe(true);
     expect(toggledPreferences.isCategoryEnabled(AnalyticsEventCategory.Preferences)).toBe(true);
     expect(toggledPreferences.isCategoryEnabled(AnalyticsEventCategory.Statistics)).toBe(true);
-    expect(base.equals(Permissions.DEFAULT)).toBe(true);
+    expect(base.equals(AnalyticsPermissions.DEFAULT)).toBe(true);
     expect(base.equals(enabledStatistics)).toBe(false);
   });
 
   it('checks event permissions through the event category', () => {
-    const permissions = Permissions.DEFAULT.enableCategory(AnalyticsEventCategory.Marketing);
+    const permissions = AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Marketing);
     const marketingEvent = createAnalyticsEvent('newsletter-signup', AnalyticsEventCategory.Marketing);
     const statisticsEvent = createAnalyticsEvent('page-view', AnalyticsEventCategory.Statistics);
 
@@ -54,7 +54,7 @@ describe('Permissions', () => {
       [AnalyticsEventCategory.Marketing]: 'enabled',
     });
 
-    const permissions = Permissions.fromJSON(json);
+    const permissions = AnalyticsPermissions.fromJSON(json);
 
     expect(permissions.toJSON()).toEqual({
       [AnalyticsEventCategory.Necessary]: true,
@@ -65,9 +65,9 @@ describe('Permissions', () => {
   });
 
   it('parses JSON against a custom default permission set', () => {
-    const permissions = Permissions.fromJSON(
+    const permissions = AnalyticsPermissions.fromJSON(
       JSON.stringify({ [AnalyticsEventCategory.Preferences]: false }),
-      Permissions.FULL,
+      AnalyticsPermissions.FULL,
     );
 
     expect(permissions.toJSON()).toEqual({
@@ -79,11 +79,11 @@ describe('Permissions', () => {
   });
 
   it('returns undefined for invalid JSON in the safe parser', () => {
-    expect(Permissions.tryFromJSON('not-json')).toBeUndefined();
-    expect(Permissions.tryFromJSON('null')).toBeUndefined();
+    expect(AnalyticsPermissions.tryFromJSON('not-json')).toBeUndefined();
+    expect(AnalyticsPermissions.tryFromJSON('null')).toBeUndefined();
   });
 
   it('serializes to a plain JSON object', () => {
-    expect(JSON.stringify(Permissions.FULL)).toBe(JSON.stringify(fullPermissions));
+    expect(JSON.stringify(AnalyticsPermissions.FULL)).toBe(JSON.stringify(fullPermissions));
   });
 });

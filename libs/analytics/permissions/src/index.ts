@@ -1,6 +1,6 @@
-export { Permissions } from './lib/permissions';
+export { AnalyticsPermissions } from './lib/permissions';
 export {
-  PermissionsManager,
-  providePermissionsManagerConfig,
-  type PermissionsManagerConfig,
+  AnalyticsPermissionsManager,
+  provideAnalyticsPermissionsManagerConfig,
+  type AnalyticsPermissionsManagerConfig,
 } from './lib/permissions-manager';
