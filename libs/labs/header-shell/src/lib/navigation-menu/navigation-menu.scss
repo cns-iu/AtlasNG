@@ -20,19 +20,19 @@
     )
   );
 
+  @include mat.icon-button-overrides(
+    (
+      icon-color: token-utils.slot(icon-color, $config),
+      state-layer-color: token-utils.slot(icon-color, $config),
+    )
+  );
+
   .ang-navigation-menu {
     display: flex;
     min-height: 100%;
     flex-direction: column;
     justify-content: space-between;
     gap: 1.5rem;
-    background-color: token-utils.slot(menu-container-color, $config);
-  }
-
-  &.right {
-    .ang-navigation-menu {
-      background-color: token-utils.slot(menu-container-color-right, $config);
-    }
   }
 
   .ang-navigation-menu-links {
@@ -68,24 +68,9 @@
     background: token-utils.slot(menu-container-color, $config);
 
     .ang-footer-social-icon {
-      @include mat.icon-button-overrides(
-        (
-          icon-color: token-utils.slot(icon-color, $config),
-          state-layer-color: token-utils.slot(icon-color, $config),
-        )
-      );
-
       height: 2.5rem;
       width: 2.5rem;
       min-width: 0;
     }
   }
-}
-
-::ng-deep mat-drawer {
-  --mat-sidenav-container-width: 20rem;
-}
-
-::ng-deep mat-drawer-content {
-  height: calc(100vh - 3.5rem);
 }

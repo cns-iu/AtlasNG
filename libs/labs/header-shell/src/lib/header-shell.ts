@@ -22,6 +22,7 @@ export interface HeaderShellNavigationItem {
   link?: AnyLinkCommand;
   /** Optional tooltip for navigation toggle items. */
   tooltip?: string;
+  /** Optional icon for the navigation item. */
   icon?: string;
 }
 
