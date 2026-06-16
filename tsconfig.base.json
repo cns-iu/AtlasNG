@@ -24,6 +24,7 @@
     "paths": {
       "@atlasng/analytics": ["./libs/analytics/src/index.ts"],
       "@atlasng/analytics/events": ["./libs/analytics/events/src/index.ts"],
+      "@atlasng/analytics/permissions": ["./libs/analytics/permissions/src/index.ts"],
       "@atlasng/cdk": ["./libs/cdk/src/index.ts"],
       "@atlasng/common": ["./libs/common/src/index.ts"],
       "@atlasng/core": ["./libs/core/src/index.ts"],
