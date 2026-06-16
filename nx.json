@@ -249,6 +249,7 @@
       "cache": true,
       "inputs": ["default", "^production"],
       "options": {
+        "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"],
         "coverage": true,
         "coverageInclude": ["{projectRoot}/**/*.ts"],
         "coverageExclude": [

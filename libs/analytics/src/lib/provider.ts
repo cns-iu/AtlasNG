@@ -1,4 +1,5 @@
 import { EnvironmentProviders, ErrorHandler, makeEnvironmentProviders, Provider } from '@angular/core';
+import { PermissionsManagerConfig, providePermissionsManagerConfig } from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG, AnalyticsConfig } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
 import { AnalyticsErrorHandler } from './features/error-handler';
@@ -15,6 +16,7 @@ export interface AnalyticsFeature {
 export enum AnalyticsFeatureKind {
   CustomBackend,
   DefaultBackend,
+  PermissionsManagerConfiguration,
   GlobalErrorHandler,
 }
 
@@ -44,6 +46,18 @@ export function withDefaultBackend(/* TODO config */): AnalyticsFeature {
     providers: [
       // TODO
     ],
+  };
+}
+
+/**
+ * Configure the permissions manager.
+ *
+ * @param config The permissions manager configuration.
+ */
+export function withPermissionsManagerConfiguration(config: PermissionsManagerConfig): AnalyticsFeature {
+  return {
+    kind: AnalyticsFeatureKind.PermissionsManagerConfiguration,
+    providers: [providePermissionsManagerConfig(config)],
   };
 }
 

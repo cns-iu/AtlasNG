@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "peerDependencies": {
     "@angular/core": "^21.2.6",
+    "@atlasng/core": "0.0.2",
     "type-fest": "^5.5.0"
   },
   "sideEffects": false
