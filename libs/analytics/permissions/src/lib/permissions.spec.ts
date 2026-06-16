@@ -27,6 +27,7 @@ describe('Permissions', () => {
     const enabledStatistics = base.enableCategory(AnalyticsEventCategory.Statistics);
     const disabledNecessary = enabledStatistics.disableCategory(AnalyticsEventCategory.Necessary);
     const toggledPreferences = enabledStatistics.toggleCategory(AnalyticsEventCategory.Preferences);
+    const setMarketingFalse = toggledPreferences.setCategory(AnalyticsEventCategory.Marketing, false);
 
     expect(base.isCategoryEnabled(AnalyticsEventCategory.Statistics)).toBe(false);
     expect(enabledStatistics.isCategoryEnabled(AnalyticsEventCategory.Statistics)).toBe(true);
@@ -34,6 +35,7 @@ describe('Permissions', () => {
     expect(disabledNecessary.isCategoryEnabled(AnalyticsEventCategory.Necessary)).toBe(true);
     expect(toggledPreferences.isCategoryEnabled(AnalyticsEventCategory.Preferences)).toBe(true);
     expect(toggledPreferences.isCategoryEnabled(AnalyticsEventCategory.Statistics)).toBe(true);
+    expect(setMarketingFalse.isCategoryEnabled(AnalyticsEventCategory.Marketing)).toBe(false);
     expect(base.equals(AnalyticsPermissions.DEFAULT)).toBe(true);
     expect(base.equals(enabledStatistics)).toBe(false);
   });

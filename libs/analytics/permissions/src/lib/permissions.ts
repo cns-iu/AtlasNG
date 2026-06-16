@@ -117,6 +117,17 @@ export class AnalyticsPermissions {
   }
 
   /**
+   * Returns a copy with the given category set to the specified enabled state.
+   *
+   * @param category The category to update.
+   * @param enabled The new enabled state for the category.
+   * @returns A new permissions value object.
+   */
+  setCategory(category: AnalyticsEventCategory, enabled: boolean): AnalyticsPermissions {
+    return this.#updateCategories({ [category]: enabled });
+  }
+
+  /**
    * Applies category updates while preserving required permissions.
    *
    * @param updates Partial category updates to apply.
