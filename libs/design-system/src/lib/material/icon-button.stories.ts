@@ -34,7 +34,7 @@ const meta: Meta<CustomizationControls> = {
     icon: {
       control: 'select',
       description: 'The name of the Material icon to display inside the button.',
-      options: ['more_vert', 'apps', 'help', 'tune', 'menu', 'exclamation_mark'],
+      options: ['mail', 'apps', 'help', 'tune', 'menu', 'exclamation_mark'],
     },
     tooltip: {
       control: 'text',
@@ -59,7 +59,7 @@ type Story = StoryObj<CustomizationControls>;
 
 export const Default: Story = {
   args: {
-    icon: 'more_vert',
+    icon: 'mail',
     tooltip: 'Icon button tooltip',
   },
 };

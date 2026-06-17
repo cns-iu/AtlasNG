@@ -1,7 +1,17 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/libs/labs",
+  "assets": [
+    {
+      "input": "src/sass",
+      "glob": "**/*.scss",
+      "output": "sass"
+    },
+    "**/tokens.scss",
+    "**/_tokens.scss"
+  ],
   "lib": {
-    "entryFile": "src/index.ts"
+    "entryFile": "src/index.ts",
+    "styleIncludePaths": ["./src/sass"]
   }
 }

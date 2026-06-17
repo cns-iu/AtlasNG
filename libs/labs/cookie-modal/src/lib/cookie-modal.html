@@ -1,0 +1,77 @@
+<div matDialogTitle class="ang-cookie-modal--header" angEventScope="header">
+  <div class="ang-cookie-modal--logo">
+    @if (logoSrc) {
+      <img [attr.src]="logoSrc" [attr.alt]="logoLabel ?? 'Logo'" />
+    }
+  </div>
+
+  @if (!disableClose) {
+    <button matIconButton matDialogClose angEventScope="close" angTrackClick aria-label="Close cookie consent modal">
+      <mat-icon fontIcon="close" />
+    </button>
+  }
+</div>
+
+<mat-divider />
+
+<mat-tab-group matDialogContent class="ang-cookie-modal--tabs" angEventScope="tabs" [(selectedIndex)]="activeTab">
+  <mat-tab label="Consent" angEventScope="consent-tab">
+    <div class="ang-cookie-modal--content">
+      <p>This website uses cookies and similar technologies.</p>
+      <p>
+        We use anonymized statistics data insights to improve our website. Marketing cookies are needed to watch videos
+        on this website.
+      </p>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Details" angEventScope="details-tab">
+    <ang-cookie-permissions class="ang-cookie-modal--content" [providers]="providers" [(permissions)]="permissions" />
+  </mat-tab>
+</mat-tab-group>
+
+<mat-divider />
+
+<div matDialogActions class="ang-cookie-modal--actions" angEventScope="actions" align="center">
+  <button
+    matButton="filled"
+    angEventScope="allow-necessary"
+    angTrackClick
+    class="ang-cookie-modal--actions-action"
+    [matDialogClose]="allowNecessaryPermissions"
+  >
+    Allow necessary only
+  </button>
+
+  @if (activeTab() === 0) {
+    <button
+      matButton="outlined"
+      angEventScope="customize"
+      angTrackClick
+      class="ang-cookie-modal--actions-action"
+      (click)="activeTab.set(1)"
+    >
+      Customize
+    </button>
+  } @else {
+    <button
+      matButton="filled"
+      angEventScope="allow-selection"
+      angTrackClick
+      class="ang-cookie-modal--actions-action"
+      [matDialogClose]="permissions()"
+    >
+      Allow Selection
+    </button>
+  }
+
+  <button
+    matButton="filled"
+    angEventScope="allow-all"
+    angTrackClick
+    class="ang-cookie-modal--actions-action"
+    [matDialogClose]="allowAllPermissions"
+  >
+    Allow all
+  </button>
+</div>

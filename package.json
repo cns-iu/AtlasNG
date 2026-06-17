@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/monorepo",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "license": "MIT",
   "scripts": {
     "prepare": "husky"
@@ -8,7 +8,6 @@
   "nx": {
     "includedScripts": []
   },
-  "private": true,
   "dependencies": {
     "@angular/cdk": "^21.2.6",
     "@angular/common": "^21.2.6",
@@ -18,6 +17,7 @@
     "@angular/material": "^21.2.6",
     "@angular/platform-browser": "^21.2.6",
     "@angular/router": "^21.2.6",
+    "@angular/youtube-player": "^21.2.6",
     "analytics": "^0.8.19",
     "rxjs": "~7.8.2",
     "type-fest": "^5.5.0"

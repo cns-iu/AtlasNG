@@ -1,0 +1,101 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  @include mat.button-overrides(
+    (
+      text-icon-spacing: 0.125rem,
+      text-label-text-font: token-utils.slot(privacy-font-family, $config),
+      text-label-text-size: token-utils.slot(privacy-font-size, $config),
+      text-label-text-tracking: token-utils.slot(privacy-letter-spacing, $config),
+      text-label-text-weight: token-utils.slot(privacy-font-weight, $config),
+    )
+  );
+
+  display: grid;
+  grid-template-areas:
+    'logo'
+    'socials'
+    'privacy'
+    'copyright';
+  grid-template-columns: 1fr;
+  row-gap: 0.5rem;
+  padding: 2.5rem 1.25rem;
+  background: token-utils.slot(background-color, $config);
+
+  .ang-footer-logo {
+    grid-area: logo;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 3rem;
+  }
+
+  .ang-footer-socials {
+    grid-area: socials;
+    display: grid;
+    grid-template-columns: repeat(4, max-content);
+    justify-content: center;
+    padding: 0.75rem 0.75rem 1rem;
+
+    .ang-footer-social-icon {
+      height: 2.5rem;
+      margin: 0.25rem;
+    }
+  }
+
+  .ang-footer-privacy {
+    grid-area: privacy;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    column-gap: 0.25rem;
+
+    button {
+      text-wrap: nowrap;
+    }
+  }
+
+  .ang-footer-copyright {
+    grid-area: copyright;
+    display: block;
+    text-wrap: nowrap;
+    align-content: center;
+    height: 3rem;
+    text-align: center;
+    color: token-utils.slot(copyright-color, $config);
+    font-family: token-utils.slot(copyright-font, $config);
+    font-size: token-utils.slot(copyright-font-size, $config);
+    font-weight: token-utils.slot(copyright-font-weight, $config);
+    letter-spacing: token-utils.slot(copyright-letter-spacing, $config);
+    line-height: token-utils.slot(copyright-line-height, $config);
+
+    .ang-footer-link {
+      font-weight: 400;
+      text-decoration: none;
+      --ang-text-link-button-color: token-utils.slot(copyright-color, $config);
+    }
+  }
+
+  @media (min-width: 960px) {
+    grid-template-areas:
+      'logo      socials   privacy  '
+      'copyright copyright copyright';
+    grid-template-columns: auto 1fr auto;
+    padding: 2.5rem;
+    row-gap: 0;
+
+    .ang-footer-socials {
+      grid-auto-columns: max-content;
+      grid-auto-flow: column;
+      grid-template-columns: none;
+      padding: 0 0.75rem;
+    }
+
+    .ang-footer-copyright {
+      text-align: left;
+    }
+  }
+}

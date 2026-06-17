@@ -1,9 +1,16 @@
+import { ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { CoreEvents } from '@atlasng/analytics/events';
+import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
-import { provideAnalytics, withCustomBackend, withDefaultBackend, withGlobalErrorHandler } from './provider';
-import { ErrorHandler } from '@angular/core';
-import { CoreEvents } from '@atlasng/analytics/events';
+import {
+  provideAnalytics,
+  withCustomBackend,
+  withDefaultBackend,
+  withGlobalErrorHandler,
+  withPermissionsConfig,
+} from './provider';
 
 describe('provideAnalytics', () => {
   function enableProdMode() {
@@ -104,5 +111,27 @@ describe('provideAnalytics', () => {
 
     expect(setup).not.toThrow();
     restoreDevMode();
+  });
+
+  it('should configure the permissions manager', () => {
+    const backend = createMockBackend();
+    const providers = provideAnalytics(
+      {},
+      withCustomBackend(() => backend),
+      withPermissionsConfig({
+        changeEventName: false,
+        storage: false,
+        storageKey: 'custom-permissions-key',
+        storageEvents: false,
+      }),
+    );
+
+    TestBed.configureTestingModule({ providers: [providers] });
+
+    const manager = TestBed.inject(AnalyticsPermissionsManager);
+    expect(manager.config.changeEventName).toBe(false);
+    expect(manager.config.storage).toBe(false);
+    expect(manager.config.storageKey).toBe('custom-permissions-key');
+    expect(manager.config.storageEvents).toBe(false);
   });
 });
