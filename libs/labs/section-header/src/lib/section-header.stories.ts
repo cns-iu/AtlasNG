@@ -8,7 +8,7 @@ interface ExtraArgs {
 
 const meta: Meta<SectionHeader & ExtraArgs> = {
   component: SectionHeader,
-  title: 'Design System/Section Header',
+  title: 'Labs/Section Header',
   parameters: {
     design: {
       type: 'figma',

@@ -44,11 +44,11 @@
       ],
       "@atlasng/design-system/indicators/no-results": ["./libs/design-system/indicators/no-results/src/index.ts"],
       "@atlasng/design-system/indicators/results": ["./libs/design-system/indicators/results/src/index.ts"],
-      "@atlasng/design-system/section-header": ["./libs/design-system/section-header/src/index.ts"],
       "@atlasng/design-system/text-link": ["./libs/design-system/text-link/src/index.ts"],
       "@atlasng/labs": ["./libs/labs/src/index.ts"],
       "@atlasng/labs/cookie-modal": ["./libs/labs/cookie-modal/src/index.ts"],
       "@atlasng/labs/footer": ["./libs/labs/footer/src/index.ts"],
+      "@atlasng/labs/section-header": ["./libs/design-system/section-header/src/index.ts"],
       "@atlasng/labs/youtube-player": ["./libs/labs/youtube-player/src/index.ts"]
     }
   },

@@ -1,6 +1,6 @@
 @if (anchor()) {
   <span class="ang-section-header-link-container">
-    <a mat-icon-button class="ang-section-header-link" [attr.aria-labelledby]="headerId" [attr.href]="`#${anchor()}`">
+    <a mat-icon-button class="ang-section-header-link" [attr.aria-labelledby]="headerId" [angAnyLink]="anchor()">
       <mat-icon class="ang-section-header-icon" fontIcon="link" />
     </a>
   </span>
