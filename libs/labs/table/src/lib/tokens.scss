@@ -2,7 +2,14 @@
 
 $config: (
   namespace: 'table',
-  tokens: (),
+  tokens: (
+    background-color: token-utils.sys-token(background),
+    vertical-divider-color: token-utils.sys-token(outline),
+    row-alternate-color: token-utils.sys-token(surface-container-low),
+    row-outline-color: token-utils.sys-token(outline-variant),
+    header-background-color: token-utils.sys-token(surface-variant),
+    item-text-color: token-utils.sys-token(on-surface-variant),
+  ),
 );
 
 @mixin overrides($overrides) {
