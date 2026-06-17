@@ -49,6 +49,7 @@
       "@atlasng/labs/cookie-modal": ["./libs/labs/cookie-modal/src/index.ts"],
       "@atlasng/labs/footer": ["./libs/labs/footer/src/index.ts"],
       "@atlasng/labs/table": ["./libs/labs/table/src/index.ts"],
+      "@atlasng/labs/section-header": ["./libs/labs/section-header/src/index.ts"],
       "@atlasng/labs/youtube-player": ["./libs/labs/youtube-player/src/index.ts"]
     }
   },
