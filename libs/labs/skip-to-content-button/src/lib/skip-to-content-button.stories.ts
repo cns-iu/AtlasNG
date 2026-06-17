@@ -5,6 +5,12 @@ import { SkipToContentButton } from './skip-to-content-button';
 const meta: Meta<SkipToContentButton> = {
   component: SkipToContentButton,
   title: 'Labs/Skip to Content Button',
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=6668-345',
+    },
+  },
   args: {
     anchorId: 'main-content',
     label: 'Skip to main content',

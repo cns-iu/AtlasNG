@@ -24,6 +24,7 @@
       text-label-text-size: token-utils.slot(font-size, $config),
       text-label-text-weight: token-utils.slot(font-weight, $config),
       text-label-text-tracking: token-utils.slot(tracking, $config),
+      text-state-layer-color: transparent,
     )
   );
 
@@ -33,6 +34,7 @@
     left: 50%;
     opacity: 0;
     clip-path: inset(50%);
+    text-wrap: nowrap;
   }
 
   &:active,
