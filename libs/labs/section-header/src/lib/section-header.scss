@@ -1,0 +1,96 @@
+@use 'sass:map';
+@use 'internal/token-utils';
+
+$level-configs: (
+  1: (
+    font: var(token-utils.sys-token(display-medium)),
+    link-offset: 7px,
+    margin: 0.5rem,
+  ),
+  2: (
+    font: var(token-utils.sys-token(display-small)),
+    link-offset: 2px,
+    margin: 0.375rem,
+  ),
+  3: (
+    font: var(token-utils.sys-token(headline-large)),
+    link-offset: 0,
+    margin: 0.5rem,
+  ),
+  4: (
+    font: var(token-utils.sys-token(headline-medium)),
+    link-offset: -2px,
+    margin: 0.25rem,
+  ),
+  5: (
+    font: var(token-utils.sys-token(headline-small)),
+    link-offset: -5px,
+    margin: 0.25rem,
+  ),
+  6: (
+    font: var(token-utils.sys-token(title-large)),
+    link-offset: -6px,
+    margin: 0.25rem,
+  ),
+);
+
+$color-config: (
+  divider-color: var(token-utils.sys-token(outline)),
+  text-color: var(token-utils.sys-token(on-background)),
+);
+
+:host {
+  display: block;
+  margin: 0;
+
+  .ang-section-header-link-container {
+    display: none;
+    vertical-align: top;
+    height: 0;
+    line-height: 1;
+
+    @media (min-width: 640px) {
+      display: inline-block;
+    }
+
+    .ang-section-header-link {
+      position: relative;
+      margin-left: calc(-2.5rem - 5px);
+
+      .ang-section-header-icon {
+        visibility: hidden;
+      }
+
+      &:focus-visible .ang-section-header-icon {
+        visibility: visible;
+      }
+    }
+  }
+
+  .ang-section-header-content {
+    display: inline-block;
+    color: map.get($color-config, text-color);
+  }
+
+  &:hover .ang-section-header-link-container .ang-section-header-link .ang-section-header-icon {
+    visibility: visible;
+  }
+
+  mat-divider {
+    border-color: map.get($color-config, divider-color);
+  }
+
+  @each $level, $config in $level-configs {
+    &h#{$level} {
+      font: map.get($config, font);
+
+      .ang-section-header-link-container .ang-section-header-link {
+        top: map.get($config, link-offset);
+      }
+
+      mat-divider {
+        margin-top: map.get($config, margin);
+      }
+    }
+  }
+}
