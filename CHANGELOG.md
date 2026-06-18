@@ -12,7 +12,6 @@
 - Daniel Bolin @axdanbol
 - Edward Lu @edlu77
 
-
 ## 0.0.2 (2026-06-12)
 
 ### 🚀 Features
