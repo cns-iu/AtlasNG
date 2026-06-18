@@ -1,0 +1,84 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use '../tokens' as *;
+
+:host {
+  @include mat.button-overrides(
+    (
+      text-container-height: 3rem,
+      text-icon-spacing: 1rem,
+      text-label-text-color: token-utils.slot(menu-button-text-color, $config),
+      text-state-layer-color: token-utils.slot(menu-state-layer-color, $config),
+    )
+  );
+
+  @include mat.icon-overrides(
+    (
+      color: token-utils.slot(icon-color, $config),
+    )
+  );
+
+  @include mat.icon-button-overrides(
+    (
+      icon-color: token-utils.slot(icon-color, $config),
+      state-layer-color: token-utils.slot(icon-color, $config),
+    )
+  );
+
+  .ang-navigation-menu {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+    background-color: var(--ang-drawer-background-color);
+  }
+
+  .ang-navigation-menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+    z-index: 0;
+    padding-bottom: 5rem;
+  }
+
+  .ang-navigation-menu-link {
+    width: 100%;
+    justify-content: flex-start;
+
+    &:active {
+      @include mat.button-overrides(
+        (
+          text-state-layer-color: token-utils.slot(menu-state-layer-color-active, $config),
+          text-pressed-state-layer-opacity: 1,
+        )
+      );
+    }
+  }
+
+  .ang-navigation-menu-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  .ang-navigation-menu-social {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid token-utils.slot(divider-color, $config);
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    background-color: inherit;
+
+    .ang-footer-social-icon {
+      height: 2.5rem;
+      width: 2.5rem;
+      min-width: 0;
+    }
+  }
+}
