@@ -19,6 +19,7 @@
     "@angular/router": "^21.2.6",
     "@angular/youtube-player": "^21.2.6",
     "analytics": "^0.8.19",
+    "qs": "^6.15.2",
     "rxjs": "~7.8.2",
     "type-fest": "^5.5.0"
   },
