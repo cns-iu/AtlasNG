@@ -13,6 +13,8 @@ import {
 } from './provider';
 
 describe('provideAnalytics', () => {
+  const DEFAULT_BACKEND_CONFIG = { endpoint: '' };
+
   function enableProdMode() {
     const global = globalThis as Record<string, unknown>;
     const originalNgDevMode = global['ngDevMode'];
@@ -72,6 +74,18 @@ describe('provideAnalytics', () => {
     expect(injectedBackend).toBe(backend);
   });
 
+  it('should provide the default backend', () => {
+    const providers = provideAnalytics({ appName: 'DefaultBackendTest' }, withDefaultBackend(DEFAULT_BACKEND_CONFIG));
+    TestBed.configureTestingModule({ providers: [providers] });
+
+    const backend = TestBed.inject(ANALYTICS_BACKEND);
+    expect(backend).toBeDefined();
+    expect(backend.page).toBeDefined();
+    expect(backend.track).toBeDefined();
+    expect(typeof backend.page).toBe('function');
+    expect(typeof backend.track).toBe('function');
+  });
+
   it.todo('should provide the default backend');
 
   it('should throw if multiple backends are provided', () => {
@@ -92,7 +106,7 @@ describe('provideAnalytics', () => {
     const setup = () =>
       provideAnalytics(
         {},
-        withDefaultBackend(),
+        withDefaultBackend(DEFAULT_BACKEND_CONFIG),
         withCustomBackend(() => backend),
       );
 

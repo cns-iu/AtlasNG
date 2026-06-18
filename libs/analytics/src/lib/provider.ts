@@ -5,6 +5,7 @@ import {
 } from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG, AnalyticsConfig } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
+import { DefaultAnalyticsBackendConfig, defaultBackendFactory } from './default-backend/default-backend';
 import { AnalyticsErrorHandler } from './features/error-handler';
 
 /** Represents a feature that can be added to the analytics configuration. */
@@ -43,11 +44,14 @@ export function withCustomBackend(backendFactory: () => AnalyticsBackend): Analy
 /**
  * Add the default analytics backend provided by this library.
  */
-export function withDefaultBackend(/* TODO config */): AnalyticsFeature {
+export function withDefaultBackend(config: DefaultAnalyticsBackendConfig): AnalyticsFeature {
   return {
     kind: AnalyticsFeatureKind.DefaultBackend,
     providers: [
-      // TODO
+      {
+        provide: ANALYTICS_BACKEND,
+        useFactory: () => defaultBackendFactory(config),
+      },
     ],
   };
 }

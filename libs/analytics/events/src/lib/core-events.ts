@@ -32,6 +32,7 @@ export namespace CoreEvents {
   export type Error = typeof CoreEvents.Error;
   export type Focus = typeof CoreEvents.Focus;
   export type Hover = typeof CoreEvents.Hover;
+  export type Identify = typeof CoreEvents.Identify;
   export type Input = typeof CoreEvents.Input;
   export type Keyboard = typeof CoreEvents.Keyboard;
   export type PageView = typeof CoreEvents.PageView;
@@ -48,6 +49,7 @@ export const CoreEvents = {
   Error: createAnalyticsEvent<ErrorAnalyticsEventPayload>('error', AnalyticsEventCategory.Necessary),
   Focus: createAnalyticsEvent('focus', AnalyticsEventCategory.Statistics),
   Hover: createAnalyticsEvent('hover', AnalyticsEventCategory.Statistics),
+  Identify: createAnalyticsEvent('identify', AnalyticsEventCategory.Marketing),
   Input: createAnalyticsEvent('input', AnalyticsEventCategory.Statistics),
   Keyboard: createAnalyticsEvent('keyboard', AnalyticsEventCategory.Statistics),
   PageView: createAnalyticsEvent<PageViewAnalyticsEventPayload>('pageView', AnalyticsEventCategory.Statistics),

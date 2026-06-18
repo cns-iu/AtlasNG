@@ -26,6 +26,7 @@ export {
   withCustomBackend,
   withDefaultBackend,
   withGlobalErrorHandler,
+  withPermissionsConfig,
   type AnalyticsFeature,
 } from './lib/provider';
 export { EVENT_SCOPE, EventScope, provideEventScope, type IEventScope } from './lib/scope';
