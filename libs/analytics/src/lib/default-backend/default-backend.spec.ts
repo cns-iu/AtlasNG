@@ -14,7 +14,10 @@ vi.mock('analytics', () => ({
 }));
 
 describe('defaultBackendFactory', () => {
-  function createBackend(config: DefaultAnalyticsBackendConfig, analyticsConfig?: { appName?: string; appVersion?: string }) {
+  function createBackend(
+    config: DefaultAnalyticsBackendConfig,
+    analyticsConfig?: { appName?: string; appVersion?: string },
+  ) {
     TestBed.configureTestingModule({
       providers: [
         {

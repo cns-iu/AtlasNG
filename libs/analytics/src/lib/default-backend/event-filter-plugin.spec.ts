@@ -55,7 +55,9 @@ describe('eventFilterPlugin', () => {
 
   it('should throw when abort callback is missing', () => {
     const { plugin, config } = createPlugin();
-    const trackStart = plugin['trackStart'] as ((args: TrackMethodArgs<EventFilterPluginConfig>) => unknown) | undefined;
+    const trackStart = plugin['trackStart'] as
+      | ((args: TrackMethodArgs<EventFilterPluginConfig>) => unknown)
+      | undefined;
     const args = {
       ...createBaseArgs(config),
       payload: {
@@ -65,14 +67,14 @@ describe('eventFilterPlugin', () => {
       },
     } as TrackMethodArgs<EventFilterPluginConfig>;
 
-    expect(() => trackStart?.(args)).toThrow(
-      'EventFilterPlugin requires analytics backend to support aborting events',
-    );
+    expect(() => trackStart?.(args)).toThrow('EventFilterPlugin requires analytics backend to support aborting events');
   });
 
   it('should abort when tracking is disabled on the server', () => {
     const { plugin, config } = createPlugin({ platformId: 'server' });
-    const trackStart = plugin['trackStart'] as ((args: TrackMethodArgs<EventFilterPluginConfig>) => unknown) | undefined;
+    const trackStart = plugin['trackStart'] as
+      | ((args: TrackMethodArgs<EventFilterPluginConfig>) => unknown)
+      | undefined;
     const aborted = Symbol('aborted');
     const abort = vi.fn().mockReturnValue(aborted);
 
@@ -94,7 +96,9 @@ describe('eventFilterPlugin', () => {
   it('should allow tracking on the server when explicitly enabled', () => {
     const config = { enableServerSideTracking: true };
     const { plugin } = createPlugin({ platformId: 'server', config });
-    const trackStart = plugin['trackStart'] as ((args: TrackMethodArgs<EventFilterPluginConfig>) => unknown) | undefined;
+    const trackStart = plugin['trackStart'] as
+      | ((args: TrackMethodArgs<EventFilterPluginConfig>) => unknown)
+      | undefined;
     const abort = vi.fn();
 
     const args = {
@@ -114,7 +118,9 @@ describe('eventFilterPlugin', () => {
 
   it('should abort page events when permissions disable the category', () => {
     const { plugin, config } = createPlugin({ permissions: AnalyticsPermissions.DEFAULT });
-    const pageStart = plugin['pageStart'] as ((args: AnyPluginMethodArgs<EventFilterPluginConfig>) => unknown) | undefined;
+    const pageStart = plugin['pageStart'] as
+      | ((args: AnyPluginMethodArgs<EventFilterPluginConfig>) => unknown)
+      | undefined;
     const aborted = Symbol('aborted');
     const abort = vi.fn().mockReturnValue(aborted);
 
@@ -156,7 +162,9 @@ describe('eventFilterPlugin', () => {
 
   it('should allow track events when permissions enable the category', () => {
     const { plugin, config } = createPlugin({ permissions: AnalyticsPermissions.FULL });
-    const trackStart = plugin['trackStart'] as ((args: TrackMethodArgs<EventFilterPluginConfig>) => unknown) | undefined;
+    const trackStart = plugin['trackStart'] as
+      | ((args: TrackMethodArgs<EventFilterPluginConfig>) => unknown)
+      | undefined;
     const abort = vi.fn();
 
     const args = {
