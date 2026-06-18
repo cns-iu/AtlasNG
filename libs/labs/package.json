@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/labs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "sideEffects": false,
   "exports": {
     ".": {
@@ -13,9 +13,9 @@
     "@angular/core": "^21.2.6",
     "@angular/material": "^21.2.6",
     "@angular/youtube-player": "^21.2.6",
-    "@atlasng/analytics": "0.0.2",
-    "@atlasng/common": "0.0.2",
-    "@atlasng/design-system": "0.0.2"
+    "@atlasng/analytics": "0.0.3",
+    "@atlasng/common": "0.0.3",
+    "@atlasng/design-system": "0.0.3"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",
