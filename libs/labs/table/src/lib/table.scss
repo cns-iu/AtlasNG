@@ -19,9 +19,7 @@
   );
 
   .align-right {
-    ::ng-deep .mat-sort-header-container {
-      justify-content: flex-end;
-    }
+    text-align: right;
   }
 
   th:not(:first-child),
@@ -43,7 +41,16 @@
 
     th {
       border-bottom: 1px solid token-utils.slot(vertical-divider-color, $config);
+    }
+
+    th,
+    .footer {
       background-color: token-utils.slot(header-background-color, $config);
+    }
+
+    .footer {
+      color: token-utils.slot(footer-text-color, $config);
+      border-top: 1px solid token-utils.slot(vertical-divider-color, $config);
     }
   }
 

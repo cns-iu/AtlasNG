@@ -100,6 +100,7 @@ const columns: TableColumn[] = [
   {
     column: 'name',
     label: 'Name',
+    sticky: true,
   },
   {
     column: 'symbol',
@@ -108,7 +109,7 @@ const columns: TableColumn[] = [
   {
     column: 'weight',
     label: 'Weight',
-    align: 'right',
+    numeric: true,
   },
 ];
 
@@ -126,6 +127,7 @@ const meta: Meta<Table> = {
     columns: columns,
     enableSort: true,
     stickyHeader: true,
+    totalsFooter: true,
   },
   argTypes: {
     variant: {
@@ -136,6 +138,9 @@ const meta: Meta<Table> = {
       control: 'boolean',
     },
     stickyHeader: {
+      control: 'boolean',
+    },
+    totalsFooter: {
       control: 'boolean',
     },
   },

@@ -15,7 +15,8 @@ export type TableCell = {
 export interface TableColumn {
   column: string;
   label: string;
-  align?: 'left' | 'center' | 'right';
+  sticky?: boolean;
+  numeric?: boolean;
 }
 
 @Component({
@@ -35,16 +36,18 @@ export class Table<T = TableRow> {
   /** Table variant */
   readonly variant = input<TableVariant>('alternating');
 
-  /** Enables sorting */
-  readonly enableSort = input<boolean>(false);
-
   /** Table data rows */
   readonly rows = input<T[]>([]);
 
   /** Columns in table */
   readonly columns = input<TableColumn[]>([]);
 
+  /** Enables sorting */
+  readonly enableSort = input<boolean>(false);
+
   readonly stickyHeader = input<boolean>(true);
+
+  readonly totalsFooter = input<boolean>(true);
 
   readonly columnIds = computed(() => this.columns().map((col) => col.column));
 
@@ -60,5 +63,11 @@ export class Table<T = TableRow> {
     effect(() => {
       this.dataSource.sort = this.sort();
     });
+  }
+
+  getTotal(col: string): number {
+    return this.rows()
+      .map((row) => row[col as keyof typeof row])
+      .reduce((acc, value) => acc + (typeof value === 'number' ? value : 0), 0);
   }
 }

@@ -1,7 +1,7 @@
 <table mat-table matSort aria-label="Table with sort function" [dataSource]="dataSource">
-  @for (col of columns(); track col.column) {
-    <ng-container [matColumnDef]="col.column">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header [class.align-right]="col.align === 'right'">
+  @for (col of columns(); track $index) {
+    <ng-container [matColumnDef]="col.column" [sticky]="col.sticky">
+      <th *matHeaderCellDef mat-header-cell mat-sort-header [class.align-right]="col.numeric">
         {{ col.label }}
       </th>
       <td *matCellDef="let element" mat-cell>
@@ -19,9 +19,15 @@
           </a>
         }
       </td>
+      @if (totalsFooter()) {
+        <td *matFooterCellDef mat-footer-cell class="footer" [class.align-right]="col.numeric">
+          {{ col.numeric ? getTotal(col.column) : $first ? 'Total' : '' }}
+        </td>
+      }
     </ng-container>
   }
 
   <tr *matHeaderRowDef="columnIds(); sticky: stickyHeader()" mat-header-row></tr>
   <tr *matRowDef="let row; columns: columnIds()" mat-row></tr>
+  <tr *matFooterRowDef="columnIds(); sticky: true" mat-footer-row></tr>
 </table>
