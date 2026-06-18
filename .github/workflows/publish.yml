@@ -1,6 +1,7 @@
 name: Publish
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - v*.*.*
@@ -27,6 +28,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+          registry-url: https://registry.npmjs.org/
           package-manager-cache: false
 
       - name: Install dependencies
@@ -34,6 +36,11 @@ jobs:
 
       - name: Print Environment Info
         run: npx nx report
+
+      - name: Check npm auth state
+        run: |
+          npm whoami || true
+          npm config get registry
 
       - name: Build packages
         run: npx nx run-many --target=build --projects=tag:library
