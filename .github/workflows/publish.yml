@@ -5,6 +5,9 @@ on:
     tags:
       - v*.*.*
 
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
 jobs:
   publish:
     name: Publish
@@ -40,5 +43,4 @@ jobs:
         run: npx nx release publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
