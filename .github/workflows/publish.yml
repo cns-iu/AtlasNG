@@ -33,6 +33,9 @@ jobs:
       - name: Print Environment Info
         run: npx nx report
 
+      - name: Build packages
+        run: npx nx run-many --target=build --projects=tag:library
+
       - name: Publish packages
         run: npx nx release publish
         env:
