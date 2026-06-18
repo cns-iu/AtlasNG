@@ -12,12 +12,12 @@ export type TableCell = {
   link?: string;
 };
 
-export interface TableColumn {
+export type TableColumn = {
   column: string;
   label: string;
   sticky?: boolean;
   numeric?: boolean;
-}
+};
 
 @Component({
   selector: 'ang-table',
@@ -45,10 +45,13 @@ export class Table<T = TableRow> {
   /** Enables sorting */
   readonly enableSort = input<boolean>(false);
 
+  /** Makes header sticky */
   readonly stickyHeader = input<boolean>(true);
 
+  /** Enables totals footer */
   readonly totalsFooter = input<boolean>(true);
 
+  /** Returns the IDs of all columns */
   readonly columnIds = computed(() => this.columns().map((col) => col.column));
 
   /** Mat sort element */

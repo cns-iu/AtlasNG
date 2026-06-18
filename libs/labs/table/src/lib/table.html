@@ -1,4 +1,10 @@
-<table mat-table matSort aria-label="Table with sort function" [dataSource]="dataSource">
+<table
+  mat-table
+  matSort
+  aria-label="Table with sort function"
+  [dataSource]="dataSource"
+  [matSortDisabled]="!enableSort()"
+>
   @for (col of columns(); track $index) {
     <ng-container [matColumnDef]="col.column" [sticky]="col.sticky">
       <th *matHeaderCellDef mat-header-cell mat-sort-header [class.align-right]="col.numeric">
@@ -29,5 +35,7 @@
 
   <tr *matHeaderRowDef="columnIds(); sticky: stickyHeader()" mat-header-row></tr>
   <tr *matRowDef="let row; columns: columnIds()" mat-row></tr>
-  <tr *matFooterRowDef="columnIds(); sticky: true" mat-footer-row></tr>
+  @if (totalsFooter()) {
+    <tr *matFooterRowDef="columnIds(); sticky: true" mat-footer-row></tr>
+  }
 </table>
