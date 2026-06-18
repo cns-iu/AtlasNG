@@ -1,3 +1,17 @@
+## 0.0.3 (2026-06-18)
+
+### 🚀 Features
+
+- **analytics:** add permissions management ([#75](https://github.com/cns-iu/AtlasNG/pull/75))
+- **analytics:** analytics default backend ([#79](https://github.com/cns-iu/AtlasNG/pull/79))
+- **labs:** add footer ([#68](https://github.com/cns-iu/AtlasNG/pull/68))
+- **labs:** header shell ([#74](https://github.com/cns-iu/AtlasNG/pull/74))
+
+### ❤️ Thank You
+
+- Daniel Bolin @axdanbol
+- Edward Lu @edlu77
+
 ## 0.0.2 (2026-06-12)
 
 ### 🚀 Features

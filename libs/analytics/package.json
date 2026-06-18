@@ -1,10 +1,26 @@
 {
   "name": "@atlasng/analytics",
-  "version": "0.0.2",
+  "version": "0.0.3",
+  "description": "Analytics library for AtlasNG",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cns-iu/AtlasNG"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@angular/core": "^21.2.6",
-    "@atlasng/core": "0.0.2",
-    "type-fest": "^5.5.0"
+    "@angular/common": "^21.2.6",
+    "@atlasng/core": "0.0.3",
+    "analytics": "^0.8.19",
+    "type-fest": "^5.5.0",
+    "qs": "^6.15.2"
   },
   "sideEffects": false
 }

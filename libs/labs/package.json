@@ -1,7 +1,19 @@
 {
   "name": "@atlasng/labs",
-  "version": "0.0.2",
-  "sideEffects": false,
+  "version": "0.0.3",
+  "description": "Labs library for AtlasNG",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cns-iu/AtlasNG"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "sass": "./sass/_index.scss"
@@ -13,14 +25,15 @@
     "@angular/core": "^21.2.6",
     "@angular/material": "^21.2.6",
     "@angular/youtube-player": "^21.2.6",
-    "@atlasng/analytics": "0.0.2",
-    "@atlasng/common": "0.0.2",
-    "@atlasng/design-system": "0.0.2"
+    "@atlasng/analytics": "0.0.3",
+    "@atlasng/common": "0.0.3",
+    "@atlasng/design-system": "0.0.3"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",
     "@storybook/addon-designs": "*",
     "@storybook/addon-docs": "*",
     "@storybook/addon-themes": "*"
-  }
+  },
+  "sideEffects": false
 }

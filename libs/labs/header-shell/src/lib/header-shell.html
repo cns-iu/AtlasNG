@@ -1,0 +1,58 @@
+<ang-skip-to-content-button anchorId="main-content" label="Skip to main content" />
+<header class="ang-header-shell">
+  <div class="ang-header-shell-left">
+    @if (hasLocalNavigation()) {
+      <button
+        matIconButton
+        angTrackClick
+        type="button"
+        class="ang-header-shell-menu-button"
+        [matTooltip]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
+        [attr.aria-label]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
+        (click)="localNavigationToggle.emit()"
+      >
+        <mat-icon [fontIcon]="localNavigationIcon()" />
+      </button>
+    }
+    <a
+      class="ang-header-shell-logo"
+      aria-label="Go to homepage"
+      target="_blank"
+      matTooltip="Homepage"
+      [angAnyLink]="logoLink()"
+    >
+      <img alt="App Logo" [src]="logoUrl()" />
+    </a>
+    <mat-divider vertical class="ang-header-shell-divider" />
+  </div>
+
+  <nav class="ang-header-shell-desktop-nav" aria-label="Primary navigation">
+    @for (item of navigationItems(); track item.id) {
+      <ang-navigation-button [link]="item.link">
+        {{ item.label }}
+      </ang-navigation-button>
+    }
+  </nav>
+
+  <div class="ang-header-shell-right">
+    @if (helpLink()) {
+      <div class="ang-header-shell-right-fixed">
+        <ang-help-button [link]="helpLink()" />
+      </div>
+    }
+
+    <div class="ang-header-shell-apps">
+      <button
+        matIconButton
+        angTrackClick
+        type="button"
+        class="ang-header-shell-icon-button"
+        matTooltip="Apps"
+        [attr.aria-label]="'Open app switcher'"
+        (click)="appsMenuToggle.emit()"
+      >
+        <mat-icon fontIcon="apps" />
+      </button>
+    </div>
+  </div>
+</header>

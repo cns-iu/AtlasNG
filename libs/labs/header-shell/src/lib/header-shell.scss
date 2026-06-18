@@ -1,0 +1,97 @@
+@use '@angular/material' as mat;
+@use 'internal/breakpoints';
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: block;
+  background-color: token-utils.slot(container-color, $config);
+  backdrop-filter: blur(10rem);
+
+  @include mat.icon-overrides(
+    (
+      color: token-utils.slot(icon-color, $config),
+    )
+  );
+
+  @include mat.divider-overrides(
+    (
+      color: token-utils.slot(divider-color, $config),
+    )
+  );
+
+  .ang-header-shell {
+    display: flex;
+    min-height: 3.5rem;
+    min-width: 20rem;
+    padding: 0 0.25rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ang-header-shell-left,
+  .ang-header-shell-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .ang-header-shell-menu-button {
+    margin: 0.25rem;
+  }
+
+  .ang-header-shell-logo {
+    min-width: 3.5rem;
+    height: 3rem;
+    border-radius: token-utils.slot(outline-radius, $config);
+    background-color: token-utils.slot(logo-background-color, $config);
+    color: token-utils.slot(logo-color, $config);
+  }
+
+  .ang-header-shell-divider {
+    display: none;
+    height: 2.5rem;
+    margin: 0 1.25rem;
+  }
+
+  .ang-header-shell-desktop-nav {
+    display: none;
+  }
+
+  .ang-header-shell-right {
+    flex-shrink: 0;
+  }
+
+  .ang-header-shell-right-fixed,
+  .ang-header-shell-apps {
+    display: flex;
+    align-items: center;
+  }
+
+  .ang-header-shell-icon-button:focus-visible,
+  .ang-header-shell-logo:focus-visible {
+    outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
+  }
+
+  @include breakpoints.breakpoint(medium, large, x-large) {
+    .ang-header-shell {
+      padding: 0 0.5rem;
+    }
+    .ang-header-shell-menu-button {
+      display: none;
+    }
+    .ang-header-shell-divider {
+      display: unset;
+    }
+
+    .ang-header-shell-desktop-nav {
+      min-width: 0;
+      display: flex;
+      flex: 1;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+}

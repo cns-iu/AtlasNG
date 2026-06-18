@@ -1,0 +1,25 @@
+@use 'internal/sass-utils';
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'header-shell',
+  tokens: (
+    drawer-border-color: token-utils.sys-token(outline),
+    container-color: sass-utils.color-with-opacity(token-utils.sys-token(surface-variant), 80%),
+    logo-background-color: token-utils.sys-token(surface-container-high),
+    logo-color: token-utils.sys-token(on-surface),
+    icon-color: token-utils.sys-token(on-surface-variant),
+    focus-outline-color: token-utils.sys-token(on-surface),
+    outline-radius: token-utils.sys-token(corner-small),
+    divider-color: token-utils.sys-token(outline),
+    menu-button-text-color: token-utils.sys-token(on-surface),
+    menu-container-color: token-utils.sys-token(surface-container),
+    menu-container-color-right: token-utils.sys-token(surface-variant),
+    menu-state-layer-color: token-utils.sys-token(on-surface),
+    menu-state-layer-color-active: token-utils.sys-token(primary-container),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

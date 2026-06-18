@@ -1,0 +1,24 @@
+<div class="ang-navigation-menu">
+  <mat-accordion displayMode="flat" class="ang-navigation-menu-links">
+    @for (item of navigationItems(); track item.id) {
+      <a matButton class="ang-navigation-menu-link" [angAnyLink]="item.link">
+        @if (item.icon) {
+          <mat-icon class="ang-navigation-menu-icon" [fontIcon]="item.icon" />
+        }
+        <span class="ang-navigation-menu-label">{{ item.label }}</span>
+      </a>
+    }
+  </mat-accordion>
+
+  <div class="ang-navigation-menu-social" aria-label="Social media links">
+    @for (id of socialMediaIds(); track id) {
+      <ang-social-media-button class="ang-footer-social-icon" [id]="id" />
+    }
+    @if (email()) {
+      <ang-social-media-button
+        class="ang-footer-social-icon"
+        [def]="{ id: 'mail', label: 'Email', url: `mailto:${email()}`, fontIcon: 'mail' }"
+      />
+    }
+  </div>
+</div>
