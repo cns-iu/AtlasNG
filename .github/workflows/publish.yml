@@ -37,15 +37,10 @@ jobs:
       - name: Print Environment Info
         run: npx nx report
 
-      - name: Check npm auth state
-        run: |
-          npm whoami || true
-          npm config get registry
-
       - name: Build packages
         run: npx nx run-many --target=build --projects=tag:library
 
       - name: Publish packages
-        run: npx nx release publish
+        run: npx nx release publish --access=public
         env:
           NPM_CONFIG_PROVENANCE: true

@@ -158,8 +158,7 @@
     "nx-release-publish": {
       "executor": "@nx/js:release-publish",
       "options": {
-        "packageRoot": "{workspaceRoot}/dist/{projectRoot}",
-        "access": "public"
+        "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
       }
     },
     "pre-build-storybook": {
