@@ -1,6 +1,19 @@
 {
   "name": "@atlasng/common",
   "version": "0.0.3",
+  "description": "Common library for AtlasNG",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cns-iu/AtlasNG"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@angular/common": "^21.2.6",
     "@angular/core": "^21.2.6",

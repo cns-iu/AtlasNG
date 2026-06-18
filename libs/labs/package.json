@@ -1,7 +1,19 @@
 {
   "name": "@atlasng/labs",
   "version": "0.0.3",
-  "sideEffects": false,
+  "description": "Labs library for AtlasNG",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cns-iu/AtlasNG"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "sass": "./sass/_index.scss"
@@ -22,5 +34,6 @@
     "@storybook/addon-designs": "*",
     "@storybook/addon-docs": "*",
     "@storybook/addon-themes": "*"
-  }
+  },
+  "sideEffects": false
 }
