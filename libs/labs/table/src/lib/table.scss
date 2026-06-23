@@ -1,0 +1,81 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: block;
+  overflow: scroll;
+  max-height: 35rem;
+  border-radius: 0.5rem;
+
+  @include mat.table-overrides(
+    (
+      background-color: transparent,
+      row-item-outline-color: transparent,
+      row-item-label-text-color: token-utils.slot(item-text-color, $config),
+      header-container-height: 2.75rem,
+      row-item-container-height: 2.5rem,
+    )
+  );
+
+  .align-right {
+    text-align: right;
+  }
+
+  th:not(:first-child),
+  td:not(:first-child) {
+    border-left-width: 1px;
+    border-left-style: solid;
+    border-left-color: token-utils.slot(row-outline-color, $config);
+  }
+
+  &.ang-table-variant-alternating,
+  &.ang-table-variant-divider {
+    border: 1px solid token-utils.slot(vertical-divider-color, $config);
+
+    @include mat.table-overrides(
+      (
+        background-color: token-utils.slot(background-color, $config),
+      )
+    );
+
+    th {
+      border-bottom: 1px solid token-utils.slot(vertical-divider-color, $config);
+    }
+
+    th,
+    .footer {
+      background-color: token-utils.slot(header-background-color, $config);
+    }
+
+    .footer {
+      color: token-utils.slot(footer-text-color, $config);
+      border-top: 1px solid token-utils.slot(vertical-divider-color, $config);
+    }
+  }
+
+  &.ang-table-variant-alternating {
+    @include mat.table-overrides(
+      (
+        row-item-outline-color: token-utils.slot(row-outline-color, $config),
+      )
+    );
+
+    th:not(:first-child),
+    td:not(:first-child) {
+      border-left-color: token-utils.slot(vertical-divider-color, $config);
+    }
+
+    ::ng-deep tbody tr:nth-child(even) {
+      background-color: token-utils.slot(row-alternate-color, $config);
+    }
+  }
+
+  &.ang-table-variant-divider {
+    @include mat.table-overrides(
+      (
+        row-item-outline-color: token-utils.slot(row-outline-color, $config),
+      )
+    );
+  }
+}

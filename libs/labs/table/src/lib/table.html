@@ -1,0 +1,41 @@
+<table
+  mat-table
+  matSort
+  aria-label="Table with sort function"
+  [dataSource]="dataSource"
+  [matSortDisabled]="!enableSort()"
+>
+  @for (col of columns(); track $index) {
+    <ng-container [matColumnDef]="col.column" [sticky]="col.sticky">
+      <th *matHeaderCellDef mat-header-cell mat-sort-header [class.align-right]="col.numeric">
+        {{ col.label }}
+      </th>
+      <td *matCellDef="let element" mat-cell>
+        @if (typeof element[col.column] === 'string') {
+          {{ element[col.column] }}
+        }
+        @if (typeof element[col.column] === 'number') {
+          <div style="text-align: right">
+            {{ element[col.column] }}
+          </div>
+        }
+        @if (typeof element[col.column] === 'object') {
+          <a angTextLink target="_blank" [href]="element[col.column].link">
+            {{ element[col.column].label }}
+          </a>
+        }
+      </td>
+      @if (totalsFooter()) {
+        <td *matFooterCellDef mat-footer-cell class="footer" [class.align-right]="col.numeric">
+          {{ col.numeric ? getTotal(col.column) : $first ? 'Total' : '' }}
+        </td>
+      }
+    </ng-container>
+  }
+
+  <tr *matHeaderRowDef="columnIds(); sticky: stickyHeader()" mat-header-row></tr>
+  <tr *matRowDef="let row; columns: columnIds()" mat-row></tr>
+  @if (totalsFooter()) {
+    <tr *matFooterRowDef="columnIds(); sticky: true" mat-footer-row></tr>
+  }
+</table>
