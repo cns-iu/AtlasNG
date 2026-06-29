@@ -14,4 +14,7 @@ import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 export class NavigationButton {
   /** The link to navigate to */
   readonly link = input<AnyLinkCommand>();
+
+  /** Whether the link is external */
+  readonly external = input<boolean | undefined>();
 }

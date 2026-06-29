@@ -66,7 +66,9 @@
   .ang-navigation-menu-social {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    width: 100%;
+    gap: 0.5rem;
     height: 3rem;
     padding: 0.5rem 0;
     border-top: 1px solid token-utils.slot(divider-color, $config);

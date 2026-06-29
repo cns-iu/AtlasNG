@@ -1,7 +1,12 @@
 <div class="ang-navigation-menu">
   <mat-accordion displayMode="flat" class="ang-navigation-menu-links">
     @for (item of navigationItems(); track item.id) {
-      <a matButton class="ang-navigation-menu-link" [angAnyLink]="item.link">
+      <a
+        matButton
+        class="ang-navigation-menu-link"
+        [angAnyLink]="item.link"
+        [target]="item.external ? '_blank' : undefined"
+      >
         @if (item.icon) {
           <mat-icon class="ang-navigation-menu-icon" [fontIcon]="item.icon" />
         }

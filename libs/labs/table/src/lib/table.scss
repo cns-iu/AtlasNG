@@ -5,7 +5,6 @@
 :host {
   display: block;
   overflow: scroll;
-  max-height: 35rem;
   border-radius: 0.5rem;
 
   @include mat.table-overrides(
@@ -20,6 +19,22 @@
 
   .align-right {
     text-align: right;
+
+    ::ng-deep .mat-sort-header-container {
+      justify-content: end;
+    }
+
+    div {
+      margin-right: 1.125rem;
+    }
+
+    &.footer {
+      padding-right: 2.125rem;
+    }
+  }
+
+  .sticky {
+    border-right: 1px solid token-utils.slot(vertical-divider-color, $config);
   }
 
   th:not(:first-child),

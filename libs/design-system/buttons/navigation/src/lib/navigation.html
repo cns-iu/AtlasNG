@@ -1,3 +1,10 @@
-<a matButton angTrackClick class="ang-navigation-button" target="_blank" disableRipple [angAnyLink]="link()">
+<a
+  matButton
+  angTrackClick
+  class="ang-navigation-button"
+  disableRipple
+  [angAnyLink]="link()"
+  [target]="external() ? '_blank' : undefined"
+>
   <span class="ang-navigation-text"><ng-content /></span>
 </a>

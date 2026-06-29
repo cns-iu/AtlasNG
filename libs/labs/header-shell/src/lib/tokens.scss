@@ -6,7 +6,8 @@ $config: (
   tokens: (
     drawer-border-color: token-utils.sys-token(outline),
     container-color: sass-utils.color-with-opacity(token-utils.sys-token(surface-variant), 80%),
-    logo-background-color: token-utils.sys-token(surface-container-high),
+    drawer-content-color: token-utils.sys-token(on-surface-variant),
+    logo-background-color: transparent,
     logo-color: token-utils.sys-token(on-surface),
     icon-color: token-utils.sys-token(on-surface-variant),
     focus-outline-color: token-utils.sys-token(on-surface),

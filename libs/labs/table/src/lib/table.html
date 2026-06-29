@@ -7,15 +7,21 @@
 >
   @for (col of columns(); track $index) {
     <ng-container [matColumnDef]="col.column" [sticky]="col.sticky">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header [class.align-right]="col.numeric">
+      <th
+        *matHeaderCellDef
+        mat-header-cell
+        mat-sort-header
+        [class.align-right]="col.numeric"
+        [class.sticky]="col.sticky"
+      >
         {{ col.label }}
       </th>
-      <td *matCellDef="let element" mat-cell>
+      <td *matCellDef="let element" mat-cell [class.sticky]="col.sticky" [class.align-right]="col.numeric">
         @if (typeof element[col.column] === 'string') {
           {{ element[col.column] }}
         }
         @if (typeof element[col.column] === 'number') {
-          <div style="text-align: right">
+          <div>
             {{ element[col.column] }}
           </div>
         }
@@ -26,7 +32,13 @@
         }
       </td>
       @if (totalsFooter()) {
-        <td *matFooterCellDef mat-footer-cell class="footer" [class.align-right]="col.numeric">
+        <td
+          *matFooterCellDef
+          mat-footer-cell
+          class="footer"
+          [class.align-right]="col.numeric"
+          [class.sticky]="col.sticky"
+        >
           {{ col.numeric ? getTotal(col.column) : $first ? 'Total' : '' }}
         </td>
       }

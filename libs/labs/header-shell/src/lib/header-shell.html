@@ -28,7 +28,7 @@
 
   <nav class="ang-header-shell-desktop-nav" aria-label="Primary navigation">
     @for (item of navigationItems(); track item.id) {
-      <ang-navigation-button [link]="item.link">
+      <ang-navigation-button [link]="item.link" [external]="item.external">
         {{ item.label }}
       </ang-navigation-button>
     }

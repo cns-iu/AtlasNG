@@ -3,8 +3,18 @@
 @use '../tokens' as *;
 
 :host {
+  @include mat.sidenav-overrides(
+    (
+      container-width: 20rem,
+      container-background-color: var(--ang-drawer-background-color),
+      content-text-color: token-utils.slot(drawer-content-color, $config),
+    )
+  );
+
   mat-drawer-content {
     height: calc(100vh - 3.5rem);
+    display: flex;
+    flex-direction: column;
   }
 
   mat-drawer {
@@ -14,13 +24,6 @@
     border-color: token-utils.slot(drawer-border-color, $config);
     border-style: solid;
     border-width: 1px 1px 1px 0px;
-
-    @include mat.sidenav-overrides(
-      (
-        container-width: 20rem,
-        container-background-color: var(--ang-drawer-background-color),
-      )
-    );
 
     &.right {
       --ang-drawer-background-color: #{token-utils.slot(menu-container-color-right, $config)};
