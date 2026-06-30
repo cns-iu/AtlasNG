@@ -10,8 +10,8 @@ const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
 ];
 
 const APP_MENU_ITEMS: HeaderShellNavigationItem[] = [
-  { id: 'app-link-1', label: 'App Link 1', link: '/app-link-1' },
-  { id: 'app-link-2', label: 'App Link 2', link: '/app-link-2' },
+  { id: 'app-link-1', label: 'App Link 1', link: 'http://www.example.com', external: true },
+  { id: 'app-link-2', label: 'App Link 2', link: 'http://www.example.com', external: true },
 ];
 
 const SOCIAL_MEDIA_IDS = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x'];
