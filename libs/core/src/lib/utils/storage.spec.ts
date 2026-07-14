@@ -1,4 +1,4 @@
-import { isStorageAvailable } from './utils';
+import { isStorageAvailable } from './storage';
 
 describe('isStorageAvailable', () => {
   function createStorage(overrides: Partial<Storage> = {}): Storage {
