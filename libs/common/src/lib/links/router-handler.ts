@@ -7,24 +7,59 @@ import { RouterlessLinkHandler, RouterlessPreparedLink } from './routerless-hand
 import { isAnchorLikeElement } from './shared/anchor-element';
 import { isUrlTree, tryParseAbsoluteUrl } from './shared/url';
 
+/**
+ * Link metadata prepared by the Angular Router-aware handler.
+ */
 export interface RouterPreparedLink extends RouterlessPreparedLink {
+  /**
+   * Parsed router URL used for Angular Router navigation.
+   *
+   * Omitted when the command resolves to an absolute external URL.
+   */
   urlTree?: UrlTree;
 }
 
+/**
+ * Link handler that supports Angular Router commands while delegating absolute URLs to the routerless handler.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
+  /**
+   * Optional registry for resolving custom elements that behave like anchors.
+   */
   readonly #customElementRegistry = inject(CUSTOM_ELEMENT_REGISTRY);
 
+  /**
+   * Angular Router instance used to build and execute route-based navigation.
+   */
   readonly #router = inject(Router);
 
+  /**
+   * Angular location service used to prepare browser-visible URLs.
+   */
   readonly #location = inject(Location);
 
+  /**
+   * Angular error handler for reporting navigation failures.
+   */
   readonly #errorHandler = inject(ErrorHandler);
 
+  /**
+   * Routerless fallback used for absolute URLs and hard navigations.
+   */
   readonly #routerlessHandler = inject(RouterlessLinkHandler);
 
+  /**
+   * Prepares a link payload that supports both absolute URLs and Angular Router commands.
+   *
+   * @param command Navigation command and URL creation options.
+   * @param element Host element associated with the link.
+   * @param attributes Optional link attributes from directive inputs.
+   * @param injector Optional injector used to resolve router state for relative commands.
+   * @returns Prepared link metadata used by {@link navigateTo}.
+   */
   prepareLink(
     command: LinkCommand,
     element?: Element,
@@ -45,6 +80,17 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
     };
   }
 
+  /**
+   * Navigates to a prepared link using Angular Router when a `UrlTree` is available.
+   *
+   * Preserves native browser behavior for modified clicks, non-`_self` targets,
+   * downloads, and absolute URLs delegated to the routerless handler.
+   *
+   * @param link Prepared link metadata from {@link prepareLink}.
+   * @param event Triggering DOM event.
+   * @param options Angular Router navigation behavior options.
+   * @returns `true` when native navigation should continue, otherwise `false` or `void`.
+   */
   navigateTo(link: RouterPreparedLink, event: Event, options: NavigationBehaviorOptions): boolean | void {
     const { attributes, urlTree } = link;
     if (!urlTree) {
@@ -74,6 +120,13 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
     return !link.isAnchorLikeElement;
   }
 
+  /**
+   * Selects or creates the router URL tree represented by a command.
+   *
+   * @param command Navigation command and URL creation options.
+   * @param injector Optional injector used to resolve the root route for relative commands.
+   * @returns URL tree used for Angular Router navigation.
+   */
   #selectUrlTree(command: LinkCommand, injector?: Injector): UrlTree {
     const commandValue = command.command;
     if (isUrlTree(commandValue)) {

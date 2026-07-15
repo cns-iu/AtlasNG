@@ -18,6 +18,12 @@ import { isUrlTree } from './links/shared/url';
 /** Valid types for the link command input. */
 export type AnyLinkCommand = string | readonly unknown[] | UrlTree | LinkCommand | null | undefined;
 
+/**
+ * Normalizes supported directive input values into a `LinkCommand` object.
+ *
+ * @param value Raw `angAnyLink` input value.
+ * @returns Normalized link command, or `undefined` when the input is nullish.
+ */
 export function commandAttribute(value: AnyLinkCommand): LinkCommand | undefined {
   if (value === null || value === undefined) {
     return undefined;
@@ -206,6 +212,12 @@ export class AnyLink {
     return value !== undefined ? value : this[name]();
   }
 
+  /**
+   * Merges defined directive-level router inputs onto a command.
+   *
+   * @param command Link command from the primary input.
+   * @returns Command with configured router defaults applied.
+   */
   #getCommandWithDefaults(command: LinkCommand): LinkCommand {
     const result = { ...command };
 

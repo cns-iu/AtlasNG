@@ -36,7 +36,7 @@ export interface LinkAttributes {
  * Link attributes where each value may be `null`.
  *
  * `null` indicates that the attribute should be removed from the host element
- * instead of falling back to it's initial value.
+ * instead of falling back to its initial value.
  */
 export type NullableLinkAttributes = {
   [TKey in keyof LinkAttributes]: LinkAttributes[TKey] | null;

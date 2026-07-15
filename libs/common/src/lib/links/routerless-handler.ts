@@ -32,6 +32,9 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
    */
   readonly #customElementRegistry = inject(CUSTOM_ELEMENT_REGISTRY);
 
+  /**
+   * Serializer used to turn routerless command inputs into browser URLs.
+   */
   readonly #commandSerializer = inject(RouterlessCommandSerializer);
 
   /**
@@ -82,6 +85,12 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
     return false;
   }
 
+  /**
+   * Warns in development mode when router-only navigation options are used.
+   *
+   * @param name Unsupported option name.
+   * @param value Option value to inspect.
+   */
   #checkUnsupportedOption(name: string, value: unknown): void {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && value) {
       // eslint-disable-next-line no-console
