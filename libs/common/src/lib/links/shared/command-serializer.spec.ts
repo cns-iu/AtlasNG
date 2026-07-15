@@ -1,12 +1,6 @@
 import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import {
-  type ActivatedRoute,
-  DefaultUrlSerializer,
-  UrlSegment,
-  UrlSerializer,
-  UrlTree,
-} from '@angular/router';
+import { type ActivatedRoute, DefaultUrlSerializer, UrlSegment, UrlSerializer, UrlTree } from '@angular/router';
 import { RouterlessCommandSerializer } from './command-serializer';
 
 describe('RouterlessCommandSerializer', () => {

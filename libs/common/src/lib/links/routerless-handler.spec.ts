@@ -145,11 +145,7 @@ describe('RouterlessLinkHandler', () => {
     it('assigns browser location for non-anchor hosts', () => {
       const { browserLocation, handler } = setup();
 
-      const shouldContinueNativeNavigation = handler.navigateTo(
-        preparedLink(),
-        new Event('click'),
-        defaultOptions(),
-      );
+      const shouldContinueNativeNavigation = handler.navigateTo(preparedLink(), new Event('click'), defaultOptions());
 
       expect(shouldContinueNativeNavigation).toBe(false);
       expect(browserLocation.assign).toHaveBeenCalledWith('/base/next');
@@ -184,7 +180,9 @@ describe('RouterlessLinkHandler', () => {
         }),
       );
 
-      expect(warnSpy).toHaveBeenCalledWith('The "skipLocationChange" option is not supported in routerless navigation.');
+      expect(warnSpy).toHaveBeenCalledWith(
+        'The "skipLocationChange" option is not supported in routerless navigation.',
+      );
       expect(warnSpy).toHaveBeenCalledWith('The "state" option is not supported in routerless navigation.');
       expect(warnSpy).toHaveBeenCalledWith('The "browserUrl" option is not supported in routerless navigation.');
     });
