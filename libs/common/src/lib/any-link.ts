@@ -236,10 +236,7 @@ export class AnyLink {
       result.fragment = fragment;
     }
 
-    const preserveFragment = this.preserveFragment();
-    if (preserveFragment !== undefined) {
-      result.preserveFragment = preserveFragment;
-    }
+    result.preserveFragment = this.preserveFragment();
 
     const relativeTo = this.relativeTo();
     if (relativeTo !== undefined) {
