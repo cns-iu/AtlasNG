@@ -1,39 +1,44 @@
 import {
   Component,
-  ComponentRef,
   createEnvironmentInjector,
+  DestroyRef,
   EnvironmentInjector,
+  inject,
   runInInjectionContext,
-  Type,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { StyleLoader } from './style-loader';
 
-@Component({
-  selector: 'ang-first-style-loader',
-  template: '',
-})
-class FirstStyleLoaderComponent {}
+function createStyleLoaderComponent() {
+  @Component({
+    selector: 'ang-first-style-loader',
+    template: '',
+  })
+  class StyleLoaderComponent {
+    static readonly constructorCb = vi.fn();
+    static readonly destroyCb = vi.fn();
 
-@Component({
-  selector: 'ang-second-style-loader',
-  template: '',
-})
-class SecondStyleLoaderComponent {}
+    constructor() {
+      StyleLoaderComponent.constructorCb();
+      inject(DestroyRef).onDestroy(() => {
+        StyleLoaderComponent.destroyCb();
+      });
+    }
+  }
+
+  return StyleLoaderComponent;
+}
 
 describe('StyleLoader', () => {
-  function getRefs(service: StyleLoader): ComponentRef<unknown>[] {
-    return (service as unknown as { refs: ComponentRef<unknown>[] }).refs;
-  }
-
-  function getLoaders(service: StyleLoader): Set<Type<unknown>> {
-    return (service as unknown as { loaders: Set<Type<unknown>> }).loaders;
-  }
+  const FirstStyleLoaderComponent = createStyleLoaderComponent();
+  const SecondStyleLoaderComponent = createStyleLoaderComponent();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [StyleLoader],
     });
+
+    vi.resetAllMocks();
   });
 
   it('loads a stylesheet component only once per loader type', () => {
@@ -42,8 +47,7 @@ describe('StyleLoader', () => {
     service.load(FirstStyleLoaderComponent);
     service.load(FirstStyleLoaderComponent);
 
-    expect(getLoaders(service).has(FirstStyleLoaderComponent)).toBe(true);
-    expect(getRefs(service)).toHaveLength(1);
+    expect(FirstStyleLoaderComponent.constructorCb).toHaveBeenCalledTimes(1);
   });
 
   it('creates component refs for different loader types', () => {
@@ -52,9 +56,8 @@ describe('StyleLoader', () => {
     service.load(FirstStyleLoaderComponent);
     service.load(SecondStyleLoaderComponent);
 
-    expect(getLoaders(service).has(FirstStyleLoaderComponent)).toBe(true);
-    expect(getLoaders(service).has(SecondStyleLoaderComponent)).toBe(true);
-    expect(getRefs(service)).toHaveLength(2);
+    expect(FirstStyleLoaderComponent.constructorCb).toHaveBeenCalledTimes(1);
+    expect(SecondStyleLoaderComponent.constructorCb).toHaveBeenCalledTimes(1);
   });
 
   it('destroys created refs when its injection context is destroyed', () => {
@@ -64,11 +67,8 @@ describe('StyleLoader', () => {
 
     service.load(FirstStyleLoaderComponent);
 
-    const [firstRef] = getRefs(service);
-    const destroySpy = vi.spyOn(firstRef, 'destroy');
-
     childInjector.destroy();
 
-    expect(destroySpy).toHaveBeenCalledTimes(1);
+    expect(FirstStyleLoaderComponent.destroyCb).toHaveBeenCalledTimes(1);
   });
 });
