@@ -1,12 +1,18 @@
-export { AnyLink, type AnyLinkCommand } from './lib/any-link/any-link';
+export { AnyLink, type AnyLinkCommand } from './lib/any-link';
+export { IdGenerator, provideIdGeneratorConfig, type IdGeneratorConfig } from './lib/id-generator';
 export {
   LinkHandler,
-  RouterlessLinkHandler,
   type LinkAttributes,
   type LinkCommand,
   type NullableLinkAttributes,
   type PreparedLink,
-  type RouterlessLinkHandlerContext,
-} from './lib/any-link/link-handler';
-export { RouterLinkHandler, type RouterLinkHandlerContext } from './lib/any-link/router-link-handler';
-export { ID_GENERATOR_OPTIONS, IdGenerator, type IdGeneratorOptions } from './lib/id-generator';
+} from './lib/links/handler';
+export {
+  provideLinkHandler,
+  withCustomHandler,
+  withRouterHandler,
+  withRouterlessHandler,
+  type LinkHandlerFeature,
+} from './lib/links/providers';
+export { RouterLinkHandler, type RouterPreparedLink } from './lib/links/router-handler';
+export { RouterlessLinkHandler, type RouterlessPreparedLink } from './lib/links/routerless-handler';
