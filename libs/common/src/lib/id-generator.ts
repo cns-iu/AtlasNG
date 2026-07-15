@@ -1,28 +1,31 @@
-import { APP_ID, inject, Injectable, InjectionToken } from '@angular/core';
+import { APP_ID, inject, Injectable, isDevMode } from '@angular/core';
+import { createConfigDefinition } from '@atlasng/core';
 
 /**
  * Configures how IDs are composed by {@link IdGenerator}.
  */
-export interface IdGeneratorOptions {
+export interface IdGeneratorConfig {
   /**
-   * Includes a random infix segment in generated IDs when enabled. (Enabled by default)
+   * An infix to include in generated IDs.
+   * If `true`, a random hexadecimal infix will be used.
+   * If `false`, no infix will be included.
    */
-  randomize?: boolean;
+  infix?: string | boolean;
 }
 
-/** Maximum random value used to build the optional hexadecimal infix segment. */
-const INFIX_MAX = 0xffffff;
+/** Configuration definition. */
+const ID_GENERATOR_CONFIG = createConfigDefinition<IdGeneratorConfig>('ID_GENERATOR_CONFIG', () => ({
+  // Enabled by default in production builds
+  infix: !isDevMode(),
+}));
 
-/** Default configuration applied when no custom options are provided. */
-const DEFAULT_GENERATOR_OPTIONS: Required<IdGeneratorOptions> = {
-  randomize: true,
-};
-
-/** Dependency injection token for overriding {@link IdGenerator} options. */
-export const ID_GENERATOR_OPTIONS = new InjectionToken<IdGeneratorOptions>('ID_GENERATOR_OPTIONS', {
-  providedIn: 'root',
-  factory: () => DEFAULT_GENERATOR_OPTIONS,
-});
+/**
+ * Provides the {@link IdGeneratorConfig} for the application.
+ *
+ * @param config Configuration values to provide.
+ * @returns Provider for the configuration.
+ */
+export const provideIdGeneratorConfig = ID_GENERATOR_CONFIG.provide;
 
 /**
  * Generates stable, incrementing DOM-safe IDs.
@@ -31,17 +34,17 @@ export const ID_GENERATOR_OPTIONS = new InjectionToken<IdGeneratorOptions>('ID_G
   providedIn: 'root',
 })
 export class IdGenerator {
+  /** Configuration for the ID generator. */
+  readonly config = ID_GENERATOR_CONFIG.inject();
+
   /** Angular application ID. */
-  private readonly appId = inject(APP_ID);
+  readonly #appId = inject(APP_ID);
 
-  /** Effective generator options after merging defaults with user provided overrides. */
-  private readonly options = { ...DEFAULT_GENERATOR_OPTIONS, ...inject(ID_GENERATOR_OPTIONS) };
-
-  /** Random hexadecimal segment reused across generated IDs when randomization is enabled. */
-  private readonly infix = Math.floor(INFIX_MAX * Math.random()).toString(16);
+  /** Infix for the ID generator or `false` when disabled. */
+  readonly #infix = this.config.infix === true ? this.#getRandomInfix() : this.config.infix;
 
   /** Monotonic counter that guarantees uniqueness within this service instance. */
-  private counter = 0;
+  #counter = 0;
 
   /**
    * Builds a unique ID using the provided prefix and generator configuration.
@@ -52,14 +55,25 @@ export class IdGenerator {
   getId(prefix: string): string {
     const parts = [prefix];
 
-    if (this.appId !== 'ng') {
-      parts.push(this.appId);
+    if (this.#appId !== 'ng') {
+      parts.push(this.#appId);
     }
-    if (this.options.randomize) {
-      parts.push(this.infix);
+    if (this.#infix) {
+      parts.push(this.#infix);
     }
 
-    parts.push(`${this.counter++}`);
+    parts.push(`${this.#counter++}`);
     return parts.join('-');
+  }
+
+  /**
+   * Creates a random hexadecimal infix.
+   */
+  #getRandomInfix(): string {
+    const RANDOM_INFIX_MAX = 0xffffff;
+    const length = RANDOM_INFIX_MAX.toString(16).length;
+    return Math.floor(RANDOM_INFIX_MAX * Math.random())
+      .toString(16)
+      .padStart(length, '0');
   }
 }
