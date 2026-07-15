@@ -3,13 +3,13 @@ import { assertInInjectionContext, inject, InjectionToken, Provider } from '@ang
 /**
  * Defines a configuration token and provides methods for injecting and providing configuration values.
  */
-export interface ConfigDefinition<T extends object> {
+export interface ConfigDefinition<TConfig extends object> {
   /** Configuration token */
-  token: InjectionToken<T>;
+  token: InjectionToken<TConfig>;
   /** Injects the configuration with defaults applied */
-  inject: () => Required<T>;
+  inject: () => Readonly<Required<TConfig>>;
   /** Provides a provider for the configuration */
-  provide: (config: T) => Provider;
+  provide: (config: TConfig) => Provider;
 }
 
 /**
@@ -19,10 +19,10 @@ export interface ConfigDefinition<T extends object> {
  * @param defaultsFactory Default configuration factory function.
  * @returns Resolved configuration value with defaults applied.
  */
-export function injectConfig<T extends object>(
-  token: InjectionToken<T>,
-  defaultsFactory: () => Required<T>,
-): Required<T> {
+export function injectConfig<TConfig extends object>(
+  token: InjectionToken<TConfig>,
+  defaultsFactory: () => Required<TConfig>,
+): Readonly<Required<TConfig>> {
   assertInInjectionContext(injectConfig);
 
   const config = inject(token, { optional: true });
@@ -47,7 +47,7 @@ export function injectConfig<T extends object>(
  * @param config Configuration value to provide.
  * @returns Provider for the configuration.
  */
-export function provideConfig<T extends object>(token: InjectionToken<T>, config: T): Provider {
+export function provideConfig<TConfig extends object>(token: InjectionToken<TConfig>, config: TConfig): Provider {
   return {
     provide: token,
     useValue: config,
@@ -61,14 +61,14 @@ export function provideConfig<T extends object>(token: InjectionToken<T>, config
  * @param defaultsFactory Default configuration factory function.
  * @returns Configuration definition.
  */
-export function createConfigDefinition<T extends object>(
+export function createConfigDefinition<TConfig extends object>(
   name: string,
-  defaultsFactory: () => Required<T>,
-): ConfigDefinition<T> {
-  const token = new InjectionToken<T>(name);
+  defaultsFactory: () => Required<TConfig>,
+): ConfigDefinition<TConfig> {
+  const token = new InjectionToken<TConfig>(name);
   return {
     token,
     inject: () => injectConfig(token, defaultsFactory),
-    provide: (config: T) => provideConfig(token, config),
+    provide: (config: TConfig) => provideConfig(token, config),
   };
 }

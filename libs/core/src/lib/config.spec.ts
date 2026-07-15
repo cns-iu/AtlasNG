@@ -18,7 +18,7 @@ describe('injectConfig', () => {
     });
   }
 
-  function getConfig(): Required<TestConfig> {
+  function getConfig() {
     return TestBed.runInInjectionContext(() => injectConfig(TEST_TOKEN, DEFAULTS_FACTORY));
   }
 
@@ -67,7 +67,7 @@ describe('provideConfig', () => {
 describe('createConfigDefinition', () => {
   const CONFIG_DEF = createConfigDefinition<TestConfig>('MyConfig', DEFAULTS_FACTORY);
 
-  function getConfig(): Required<TestConfig> {
+  function getConfig() {
     return TestBed.runInInjectionContext(() => CONFIG_DEF.inject());
   }
 
