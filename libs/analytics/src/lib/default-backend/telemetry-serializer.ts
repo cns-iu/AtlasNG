@@ -79,7 +79,7 @@ export function serializeTelemetryValue(value: unknown): unknown {
   }
 
   // Various error types
-  if (isZodErrorLike2(value)) {
+  if (isZodErrorLike(value)) {
     const props = pick(value, ['name', 'message', 'issues']);
     return { ...props, stack: serializeStack(value.stack) };
   } else if (value instanceof HttpErrorResponse) {
@@ -131,7 +131,7 @@ function serializeStack(stack: string | undefined, maxLength = MAX_STACK_LENGTH)
  * @param obj Candidate object.
  * @returns True when the object can be treated as a Zod-like error.
  */
-function isZodErrorLike2(obj: object): obj is ZodErrorLike {
+function isZodErrorLike(obj: object): obj is ZodErrorLike {
   return (
     'name' in obj &&
     'message' in obj &&
