@@ -162,16 +162,16 @@ export class AnalyticsPermissions {
     }
 
     const categories = Object.values(AnalyticsEventCategory);
-    const basePermissions = defaultPermissions ? defaultPermissions.#permissions : DEFAULT_CATEGORY_PERMISSIONS;
-    const permissions = categories.reduce((acc, category) => {
+    const base = defaultPermissions ?? AnalyticsPermissions.DEFAULT;
+    const permissions = categories.reduce<Partial<CategoryPermissions>>((acc, category) => {
       if (category in parsed) {
         const value = (parsed as Record<string, unknown>)[category];
         return { ...acc, [category]: Boolean(value) };
       }
       return acc;
-    }, basePermissions);
+    }, {});
 
-    return new AnalyticsPermissions(permissions);
+    return base.#updateCategories(permissions);
   }
 
   /**
