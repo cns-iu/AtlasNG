@@ -15,7 +15,8 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/core": "^21.2.6"
+    "@angular/core": "^21.2.6",
+    "type-fest": "^5.5.0"
   },
   "sideEffects": false
 }

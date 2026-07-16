@@ -1,5 +1,5 @@
 import { APP_ID, inject, Injectable, isDevMode } from '@angular/core';
-import { createConfigDefinition } from '@atlasng/core';
+import { createConfigurationToken, type } from '@atlasng/core';
 
 /**
  * Configures how IDs are composed by {@link IdGenerator}.
@@ -14,10 +14,14 @@ export interface IdGeneratorConfig {
 }
 
 /** Configuration definition. */
-const ID_GENERATOR_CONFIG = createConfigDefinition<IdGeneratorConfig>('ID_GENERATOR_CONFIG', () => ({
-  // Enabled by default in production builds
-  infix: !isDevMode(),
-}));
+const ID_GENERATOR_CONFIG = createConfigurationToken({
+  name: 'ID_GENERATOR_CONFIG',
+  config: type<IdGeneratorConfig>(),
+  defaults: () => ({
+    // Enabled by default in production builds
+    infix: !isDevMode(),
+  }),
+});
 
 /**
  * Provides the {@link IdGeneratorConfig} for the application.

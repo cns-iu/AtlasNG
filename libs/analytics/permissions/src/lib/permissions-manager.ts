@@ -1,5 +1,5 @@
-import { DestroyRef, inject, Injectable, InjectionToken, Provider, signal } from '@angular/core';
-import { LOCAL_STORAGE, WINDOW } from '@atlasng/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { createConfigurationToken, LOCAL_STORAGE, type, WINDOW } from '@atlasng/core';
 import { AnalyticsPermissions } from './permissions';
 
 /**
@@ -29,14 +29,17 @@ export interface AnalyticsPermissionsManagerConfig {
   storageEvents?: boolean;
 }
 
-/** Injection token for {@link AnalyticsPermissionsManagerConfig}. */
-const ANALYTICS_PERMISSIONS_CONFIG = new InjectionToken<AnalyticsPermissionsManagerConfig>(
-  'ANALYTICS_PERMISSIONS_CONFIG',
-  {
-    providedIn: 'root',
-    factory: () => ({}),
-  },
-);
+/** Permission manager configuration. */
+const ANALYTICS_PERMISSIONS_CONFIG = createConfigurationToken({
+  name: 'ANALYTICS_PERMISSIONS_CONFIG',
+  config: type<AnalyticsPermissionsManagerConfig>(),
+  defaults: () => ({
+    changeEventName: 'atlasng:analytics:permissions-change',
+    storage: inject(LOCAL_STORAGE) ?? false,
+    storageKey: '__atlasng_analytics_permissions__',
+    storageEvents: true,
+  }),
+});
 
 /**
  * Provides configuration for {@link AnalyticsPermissionsManager}.
@@ -44,27 +47,7 @@ const ANALYTICS_PERMISSIONS_CONFIG = new InjectionToken<AnalyticsPermissionsMana
  * @param config Partial manager configuration.
  * @returns Angular provider entry for the config token.
  */
-export function provideAnalyticsPermissionsManagerConfig(config: AnalyticsPermissionsManagerConfig): Provider {
-  return {
-    provide: ANALYTICS_PERMISSIONS_CONFIG,
-    useValue: config,
-  };
-}
-
-/**
- * Injects manager configuration and resolves all default values.
- *
- * @returns A fully populated manager configuration object.
- */
-function injectAnalyticsPermissionsManagerConfigWithDefaults(): Required<AnalyticsPermissionsManagerConfig> {
-  const config = inject(ANALYTICS_PERMISSIONS_CONFIG);
-  return {
-    changeEventName: config.changeEventName ?? 'atlasng:analytics:permissions-change',
-    storage: config.storage ?? inject(LOCAL_STORAGE) ?? false,
-    storageKey: config.storageKey ?? '__atlasng_analytics_permissions__',
-    storageEvents: config.storageEvents ?? true,
-  };
-}
+export const provideAnalyticsPermissionsManagerConfig = ANALYTICS_PERMISSIONS_CONFIG.provide;
 
 /**
  * Manages active analytics permissions.
@@ -77,11 +60,11 @@ function injectAnalyticsPermissionsManagerConfigWithDefaults(): Required<Analyti
   providedIn: 'root',
 })
 export class AnalyticsPermissionsManager {
+  /** Resolved manager configuration with defaults applied. */
+  readonly config = ANALYTICS_PERMISSIONS_CONFIG.inject();
+
   /** Window abstraction used for browser event wiring. */
   readonly #window = inject(WINDOW);
-
-  /** Resolved manager configuration with defaults applied. */
-  readonly config = injectAnalyticsPermissionsManagerConfigWithDefaults();
 
   /** Writable permission state signal. */
   readonly #permissions = signal(AnalyticsPermissions.DEFAULT);
