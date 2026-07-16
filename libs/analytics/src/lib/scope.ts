@@ -23,7 +23,7 @@ export interface IEventScope {
 export const EVENT_SCOPE = new InjectionToken<IEventScope>('EVENT_SCOPE', {
   providedIn: 'root',
   factory: () => {
-    const { rootScope, appName } = inject(ANALYTICS_CONFIG);
+    const { rootScope, appName } = ANALYTICS_CONFIG.inject();
     return new StaticEventScope(rootScope ?? appName ?? '', null);
   },
 });

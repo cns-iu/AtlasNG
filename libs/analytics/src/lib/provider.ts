@@ -96,10 +96,7 @@ export function provideAnalytics(config?: AnalyticsConfig, ...features: Analytic
   }
 
   return makeEnvironmentProviders([
-    {
-      provide: ANALYTICS_CONFIG,
-      useValue: config ?? {},
-    },
+    ANALYTICS_CONFIG.provide(config ?? {}),
     ...features.flatMap((feature) => feature.providers),
   ]);
 }

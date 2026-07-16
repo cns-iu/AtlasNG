@@ -1,5 +1,6 @@
-import { inject, Injectable, InjectionToken } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor, PageViewAnalyticsEventPayload } from '@atlasng/analytics/events';
+import { createConfigurationToken, type } from '@atlasng/core';
 import { ANALYTICS_BACKEND } from './backend';
 
 /** Analytics configuration */
@@ -12,10 +13,10 @@ export interface AnalyticsConfig {
   rootScope?: string;
 }
 
-/** Injection token for the analytics configuration */
-export const ANALYTICS_CONFIG = new InjectionToken<AnalyticsConfig>('ANALYTICS_CONFIG', {
-  providedIn: 'root',
-  factory: () => ({}),
+export const ANALYTICS_CONFIG = createConfigurationToken({
+  name: 'ANALYTICS_CONFIG',
+  config: type<AnalyticsConfig>(),
+  defaults: () => ({}),
 });
 
 /**
@@ -27,9 +28,10 @@ export const ANALYTICS_CONFIG = new InjectionToken<AnalyticsConfig>('ANALYTICS_C
 })
 export class Analytics {
   /** Analytics configuration. */
-  readonly config = inject(ANALYTICS_CONFIG);
+  readonly config = ANALYTICS_CONFIG.inject();
+
   /** Logging backend for handling analytics events. */
-  private readonly backend = inject(ANALYTICS_BACKEND, { optional: true });
+  readonly #backend = inject(ANALYTICS_BACKEND, { optional: true });
 
   /**
    * Track a page view event.
@@ -39,7 +41,7 @@ export class Analytics {
    * @returns A promise that resolves when the page view event has been tracked
    */
   trackPageView(payload?: PageViewAnalyticsEventPayload, options?: Record<string, unknown>): Promise<void> {
-    return this.backend?.page(payload, options) ?? Promise.resolve();
+    return this.#backend?.page(payload, options) ?? Promise.resolve();
   }
 
   /**
@@ -55,6 +57,6 @@ export class Analytics {
     payload: AnalyticsEventPayloadFor<E>,
     options?: Record<string, unknown>,
   ): Promise<void> {
-    return this.backend?.track(event, payload, options) ?? Promise.resolve();
+    return this.#backend?.track(event, payload, options) ?? Promise.resolve();
   }
 }
