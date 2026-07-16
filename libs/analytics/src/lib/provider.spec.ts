@@ -35,7 +35,7 @@ describe('provideAnalytics', () => {
     const providers = provideAnalytics({ appName: 'TestApp' }, withCustomBackend(createMockBackend));
     TestBed.configureTestingModule({ providers: [providers] });
 
-    const config = TestBed.inject(ANALYTICS_CONFIG);
+    const config = TestBed.inject(ANALYTICS_CONFIG.token);
     expect(config.appName).toBe('TestApp');
   });
 
