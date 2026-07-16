@@ -20,10 +20,7 @@ describe('defaultBackendFactory', () => {
   ) {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: ANALYTICS_CONFIG,
-          useValue: analyticsConfig ?? { appName: 'AtlasNG', appVersion: '1.2.3' },
-        },
+        ANALYTICS_CONFIG.provide(analyticsConfig ?? { appName: 'AtlasNG', appVersion: '1.2.3' }),
         { provide: PLATFORM_ID, useValue: 'browser' },
         {
           provide: AnalyticsPermissionsManager,
