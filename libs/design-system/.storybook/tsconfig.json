@@ -1,8 +1,6 @@
 {
   "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "ignoreDeprecations": "6.0"
-  },
+  "compilerOptions": {},
   "exclude": ["../**/*.spec.ts"],
   "include": [
     "../**/*.stories.ts",
