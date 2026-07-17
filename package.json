@@ -8,6 +8,9 @@
   "nx": {
     "includedScripts": []
   },
+  "engines": {
+    "node": ">=24"
+  },
   "overrides": {
     "@storybook/angular": {
       "@angular-devkit/build-angular": "^22.0.7",
@@ -31,16 +34,17 @@
     "type-fest": "^5.5.0"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "^22.0.7",
     "@angular-devkit/core": "^22.0.7",
     "@angular-devkit/schematics": "^22.0.7",
     "@angular/build": "^22.0.7",
     "@angular/cli": "^22.0.7",
     "@angular/compiler-cli": "^22.0.7",
     "@angular/language-service": "^22.0.7",
-    "@commitlint/cli": "^20.5.0",
-    "@commitlint/config-conventional": "^20.5.0",
-    "@commitlint/config-nx-scopes": "^20.5.0",
-    "@compodoc/compodoc": "^1.2.1",
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@commitlint/config-nx-scopes": "^21.2.0",
+    "@compodoc/compodoc": "^2.0.0",
     "@eslint/js": "^10.0.1",
     "@fontsource-variable/material-symbols-rounded": "^5.2.45",
     "@fontsource-variable/montserrat": "^5.2.8",
@@ -68,10 +72,11 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",
+    "@types/qs": "^6.15.1",
     "@typescript-eslint/utils": "^8.58.0",
     "@vitest/coverage-v8": "^4.1.2",
     "angular-eslint": "^22.1.0",
-    "commander": "^14.0.3",
+    "commander": "^15.0.0",
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsonc": "^3.1.2",
@@ -80,7 +85,7 @@
     "jsdom": "^27.1.0",
     "ng-packagr": "~22.0.1",
     "nx": "23.1.0",
-    "prettier": "~3.8.1",
+    "prettier": "^3.9.5",
     "storybook": "^10.5.2",
     "ts-node": "10.9.1",
     "tslib": "^2.8.1",
@@ -90,11 +95,10 @@
     "vitest": "^4.1.2"
   },
   "allowScripts": {
-    "@parcel/watcher@2.5.6": true,
-    "@swc/core@1.15.43": true,
-    "esbuild@0.28.1": true,
-    "esbuild@0.27.7": true,
-    "nx@23.1.0": true,
-    "unrs-resolver@1.12.2": true
+    "@parcel/watcher": true,
+    "@swc/core": true,
+    "esbuild": true,
+    "nx": true,
+    "unrs-resolver": true
   }
 }
