@@ -75,6 +75,35 @@
     outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
   }
 
+  .ang-header-shell-navigation-button {
+    @include mat.button-overrides(
+      (
+        text-container-height: 3rem,
+        text-label-text-color: token-utils.slot(label-color, $config),
+        text-icon-spacing: 0.125rem,
+        text-label-text-font: token-utils.slot(label-font, $config),
+        text-label-text-size: token-utils.slot(label-font-size, $config),
+        text-label-text-tracking: token-utils.slot(label-letter-spacing, $config),
+        text-label-text-weight: token-utils.slot(label-font-weight, $config),
+        text-with-icon-horizontal-padding: 0.75rem,
+        text-state-layer-color: transparent,
+      )
+    );
+
+    &:focus-visible {
+      outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
+    }
+
+    :is(&:hover, &:active, &:focus-visible) {
+      .ang-header-shell-navigation-text {
+        text-decoration: underline;
+        text-underline-offset: 0.25rem;
+        text-decoration-thickness: 0.125rem;
+        text-decoration-color: token-utils.slot(underline-color, $config);
+      }
+    }
+  }
+
   @include breakpoints.breakpoint(medium, large, x-large) {
     .ang-header-shell {
       padding: 0 0.5rem;

@@ -28,9 +28,15 @@
 
   <nav class="ang-header-shell-desktop-nav" aria-label="Primary navigation">
     @for (item of navigationItems(); track item.id) {
-      <ang-navigation-button [link]="item.link">
-        {{ item.label }}
-      </ang-navigation-button>
+      @if (item.external) {
+        <ang-navigation-button [link]="item.link">
+          {{ item.label }}
+        </ang-navigation-button>
+      } @else {
+        <a matButton angTrackClick class="ang-header-shell-navigation-button" disableRipple [angAnyLink]="item.link">
+          <span class="ang-header-shell-navigation-text">{{ item.label }}</span>
+        </a>
+      }
     }
   </nav>
 
