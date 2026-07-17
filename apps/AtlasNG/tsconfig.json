@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "declaration": false
+    "declaration": false,
+    "ignoreDeprecations": "6.0"
   },
   "references": [
     {

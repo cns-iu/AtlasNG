@@ -53,7 +53,11 @@
       "@atlasng/labs/skip-to-content-button": ["./libs/labs/skip-to-content-button/src/index.ts"],
       "@atlasng/labs/table": ["./libs/labs/table/src/index.ts"],
       "@atlasng/labs/youtube-player": ["./libs/labs/youtube-player/src/index.ts"]
-    }
+    },
+    "noUncheckedSideEffectImports": false,
+    "types": ["*"],
+    "esModuleInterop": false,
+    "ignoreDeprecations": "6.0"
   },
   "exclude": ["node_modules", "tmp"],
   "angularCompilerOptions": {

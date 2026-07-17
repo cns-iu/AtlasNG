@@ -10,4 +10,7 @@
   ],
   "files": [],
   "include": [],
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0"
+  }
 }
