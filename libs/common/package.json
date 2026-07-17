@@ -15,9 +15,9 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/common": "^21.2.6",
-    "@angular/core": "^21.2.6",
-    "@angular/router": "^21.2.6",
+    "@angular/common": "^22.0.7",
+    "@angular/core": "^22.0.7",
+    "@angular/router": "^22.0.7",
     "@atlasng/core": "0.0.4"
   },
   "sideEffects": false
