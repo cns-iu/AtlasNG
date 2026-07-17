@@ -6,7 +6,8 @@ $config: (
   tokens: (
     drawer-border-color: token-utils.sys-token(outline),
     container-color: sass-utils.color-with-opacity(token-utils.sys-token(surface-variant), 80%),
-    logo-background-color: token-utils.sys-token(surface-container-high),
+    drawer-content-color: token-utils.sys-token(on-surface-variant),
+    logo-background-color: transparent,
     logo-color: token-utils.sys-token(on-surface),
     icon-color: token-utils.sys-token(on-surface-variant),
     focus-outline-color: token-utils.sys-token(on-surface),
@@ -17,6 +18,12 @@ $config: (
     menu-container-color-right: token-utils.sys-token(surface-variant),
     menu-state-layer-color: token-utils.sys-token(on-surface),
     menu-state-layer-color-active: token-utils.sys-token(primary-container),
+    label-color: token-utils.sys-token(on-surface),
+    underline-color: token-utils.sys-token(primary),
+    label-font: token-utils.sys-token(title-medium-font),
+    label-font-size: token-utils.sys-token(title-medium-size),
+    label-letter-spacing: token-utils.sys-token(title-medium-tracking),
+    label-font-weight: token-utils.sys-token(title-medium-weight),
   ),
 );
 

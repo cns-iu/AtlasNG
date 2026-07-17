@@ -24,6 +24,8 @@ export interface HeaderShellNavigationItem {
   tooltip?: string;
   /** Optional icon for the navigation item. */
   icon?: string;
+  /** Whether the link is external. */
+  external?: boolean;
 }
 
 /** Screen size breakpoint to disable desktop navigation (px). */
