@@ -37,13 +37,17 @@ export abstract class MultiTrackEventBase<E extends AnalyticsEvent> {
    */
   constructor() {
     effect((onCleanup) => {
+      const unlistenFns: (() => void)[] = [];
       for (const def of this.eventDefs()) {
-        const handler = this.getHandler(def);
+        const handler = this.#createHandler(def);
         const unlisten = this.renderer.listen(this.el, def.trigger, handler);
+        unlistenFns.push(unlisten);
+      }
 
+      if (unlistenFns.length > 0) {
         // Delay cleanup to ensure that events are fully processed.
         // Otherwise, if the directive is destroyed in response to the event it won't get tracked.
-        onCleanup(() => setTimeout(unlisten));
+        onCleanup(() => setTimeout(() => unlistenFns.forEach((unlisten) => unlisten())));
       }
     });
   }
@@ -51,7 +55,7 @@ export abstract class MultiTrackEventBase<E extends AnalyticsEvent> {
   /**
    * Create an event handler function for the given event definition.
    */
-  private getHandler(def: AnalyticsEventTrackingDef<E>): (data: unknown) => void {
+  #createHandler(def: AnalyticsEventTrackingDef<E>): (data: unknown) => void {
     return (data) =>
       void this.analytics.trackEvent(
         def.event,
