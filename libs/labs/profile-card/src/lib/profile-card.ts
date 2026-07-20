@@ -9,7 +9,7 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@an
   styleUrl: './profile-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.hra-profile-card-center-content]': 'centerContent()',
+    '[class.ang-profile-card-center-content]': 'centerContent()',
   },
 })
 export class ProfileCard {

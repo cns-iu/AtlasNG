@@ -3,5 +3,23 @@
 
 $config: (
   namespace: 'ang-profile-card',
-  tokens: (),
+  tokens: (
+    card-color: token-utils.sys-token(on-surface-variant),
+    name-color: token-utils.sys-token(on-surface),
+    name-font: token-utils.sys-token(title-medium-font),
+    name-font-size: token-utils.sys-token(title-medium-size),
+    name-line-height: token-utils.sys-token(title-medium-line-height),
+    name-letter-spacing: token-utils.sys-token(title-medium-tracking),
+    name-font-weight: token-utils.sys-token(title-medium-weight),
+    description-font: token-utils.sys-token(body-medium-font),
+    description-font-size: token-utils.sys-token(body-medium-size),
+    description-line-height: token-utils.sys-token(body-medium-line-height),
+    description-letter-spacing: token-utils.sys-token(body-medium-tracking),
+    description-font-weight: token-utils.sys-token(body-medium-weight),
+    action-font: token-utils.sys-token(body-medium-font),
+    action-font-size: token-utils.sys-token(body-medium-size),
+    action-line-height: token-utils.sys-token(body-medium-line-height),
+    action-letter-spacing: token-utils.sys-token(body-medium-tracking),
+    action-font-weight: token-utils.sys-token(body-medium-weight),
+  ),
 );

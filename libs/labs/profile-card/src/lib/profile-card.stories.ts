@@ -3,6 +3,7 @@ import { AnyLink } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/text-link';
 import { type Meta, type StoryObj } from '@storybook/angular';
 import { ProfileCard } from './profile-card';
+import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media';
 
 const meta: Meta<ProfileCard> = {
   component: ProfileCard,
@@ -14,7 +15,7 @@ const meta: Meta<ProfileCard> = {
     },
   },
   args: {
-    pictureUrl: 'assets/placeholder.svg',
+    pictureUrl: 'assets/placeholder.png',
     name: 'Firstname Lastname',
     description: 'Occupation, Company',
     centerContent: false,
@@ -32,9 +33,7 @@ export const Default: Story = {
     },
     styles: [
       `.action-link {
-        display: inline-flex;
-        gap: 0.5rem;
-        align-items: center;
+        margin-top: .5rem;
       }`,
     ],
     template: `
@@ -53,43 +52,41 @@ export const Default: Story = {
   }),
 };
 
-// export const SocialIcons: Story = {
-//   render: (args) => ({
-//     props: args,
-//     moduleMetadata: {
-//       imports: [AnyLink, MatIconModule],
-//     },
-//     styles: [
-//       `.social-media-actions {
-//         display: flex;
-//         gap: 0.5rem;
-//         align-items: center;
-//         color: vars.$on-tertiary-fixed;
-//       }
-//     }`,
-//     ],
-//     template: `
-//       <ang-profile-card
-//         [pictureUrl]="pictureUrl"
-//         [name]="name"
-//         [description]="description"
-//         [centerContent]="centerContent"
-//       >
-//         <div class="social-media-actions">
-//           <a mat-icon-button>
-//             <mat-icon color="accent">mail</mat-icon>
-//           </a>
-//           <a mat-icon-button>
-//             <mat-icon color="accent">person</mat-icon>
-//           </a>
-//           <a mat-icon-button>
-//             <mat-icon svgIcon="social:linkedin" color="accent"></mat-icon>
-//           </a>
-//           <a mat-icon-button>
-//             <mat-icon svgIcon="social:github" color="accent"></mat-icon>
-//           </a>
-//         </div>
-//       </ang-profile-card>
-//     `,
-//   }),
-// };
+export const SocialIcons: Story = {
+  args: {
+    centerContent: true,
+  },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: {
+      imports: [AnyLink, SocialMediaButton],
+    },
+    styles: [
+      `.social-media-actions {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+
+          ang-social-media-button {
+            height: 2.5rem;
+          }
+        }
+      }`,
+    ],
+    template: `
+      <ang-profile-card
+        [pictureUrl]="pictureUrl"
+        [name]="name"
+        [description]="description"
+        [centerContent]="centerContent"
+      >
+        <div class="social-media-actions">
+          <ang-social-media-button id="linkedin"></ang-social-media-button>
+          <ang-social-media-button id="github"></ang-social-media-button>
+          <ang-social-media-button id="youtube"></ang-social-media-button>
+          <ang-social-media-button id="instagram"></ang-social-media-button>
+        </div>
+      </ang-profile-card>
+    `,
+  }),
+};
