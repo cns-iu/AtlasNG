@@ -1,0 +1,10 @@
+<div class="picture">
+  <img [attr.src]="pictureUrl()" [attr.alt]="`Profile picture of ${name()}`" />
+</div>
+<div class="content">
+  <div class="name">{{ name() }}</div>
+  <p class="description">{{ description() }}</p>
+</div>
+<div class="actions">
+  <ng-content />
+</div>
