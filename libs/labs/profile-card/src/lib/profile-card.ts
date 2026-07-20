@@ -1,0 +1,27 @@
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
+
+/**
+ * Profile Card for displaying user information and relevant links
+ */
+@Component({
+  selector: 'ang-profile-card',
+  templateUrl: './profile-card.html',
+  styleUrl: './profile-card.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.hra-profile-card-center-content]': 'centerContent()',
+  },
+})
+export class ProfileCard {
+  /** Field for profile picture URL */
+  readonly pictureUrl = input.required<string>();
+
+  /** Field for profile name */
+  readonly name = input.required<string>();
+
+  /** Field for description */
+  readonly description = input.required<string>();
+
+  /** Whether to center card content */
+  readonly centerContent = input(false, { transform: booleanAttribute });
+}
