@@ -14,5 +14,5 @@
     "@nx/plugin:e2e-project",
     "@nx/plugin:plugin-lint-checks"
   ],
-  "conventionalCommits.scopes": ["AtlasNG", "analytics", "cdk", "common", "core", "design-system", "labs"]
+  "conventionalCommits.scopes": ["AtlasNG", "analytics", "cdk", "common", "content-templates", "core", "design-system", "labs"]
 }
