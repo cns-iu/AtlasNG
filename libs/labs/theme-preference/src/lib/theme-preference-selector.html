@@ -1,0 +1,10 @@
+<mat-button-toggle-group
+  [value]="preference()"
+  [disabled]="disabled()"
+  [attr.aria-label]="ariaLabel()"
+  (change)="handlePreferenceChange($event)"
+>
+  <mat-button-toggle value="light">Light</mat-button-toggle>
+  <mat-button-toggle value="dark">Dark</mat-button-toggle>
+  <mat-button-toggle value="system">Use device setting</mat-button-toggle>
+</mat-button-toggle-group>
