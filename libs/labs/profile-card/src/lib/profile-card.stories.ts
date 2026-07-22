@@ -1,9 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { AnyLink } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/text-link';
 import { type Meta, type StoryObj } from '@storybook/angular';
 import { ProfileCard } from './profile-card';
 import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media';
+import { GridContainer } from '@atlasng/labs/grid-container';
 
 const meta: Meta<ProfileCard> = {
   component: ProfileCard,
@@ -87,6 +89,61 @@ export const SocialIcons: Story = {
           <ang-social-media-button id="instagram"></ang-social-media-button>
         </div>
       </ang-profile-card>
+    `,
+  }),
+};
+
+export const Large: Story = {
+  args: {
+    variant: 'large',
+    nameLink: 'https://www.example.com',
+  },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: {
+      imports: [AnyLink, MatIconModule, TextLink],
+    },
+    styles: [
+      `ang-profile-card {
+        width: 17rem !important;
+      }`,
+    ],
+    template: `
+      <ang-profile-card
+        [pictureUrl]="pictureUrl"
+        [name]="name"
+        [description]="description"
+        [variant]="variant"
+        [nameLink]="nameLink"
+      />
+    `,
+  }),
+};
+
+export const PortraitGrid: Story = {
+  args: {
+    nameLink: 'https://www.example.com',
+  },
+  render: (args) => ({
+    props: {
+      ...args,
+      cardIndexes: Array.from({ length: 7 }),
+    },
+    moduleMetadata: {
+      imports: [CommonModule, GridContainer],
+    },
+    template: `
+      <ang-grid-container>
+        <ang-profile-card
+          *ngFor="let _ of cardIndexes"
+          [pictureUrl]="pictureUrl"
+          [name]="name"
+          [description]="description"
+          [variant]="variant"
+          [nameLink]="nameLink"
+        >
+        </ang-profile-card>
+      </ang-grid-container>
     `,
   }),
 };
