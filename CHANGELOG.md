@@ -1,3 +1,13 @@
+## 0.0.6 (2026-07-22)
+
+### 🚀 Features
+
+- **labs:** add large rounded variant of profile card ([#85](https://github.com/cns-iu/AtlasNG/pull/85))
+
+### ❤️ Thank You
+
+- Edward Lu @edlu77
+
 ## 0.0.5 (2026-07-20)
 
 ### 🚀 Features
