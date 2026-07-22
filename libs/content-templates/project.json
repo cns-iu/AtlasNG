@@ -1,0 +1,17 @@
+{
+  "name": "content-templates",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/content-templates/src",
+  "prefix": "ang",
+  "projectType": "library",
+  "tags": ["library"],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:package"
+    },
+    "build-compodoc": {},
+    "compodoc": {},
+    "test": {},
+    "nx-release-publish": {}
+  }
+}

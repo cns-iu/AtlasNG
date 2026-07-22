@@ -279,6 +279,10 @@
       "options": {
         "command": "test-storybook -c {projectRoot}/.storybook --url=http://localhost:4400"
       }
+    },
+    "@nx/angular:unit-test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
     }
   },
   "generators": {
