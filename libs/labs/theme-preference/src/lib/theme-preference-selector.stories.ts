@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { ThemePreferenceSelector } from './theme-preference-selector';
 
 const meta: Meta<ThemePreferenceSelector> = {
-  title: 'Labs/Theme Preference',
+  title: 'Labs/Theme Preference/Selector',
   component: ThemePreferenceSelector,
   args: {
     preference: 'system',

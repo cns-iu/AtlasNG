@@ -17,7 +17,7 @@ describe('ThemePreferenceSelector', () => {
   it('selects the device setting by default', async () => {
     await render(ThemePreferenceSelector);
 
-    expect(screen.getByRole('radio', { name: 'Use device setting' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Device settings' })).toBeChecked();
   });
 
   it('renders an initial preference', async () => {
@@ -41,7 +41,7 @@ describe('ThemePreferenceSelector', () => {
 
     expect(screen.getByRole('radio', { name: 'Light' })).toBeDisabled();
     expect(screen.getByRole('radio', { name: 'Dark' })).toBeDisabled();
-    expect(screen.getByRole('radio', { name: 'Use device setting' })).toBeDisabled();
+    expect(screen.getByRole('radio', { name: 'Device settings' })).toBeDisabled();
   });
 
   it('applies a custom accessible group label', async () => {
