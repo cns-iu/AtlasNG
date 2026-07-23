@@ -54,7 +54,8 @@
       "@atlasng/labs/section-header": ["./libs/labs/section-header/src/index.ts"],
       "@atlasng/labs/skip-to-content-button": ["./libs/labs/skip-to-content-button/src/index.ts"],
       "@atlasng/labs/table": ["./libs/labs/table/src/index.ts"],
-      "@atlasng/labs/youtube-player": ["./libs/labs/youtube-player/src/index.ts"]
+      "@atlasng/labs/youtube-player": ["./libs/labs/youtube-player/src/index.ts"],
+      "@atlasng/labs/theme-preference": ["libs/labs/theme-preference/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

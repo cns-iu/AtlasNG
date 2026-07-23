@@ -1,0 +1,40 @@
+<button
+  matIconButton
+  type="button"
+  [disabled]="disabled()"
+  [attr.aria-label]="ariaLabel()"
+  [matTooltip]="tooltip()"
+  [matMenuTriggerFor]="themeMenu"
+>
+  <mat-icon fontIcon="brightness_4" />
+</button>
+
+<mat-menu
+  aria-label="Theme preference"
+  [xPosition]="xPosition()"
+  [yPosition]="yPosition()"
+  [overlapTrigger]="overlapTrigger()"
+  #themeMenu="matMenu"
+>
+  @for (option of options; track option.value) {
+    <button
+      mat-menu-item
+      type="button"
+      role="menuitemradio"
+      [class.ang-theme-preference-menu-item-selected]="preference() === option.value"
+      [attr.aria-checked]="preference() === option.value"
+      (click)="selectPreference(option.value)"
+    >
+      <mat-icon [fontIcon]="option.icon" />
+      <span class="ang-theme-preference-menu-item-content">
+        <span>{{ option.label }}</span>
+        <mat-icon
+          class="ang-theme-preference-menu-check"
+          fontIcon="check"
+          aria-hidden="true"
+          [class.ang-theme-preference-menu-check-hidden]="preference() !== option.value"
+        />
+      </span>
+    </button>
+  }
+</mat-menu>

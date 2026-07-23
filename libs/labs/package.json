@@ -27,6 +27,7 @@
     "@angular/youtube-player": "^21.2.6",
     "@atlasng/analytics": "0.0.6",
     "@atlasng/common": "0.0.6",
+    "@atlasng/core": "0.0.6",
     "@atlasng/design-system": "0.0.6"
   },
   "devDependencies": {
