@@ -68,24 +68,19 @@ describe('ThemePreferenceMenu', () => {
     expect(fixture.componentInstance.preference).toBe('light');
   });
 
-  it('shows the check icon only for the selected option', async () => {
+  it('reserves check-icon space and shows the check only for the selected option', async () => {
     const user = userEvent.setup();
     await render(ThemePreferenceMenu, { inputs: { preference: 'dark' } });
 
     await user.click(screen.getByRole('button', { name: 'Choose theme preference' }));
 
+    const lightOption = screen.getByRole('menuitemradio', { name: 'Light mode' });
     const darkOption = screen.getByRole('menuitemradio', { name: 'Dark mode' });
+    const deviceOption = screen.getByRole('menuitemradio', { name: 'Device settings' });
     expect(darkOption).toHaveAttribute('aria-checked', 'true');
-    expect(
-      within(darkOption)
-        .getAllByRole('img', { hidden: true })
-        .map((icon) => icon.getAttribute('data-mat-icon-name')),
-    ).toEqual(['dark_mode', 'check']);
-    expect(
-      screen
-        .getAllByRole('img', { hidden: true })
-        .filter((icon) => icon.getAttribute('data-mat-icon-name') === 'check'),
-    ).toHaveLength(1);
+    expect(within(lightOption).getAllByRole('img', { hidden: true })[1]).not.toBeVisible();
+    expect(within(darkOption).getAllByRole('img', { hidden: true })[1]).toBeVisible();
+    expect(within(deviceOption).getAllByRole('img', { hidden: true })[1]).not.toBeVisible();
   });
 
   it('supports a disabled trigger', async () => {

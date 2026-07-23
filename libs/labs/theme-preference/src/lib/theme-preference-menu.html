@@ -28,9 +28,12 @@
       <mat-icon [fontIcon]="option.icon" />
       <span class="ang-theme-preference-menu-item-content">
         <span>{{ option.label }}</span>
-        @if (preference() === option.value) {
-          <mat-icon class="ang-theme-preference-menu-check" fontIcon="check" aria-hidden="true" />
-        }
+        <mat-icon
+          class="ang-theme-preference-menu-check"
+          fontIcon="check"
+          aria-hidden="true"
+          [class.ang-theme-preference-menu-check-hidden]="preference() !== option.value"
+        />
       </span>
     </button>
   }
