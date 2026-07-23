@@ -2,9 +2,17 @@
   <img [attr.src]="pictureUrl()" [attr.alt]="`Profile picture of ${name()}`" />
 </div>
 <div class="content">
-  <div class="name">{{ name() }}</div>
+  @if (nameLink()) {
+    <a angTextLink class="name" target="_blank" [angAnyLink]="nameLink()">
+      {{ name() }}
+    </a>
+  } @else {
+    <div class="name">{{ name() }}</div>
+  }
   <p class="description">{{ description() }}</p>
 </div>
-<div class="actions">
-  <ng-content />
-</div>
+@if (variant() === 'default') {
+  <div class="actions">
+    <ng-content />
+  </div>
+}
