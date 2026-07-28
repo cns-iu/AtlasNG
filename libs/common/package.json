@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/common",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Common library for AtlasNG",
   "license": "MIT",
   "repository": {
@@ -18,7 +18,7 @@
     "@angular/common": "^22.0.7",
     "@angular/core": "^22.0.7",
     "@angular/router": "^22.0.7",
-    "@atlasng/core": "0.0.4"
+    "@atlasng/core": "0.0.6"
   },
   "sideEffects": false
 }

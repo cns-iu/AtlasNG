@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/design-system",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Design System library for AtlasNG",
   "license": "MIT",
   "repository": {
@@ -24,9 +24,9 @@
     "@angular/common": "^22.0.7",
     "@angular/core": "^22.0.7",
     "@angular/material": "^22.0.5",
-    "@atlasng/analytics": "^0.0.4",
-    "@atlasng/common": "^0.0.4",
-    "@atlasng/core": "^0.0.4"
+    "@atlasng/analytics": "^0.0.6",
+    "@atlasng/common": "^0.0.6",
+    "@atlasng/core": "^0.0.6"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",

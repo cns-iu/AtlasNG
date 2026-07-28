@@ -1,3 +1,28 @@
+## 0.0.6 (2026-07-22)
+
+### 🚀 Features
+
+- **labs:** add large rounded variant of profile card ([#85](https://github.com/cns-iu/AtlasNG/pull/85))
+
+### ❤️ Thank You
+
+- Edward Lu @edlu77
+
+## 0.0.5 (2026-07-20)
+
+### 🚀 Features
+
+- **labs:** add profile card ([#84](https://github.com/cns-iu/AtlasNG/pull/84))
+
+### 🩹 Fixes
+
+- **AtlasNG:** updates for navigation button, header shell and table ([#80](https://github.com/cns-iu/AtlasNG/pull/80))
+
+### ❤️ Thank You
+
+- edlu77 @edlu77
+- Edward Lu @edlu77
+
 ## 0.0.3 (2026-06-18)
 
 ### 🚀 Features
