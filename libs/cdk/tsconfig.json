@@ -9,5 +9,6 @@
     }
   ],
   "files": [],
-  "include": []
+  "include": [],
+  "compilerOptions": {}
 }

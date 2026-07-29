@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/cdk",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "CDK library for AtlasNG",
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/core": "^21.2.6"
+    "@angular/core": "^22.0.7"
   },
   "sideEffects": false
 }
