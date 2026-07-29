@@ -24,7 +24,7 @@
 
 ## AtlasNG Quick Start
 
-- Stack: Nx 22 + Angular 21 monorepo, package manager is npm (`package.json` has no workspace manager override).
+- Stack: Nx 23 + Angular 22 monorepo, package manager is npm (`package.json` has no workspace manager override).
 - Use `npx nx` for local commands in this repo (matches existing README examples and avoids global CLI drift).
 - Primary projects:
   - `AtlasNG` (application)
