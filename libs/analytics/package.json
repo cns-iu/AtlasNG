@@ -15,8 +15,8 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/core": "^21.2.6",
-    "@angular/common": "^21.2.6",
+    "@angular/core": "^22.0.7",
+    "@angular/common": "^22.0.7",
     "@atlasng/core": "0.0.6",
     "analytics": "^0.8.19",
     "type-fest": "^5.5.0",

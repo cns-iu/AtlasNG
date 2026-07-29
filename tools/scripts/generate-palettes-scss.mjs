@@ -182,6 +182,7 @@ async function main() {
   try {
     await program.parseAsync();
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`Error: ${error.message}`);
     process.exit(1);
   }

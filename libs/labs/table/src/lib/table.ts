@@ -31,7 +31,7 @@ export type TableColumn = {
 })
 export class Table<T = TableRow> {
   /** Table data source */
-  protected readonly dataSource = new MatTableDataSource<T>([]);
+  protected readonly dataSource: MatTableDataSource<T> = new MatTableDataSource<T>([]);
 
   /** Table variant */
   readonly variant = input<TableVariant>('alternating');

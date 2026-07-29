@@ -12,5 +12,6 @@
     }
   ],
   "files": [],
-  "include": []
+  "include": [],
+  "compilerOptions": {}
 }
