@@ -1,26 +1,21 @@
 export { Analytics, ANALYTICS_CONFIG, type AnalyticsConfig } from './lib/analytics';
 export { ANALYTICS_BACKEND, type AnalyticsBackend } from './lib/backend';
 export {
-  MultiTrackEvent,
-  MultiTrackEventBase,
-  type AnalyticsEventTrackingDef,
-} from './lib/directives/multi-track-event';
-export {
-  payloadAttribute,
   TrackBlur,
   TrackChange,
   TrackClick,
   TrackDoubleClick,
   TrackError,
-  TrackEvent,
-  TrackEventBase,
   TrackFocus,
   TrackHover,
   TrackInput,
   TrackKeyboard,
   TrackReset,
   TrackSubmit,
-} from './lib/directives/track-event';
+} from './lib/directives/core-track-events';
+export { MultiTrackEvent, TrackEvent, type AnalyticsEventTrackingDef } from './lib/directives/track-event';
+export { payloadAttribute, triggersAttribute } from './lib/directives/track-event-transforms';
+export { initializeTrackEvent } from './lib/directives/track-event/initialize-track-event';
 export {
   provideAnalytics,
   withCustomBackend,
