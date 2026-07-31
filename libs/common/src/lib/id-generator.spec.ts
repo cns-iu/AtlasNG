@@ -1,6 +1,6 @@
 import { APP_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ID_GENERATOR_OPTIONS, IdGenerator, type IdGeneratorOptions } from './id-generator';
+import { IdGenerator, IdGeneratorConfig, provideIdGeneratorConfig } from './id-generator';
 
 describe('IdGenerator', () => {
   afterEach(() => {
@@ -8,11 +8,7 @@ describe('IdGenerator', () => {
     TestBed.resetTestingModule();
   });
 
-  function setup(options?: {
-    appId?: string;
-    generatorOptions?: IdGeneratorOptions;
-    randomValue?: number;
-  }): IdGenerator {
+  function setup(options?: { appId?: string; generatorConfig?: IdGeneratorConfig; randomValue?: number }): IdGenerator {
     if (options?.randomValue !== undefined) {
       vi.spyOn(Math, 'random').mockReturnValue(options.randomValue);
     }
@@ -20,7 +16,7 @@ describe('IdGenerator', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: APP_ID, useValue: options?.appId ?? 'ng' },
-        { provide: ID_GENERATOR_OPTIONS, useValue: options?.generatorOptions ?? {} },
+        provideIdGeneratorConfig(options?.generatorConfig ?? { infix: true }),
       ],
     });
 
@@ -29,7 +25,6 @@ describe('IdGenerator', () => {
 
   it('generates ids with prefix, random infix, and an incrementing counter by default', () => {
     const generator = setup({ randomValue: 0.5 });
-
     const firstId = generator.getId('field');
     const secondId = generator.getId('field');
 
@@ -39,15 +34,20 @@ describe('IdGenerator', () => {
 
   it('includes non-default app id in generated ids', () => {
     const generator = setup({ appId: 'atlas', randomValue: 0.5 });
-
     const id = generator.getId('field');
 
     expect(id).toMatch(/^field-atlas-[0-9a-f]+-0$/);
   });
 
-  it('omits random infix when randomize is disabled', () => {
-    const generator = setup({ generatorOptions: { randomize: false }, appId: 'atlas' });
+  it('includes custom infix in generated ids', () => {
+    const generator = setup({ appId: 'atlas', generatorConfig: { infix: 'custom' } });
+    const id = generator.getId('field');
 
+    expect(id).toBe('field-atlas-custom-0');
+  });
+
+  it('omits random infix when randomize is disabled', () => {
+    const generator = setup({ appId: 'atlas', generatorConfig: { infix: false } });
     const id = generator.getId('field');
 
     expect(id).toBe('field-atlas-0');

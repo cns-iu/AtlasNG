@@ -51,6 +51,7 @@ describe('Permissions', () => {
 
   it('parses JSON with defaults and coerces category values to booleans', () => {
     const json = JSON.stringify({
+      [AnalyticsEventCategory.Necessary]: false,
       [AnalyticsEventCategory.Statistics]: 1,
       [AnalyticsEventCategory.Preferences]: '',
       [AnalyticsEventCategory.Marketing]: 'enabled',

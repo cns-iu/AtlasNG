@@ -1,5 +1,5 @@
 import { DOCUMENT, inject, InjectionToken } from '@angular/core';
-import { isStorageAvailable } from './utils';
+import { isStorageAvailable } from './utils/storage';
 
 /**
  * Re-export of Angular's platform-agnostic document token.

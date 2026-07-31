@@ -179,7 +179,7 @@ Both `@nx/js/typescript` and `@nx/vite/plugin` auto-detect `vue-tsc` when instal
 
 **Correct order:**
 
-1. `pnpm add -wD eslint@^9 eslint-plugin-vue vue-eslint-parser @vue/eslint-config-typescript @typescript-eslint/parser @nx/eslint-plugin typescript-eslint`
+1. `pnpm add -wD eslint@^10.1.0 eslint-plugin-vue vue-eslint-parser @vue/eslint-config-typescript @typescript-eslint/parser @nx/eslint-plugin typescript-eslint`
 2. Create root `eslint.config.mjs`
 3. Then `npx nx add @nx/eslint`
 
@@ -250,7 +250,7 @@ Remove `@nx/js/typescript` if all projects use Vite. Keep it (renamed to `"tsc-t
 2. **React projects**: Extend root + `nx.configs['flat/react']`
 3. **Vue projects**: Extend root + `vue.configs['flat/recommended']` + `vue-eslint-parser`
 
-**Required packages**: Shared (`eslint@^9`, `@nx/eslint-plugin`, `typescript-eslint`, `@typescript-eslint/parser`), React (`eslint-plugin-import`, `eslint-plugin-jsx-a11y`, `eslint-plugin-react`, `eslint-plugin-react-hooks`), Vue (`eslint-plugin-vue`, `vue-eslint-parser`)
+**Required packages**: Shared (`eslint@^10.1.0`, `@nx/eslint-plugin`, `typescript-eslint`, `@typescript-eslint/parser`), React (`eslint-plugin-import`, `eslint-plugin-jsx-a11y`, `eslint-plugin-react`, `eslint-plugin-react-hooks`), Vue (`eslint-plugin-vue`, `vue-eslint-parser`)
 
 `@nx/react`/`@nx/vue` are for generators only — no target conflicts.
 
@@ -372,7 +372,7 @@ See SKILL.md for generic multi-import (name collisions, dep refs). Vite-specific
 ### Scenario 6: Multiple non-Nx React apps (CRA, Next.js, React Router 7, TanStack Start, Vite) → TS preset (PASS)
 
 - Sources: 5 standalone non-Nx repos with different build tools
-- Dest: CNW ts preset (Nx 22.5.1), npm workspaces, `packages/*`
+- Dest: CNW ts preset (Nx 23.1.0), npm workspaces, `packages/*`
 - Import: whole-repo for each, sequential into `packages/<name>`
 - Pre-import fixes:
   1. Removed `packages/.gitkeep` and committed

@@ -11,11 +11,28 @@ import {
 } from '@angular/core';
 import type { ActivatedRoute, Params, QueryParamsHandling, UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
-import { LinkAttributes, LinkCommand, LinkHandler } from './link-handler';
-import { commandAttribute, isAnchorLikeElement, isUrlTree, safeMerge } from './utils';
+import { LinkAttributes, LinkCommand, LinkHandler } from './links/handler';
+import { isAnchorLikeElement } from './links/shared/anchor-element';
+import { isUrlTree } from './links/shared/url';
 
 /** Valid types for the link command input. */
 export type AnyLinkCommand = string | readonly unknown[] | UrlTree | LinkCommand | null | undefined;
+
+/**
+ * Normalizes supported directive input values into a `LinkCommand` object.
+ *
+ * @param value Raw `angAnyLink` input value.
+ * @returns Normalized link command, or `undefined` when the input is nullish.
+ */
+export function commandAttribute(value: AnyLinkCommand): LinkCommand | undefined {
+  if (value === null || value === undefined) {
+    return undefined;
+  } else if (typeof value === 'object' && 'command' in value) {
+    return value;
+  }
+
+  return { command: value };
+}
 
 /**
  * Generic navigation directive that works with both internal Angular routes and external URLs.
@@ -76,73 +93,67 @@ export class AnyLink {
   readonly info = input<unknown>();
 
   /** Injector used to resolve optional dependencies while preparing navigation commands. */
-  private readonly injector = inject(Injector);
+  readonly #injector = inject(Injector);
 
   /** Host DOM element the directive is attached to. */
-  private readonly element = inject(ElementRef).nativeElement as Element;
+  readonly #element = inject(ElementRef).nativeElement as Element;
 
   /** Link orchestration service responsible for preparing and executing navigation. */
-  private readonly handler = inject(LinkHandler);
+  readonly #handler = inject(LinkHandler);
 
   /** Initial static `href` attribute from the host element, if present. */
-  private readonly initialHref = inject(new HostAttributeToken('href'), { optional: true });
+  readonly #initialHref = inject(new HostAttributeToken('href'), { optional: true });
 
   /** Initial static `tabindex` attribute from the host element, if present. */
-  private readonly initialTabIndex = inject(new HostAttributeToken('tabindex'), { optional: true });
+  readonly #initialTabIndex = inject(new HostAttributeToken('tabindex'), { optional: true });
 
   /** Whether the host behaves as an anchor-like element for native link semantics. */
-  private readonly isAnchorLikeElement = isAnchorLikeElement(this.element, inject(CUSTOM_ELEMENT_REGISTRY));
+  readonly #isAnchorLikeElement = isAnchorLikeElement(this.#element, inject(CUSTOM_ELEMENT_REGISTRY));
 
   /** Prepared link model derived from command inputs and current directive state. */
-  private readonly preparedLink = computed(() => {
+  readonly #preparedLink = computed(() => {
     const command = this.command();
     if (!command) {
       return undefined;
     }
 
-    return this.handler.prepareLink(
-      safeMerge(command, {
-        queryParams: this.queryParams(),
-        queryParamsHandling: this.queryParamsHandling(),
-        fragment: this.fragment(),
-        preserveFragment: this.preserveFragment(),
-        relativeTo: this.relativeTo(),
-      }),
-      this.element,
+    return this.#handler.prepareLink(
+      this.#getCommandWithDefaults(command),
+      this.#element,
       {
         target: this.target(),
         rel: this.rel(),
         download: this.download(),
       },
-      this.injector,
+      this.#injector,
     );
   });
 
   /** Resolved `href` host attribute value. */
   protected readonly hrefAttribute = computed(() => {
-    if (!this.isAnchorLikeElement) {
-      return this.initialHref;
+    if (!this.#isAnchorLikeElement) {
+      return this.#initialHref;
     }
 
-    return this.preparedLink()?.href;
+    return this.#preparedLink()?.href;
   });
 
   /** Resolved `target` host attribute value. */
-  protected readonly targetAttribute = computed(() => this.getAttributeValue('target'));
+  protected readonly targetAttribute = computed(() => this.#getAttributeValue('target'));
 
   /** Resolved `rel` host attribute value. */
-  protected readonly relAttribute = computed(() => this.getAttributeValue('rel'));
+  protected readonly relAttribute = computed(() => this.#getAttributeValue('rel'));
 
   /** Resolved `download` host attribute value. */
-  protected readonly downloadAttribute = computed(() => this.getAttributeValue('download'));
+  protected readonly downloadAttribute = computed(() => this.#getAttributeValue('download'));
 
   /** Resolved `tabindex` host attribute value for keyboard accessibility on non-anchor hosts. */
   protected readonly tabIndexAttribute = computed(() => {
-    if (this.initialTabIndex !== null || this.isAnchorLikeElement) {
-      return this.initialTabIndex;
+    if (this.#initialTabIndex !== null || this.#isAnchorLikeElement) {
+      return this.#initialTabIndex;
     }
 
-    return this.preparedLink() ? '0' : null;
+    return this.#preparedLink() ? '0' : null;
   });
 
   /**
@@ -174,12 +185,12 @@ export class AnyLink {
    * @returns `true` to keep default browser behavior, or `false` to suppress it.
    */
   protected onClick(event: PointerEvent): boolean {
-    const link = this.preparedLink();
+    const link = this.#preparedLink();
     if (!link) {
       return true;
     }
 
-    const result = this.handler.navigateTo(link, event, {
+    const result = this.#handler.navigateTo(link, event, {
       skipLocationChange: this.skipLocationChange(),
       browserUrl: this.browserUrl(),
       replaceUrl: this.replaceUrl(),
@@ -187,7 +198,7 @@ export class AnyLink {
       info: this.info(),
     });
 
-    return result ?? !this.isAnchorLikeElement;
+    return result ?? !this.#isAnchorLikeElement;
   }
 
   /**
@@ -196,8 +207,42 @@ export class AnyLink {
    * @param name Link attribute name to resolve.
    * @returns Resolved attribute value, `null`, or `undefined` when not provided.
    */
-  private getAttributeValue(name: keyof LinkAttributes): string | null | undefined {
-    const value = this.preparedLink()?.attributes?.[name];
+  #getAttributeValue(name: keyof LinkAttributes): string | null | undefined {
+    const value = this.#preparedLink()?.attributes?.[name];
     return value !== undefined ? value : this[name]();
+  }
+
+  /**
+   * Merges defined directive-level router inputs onto a command.
+   *
+   * @param command Link command from the primary input.
+   * @returns Command with configured router defaults applied.
+   */
+  #getCommandWithDefaults(command: LinkCommand): LinkCommand {
+    const result = { ...command };
+
+    const queryParams = this.queryParams();
+    if (queryParams !== undefined) {
+      result.queryParams = queryParams;
+    }
+
+    const queryParamsHandling = this.queryParamsHandling();
+    if (queryParamsHandling !== undefined) {
+      result.queryParamsHandling = queryParamsHandling;
+    }
+
+    const fragment = this.fragment();
+    if (fragment !== undefined) {
+      result.fragment = fragment;
+    }
+
+    result.preserveFragment = this.preserveFragment();
+
+    const relativeTo = this.relativeTo();
+    if (relativeTo !== undefined) {
+      result.relativeTo = relativeTo;
+    }
+
+    return result;
   }
 }

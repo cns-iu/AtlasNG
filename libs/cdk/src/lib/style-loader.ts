@@ -20,18 +20,18 @@ import {
 })
 export class StyleLoader {
   /** Reference to the environment injector. */
-  private readonly environmentInjector = inject(EnvironmentInjector);
+  readonly #environmentInjector = inject(EnvironmentInjector);
   /** Set of loaded style provider components. */
-  private readonly loaders = new Set<Type<unknown>>();
+  readonly #loaders = new Set<Type<unknown>>();
   /** List of created component references. */
-  private readonly refs: ComponentRef<unknown>[] = [];
+  readonly #refs: ComponentRef<unknown>[] = [];
 
   /**
    * Initialize the style loader and register cleanup logic.
    */
   constructor() {
     inject(DestroyRef).onDestroy(() => {
-      this.refs.forEach((ref) => ref.destroy());
+      this.#refs.forEach((ref) => ref.destroy());
     });
   }
 
@@ -41,10 +41,10 @@ export class StyleLoader {
    * @param loader Style provider component to load.
    */
   load(loader: Type<unknown>): void {
-    if (!this.loaders.has(loader)) {
-      const ref = createComponent(loader, { environmentInjector: this.environmentInjector });
-      this.loaders.add(loader);
-      this.refs.push(ref);
+    if (!this.#loaders.has(loader)) {
+      const ref = createComponent(loader, { environmentInjector: this.#environmentInjector });
+      this.#loaders.add(loader);
+      this.#refs.push(ref);
     }
   }
 }

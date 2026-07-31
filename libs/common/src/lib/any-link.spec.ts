@@ -3,14 +3,14 @@ import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { AnyLink } from './any-link';
-import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from './link-handler';
+import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from './links/handler';
+import { provideLinkHandler, withCustomHandler } from './links/providers';
 
-class MockLinkHandler extends LinkHandler {
+class MockLinkHandler implements LinkHandler {
   readonly prepareLink = vi.fn(
-    (_command: LinkCommand, _element?: Element, attributes?: LinkAttributes): PreparedLink<Record<string, never>> => ({
+    (_command: LinkCommand, _element?: Element, attributes?: LinkAttributes): PreparedLink => ({
       href: '/resolved',
       attributes,
-      handlerContext: {},
     }),
   );
 
@@ -35,8 +35,8 @@ describe('AnyLink', () => {
       imports: [AnyLink],
       componentProperties,
       providers: [
-        { provide: LinkHandler, useValue: handler },
         { provide: CUSTOM_ELEMENT_REGISTRY, useValue: customElementRegistry },
+        provideLinkHandler(withCustomHandler(() => handler)),
       ],
     });
 
@@ -84,7 +84,6 @@ describe('AnyLink', () => {
     await setup('<a data-testid="any-link" [angAnyLink]="command">go</a>', undefined, (handler) => {
       handler.prepareLink.mockReturnValue({
         href: '/prepared',
-        handlerContext: {},
       });
     });
 
@@ -114,7 +113,6 @@ describe('AnyLink', () => {
             rel: null,
             download: 'prepared.txt',
           },
-          handlerContext: {},
         });
       },
     );
@@ -140,6 +138,46 @@ describe('AnyLink', () => {
     expect(element).toHaveAttribute('target', '_blank');
     expect(element).toHaveAttribute('rel', 'noopener');
     expect(element).toHaveAttribute('download', 'report.csv');
+  });
+
+  it('merges defined router inputs onto LinkCommand object inputs', async () => {
+    const queryParams = { next: '2' };
+    const commandRelativeTo = { snapshot: 'command-route' };
+    const relativeTo = { snapshot: 'input-route' };
+    const { handler } = await setup(
+      `<a data-testid="any-link" [angAnyLink]="command" [queryParams]="queryParams"
+          [queryParamsHandling]="queryParamsHandling" [fragment]="fragment"
+          [preserveFragment]="preserveFragment" [relativeTo]="relativeTo"></a>`,
+      {
+        command: {
+          command: '/from-command',
+          fragment: 'old',
+          preserveFragment: false,
+          queryParams: { old: '1' },
+          queryParamsHandling: 'preserve',
+          relativeTo: commandRelativeTo,
+        },
+        fragment: 'new',
+        preserveFragment: true,
+        queryParams,
+        queryParamsHandling: 'merge',
+        relativeTo,
+      },
+    );
+
+    expect(handler.prepareLink).toHaveBeenCalledWith(
+      {
+        command: '/from-command',
+        fragment: 'new',
+        preserveFragment: true,
+        queryParams,
+        queryParamsHandling: 'merge',
+        relativeTo,
+      },
+      screen.getByTestId('any-link'),
+      { download: undefined, rel: undefined, target: undefined },
+      expect.anything(),
+    );
   });
 
   it('sets tabindex=0 for non-anchor hosts with a prepared link and no initial tabindex', async () => {

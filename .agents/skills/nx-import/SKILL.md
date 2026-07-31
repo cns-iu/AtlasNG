@@ -6,7 +6,7 @@ description: Import, merge, or combine repositories into an Nx workspace using n
 ## Quick Start
 
 - `nx import` brings code from a source repository or folder into the current workspace, preserving commit history.
-- After nx `22.6.0`, `nx import` responds with .ndjson outputs and follow-up questions. For earlier versions, always run with `--no-interactive` and specify all flags directly.
+- With nx `23.1.0` used by this repository, `nx import` responds with .ndjson outputs and follow-up questions. For earlier versions, always run with `--no-interactive` and specify all flags directly.
 - Run `nx import --help` for available options.
 - Make sure the destination directory is empty before importing.
   EXAMPLE: target has `libs/utils` and `libs/models`; source has `libs/ui` and `libs/data-access` — you cannot import `libs/` into `libs/` directly. Import each source library individually.
@@ -108,7 +108,7 @@ Subdirectory import doesn't bring the source's root `eslint.config.mjs`, but pro
 
 **Fix order**:
 
-1. Install ESLint deps first: `pnpm add -wD eslint@^9 @nx/eslint-plugin typescript-eslint` (plus framework-specific plugins)
+1. Install ESLint deps first: `pnpm add -wD eslint@^10.1.0 @nx/eslint-plugin typescript-eslint` (plus framework-specific plugins)
 2. Create root `eslint.config.mjs` (copy from source or create with `@nx/eslint-plugin` base rules)
 3. Then `npx nx add @nx/eslint` to register the plugin in `nx.json`
 
@@ -116,12 +116,12 @@ Install `typescript-eslint` explicitly — pnpm's strict hoisting won't auto-res
 
 ### ESLint Version Pinning (Critical)
 
-**Pin ESLint to v9** (`eslint@^9.0.0`). ESLint 10 breaks `@nx/eslint` and many plugins with cryptic errors like `Cannot read properties of undefined (reading 'version')`.
+**Pin ESLint to v10** (`eslint@^10.1.0`) to match this repository. Nx 23.1.0 supports ESLint 9 and 10; verify that framework-specific plugins also support the selected major.
 
-`@nx/eslint` may peer-depend on ESLint 8, causing the wrong version to resolve. If lint fails with `Cannot read properties of undefined (reading 'allow')`, add `pnpm.overrides`:
+Imported packages may constrain ESLint to an older major, causing the wrong version to resolve. If that happens, align their dependencies with the destination and add `pnpm.overrides` when a workspace-wide pin is needed:
 
 ```json
-{ "pnpm": { "overrides": { "eslint": "^9.0.0" } } }
+{ "pnpm": { "overrides": { "eslint": "^10.1.0" } } }
 ```
 
 ### Dependency Version Conflicts

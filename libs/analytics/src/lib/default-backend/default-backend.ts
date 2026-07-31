@@ -1,4 +1,3 @@
-import { inject } from '@angular/core';
 import { Analytics, AnalyticsPlugin } from 'analytics';
 import { ANALYTICS_CONFIG } from '../analytics';
 import { AnalyticsBackend } from '../backend';
@@ -30,7 +29,7 @@ export interface DefaultAnalyticsBackendConfig extends EventFilterPluginConfig, 
  * @returns Configured analytics backend instance.
  */
 export function defaultBackendFactory(config: DefaultAnalyticsBackendConfig): AnalyticsBackend {
-  const { appName, appVersion } = inject(ANALYTICS_CONFIG);
+  const { appName, appVersion } = ANALYTICS_CONFIG.inject();
   const plugins = typeof config.plugins === 'function' ? config.plugins() : (config.plugins ?? []);
 
   return Analytics({

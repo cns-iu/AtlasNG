@@ -10,7 +10,7 @@ import { CoreEvents } from '@atlasng/analytics/events';
 })
 export class AnalyticsErrorHandler implements ErrorHandler {
   /** Reference to analytics. */
-  private readonly analytics = inject(Analytics);
+  readonly #analytics = inject(Analytics);
 
   /**
    * Log any unhandled error as an analytics event.
@@ -24,7 +24,7 @@ export class AnalyticsErrorHandler implements ErrorHandler {
       console.error('Unhandled error', error);
     }
 
-    this.analytics.trackEvent(CoreEvents.Error, {
+    this.#analytics.trackEvent(CoreEvents.Error, {
       message: 'Unhandled error',
       reason: error,
     });

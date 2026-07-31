@@ -7,3 +7,10 @@ export {
   SESSION_STORAGE,
   WINDOW,
 } from './lib/browser-tokens';
+export {
+  createConfigurationToken,
+  type,
+  type ConfigurationToken,
+  type ConfigurationTokenOptions,
+  type ConfigurationWithDefaults,
+} from './lib/configuration-token';
