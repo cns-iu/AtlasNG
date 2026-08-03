@@ -1,9 +1,9 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AnalyticsPlugin } from 'analytics';
 import { AnalyticsPermissions, AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
+import { AnalyticsPlugin } from 'analytics';
 import { ANALYTICS_CONFIG } from '../analytics';
-import { defaultBackendFactory, DefaultAnalyticsBackendConfig } from './default-backend';
+import { DefaultAnalyticsBackendConfig, defaultBackendFactory } from './default-backend';
 
 const { analyticsFactoryMock } = vi.hoisted(() => ({
   analyticsFactoryMock: vi.fn(),
@@ -14,10 +14,7 @@ vi.mock('analytics', () => ({
 }));
 
 describe('defaultBackendFactory', () => {
-  function createBackend(
-    config: DefaultAnalyticsBackendConfig,
-    analyticsConfig?: { appName?: string; appVersion?: string },
-  ) {
+  function configureProviders(analyticsConfig?: { appName?: string; appVersion?: string }) {
     TestBed.configureTestingModule({
       providers: [
         ANALYTICS_CONFIG.provide(analyticsConfig ?? { appName: 'AtlasNG', appVersion: '1.2.3' }),
@@ -30,22 +27,26 @@ describe('defaultBackendFactory', () => {
         },
       ],
     });
+  }
+
+  function createBackend(
+    config: DefaultAnalyticsBackendConfig,
+    analyticsConfig?: { appName?: string; appVersion?: string },
+  ) {
+    configureProviders(analyticsConfig);
 
     return TestBed.runInInjectionContext(() => defaultBackendFactory(config));
   }
 
-  function setNgDevMode(value: unknown): () => void {
+  function runWithProdMode<T>(callback: () => T): T {
     const global = globalThis as Record<string, unknown>;
     const previous = global['ngDevMode'];
-    if (value === undefined) {
-      delete global['ngDevMode'];
-    } else {
-      global['ngDevMode'] = value;
-    }
-
-    return () => {
+    global['ngDevMode'] = false;
+    try {
+      return callback();
+    } finally {
       global['ngDevMode'] = previous;
-    };
+    }
   }
 
   function getAnalyticsOptions(): {
@@ -114,16 +115,17 @@ describe('defaultBackendFactory', () => {
   });
 
   it('should set debug to false when ngDevMode is false', () => {
-    const restore = setNgDevMode(false);
     const backend = { track: vi.fn(), page: vi.fn() };
     analyticsFactoryMock.mockReturnValueOnce(backend);
 
-    createBackend({ endpoint: 'https://api.atlasng.dev/telemetry' });
+    configureProviders();
 
-    const options = getAnalyticsOptions();
-    expect(options.debug).toBe(false);
-    expect(options.plugins.map((plugin) => plugin.name)).toEqual(['atlasng-event-filter', 'atlasng-telemetry']);
+    runWithProdMode(() => {
+      TestBed.runInInjectionContext(() => defaultBackendFactory({ endpoint: 'https://api.atlasng.dev/telemetry' }));
 
-    restore();
+      const options = getAnalyticsOptions();
+      expect(options.debug).toBe(false);
+      expect(options.plugins.map((plugin) => plugin.name)).toEqual(['atlasng-event-filter', 'atlasng-telemetry']);
+    });
   });
 });

@@ -6,13 +6,15 @@ import { CoreEvents } from '@atlasng/analytics/events';
 describe('AnalyticsErrorHandler', () => {
   const error = new Error('Test error');
 
-  function enableProdMode() {
+  function runWithProdMode<T>(callback: () => T): T {
     const global = globalThis as Record<string, unknown>;
     const originalNgDevMode = global['ngDevMode'];
     global['ngDevMode'] = false;
-    return () => {
+    try {
+      return callback();
+    } finally {
       global['ngDevMode'] = originalNgDevMode;
-    };
+    }
   }
 
   function setup() {
@@ -36,12 +38,13 @@ describe('AnalyticsErrorHandler', () => {
   });
 
   it('should not log unhandled errors to the console in production mode', () => {
-    const restoreDevMode = enableProdMode();
     const { handler, consoleErrorSpy } = setup();
-    handler.handleError(error);
 
-    expect(consoleErrorSpy).not.toHaveBeenCalled();
-    restoreDevMode();
+    runWithProdMode(() => {
+      handler.handleError(error);
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('should log unhandled errors as analytics events', () => {

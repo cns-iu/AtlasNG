@@ -5,12 +5,14 @@ import { provideSocialMediaButtons, SocialMediaButton, SocialMediaButtonDef } fr
 
 describe('SocialMediaButton', () => {
   type SetupOptions = {
+    detectChangesOnRender?: boolean;
     inputs?: ComponentInput<SocialMediaButton>;
     defs?: SocialMediaButtonDef[];
   };
 
-  function setup({ inputs = {}, defs }: SetupOptions = {}) {
+  function setup({ detectChangesOnRender = true, inputs = {}, defs }: SetupOptions = {}) {
     return render(SocialMediaButton, {
+      detectChangesOnRender,
       inputs,
       providers: [
         { provide: MatIconRegistry, useClass: FakeMatIconRegistry },
@@ -84,35 +86,40 @@ describe('SocialMediaButton', () => {
   });
 
   describe('in production mode', () => {
-    function enableProdMode() {
+    function runWithProdMode<T>(callback: () => T): T {
       const global = globalThis as Record<string, unknown>;
       const originalNgDevMode = global['ngDevMode'];
       global['ngDevMode'] = false;
-      return () => {
+      try {
+        return callback();
+      } finally {
         global['ngDevMode'] = originalNgDevMode;
-      };
+      }
     }
 
     it('renders the fallback when neither id nor def are provided', async () => {
-      const restoreDevMode = enableProdMode();
-      await setup();
+      const { fixture } = await setup({ detectChangesOnRender: false });
 
-      const link = screen.getByRole('link', { name: 'Not available' });
-      expect(link).toHaveAttribute('href', '#');
-      restoreDevMode();
+      runWithProdMode(() => {
+        fixture.detectChanges();
+        const link = screen.getByRole('link', { name: 'Not available' });
+        expect(link).toHaveAttribute('href', '#');
+      });
     });
 
     it('renders the fallback when id cannot be resolved', async () => {
-      const restoreDevMode = enableProdMode();
-      await setup({
+      const { fixture } = await setup({
+        detectChangesOnRender: false,
         inputs: {
           id: 'not-a-real-platform',
         },
       });
 
-      const link = screen.getByRole('link', { name: 'Not available' });
-      expect(link).toHaveAttribute('href', '#');
-      restoreDevMode();
+      runWithProdMode(() => {
+        fixture.detectChanges();
+        const link = screen.getByRole('link', { name: 'Not available' });
+        expect(link).toHaveAttribute('href', '#');
+      });
     });
   });
 

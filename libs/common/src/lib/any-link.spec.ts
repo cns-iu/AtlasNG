@@ -1,3 +1,5 @@
+import { Component } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { fireEvent, render, screen } from '@testing-library/angular';
@@ -15,6 +17,16 @@ class MockLinkHandler implements LinkHandler {
   );
 
   readonly navigateTo = vi.fn((): boolean | void => false);
+}
+
+@Component({
+  selector: 'ang-any-link-production-host',
+  imports: [AnyLink],
+  template: '<a [angAnyLink]="command" [queryParams]="queryParams">test link</a>',
+})
+class AnyLinkProductionHost {
+  readonly command = new UrlTree();
+  readonly queryParams = { source: 'test' };
 }
 
 describe('AnyLink', () => {
@@ -43,13 +55,15 @@ describe('AnyLink', () => {
     return { ...result, user, handler };
   }
 
-  function enableProdMode() {
+  function runWithProdMode<T>(callback: () => T): T {
     const global = globalThis as Record<string, unknown>;
     const originalNgDevMode = global['ngDevMode'];
     global['ngDevMode'] = false;
-    return () => {
+    try {
+      return callback();
+    } finally {
       global['ngDevMode'] = originalNgDevMode;
-    };
+    }
   }
 
   afterEach(() => {
@@ -67,17 +81,23 @@ describe('AnyLink', () => {
     );
   });
 
-  // For some reason enabling prod mode causes the TestBed to misbehave and not reset between tests
-  // Skipping this test until we can figure out why
-  it.skip('does not throw an error for invalid input combinations in production mode', async () => {
-    const restoreProdMode = enableProdMode();
-    const result = setup('<a data-testid="any-link" [angAnyLink]="command" [relativeTo]="relativeTo"></a>', {
-      command: new UrlTree(),
-      relativeTo: {},
+  it('does not throw an error for invalid input combinations in production mode', async () => {
+    const handler = new MockLinkHandler();
+    TestBed.configureTestingModule({
+      imports: [AnyLinkProductionHost],
+      providers: [
+        { provide: CUSTOM_ELEMENT_REGISTRY, useValue: { get: vi.fn().mockReturnValue(undefined) } },
+        provideLinkHandler(withCustomHandler(() => handler)),
+      ],
     });
+    await TestBed.compileComponents();
 
-    await expect(result).resolves.not.toThrow();
-    restoreProdMode();
+    runWithProdMode(() => {
+      expect(() => {
+        const fixture = TestBed.createComponent(AnyLinkProductionHost);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
   });
 
   it('sets href from the prepared link for anchor elements', async () => {
