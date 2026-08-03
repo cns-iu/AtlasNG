@@ -12,12 +12,7 @@
       </p>
     </ng-content>
 
-    @if (privacyPolicy(); as policy) {
-      <a angTextLink class="ang-cookie-banner-privacy-policy" target="_blank" [angAnyLink]="policy">
-        Privacy policy
-        <mat-icon fontIcon="arrow_right_alt" />
-      </a>
-    }
+    <ng-content select="ang-cookie-banner-privacy-policy, [angCookieBannerPrivacyPolicy]" />
   </div>
 
   <div class="ang-cookie-banner-actions">

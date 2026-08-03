@@ -20,6 +20,11 @@ $config: (
     description-tracking: token-utils.sys-token(body-large-tracking),
     description-weight: token-utils.sys-token(body-large-weight),
     privacy-policy-color: token-utils.sys-token(on-surface),
+    privacy-policy-font: token-utils.sys-token(body-large-font),
+    privacy-policy-line-height: token-utils.sys-token(body-large-line-height),
+    privacy-policy-size: token-utils.sys-token(body-large-size),
+    privacy-policy-tracking: token-utils.sys-token(body-large-tracking),
+    privacy-policy-weight: token-utils.sys-token(body-large-weight),
   ),
 );
 

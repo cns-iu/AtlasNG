@@ -79,12 +79,11 @@ body.ang-cookie-banner-container {
   }
 
   .ang-cookie-banner-privacy-policy {
-    height: 48px;
     color: token-utils.slot('privacy-policy-color', $config);
-    font-family: token-utils.slot('description-font', $config);
-    font-size: token-utils.slot('description-size', $config);
-    line-height: token-utils.slot('description-line-height', $config);
-    letter-spacing: token-utils.slot('description-tracking', $config);
+    font-family: token-utils.slot('privacy-policy-font', $config);
+    font-size: token-utils.slot('privacy-policy-size', $config);
+    line-height: token-utils.slot('privacy-policy-line-height', $config);
+    letter-spacing: token-utils.slot('privacy-policy-tracking', $config);
   }
 
   .ang-cookie-banner-actions {
@@ -149,7 +148,7 @@ body.ang-cookie-banner-container {
     display: none;
   }
 
-  .ang-cookie-banner.ang-cookie-banner-closed {
+  .ang-cookie-banner-container.ang-cookie-banner-closed {
     padding-bottom: 0;
     scroll-padding-bottom: 0;
   }

@@ -19,11 +19,9 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
-import { AnyLink, AnyLinkCommand, IdGenerator } from '@atlasng/common';
+import { IdGenerator } from '@atlasng/common';
 import { RESIZE_OBSERVER } from '@atlasng/core';
-import { TextLink } from '@atlasng/design-system/text-link';
 
 /** Prefix used when generating a custom title id if one is not provided by the consumer. */
 const DEFAULT_TITLE_ID_PREFIX = 'ang-cookie-banner-title';
@@ -73,6 +71,15 @@ export class CookieBannerTitle {
 export class CookieBannerDescription {}
 
 /**
+ * Marks projected privacy policy content inside the cookie banner.
+ */
+@Directive({
+  selector: 'ang-cookie-banner-privacy-policy, [angCookieBannerPrivacyPolicy]',
+  host: { class: 'ang-cookie-banner-privacy-policy' },
+})
+export class CookieBannerPrivacyPolicy {}
+
+/**
  * Marks a projected action element and optionally closes the banner when clicked.
  */
 @Directive({
@@ -89,15 +96,15 @@ export class CookieBannerAction {
   readonly closeOnClick = input(true);
 
   /** Reference to the parent cookie banner. */
-  private readonly banner = inject(CookieBanner);
+  readonly #banner = inject(CookieBanner);
 
   /**
    * Closes the parent banner only when both action-level and banner-level
    * closeOnClick settings are enabled.
    */
   protected handleClick(): void {
-    if (this.closeOnClick() && this.banner.closeOnClick()) {
-      this.banner.close();
+    if (this.closeOnClick() && this.#banner.closeOnClick()) {
+      this.#banner.close();
     }
   }
 }
@@ -125,7 +132,7 @@ export class CookieBannerContainer {
  */
 @Component({
   selector: 'ang-cookie-banner',
-  imports: [AnyLink, MatButton, MatIcon, TextLink, TrackClick],
+  imports: [MatButton, TrackClick],
   templateUrl: './cookie-banner.html',
   styleUrl: './cookie-banner.scss',
   providers: [provideEventScope('cookie-banner')],
@@ -141,11 +148,6 @@ export class CookieBanner {
    * Controls whether the banner is visible.
    */
   readonly opened = model(true);
-
-  /**
-   * Optional privacy policy link configuration.
-   */
-  readonly privacyPolicy = input<AnyLinkCommand>();
 
   /**
    * Global close behavior for built-in click handlers.
@@ -164,33 +166,35 @@ export class CookieBanner {
   /**
    * Id used by aria-labelledby. Falls back to a generated id if no title directive is projected.
    */
-  protected readonly titleId = computed(() => this.titleDir()?.id() ?? this.idGenerator.getId(DEFAULT_TITLE_ID_PREFIX));
+  protected readonly titleId = computed(
+    () => this.titleDir()?.id() ?? this.#idGenerator.getId(DEFAULT_TITLE_ID_PREFIX),
+  );
 
   /** Reference to the projected title directive. */
-  private readonly titleDir = contentChild(CookieBannerTitle, { descendants: true });
+  protected readonly titleDir = contentChild(CookieBannerTitle, { descendants: true });
 
   /** Reference to the id generator. */
-  private readonly idGenerator = inject(IdGenerator);
+  readonly #idGenerator = inject(IdGenerator);
 
   /** Renderer used to update host/container classes and inline CSS variables. */
-  private readonly renderer = inject(Renderer2);
+  readonly #renderer = inject(Renderer2);
 
   /**
    * External element that receives spacing and animation classes.
    * Falls back to document body when no explicit container directive is projected.
    */
-  private readonly containerEl = inject(CookieBannerContainer, { optional: true })?.el ?? inject(DOCUMENT).body;
+  readonly #containerEl = inject(CookieBannerContainer, { optional: true })?.el ?? inject(DOCUMENT).body;
 
   /** Native host element of this banner instance. */
-  private readonly el = inject(ElementRef).nativeElement as HTMLElement;
+  readonly #el = inject(ElementRef).nativeElement as HTMLElement;
 
   /** Current measured banner block size in pixels. */
-  private readonly height = signal(0);
+  readonly #height = signal(0);
 
   /** Initializes the cookie banner. */
   constructor() {
-    this.initializeContainer();
-    this.monitorHeight();
+    this.#initializeContainer();
+    this.#monitorHeight();
 
     let isFirstChange = true;
     effect(() => {
@@ -198,14 +202,13 @@ export class CookieBanner {
       if (isFirstChange) {
         isFirstChange = false;
       } else {
-        this.setAnimationClasses(animationClasses);
+        this.#setAnimationClasses(animationClasses);
       }
     });
 
-    const { containerEl, renderer } = this;
     effect(() => {
-      const height = `${this.height()}px`;
-      renderer.setStyle(containerEl, SPACING_VARIABLE, height, RendererStyleFlags2.DashCase);
+      const height = `${this.#height()}px`;
+      this.#renderer.setStyle(this.#containerEl, SPACING_VARIABLE, height, RendererStyleFlags2.DashCase);
     });
   }
 
@@ -242,15 +245,16 @@ export class CookieBanner {
    */
   protected handleAnimationEnd(event: AnimationEvent): void {
     if (event.animationName === 'ang-cookie-banner-closed') {
-      this.renderer.setStyle(this.el, 'display', 'none');
+      this.#renderer.setStyle(this.#el, 'display', 'none');
     }
   }
 
   /**
    * Registers container-level classes/styles and ensures they are removed on destroy.
    */
-  private initializeContainer(): void {
-    const { containerEl, renderer } = this;
+  #initializeContainer(): void {
+    const containerEl = this.#containerEl;
+    const renderer = this.#renderer;
     renderer.addClass(containerEl, CONTAINER_CLASS);
     inject(DestroyRef).onDestroy(() => {
       renderer.removeClass(containerEl, CONTAINER_CLASS);
@@ -263,15 +267,15 @@ export class CookieBanner {
   /**
    * Observes host size changes and updates the container spacing CSS variable.
    */
-  private monitorHeight(): void {
+  #monitorHeight(): void {
     const ResizeObserver = inject(RESIZE_OBSERVER);
 
     if (ResizeObserver) {
       const resizeObserver = new ResizeObserver((entries) => {
-        this.height.set(entries[0].borderBoxSize[0].blockSize);
+        this.#height.set(entries[0].borderBoxSize[0].blockSize);
       });
 
-      resizeObserver.observe(this.el);
+      resizeObserver.observe(this.#el);
       inject(DestroyRef).onDestroy(() => resizeObserver.disconnect());
     }
   }
@@ -281,8 +285,10 @@ export class CookieBanner {
    *
    * @param classes Animation class token to apply.
    */
-  private setAnimationClasses(classes: string): void {
-    const { containerEl, el, renderer } = this;
+  #setAnimationClasses(classes: string): void {
+    const containerEl = this.#containerEl;
+    const el = this.#el;
+    const renderer = this.#renderer;
     renderer.removeClass(containerEl, OPENED_CLASS);
     renderer.removeClass(containerEl, CLOSED_CLASS);
     renderer.removeClass(el, OPENED_CLASS);

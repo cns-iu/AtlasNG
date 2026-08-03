@@ -8,16 +8,25 @@ import {
   CookieBannerContainer,
   CookieBannerDescription,
   CookieBannerLogo,
+  CookieBannerPrivacyPolicy,
   CookieBannerTitle,
 } from './cookie-banner';
 
 @Component({
-  imports: [CookieBanner, CookieBannerLogo, CookieBannerTitle, CookieBannerDescription, CookieBannerAction],
+  imports: [
+    CookieBanner,
+    CookieBannerLogo,
+    CookieBannerTitle,
+    CookieBannerDescription,
+    CookieBannerPrivacyPolicy,
+    CookieBannerAction,
+  ],
   template: `
     <ang-cookie-banner data-testid="custom-cookie-banner" [closeOnClick]="bannerCloseOnClick" #banner>
       <img angCookieBannerLogo alt="Site logo" src="/logo.svg" />
       <ang-cookie-banner-title id="custom-title">Custom privacy title</ang-cookie-banner-title>
       <ang-cookie-banner-description>Custom cookie description</ang-cookie-banner-description>
+      <a angCookieBannerPrivacyPolicy href="https://example.com/privacy" target="_blank">Privacy policy</a>
       <button angCookieBannerAction>Dismiss</button>
       <button angCookieBannerAction [closeOnClick]="false">Keep open</button>
     </ang-cookie-banner>
@@ -137,14 +146,14 @@ describe('CookieBanner', () => {
     expect(click).toHaveBeenCalledOnce();
   });
 
-  it('does not render a privacy policy link when privacyPolicy input is not provided', async () => {
+  it('does not render privacy policy content when none is projected', async () => {
     await setup();
 
     expect(screen.queryByRole('link', { name: /privacy policy/i })).not.toBeInTheDocument();
   });
 
-  it('renders a privacy policy link when privacyPolicy input is provided', async () => {
-    await setup({ inputs: { privacyPolicy: 'https://example.com/privacy' } });
+  it('renders projected privacy policy content', async () => {
+    await setupCustomContent();
 
     const link = screen.getByRole('link', { name: /privacy policy/i });
     expect(link).toHaveAttribute('href', 'https://example.com/privacy');
