@@ -15,13 +15,15 @@ import {
 describe('provideAnalytics', () => {
   const DEFAULT_BACKEND_CONFIG = { endpoint: '' };
 
-  function enableProdMode() {
+  function runWithProdMode<T>(callback: () => T): T {
     const global = globalThis as Record<string, unknown>;
     const originalNgDevMode = global['ngDevMode'];
     global['ngDevMode'] = false;
-    return () => {
+    try {
+      return callback();
+    } finally {
       global['ngDevMode'] = originalNgDevMode;
-    };
+    }
   }
 
   function createMockBackend(): AnalyticsBackend {
@@ -120,11 +122,11 @@ describe('provideAnalytics', () => {
   });
 
   it('should not check for backend misconfiguration when in prod mode', () => {
-    const restoreDevMode = enableProdMode();
-    const setup = () => provideAnalytics();
+    runWithProdMode(() => {
+      const setup = () => provideAnalytics();
 
-    expect(setup).not.toThrow();
-    restoreDevMode();
+      expect(setup).not.toThrow();
+    });
   });
 
   it('should configure the permissions manager', () => {

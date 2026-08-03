@@ -75,7 +75,10 @@ describe('provideLinkHandler', () => {
   });
 
   it('skips duplicate handler validation in production mode', () => {
-    runWithProdMode(() => setup(withCustomHandler(createMockLinkHandler), withRouterHandler()));
+    const providers = runWithProdMode(() =>
+      provideLinkHandler(withCustomHandler(createMockLinkHandler), withRouterHandler()),
+    );
+    TestBed.configureTestingModule({ providers: [providers] });
 
     expect(TestBed.inject(LinkHandler)).toBeInstanceOf(RouterLinkHandler);
   });
