@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Enable task distribution via Nx Cloud
-        run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="lint,test,build,build-compodoc,build-storybook"
+        run: npx nx start-ci-run --distribute-on=".nx/workflows/distribution-config.yaml" --stop-agents-after="lint,test,build,build-compodoc,build-storybook"
 
       - name: Set up Node.js
         uses: actions/setup-node@v6

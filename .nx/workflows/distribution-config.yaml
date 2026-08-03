@@ -1,0 +1,9 @@
+distribute-on:
+  default: 3 linux-medium-js
+
+assignment-rules:
+  - targets:
+      - test
+    run-on:
+      - agent: linux-medium-js
+        parallelism: 1
