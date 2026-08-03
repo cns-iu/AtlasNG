@@ -5,15 +5,9 @@ import { AnalyticsPlugin } from 'analytics';
 import { ANALYTICS_CONFIG } from '../analytics';
 import { DefaultAnalyticsBackendConfig, defaultBackendFactory } from './default-backend';
 
-const { analyticsFactoryMock } = vi.hoisted(() => ({
-  analyticsFactoryMock: vi.fn(),
-}));
-
-vi.mock('analytics', () => ({
-  Analytics: analyticsFactoryMock,
-}));
-
 describe('defaultBackendFactory', () => {
+  const analyticsFactoryMock = vi.fn();
+
   function configureProviders(analyticsConfig?: { appName?: string; appVersion?: string }) {
     TestBed.configureTestingModule({
       providers: [
@@ -35,7 +29,7 @@ describe('defaultBackendFactory', () => {
   ) {
     configureProviders(analyticsConfig);
 
-    return TestBed.runInInjectionContext(() => defaultBackendFactory(config));
+    return TestBed.runInInjectionContext(() => defaultBackendFactory(config, analyticsFactoryMock));
   }
 
   function runWithProdMode<T>(callback: () => T): T {
@@ -121,7 +115,9 @@ describe('defaultBackendFactory', () => {
     configureProviders();
 
     runWithProdMode(() => {
-      TestBed.runInInjectionContext(() => defaultBackendFactory({ endpoint: 'https://api.atlasng.dev/telemetry' }));
+      TestBed.runInInjectionContext(() =>
+        defaultBackendFactory({ endpoint: 'https://api.atlasng.dev/telemetry' }, analyticsFactoryMock),
+      );
 
       const options = getAnalyticsOptions();
       expect(options.debug).toBe(false);

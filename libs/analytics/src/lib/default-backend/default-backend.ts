@@ -4,6 +4,9 @@ import { AnalyticsBackend } from '../backend';
 import { eventFilterPlugin, EventFilterPluginConfig } from './event-filter-plugin';
 import { telemetryPlugin, TelemetryPluginConfig } from './telemetry-plugin';
 
+/** Factory signature used to create the underlying analytics instance. */
+type AnalyticsFactory = (config: Parameters<typeof Analytics>[0]) => AnalyticsBackend;
+
 /**
  * Configuration for the default analytics backend factory.
  *
@@ -26,13 +29,17 @@ export interface DefaultAnalyticsBackendConfig extends EventFilterPluginConfig, 
  * plugins, plus any caller-provided plugins.
  *
  * @param config Combined backend configuration.
+ * @param analyticsFactory Factory used to create the underlying analytics instance.
  * @returns Configured analytics backend instance.
  */
-export function defaultBackendFactory(config: DefaultAnalyticsBackendConfig): AnalyticsBackend {
+export function defaultBackendFactory(
+  config: DefaultAnalyticsBackendConfig,
+  analyticsFactory: AnalyticsFactory = Analytics,
+): AnalyticsBackend {
   const { appName, appVersion } = ANALYTICS_CONFIG.inject();
   const plugins = typeof config.plugins === 'function' ? config.plugins() : (config.plugins ?? []);
 
-  return Analytics({
+  return analyticsFactory({
     app: appName,
     version: appVersion,
     debug: !!(typeof ngDevMode === 'undefined' || ngDevMode),

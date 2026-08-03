@@ -13,6 +13,7 @@ permissions:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  VITEST_MAX_WORKERS: '2'
   HUSKY: 0
 
 concurrency:
@@ -30,7 +31,11 @@ jobs:
           fetch-depth: 0
 
       - name: Enable task distribution via Nx Cloud
-        run: npx nx start-ci-run --distribute-on=".nx/workflows/distribution-config.yaml" --stop-agents-after="lint,test,build,build-compodoc,build-storybook"
+        run: |
+          npx nx start-ci-run \
+            --distribute-on=".nx/workflows/distribution-config.yaml" \
+            --with-env-vars="VITEST_MAX_WORKERS" \
+            --stop-agents-after="lint,test,build,build-compodoc,build-storybook"
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
