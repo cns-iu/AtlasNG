@@ -110,7 +110,7 @@ export class SocialMediaButton {
 
   /** Resolved definition from either `def` input or `id` lookup. */
   protected readonly resolvedDef = computed(() => {
-    for (const def of this.getDefCandidates()) {
+    for (const def of this.#getDefCandidates()) {
       if (def) {
         return def;
       }
@@ -120,7 +120,7 @@ export class SocialMediaButton {
   });
 
   /** Optional custom definitions provided via dependency injection. */
-  private readonly defs = inject(SOCIAL_MEDIA_BUTTON_DEFS, { optional: true });
+  readonly #defs = inject(SOCIAL_MEDIA_BUTTON_DEFS, { optional: true });
 
   /**
    * Yields candidate definitions in precedence order:
@@ -130,7 +130,7 @@ export class SocialMediaButton {
    *
    * In dev mode, missing inputs or unresolved `id` will throw.
    */
-  private *getDefCandidates(): Iterable<SocialMediaButtonDef | undefined> {
+  *#getDefCandidates(): Iterable<SocialMediaButtonDef | undefined> {
     yield this.def();
 
     const id = this.id();
@@ -138,7 +138,7 @@ export class SocialMediaButton {
       throw new Error('SocialMediaButton requires an id or def input');
     }
 
-    yield this.defs?.find((d) => d.id === id);
+    yield this.#defs?.find((d) => d.id === id);
     yield DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS.find((d) => d.id === id);
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {

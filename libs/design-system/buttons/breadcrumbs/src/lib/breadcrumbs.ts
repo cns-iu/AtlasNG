@@ -22,5 +22,5 @@ export class Breadcrumbs {
   readonly items = input.required<BreadcrumbItem[]>();
 
   /** Separator to display between crumbs */
-  readonly separator = input<string>('/');
+  readonly separator = input('/');
 }

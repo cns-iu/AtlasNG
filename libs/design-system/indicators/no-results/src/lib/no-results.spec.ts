@@ -15,12 +15,12 @@ describe('NoResultsIndicator', () => {
     expect(screen.getByRole('button', { name: 'Custom label' })).toBeInTheDocument();
   });
 
-  it('should emit clearClick on button click', async () => {
+  it('should emit clear on button click', async () => {
     const user = userEvent.setup();
     const click = vi.fn();
     await render(NoResultsIndicator, {
       on: {
-        clearClick: click,
+        clear: click,
       },
     });
 

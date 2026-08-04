@@ -12,7 +12,7 @@ const meta: Meta<NoResultsIndicator> = {
     },
   },
   args: {
-    clearClick: fn(),
+    clear: fn(),
   },
 };
 
