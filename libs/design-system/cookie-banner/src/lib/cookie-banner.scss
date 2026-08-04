@@ -1,5 +1,5 @@
-@use 'internal/breakpoints';
 @use 'internal/token-utils';
+@use 'breakpoints';
 @use './tokens' as *;
 
 $container-padding: 24px;
@@ -97,7 +97,7 @@ body.ang-cookie-banner-container {
     min-width: $action-min-width;
   }
 
-  @include breakpoints.breakpoint(medium, $boundary: 'open-end') {
+  @include breakpoints.breakpoint(medium) {
     $content-margin: 24px;
     $actions-width: 320px;
     $actions-margin-left: 16px;

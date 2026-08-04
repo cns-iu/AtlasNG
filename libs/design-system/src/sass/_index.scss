@@ -2,6 +2,10 @@
 // in cases where we use different tokens than the Material defaults.
 @forward './mat-defaults' as mat-*;
 
+// Utilities
+@forward './breakpoints' show $breakpoints, $print-breakpoint, breakpoint;
+
+// Overrides
 @forward '../../buttons/breadcrumbs/src/lib/tokens' as breadcrumbs-* show $breadcrumbs-overrides;
 @forward '../../buttons/navigation/src/lib/tokens' as navigation-button-* show $navigation-button-overrides;
 @forward '../../buttons/navigation-toggle/src/lib/tokens' as navigation-toggle-* show $navigation-toggle-overrides;
