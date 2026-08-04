@@ -11,28 +11,10 @@ import {
 } from '@angular/core';
 import type { ActivatedRoute, Params, QueryParamsHandling, UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
-import { LinkAttributes, LinkCommand, LinkHandler } from './links/handler';
-import { isAnchorLikeElement } from './links/shared/anchor-element';
-import { isUrlTree } from './links/shared/url';
-
-/** Valid types for the link command input. */
-export type AnyLinkCommand = string | readonly unknown[] | UrlTree | LinkCommand | null | undefined;
-
-/**
- * Normalizes supported directive input values into a `LinkCommand` object.
- *
- * @param value Raw `angAnyLink` input value.
- * @returns Normalized link command, or `undefined` when the input is nullish.
- */
-export function commandAttribute(value: AnyLinkCommand): LinkCommand | undefined {
-  if (value === null || value === undefined) {
-    return undefined;
-  } else if (typeof value === 'object' && 'command' in value) {
-    return value;
-  }
-
-  return { command: value };
-}
+import { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from '../links/handler';
+import { isAnchorLikeElement } from '../links/shared/anchor-element';
+import { isUrlTree } from '../links/shared/url';
+import { commandAttribute } from './any-link-command';
 
 /**
  * Generic navigation directive that works with both internal Angular routes and external URLs.
@@ -92,26 +74,8 @@ export class AnyLink {
   /** Optional router navigation extras info payload. */
   readonly info = input<unknown>();
 
-  /** Injector used to resolve optional dependencies while preparing navigation commands. */
-  readonly #injector = inject(Injector);
-
-  /** Host DOM element the directive is attached to. */
-  readonly #element = inject(ElementRef).nativeElement as Element;
-
-  /** Link orchestration service responsible for preparing and executing navigation. */
-  readonly #handler = inject(LinkHandler);
-
-  /** Initial static `href` attribute from the host element, if present. */
-  readonly #initialHref = inject(new HostAttributeToken('href'), { optional: true });
-
-  /** Initial static `tabindex` attribute from the host element, if present. */
-  readonly #initialTabIndex = inject(new HostAttributeToken('tabindex'), { optional: true });
-
-  /** Whether the host behaves as an anchor-like element for native link semantics. */
-  readonly #isAnchorLikeElement = isAnchorLikeElement(this.#element, inject(CUSTOM_ELEMENT_REGISTRY));
-
   /** Prepared link model derived from command inputs and current directive state. */
-  readonly #preparedLink = computed(() => {
+  readonly preparedLink = computed(() => {
     const command = this.command();
     if (!command) {
       return undefined;
@@ -129,13 +93,31 @@ export class AnyLink {
     );
   });
 
+  /** Injector used to resolve optional dependencies while preparing navigation commands. */
+  readonly #injector = inject(Injector);
+
+  /** Host DOM element the directive is attached to. */
+  readonly #element = inject(ElementRef).nativeElement as Element;
+
+  /** Link orchestration service responsible for preparing and executing navigation. */
+  readonly #handler = inject<LinkHandler<PreparedLink>>(LinkHandler);
+
+  /** Initial static `href` attribute from the host element, if present. */
+  readonly #initialHref = inject(new HostAttributeToken('href'), { optional: true });
+
+  /** Initial static `tabindex` attribute from the host element, if present. */
+  readonly #initialTabIndex = inject(new HostAttributeToken('tabindex'), { optional: true });
+
+  /** Whether the host behaves as an anchor-like element for native link semantics. */
+  readonly #isAnchorLikeElement = isAnchorLikeElement(this.#element, inject(CUSTOM_ELEMENT_REGISTRY));
+
   /** Resolved `href` host attribute value. */
   protected readonly hrefAttribute = computed(() => {
     if (!this.#isAnchorLikeElement) {
       return this.#initialHref;
     }
 
-    return this.#preparedLink()?.href;
+    return this.preparedLink()?.href;
   });
 
   /** Resolved `target` host attribute value. */
@@ -153,7 +135,7 @@ export class AnyLink {
       return this.#initialTabIndex;
     }
 
-    return this.#preparedLink() ? '0' : null;
+    return this.preparedLink() ? '0' : null;
   });
 
   /**
@@ -185,7 +167,7 @@ export class AnyLink {
    * @returns `true` to keep default browser behavior, or `false` to suppress it.
    */
   protected onClick(event: PointerEvent): boolean {
-    const link = this.#preparedLink();
+    const link = this.preparedLink();
     if (!link) {
       return true;
     }
@@ -208,7 +190,7 @@ export class AnyLink {
    * @returns Resolved attribute value, `null`, or `undefined` when not provided.
    */
   #getAttributeValue(name: keyof LinkAttributes): string | null | undefined {
-    const value = this.#preparedLink()?.attributes?.[name];
+    const value = this.preparedLink()?.attributes?.[name];
     return value !== undefined ? value : this[name]();
   }
 

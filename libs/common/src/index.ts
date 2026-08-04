@@ -1,4 +1,5 @@
-export { AnyLink, type AnyLinkCommand } from './lib/any-link';
+export { AnyLink } from './lib/any-link/any-link';
+export { commandAttribute, isAnyLinkCommand, type AnyLinkCommand } from './lib/any-link/any-link-command';
 export { IdGenerator, provideIdGeneratorConfig, type IdGeneratorConfig } from './lib/id-generator';
 export {
   LinkHandler,
