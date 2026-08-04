@@ -2,8 +2,8 @@ import { inject, Injectable, Injector, signal, Signal } from '@angular/core';
 import type { IsActiveMatchOptions, NavigationBehaviorOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
 import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from './handler';
-import { isAnchorLikeElement } from './shared/anchor-element';
-import { RouterlessCommandSerializer } from './shared/command-serializer';
+import { isAnchorLikeElement } from './utils/anchor-element';
+import { RouterlessCommandSerializer } from './utils/command-serializer';
 
 /**
  * Link metadata prepared by the default routerless handler.

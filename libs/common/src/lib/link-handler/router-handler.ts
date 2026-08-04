@@ -4,8 +4,8 @@ import { isActive, IsActiveMatchOptions, NavigationBehaviorOptions, Router, UrlT
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { LinkAttributes, LinkCommand, LinkHandler } from './handler';
 import { RouterlessLinkHandler, RouterlessPreparedLink } from './routerless-handler';
-import { isAnchorLikeElement } from './shared/anchor-element';
-import { isUrlTree, tryParseAbsoluteUrl } from './shared/url';
+import { isAnchorLikeElement } from './utils/anchor-element';
+import { isUrlTree, tryParseAbsoluteUrl } from './utils/url';
 
 /**
  * Link metadata prepared by the Angular Router-aware handler.

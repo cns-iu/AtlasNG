@@ -1,6 +1,6 @@
 import { computed, contentChildren, Directive, effect, inject, input, output, Signal } from '@angular/core';
 import type { IsActiveMatchOptions } from '@angular/router';
-import { LinkHandler, PreparedLink } from '../links/handler';
+import { LinkHandler, PreparedLink } from '../link-handler/handler';
 import { AnyLink } from './any-link';
 
 /** CSS classes accepted by {@link AnyLinkActive}. */

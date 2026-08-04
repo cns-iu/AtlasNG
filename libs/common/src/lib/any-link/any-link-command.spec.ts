@@ -1,5 +1,5 @@
 import { UrlTree } from '@angular/router';
-import type { LinkCommand } from '../links/handler';
+import type { LinkCommand } from '../link-handler/handler';
 import { commandAttribute, isAnyLinkCommand } from './any-link-command';
 
 describe('isAnyLinkCommand', () => {

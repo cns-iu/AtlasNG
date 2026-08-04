@@ -2,8 +2,8 @@ import { signal, type Signal, type WritableSignal } from '@angular/core';
 import type { IsActiveMatchOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { render, screen } from '@testing-library/angular';
-import { LinkHandler, type LinkCommand, type PreparedLink } from '../links/handler';
-import { provideLinkHandler, withCustomHandler } from '../links/providers';
+import { LinkHandler, type LinkCommand, type PreparedLink } from '../link-handler/handler';
+import { provideLinkHandler, withCustomHandler } from '../link-handler/providers';
 import { AnyLink } from './any-link';
 import { AnyLinkActive, classListAttribute, type AnyLinkActiveOptions } from './any-link-active';
 

@@ -1,3 +1,4 @@
+import { signal, Signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { LinkHandler, type LinkCommand, type PreparedLink } from './handler';
 import {
@@ -9,7 +10,6 @@ import {
 } from './providers';
 import { RouterLinkHandler } from './router-handler';
 import { RouterlessLinkHandler } from './routerless-handler';
-import { signal, Signal } from '@angular/core';
 
 class MockLinkHandler implements LinkHandler {
   prepareLink(command: LinkCommand): PreparedLink {

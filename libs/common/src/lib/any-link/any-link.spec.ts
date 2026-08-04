@@ -4,8 +4,8 @@ import { UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from '../links/handler';
-import { provideLinkHandler, withCustomHandler } from '../links/providers';
+import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from '../link-handler/handler';
+import { provideLinkHandler, withCustomHandler } from '../link-handler/providers';
 import { AnyLink } from './any-link';
 
 class MockLinkHandler implements LinkHandler {

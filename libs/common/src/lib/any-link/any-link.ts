@@ -11,9 +11,9 @@ import {
 } from '@angular/core';
 import type { ActivatedRoute, Params, QueryParamsHandling, UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
-import { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from '../links/handler';
-import { isAnchorLikeElement } from '../links/shared/anchor-element';
-import { isUrlTree } from '../links/shared/url';
+import { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from '../link-handler/handler';
+import { isAnchorLikeElement } from '../link-handler/utils/anchor-element';
+import { isUrlTree } from '../link-handler/utils/url';
 import { commandAttribute } from './any-link-command';
 
 /**

@@ -1,6 +1,6 @@
 import type { UrlTree } from '@angular/router';
-import type { LinkCommand } from '../links/handler';
-import { isUrlTree } from '../links/shared/url';
+import type { LinkCommand } from '../link-handler/handler';
+import { isUrlTree } from '../link-handler/utils/url';
 
 /**
  * Input accepted by {@link AnyLink} for configuring navigation.

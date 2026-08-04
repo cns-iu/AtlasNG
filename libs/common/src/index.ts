@@ -7,13 +7,13 @@ export {
   type LinkCommand,
   type NullableLinkAttributes,
   type PreparedLink,
-} from './lib/links/handler';
+} from './lib/link-handler/handler';
 export {
   provideLinkHandler,
   withCustomHandler,
   withRouterHandler,
   withRouterlessHandler,
   type LinkHandlerFeature,
-} from './lib/links/providers';
-export { RouterLinkHandler, type RouterPreparedLink } from './lib/links/router-handler';
-export { RouterlessLinkHandler, type RouterlessPreparedLink } from './lib/links/routerless-handler';
+} from './lib/link-handler/providers';
+export { RouterLinkHandler, type RouterPreparedLink } from './lib/link-handler/router-handler';
+export { RouterlessLinkHandler, type RouterlessPreparedLink } from './lib/link-handler/routerless-handler';

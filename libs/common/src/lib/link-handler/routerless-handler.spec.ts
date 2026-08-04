@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import { DefaultUrlSerializer, type NavigationBehaviorOptions, UrlSerializer } from '@angular/router';
+import { DefaultUrlSerializer, UrlSerializer, type NavigationBehaviorOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
 import { LinkHandler, type LinkAttributes } from './handler';
 import { RouterlessLinkHandler, type RouterlessPreparedLink } from './routerless-handler';
