@@ -1,5 +1,5 @@
-import { inject, Injectable, Injector } from '@angular/core';
-import type { NavigationBehaviorOptions } from '@angular/router';
+import { inject, Injectable, Injector, signal, Signal } from '@angular/core';
+import type { IsActiveMatchOptions, NavigationBehaviorOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
 import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from './handler';
 import { isAnchorLikeElement } from './shared/anchor-element';
@@ -83,6 +83,18 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
     }
 
     return false;
+  }
+
+  /**
+   * Checks if a prepared link is active based on the current state.
+   *
+   * @param link Prepared link metadata.
+   * @param matchOptions Options for matching the active state.
+   * @returns A signal indicating if the link is active.
+   */
+  isActive(_link: RouterlessPreparedLink, _matchOptions?: Partial<IsActiveMatchOptions>): Signal<boolean> {
+    // TODO implement router like url matching
+    return signal(false);
   }
 
   /**

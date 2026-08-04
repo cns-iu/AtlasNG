@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
@@ -17,6 +17,8 @@ class MockLinkHandler implements LinkHandler {
   );
 
   readonly navigateTo = vi.fn((): boolean | void => false);
+
+  readonly isActive = vi.fn(() => signal(false));
 }
 
 @Component({

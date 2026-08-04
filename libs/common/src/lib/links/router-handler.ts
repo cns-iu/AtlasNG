@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
-import { ErrorHandler, inject, Injectable, Injector } from '@angular/core';
-import { NavigationBehaviorOptions, Router, UrlTree } from '@angular/router';
+import { ErrorHandler, inject, Injectable, Injector, Signal } from '@angular/core';
+import { isActive, IsActiveMatchOptions, NavigationBehaviorOptions, Router, UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { LinkAttributes, LinkCommand, LinkHandler } from './handler';
 import { RouterlessLinkHandler, RouterlessPreparedLink } from './routerless-handler';
@@ -118,6 +118,22 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
     });
 
     return !link.isAnchorLikeElement;
+  }
+
+  /**
+   * Checks if a prepared link is active based on the current state.
+   *
+   * @param link Prepared link metadata.
+   * @param matchOptions Options for matching the active state.
+   * @returns A signal indicating if the link is active.
+   */
+  isActive(link: RouterPreparedLink, matchOptions?: Partial<IsActiveMatchOptions>): Signal<boolean> {
+    const { urlTree } = link;
+    if (!urlTree) {
+      return this.#routerlessHandler.isActive(link, matchOptions);
+    }
+
+    return isActive(urlTree, this.#router, matchOptions);
   }
 
   /**

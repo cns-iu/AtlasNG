@@ -9,6 +9,7 @@ import {
 } from './providers';
 import { RouterLinkHandler } from './router-handler';
 import { RouterlessLinkHandler } from './routerless-handler';
+import { signal, Signal } from '@angular/core';
 
 class MockLinkHandler implements LinkHandler {
   prepareLink(command: LinkCommand): PreparedLink {
@@ -17,6 +18,10 @@ class MockLinkHandler implements LinkHandler {
 
   navigateTo(): boolean {
     return false;
+  }
+
+  isActive(): Signal<boolean> {
+    return signal(false);
   }
 }
 
