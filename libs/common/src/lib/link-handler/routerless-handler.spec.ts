@@ -1,6 +1,11 @@
 import { Location } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import { DefaultUrlSerializer, UrlSerializer, type NavigationBehaviorOptions } from '@angular/router';
+import {
+  DefaultUrlSerializer,
+  type IsActiveMatchOptions,
+  type NavigationBehaviorOptions,
+  UrlSerializer,
+} from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
 import { LinkHandler, type LinkAttributes } from './handler';
 import { RouterlessLinkHandler, type RouterlessPreparedLink } from './routerless-handler';
@@ -8,6 +13,7 @@ import { RouterlessLinkHandler, type RouterlessPreparedLink } from './routerless
 describe('RouterlessLinkHandler', () => {
   interface BrowserLocation {
     assign: ReturnType<typeof vi.fn<(url: string | URL) => void>>;
+    href: string;
     replace: ReturnType<typeof vi.fn<(url: string | URL) => void>>;
   }
 
@@ -30,6 +36,7 @@ describe('RouterlessLinkHandler', () => {
     };
     const browserLocation = {
       assign: vi.fn(),
+      href: currentPath,
       replace: vi.fn(),
     };
     const customElementRegistry = {
@@ -204,6 +211,52 @@ describe('RouterlessLinkHandler', () => {
       });
 
       expect(warnSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('isActive', () => {
+    function preparedLink(href: string): RouterlessPreparedLink {
+      return {
+        href,
+        isAnchorLikeElement: false,
+      };
+    }
+
+    it('uses subset matching while ignoring fragments and matrix parameters by default', () => {
+      const { handler } = setup('/current;view=details/child?existing=1&extra=2#current');
+
+      const active = handler.isActive(preparedLink('/current;view=summary?existing=1#target'));
+
+      expect(active()).toBe(true);
+    });
+
+    it('returns false when the prepared link does not match the browser location', () => {
+      const { handler } = setup('/current/child?existing=1');
+
+      const active = handler.isActive(preparedLink('/other'));
+
+      expect(active()).toBe(false);
+    });
+
+    it.each([
+      ['paths', { paths: 'exact' }],
+      ['query parameters', { queryParams: 'exact' }],
+      ['fragments', { fragment: 'exact' }],
+      ['matrix parameters', { matrixParams: 'exact' }],
+    ] satisfies [string, Partial<IsActiveMatchOptions>][])('applies partial options for exact %s matching', (_name, options) => {
+      const { handler } = setup('/current;view=details/child?existing=1&extra=2#current');
+      const link = preparedLink('/current;view=summary?existing=1#target');
+
+      expect(handler.isActive(link, options)()).toBe(false);
+    });
+
+    it('compares against the injected browser location href', () => {
+      const { angularLocation, browserLocation, handler } = setup('/browser/path');
+      angularLocation.path.mockReturnValue('/angular/path');
+      browserLocation.href = '/browser/path';
+
+      expect(handler.isActive(preparedLink('/browser/path'), { paths: 'exact' })()).toBe(true);
+      expect(handler.isActive(preparedLink('/angular/path'), { paths: 'exact' })()).toBe(false);
     });
   });
 });
