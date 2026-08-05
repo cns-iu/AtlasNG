@@ -1,9 +1,10 @@
 import { Location } from '@angular/common';
-import { ErrorHandler, Injector } from '@angular/core';
+import { ErrorHandler, Injector, signal, type WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
   type ActivatedRoute,
   DefaultUrlSerializer,
+  type IsActiveMatchOptions,
   type NavigationBehaviorOptions,
   Router,
   UrlSerializer,
@@ -12,18 +13,21 @@ import {
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
 import { type LinkAttributes } from './handler';
 import { RouterLinkHandler, type RouterPreparedLink } from './router-handler';
+import { RouterlessLinkHandler } from './routerless-handler';
 
 describe('RouterLinkHandler', () => {
   const BASE_URL = 'https://example.com/page';
 
   interface TestRouter {
     createUrlTree: ReturnType<typeof vi.fn<(commands: readonly unknown[], options?: unknown) => UrlTree>>;
+    lastSuccessfulNavigation: ReturnType<typeof vi.fn<() => { finalUrl: UrlTree }>>;
     navigateByUrl: ReturnType<typeof vi.fn<(tree: UrlTree, options?: NavigationBehaviorOptions) => Promise<boolean>>>;
     routerState: { root: ActivatedRoute };
     serializeUrl: ReturnType<typeof vi.fn<(tree: UrlTree) => string>>;
   }
 
   interface TestContext {
+    activeUrl: WritableSignal<UrlTree>;
     angularLocation: {
       path: ReturnType<typeof vi.fn<(includeHash?: boolean) => string>>;
       prepareExternalUrl: ReturnType<typeof vi.fn<(url: string) => string>>;
@@ -36,14 +40,17 @@ describe('RouterLinkHandler', () => {
     errorHandler: { handleError: ReturnType<typeof vi.fn> };
     handler: RouterLinkHandler;
     router: TestRouter;
+    routerlessHandler: RouterlessLinkHandler;
     urlSerializer: UrlSerializer;
   }
 
-  function setup(): TestContext {
+  function setup(currentUrl = '/current/path'): TestContext {
     const urlSerializer = new DefaultUrlSerializer();
     const rootRoute = {} as ActivatedRoute;
+    const activeUrl = signal(urlSerializer.parse(currentUrl));
     const router: TestRouter = {
       createUrlTree: vi.fn((commands: readonly unknown[]) => urlSerializer.parse(`/${commands.join('/')}`)),
+      lastSuccessfulNavigation: vi.fn(() => ({ finalUrl: activeUrl() })),
       navigateByUrl: vi.fn().mockResolvedValue(true),
       routerState: { root: rootRoute },
       serializeUrl: vi.fn((tree: UrlTree) => urlSerializer.serialize(tree)),
@@ -76,12 +83,14 @@ describe('RouterLinkHandler', () => {
     });
 
     return {
+      activeUrl,
       angularLocation,
       browserLocation,
       customElementRegistry,
       errorHandler,
       handler: TestBed.inject(RouterLinkHandler),
       router,
+      routerlessHandler: TestBed.inject(RouterlessLinkHandler),
       urlSerializer,
     };
   }
@@ -289,6 +298,52 @@ describe('RouterLinkHandler', () => {
       await Promise.resolve();
 
       expect(errorHandler.handleError).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe('isActive', () => {
+    it('reactively matches router links against the last successful navigation', () => {
+      const { activeUrl, handler, router, urlSerializer } = setup('/team/42?view=details');
+      const link = preparedLink({ urlTree: urlSerializer.parse('/team?view=details') });
+
+      const active = handler.isActive(link);
+
+      expect(active()).toBe(true);
+
+      activeUrl.set(urlSerializer.parse('/other'));
+
+      expect(active()).toBe(false);
+      expect(router.lastSuccessfulNavigation).toHaveBeenCalled();
+    });
+
+    it('applies partial router match options', () => {
+      const { handler, urlSerializer } = setup('/team?view=details#current');
+      const link = preparedLink({ urlTree: urlSerializer.parse('/team?view=summary#target') });
+      const ignoredOptions: Partial<IsActiveMatchOptions> = {
+        fragment: 'ignored',
+        paths: 'exact',
+        queryParams: 'ignored',
+      };
+      const exactFragmentOptions: Partial<IsActiveMatchOptions> = {
+        ...ignoredOptions,
+        fragment: 'exact',
+      };
+
+      expect(handler.isActive(link, ignoredOptions)()).toBe(true);
+      expect(handler.isActive(link, exactFragmentOptions)()).toBe(false);
+    });
+
+    it('delegates links without UrlTrees to the routerless handler', () => {
+      const { handler, routerlessHandler } = setup();
+      const matchOptions: Partial<IsActiveMatchOptions> = { paths: 'exact' };
+      const delegatedSignal = signal(true);
+      const isActiveSpy = vi.spyOn(routerlessHandler, 'isActive').mockReturnValue(delegatedSignal);
+      const link = preparedLink({ urlTree: undefined });
+
+      const active = handler.isActive(link, matchOptions);
+
+      expect(active).toBe(delegatedSignal);
+      expect(isActiveSpy).toHaveBeenCalledWith(link, matchOptions);
     });
   });
 });

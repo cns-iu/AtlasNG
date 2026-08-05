@@ -1,4 +1,5 @@
 import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { TextLink } from '@atlasng/design-system/text-link';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { expect, waitFor } from 'storybook/test';
@@ -8,6 +9,7 @@ import {
   CookieBannerContainer,
   CookieBannerDescription,
   CookieBannerLogo,
+  CookieBannerPrivacyPolicy,
   CookieBannerTitle,
 } from './cookie-banner';
 
@@ -18,24 +20,34 @@ const TOGGLE_BUTTONS = `
   </div>
 `;
 
+const PRIVACY_POLICY = `
+  <a angTextLink
+    angCookieBannerPrivacyPolicy
+    href="https://example.com/privacy"
+    target="_blank"
+    style="width: fit-content; height: 48px;"
+  >
+    Privacy policy
+    <mat-icon fontIcon="arrow_right_alt" />
+  </a>
+`;
+
 const meta: Meta<CookieBanner> = {
   title: 'Design System/Cookie Banner',
   component: CookieBanner,
-  subcomponents: [CookieBannerLogo, CookieBannerTitle, CookieBannerDescription, CookieBannerAction],
+  subcomponents: {
+    CookieBannerLogo,
+    CookieBannerTitle,
+    CookieBannerDescription,
+    CookieBannerPrivacyPolicy,
+    CookieBannerAction,
+  },
   parameters: {
     design: {
       type: 'figma',
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=4497-607',
     },
     layout: 'fullscreen',
-  },
-  args: {
-    privacyPolicy: 'https://example.com',
-  },
-  argTypes: {
-    privacyPolicy: {
-      control: 'text',
-    },
   },
   decorators: [
     moduleMetadata({
@@ -44,9 +56,11 @@ const meta: Meta<CookieBanner> = {
         CookieBannerLogo,
         CookieBannerTitle,
         CookieBannerDescription,
+        CookieBannerPrivacyPolicy,
         CookieBannerAction,
         CookieBannerContainer,
         MatButton,
+        MatIcon,
         TextLink,
       ],
     }),
@@ -55,8 +69,11 @@ const meta: Meta<CookieBanner> = {
     props: args,
     template: `
       ${TOGGLE_BUTTONS}
+      <div class="spacer" style="height: 16rem;"></div>
 
-      <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner />
+      <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner>
+        ${PRIVACY_POLICY}
+      </ang-cookie-banner>
     `,
   }),
 };
@@ -71,6 +88,7 @@ export const CustomContent: Story = {
     props: args,
     template: `
       ${TOGGLE_BUTTONS}
+      <div class="spacer" style="height: 16rem;"></div>
 
       <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner>
         <ang-cookie-banner-title>Wow, a custom title!</ang-cookie-banner-title>
@@ -78,6 +96,7 @@ export const CustomContent: Story = {
           This cookie banner has custom content. You can put whatever you want in here, like
           <a angTextLink href="https://www.example.com" target="_blank">text links</a>, icons, and more.
         </ang-cookie-banner-description>
+        ${PRIVACY_POLICY}
         <button matButton="filled" angCookieBannerAction>Got it</button>
         <a matButton="tonal" angCookieBannerAction href="https://www.example.com" target="_blank" [closeOnClick]="false">Learn more</a>
       </ang-cookie-banner>
@@ -92,7 +111,9 @@ export const EmbeddedContainer: Story = {
       ${TOGGLE_BUTTONS}
 
       <div angCookieBannerContainer style="height: 100px; border-bottom: 1px solid #1C1B1E;">
-        <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner />
+        <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner>
+          ${PRIVACY_POLICY}
+        </ang-cookie-banner>
       </div>
 
       <p>Additional content after "embedded" cookie banner.</p>
@@ -104,10 +125,14 @@ export const ScrollableContainer: Story = {
   render: (args) => ({
     props: args,
     template: `
-      ${TOGGLE_BUTTONS}
-      <div style="height: 150vh;"></div>
+      <div style="max-height: 40rem; overflow-y: auto;">
+        ${TOGGLE_BUTTONS}
+        <div style="height: 150vh;"></div>
 
-      <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner />
+        <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner>
+          ${PRIVACY_POLICY}
+        </ang-cookie-banner>
+      </div>
     `,
   }),
 };

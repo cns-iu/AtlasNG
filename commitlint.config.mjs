@@ -4,10 +4,22 @@ import path from 'node:path';
 
 const ADDITIONAL_SCOPES = ['release'];
 const NO_SCOPES_RESULT = [2, 'always', []];
+const NX_SELF_HEALING_RERUN_PATTERN = /\[Self-Healing CI Rerun\]/iu;
+
+/**
+ * Checks whether a commit was produced by Nx Cloud's self-healing CI.
+ *
+ * @param {string} message The complete commit message.
+ * @returns {boolean} Whether commitlint should ignore the message.
+ */
+function isNxSelfHealingCommit(message) {
+  return NX_SELF_HEALING_RERUN_PATTERN.test(message);
+}
 
 /** @type {import('@commitlint/types').UserConfig} */
 const config = {
   extends: ['@commitlint/config-conventional'],
+  ignores: [isNxSelfHealingCommit],
   rules: {
     'scope-enum': async (ctx) => {
       const cwd = ctx?.cwd || process.cwd();

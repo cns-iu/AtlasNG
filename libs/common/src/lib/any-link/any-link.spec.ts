@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from '../link-handler/handler';
+import { provideLinkHandler, withCustomHandler } from '../link-handler/providers';
 import { AnyLink } from './any-link';
-import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from './links/handler';
-import { provideLinkHandler, withCustomHandler } from './links/providers';
 
 class MockLinkHandler implements LinkHandler {
   readonly prepareLink = vi.fn(
@@ -17,6 +17,8 @@ class MockLinkHandler implements LinkHandler {
   );
 
   readonly navigateTo = vi.fn((): boolean | void => false);
+
+  readonly isActive = vi.fn(() => signal(false));
 }
 
 @Component({

@@ -2,6 +2,12 @@
   "name": "@atlasng/monorepo",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx nx format:write"
+      }
+    },
     "local-registry": {
       "executor": "@nx/js:verdaccio",
       "options": {

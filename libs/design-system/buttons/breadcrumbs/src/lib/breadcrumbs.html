@@ -5,9 +5,11 @@
         @if (crumb.command) {
           <a
             angTextLink
+            angAnyLinkActive
             class="ang-breadcrumbs-label"
+            ariaCurrentWhenActive="page"
             [angAnyLink]="crumb.command"
-            [attr.aria-current]="$last ? 'page' : null"
+            [angAnyLinkActiveOptions]="{ exact: true }"
             >{{ crumb.name }}</a
           >
         } @else {

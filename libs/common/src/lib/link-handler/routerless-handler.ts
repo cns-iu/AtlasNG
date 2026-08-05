@@ -1,9 +1,10 @@
-import { inject, Injectable, Injector } from '@angular/core';
-import type { NavigationBehaviorOptions } from '@angular/router';
+import { computed, inject, Injectable, Injector, Signal } from '@angular/core';
+import type { IsActiveMatchOptions, NavigationBehaviorOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
 import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from './handler';
-import { isAnchorLikeElement } from './shared/anchor-element';
-import { RouterlessCommandSerializer } from './shared/command-serializer';
+import { isAnchorLikeElement } from './utils/anchor-element';
+import { RouterlessCommandSerializer } from './utils/command-serializer';
+import { isUrlActive } from './utils/compare-url';
 
 /**
  * Link metadata prepared by the default routerless handler.
@@ -83,6 +84,25 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
     }
 
     return false;
+  }
+
+  /**
+   * Checks if a prepared link is active based on the current state.
+   *
+   * @param link Prepared link metadata.
+   * @param matchOptions Options for matching the active state.
+   * @returns A signal indicating if the link is active.
+   */
+  isActive(link: RouterlessPreparedLink, matchOptions?: Partial<IsActiveMatchOptions>): Signal<boolean> {
+    const matchOptionsWithDefaults: IsActiveMatchOptions = {
+      paths: 'subset',
+      queryParams: 'subset',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+      ...matchOptions,
+    };
+
+    return computed(() => isUrlActive(link.href, this.#location.href, matchOptionsWithDefaults));
   }
 
   /**

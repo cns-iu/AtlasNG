@@ -1,3 +1,4 @@
+import { signal, Signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { LinkHandler, type LinkCommand, type PreparedLink } from './handler';
 import {
@@ -17,6 +18,10 @@ class MockLinkHandler implements LinkHandler {
 
   navigateTo(): boolean {
     return false;
+  }
+
+  isActive(): Signal<boolean> {
+    return signal(false);
   }
 }
 

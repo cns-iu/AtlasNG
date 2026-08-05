@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { AnyLink, AnyLinkCommand } from '@atlasng/common';
+import { AnyLink, AnyLinkActive, AnyLinkCommand } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/text-link';
 
 /** Breadcrumb item */
@@ -12,7 +12,7 @@ export interface BreadcrumbItem {
 
 @Component({
   selector: 'ang-breadcrumbs',
-  imports: [TextLink, AnyLink],
+  imports: [TextLink, AnyLink, AnyLinkActive],
   templateUrl: './breadcrumbs.html',
   styleUrl: './breadcrumbs.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,5 +22,5 @@ export class Breadcrumbs {
   readonly items = input.required<BreadcrumbItem[]>();
 
   /** Separator to display between crumbs */
-  readonly separator = input<string>('/');
+  readonly separator = input('/');
 }

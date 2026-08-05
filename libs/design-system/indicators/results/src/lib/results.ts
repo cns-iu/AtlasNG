@@ -35,9 +35,9 @@ export class ResultsIndicator {
   protected readonly text = computed(() => {
     const parts = [
       this.prefix(),
-      formatNumber(this.value(), this.locale),
+      formatNumber(this.value(), this.#locale),
       this.separator(),
-      formatNumber(this.total(), this.locale),
+      formatNumber(this.total(), this.#locale),
       this.suffix(),
     ];
 
@@ -45,5 +45,5 @@ export class ResultsIndicator {
   });
 
   /** Locale used for number formatting, injected from Angular DI. */
-  private readonly locale = inject(LOCALE_ID);
+  readonly #locale = inject(LOCALE_ID);
 }

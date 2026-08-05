@@ -1,5 +1,5 @@
-import { Injectable, Injector } from '@angular/core';
-import type { NavigationBehaviorOptions, UrlCreationOptions, UrlTree } from '@angular/router';
+import { Injectable, Injector, Signal } from '@angular/core';
+import type { IsActiveMatchOptions, NavigationBehaviorOptions, UrlCreationOptions, UrlTree } from '@angular/router';
 import { RouterlessLinkHandler } from './routerless-handler';
 
 /**
@@ -92,4 +92,13 @@ export abstract class LinkHandler<TLink extends PreparedLink = PreparedLink> {
    * or `void` for implementations that do not provide a continuation signal.
    */
   abstract navigateTo(link: TLink, event: Event, options: NavigationBehaviorOptions): boolean | void;
+
+  /**
+   * Checks if a prepared link is active based on the current state.
+   *
+   * @param link Prepared link metadata.
+   * @param matchOptions Options for matching the active state.
+   * @returns A signal indicating if the link is active.
+   */
+  abstract isActive(link: TLink, matchOptions?: Partial<IsActiveMatchOptions>): Signal<boolean>;
 }
