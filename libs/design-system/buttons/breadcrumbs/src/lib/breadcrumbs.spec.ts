@@ -33,11 +33,7 @@ describe('Breadcrumbs', () => {
     await setup({
       currentUrl: '/products',
       inputs: {
-        items: [
-          { name: 'Home', command: '/' },
-          { name: 'Products', command: '/products' },
-          { name: 'Current Page' },
-        ],
+        items: [{ name: 'Home', command: '/' }, { name: 'Products', command: '/products' }, { name: 'Current Page' }],
       },
     });
 
