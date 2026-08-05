@@ -13,6 +13,7 @@ interface CustomizationControls {
 function buttonTemplate(menuVar = 'null'): string {
   return `
     <button matIconButton type="button"
+      aria-label="Click me!"
       [matTooltip]="tooltip"
       [matMenuTriggerFor]="${menuVar}"
       (click)="onClick()"
