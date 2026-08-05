@@ -12,6 +12,9 @@ export type AnyLinkActiveOptions = { exact: boolean } | Partial<IsActiveMatchOpt
 /** Values supported by the WAI-ARIA `aria-current` attribute. */
 export type AriaCurrent = 'page' | 'step' | 'location' | 'date' | 'time' | true | false;
 
+/** Active-state signals cached by their prepared link identity. */
+type ActiveSignalCache = WeakMap<PreparedLink, Signal<boolean>>;
+
 /** Match options used when exact matching is requested. */
 const EXACT_MATCH_OPTIONS: IsActiveMatchOptions = {
   paths: 'exact',
@@ -82,13 +85,7 @@ export class AnyLinkActive {
   readonly isActiveChange = output<boolean>();
 
   /** Whether the host link or at least one descendant link is currently active. */
-  readonly isActive = computed(() => {
-    if (this.options() === null) {
-      return false;
-    }
-
-    return this.#activeSignals().some((signal) => signal());
-  });
+  readonly isActive = computed(() => this.#activeSignals().some((signal) => signal()));
 
   /** Descendant links monitored when this directive is placed on an ancestor. */
   protected readonly links = contentChildren(AnyLink, { descendants: true });
@@ -99,33 +96,26 @@ export class AnyLinkActive {
   /** Strategy used to evaluate prepared links against the current location. */
   readonly #handler = inject<LinkHandler<PreparedLink>>(LinkHandler);
 
-  /** Resolved router match options derived from the public options input. */
-  readonly #matchOptions = computed(() => {
-    const options = this.options();
-    if (!options) {
-      return SUBSET_MATCH_OPTIONS;
-    } else if ('exact' in options) {
-      return options.exact ? EXACT_MATCH_OPTIONS : SUBSET_MATCH_OPTIONS;
-    }
-
-    return options;
-  });
-
   /** Per-options cache that prevents duplicate active signals for a prepared link. */
-  readonly #activeSignalCache = computed(() => {
-    // Clear the cache when match options change
-    this.#matchOptions();
-    return new WeakMap<PreparedLink, Signal<boolean>>();
+  readonly #activeSignalCache = computed((): ActiveSignalCache => {
+    // Clear the cache when options change.
+    this.options();
+    return new WeakMap();
   });
 
   /** Active-state signals for every prepared link associated with this directive. */
   readonly #activeSignals = computed(() => {
-    const result: Signal<boolean>[] = [];
-    for (const link of this.#preparedLinks()) {
-      result.push(this.#getActiveSignal(link));
+    const options = this.options();
+    if (options === null) {
+      return [];
     }
 
-    return result;
+    const matchOptions = this.#getMatchOptions(options);
+    const cache = this.#activeSignalCache();
+    return [this.#link, ...this.links()]
+      .map((link) => link?.preparedLink())
+      .filter((link) => link !== undefined)
+      .map((link) => this.#getActiveSignal(link, matchOptions, cache));
   });
 
   /** Watches the aggregate active state and emits changes to consumers. */
@@ -142,14 +132,34 @@ export class AnyLinkActive {
   }
 
   /**
+   * Resolves the public shorthand or custom configuration into handler match options.
+   *
+   * @param options Route-matching configuration supplied to the directive.
+   * @returns Match options to pass to the link handler.
+   */
+  #getMatchOptions(options: AnyLinkActiveOptions): Partial<IsActiveMatchOptions> {
+    if (!options) {
+      return SUBSET_MATCH_OPTIONS;
+    } else if ('exact' in options) {
+      return options.exact ? EXACT_MATCH_OPTIONS : SUBSET_MATCH_OPTIONS;
+    }
+
+    return options;
+  }
+
+  /**
    * Gets or creates the active-state signal for a prepared link.
    *
    * @param link Prepared link to evaluate.
-   * @returns Cached active-state signal for the current match options.
+   * @param matchOptions Match options used when creating a new active-state signal.
+   * @param cache Per-options cache that stores active-state signals by link identity.
+   * @returns Cached or newly created active-state signal for the prepared link.
    */
-  #getActiveSignal(link: PreparedLink): Signal<boolean> {
-    const matchOptions = this.#matchOptions();
-    const cache = this.#activeSignalCache();
+  #getActiveSignal(
+    link: PreparedLink,
+    matchOptions: Partial<IsActiveMatchOptions>,
+    cache: ActiveSignalCache,
+  ): Signal<boolean> {
     let signal = cache.get(link);
 
     if (!signal) {
@@ -158,28 +168,5 @@ export class AnyLinkActive {
     }
 
     return signal;
-  }
-
-  /**
-   * Iterates over prepared links on the same host and beneath an ancestor host.
-   *
-   * Links without a prepared navigation command are omitted.
-   *
-   * @returns Prepared links associated with this directive.
-   */
-  *#preparedLinks(): Iterable<PreparedLink> {
-    if (this.#link) {
-      const preparedLink = this.#link.preparedLink();
-      if (preparedLink) {
-        yield preparedLink;
-      }
-    }
-
-    for (const link of this.links()) {
-      const preparedLink = link.preparedLink();
-      if (preparedLink) {
-        yield preparedLink;
-      }
-    }
   }
 }

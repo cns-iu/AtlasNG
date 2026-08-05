@@ -182,6 +182,66 @@ describe('AnyLinkActive', () => {
     expect(handler.isActive).toHaveBeenLastCalledWith({ href: '/one' }, EXACT_MATCH_OPTIONS);
   });
 
+  it('disables and re-enables matching when options change to and from null', async () => {
+    const options = signal<AnyLinkActiveOptions>(null);
+    const { fixture, handler } = await setup(
+      `<a data-testid="link" angAnyLink="/one" angAnyLinkActive="active"
+          [angAnyLinkActiveOptions]="options()">Link</a>`,
+      { options },
+      { '/one': true },
+    );
+    const link = screen.getByTestId('link');
+
+    expect(link).not.toHaveClass('active');
+    expect(handler.isActive).not.toHaveBeenCalled();
+
+    options.set(undefined);
+    fixture.detectChanges();
+
+    expect(link).toHaveClass('active');
+    expect(handler.isActive).toHaveBeenLastCalledWith({ href: '/one' }, SUBSET_MATCH_OPTIONS);
+
+    options.set(null);
+    fixture.detectChanges();
+
+    expect(link).not.toHaveClass('active');
+    expect(handler.isActive).toHaveBeenCalledTimes(1);
+
+    options.set({ exact: true });
+    fixture.detectChanges();
+
+    expect(link).toHaveClass('active');
+    expect(handler.isActive).toHaveBeenCalledTimes(2);
+    expect(handler.isActive).toHaveBeenLastCalledWith({ href: '/one' }, EXACT_MATCH_OPTIONS);
+  });
+
+  it('reuses active-state signals for unchanged links when descendants change', async () => {
+    const showSecondLink = signal(false);
+    const { fixture, handler } = await setup(
+      `<div angAnyLinkActive="active">
+        <a angAnyLink="/one">Link 1</a>
+        @if (showSecondLink()) {
+          <a angAnyLink="/two">Link 2</a>
+        }
+      </div>`,
+      { showSecondLink },
+    );
+
+    expect(handler.isActive).toHaveBeenCalledTimes(1);
+    expect(handler.isActive).toHaveBeenLastCalledWith({ href: '/one' }, SUBSET_MATCH_OPTIONS);
+
+    showSecondLink.set(true);
+    fixture.detectChanges();
+
+    expect(handler.isActive).toHaveBeenCalledTimes(2);
+    expect(handler.isActive).toHaveBeenLastCalledWith({ href: '/two' }, SUBSET_MATCH_OPTIONS);
+
+    showSecondLink.set(false);
+    fixture.detectChanges();
+
+    expect(handler.isActive).toHaveBeenCalledTimes(2);
+  });
+
   it('disables matching when options are null', async () => {
     const { handler } = await setup(
       `<div data-testid="group" angAnyLinkActive="active" [angAnyLinkActiveOptions]="null">
