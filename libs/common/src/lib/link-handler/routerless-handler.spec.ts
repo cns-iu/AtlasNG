@@ -243,12 +243,15 @@ describe('RouterlessLinkHandler', () => {
       ['query parameters', { queryParams: 'exact' }],
       ['fragments', { fragment: 'exact' }],
       ['matrix parameters', { matrixParams: 'exact' }],
-    ] satisfies [string, Partial<IsActiveMatchOptions>][])('applies partial options for exact %s matching', (_name, options) => {
-      const { handler } = setup('/current;view=details/child?existing=1&extra=2#current');
-      const link = preparedLink('/current;view=summary?existing=1#target');
+    ] satisfies [string, Partial<IsActiveMatchOptions>][])(
+      'applies partial options for exact %s matching',
+      (_name, options) => {
+        const { handler } = setup('/current;view=details/child?existing=1&extra=2#current');
+        const link = preparedLink('/current;view=summary?existing=1#target');
 
-      expect(handler.isActive(link, options)()).toBe(false);
-    });
+        expect(handler.isActive(link, options)()).toBe(false);
+      },
+    );
 
     it('compares against the injected browser location href', () => {
       const { angularLocation, browserLocation, handler } = setup('/browser/path');
