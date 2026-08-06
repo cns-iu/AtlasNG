@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import {
   type ActivatedRoute,
   type Params,
@@ -15,9 +15,7 @@ import { applyQueryParamsAndFragmentToUrl, isUrlTree, tryParseAbsoluteUrl } from
 /**
  * Serializes router-style link commands without requiring Angular Router navigation.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class RouterlessCommandSerializer {
   /**
    * Angular location service used for path inspection and external URL preparation.

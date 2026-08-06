@@ -131,12 +131,15 @@ const angularConfig = [
   {
     files: ['**/*.ts'],
     rules: {
+      '@angular-eslint/computed-must-return': 'error',
       '@angular-eslint/consistent-component-styles': 'error',
       '@angular-eslint/no-async-lifecycle-method': 'error',
       '@angular-eslint/no-attribute-decorator': 'error',
       '@angular-eslint/no-duplicates-in-metadata-arrays': 'error',
       '@angular-eslint/prefer-host-metadata-property': 'error',
       '@angular-eslint/prefer-output-readonly': 'error',
+      '@angular-eslint/prefer-service-decorator': 'error',
+      '@angular-eslint/prefer-signal-model': 'error',
       '@angular-eslint/prefer-signals': 'error',
       '@angular-eslint/sort-keys-in-type-decorator': 'error',
     },
@@ -160,6 +163,7 @@ const angularConfig = [
       '@angular-eslint/template/no-interpolation-in-attributes': 'error',
       '@angular-eslint/template/prefer-at-else': 'error',
       '@angular-eslint/template/prefer-at-empty': 'error',
+      '@angular-eslint/template/prefer-class-binding': 'error',
       '@angular-eslint/template/prefer-contextual-for-variables': 'error',
       '@angular-eslint/template/prefer-self-closing-tags': 'error',
       '@angular-eslint/template/prefer-static-string-properties': 'error',

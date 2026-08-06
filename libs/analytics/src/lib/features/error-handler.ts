@@ -1,13 +1,11 @@
-import { ErrorHandler, inject, Injectable } from '@angular/core';
-import { Analytics } from '../analytics';
+import { ErrorHandler, inject, Service } from '@angular/core';
 import { CoreEvents } from '@atlasng/analytics/events';
+import { Analytics } from '../analytics';
 
 /**
  * Global error handler that logs unhandled errors as analytics events.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AnalyticsErrorHandler implements ErrorHandler {
   /** Reference to analytics. */
   readonly #analytics = inject(Analytics);
