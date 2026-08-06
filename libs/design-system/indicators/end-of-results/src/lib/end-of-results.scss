@@ -5,15 +5,15 @@
 :host {
   display: block;
 
-  .container {
+  .ang-end-of-results--container {
     display: grid;
     grid-template-columns: 1fr;
     justify-items: stretch;
     gap: 0.75rem;
     margin-top: 2rem;
 
-    .results-count,
-    .end-message {
+    .ang-end-of-results--results-count,
+    .ang-end-of-results--end-message {
       box-sizing: border-box;
       display: flex;
       justify-content: center;

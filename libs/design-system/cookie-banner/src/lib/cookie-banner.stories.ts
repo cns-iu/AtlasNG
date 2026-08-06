@@ -69,7 +69,7 @@ const meta: Meta<CookieBanner> = {
     props: args,
     template: `
       ${TOGGLE_BUTTONS}
-      <div class="spacer" style="height: 16rem;"></div>
+      <div class="ang-cookie-banner--spacer" style="height: 16rem;"></div>
 
       <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner>
         ${PRIVACY_POLICY}
@@ -88,7 +88,7 @@ export const CustomContent: Story = {
     props: args,
     template: `
       ${TOGGLE_BUTTONS}
-      <div class="spacer" style="height: 16rem;"></div>
+      <div class="ang-cookie-banner--spacer" style="height: 16rem;"></div>
 
       <ang-cookie-banner ${argsToTemplate(args)} data-testid="cookie-banner" #banner>
         <ang-cookie-banner-title>Wow, a custom title!</ang-cookie-banner-title>

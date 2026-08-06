@@ -27,11 +27,11 @@ import { RESIZE_OBSERVER } from '@atlasng/core';
 const DEFAULT_TITLE_ID_PREFIX = 'ang-cookie-banner-title';
 
 /** Class applied to the external container that hosts banner spacing and animation state. */
-const CONTAINER_CLASS = 'ang-cookie-banner-container';
+const CONTAINER_CLASS = 'ang-cookie-banner--container';
 /** Class toggled when the banner opens to drive enter animations. */
-const OPENED_CLASS = 'ang-cookie-banner-opened';
+const OPENED_CLASS = 'ang-cookie-banner--opened';
 /** Class toggled when the banner closes to drive exit animations. */
-const CLOSED_CLASS = 'ang-cookie-banner-closed';
+const CLOSED_CLASS = 'ang-cookie-banner--closed';
 /** CSS custom property used to reserve layout spacing for the banner height. */
 const SPACING_VARIABLE = '--ang-cookie-banner-spacing';
 
@@ -40,7 +40,7 @@ const SPACING_VARIABLE = '--ang-cookie-banner-spacing';
  */
 @Directive({
   selector: 'ang-cookie-banner-logo, [angCookieBannerLogo]',
-  host: { class: 'ang-cookie-banner-logo' },
+  host: { class: 'ang-cookie-banner--logo' },
 })
 export class CookieBannerLogo {}
 
@@ -50,7 +50,7 @@ export class CookieBannerLogo {}
 @Directive({
   selector: 'ang-cookie-banner-title, [angCookieBannerTitle]',
   host: {
-    class: 'ang-cookie-banner-title',
+    class: 'ang-cookie-banner--title',
     '[attr.id]': 'id()',
   },
 })
@@ -66,7 +66,7 @@ export class CookieBannerTitle {
  */
 @Directive({
   selector: 'ang-cookie-banner-description, [angCookieBannerDescription]',
-  host: { class: 'ang-cookie-banner-description' },
+  host: { class: 'ang-cookie-banner--description' },
 })
 export class CookieBannerDescription {}
 
@@ -75,7 +75,7 @@ export class CookieBannerDescription {}
  */
 @Directive({
   selector: 'ang-cookie-banner-privacy-policy, [angCookieBannerPrivacyPolicy]',
-  host: { class: 'ang-cookie-banner-privacy-policy' },
+  host: { class: 'ang-cookie-banner--privacy-policy' },
 })
 export class CookieBannerPrivacyPolicy {}
 
@@ -85,7 +85,7 @@ export class CookieBannerPrivacyPolicy {}
 @Directive({
   selector: 'ang-cookie-banner-action, [angCookieBannerAction]',
   host: {
-    class: 'ang-cookie-banner-action',
+    class: 'ang-cookie-banner--action',
     '(click)': 'handleClick()',
   },
 })
@@ -114,7 +114,7 @@ export class CookieBannerAction {
  */
 @Directive({
   selector: 'ang-cookie-banner-container, [angCookieBannerContainer]',
-  host: { class: 'ang-cookie-banner-container' },
+  host: { class: 'ang-cookie-banner--container' },
 })
 export class CookieBannerContainer {
   /**

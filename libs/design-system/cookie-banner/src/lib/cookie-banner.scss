@@ -8,7 +8,7 @@ $subcontainer-gap: 16px;
 $content-max-width: 716px;
 $action-min-width: 188px;
 
-body.ang-cookie-banner-container {
+body.ang-cookie-banner--container {
   overflow-y: auto;
   padding-bottom: var(--ang-cookie-banner-spacing, 0px);
   scroll-padding-bottom: var(--ang-cookie-banner-spacing, 0px);
@@ -18,7 +18,7 @@ body.ang-cookie-banner-container {
   }
 }
 
-.ang-cookie-banner-container:not(body) {
+.ang-cookie-banner--container:not(body) {
   position: relative;
   overflow-y: hidden;
   padding-bottom: var(--ang-cookie-banner-spacing, 0px);
@@ -42,14 +42,14 @@ body.ang-cookie-banner-container {
   border-top-right-radius: token-utils.slot('container-shape', $config);
   box-shadow: token-utils.slot('container-elevation', $config);
 
-  .ang-cookie-banner-section {
+  .ang-cookie-banner--section {
     display: flex;
     flex-direction: column;
     gap: $container-gap;
     padding: $container-padding;
   }
 
-  .ang-cookie-banner-content {
+  .ang-cookie-banner--content {
     display: flex;
     flex-direction: column;
     max-width: $content-max-width;
@@ -57,7 +57,7 @@ body.ang-cookie-banner-container {
     gap: $subcontainer-gap;
   }
 
-  .ang-cookie-banner-title {
+  .ang-cookie-banner--title {
     margin: 0;
     color: token-utils.slot('title-color', $config);
     font-family: token-utils.slot('title-font', $config);
@@ -67,7 +67,7 @@ body.ang-cookie-banner-container {
     letter-spacing: token-utils.slot('title-tracking', $config);
   }
 
-  .ang-cookie-banner-description {
+  .ang-cookie-banner--description {
     margin: 0;
     flex: auto;
     color: token-utils.slot('description-color', $config);
@@ -78,7 +78,7 @@ body.ang-cookie-banner-container {
     letter-spacing: token-utils.slot('description-tracking', $config);
   }
 
-  .ang-cookie-banner-privacy-policy {
+  .ang-cookie-banner--privacy-policy {
     color: token-utils.slot('privacy-policy-color', $config);
     font-family: token-utils.slot('privacy-policy-font', $config);
     font-size: token-utils.slot('privacy-policy-size', $config);
@@ -86,13 +86,13 @@ body.ang-cookie-banner-container {
     letter-spacing: token-utils.slot('privacy-policy-tracking', $config);
   }
 
-  .ang-cookie-banner-actions {
+  .ang-cookie-banner--actions {
     display: flex;
     flex-wrap: wrap;
     gap: $subcontainer-gap;
   }
 
-  .ang-cookie-banner-action {
+  .ang-cookie-banner--action {
     flex: 1 1 $action-min-width;
     min-width: $action-min-width;
   }
@@ -102,53 +102,53 @@ body.ang-cookie-banner-container {
     $actions-width: 320px;
     $actions-margin-left: 16px;
 
-    .ang-cookie-banner-section {
+    .ang-cookie-banner--section {
       flex-direction: row;
       justify-content: center;
     }
 
-    .ang-cookie-banner-content {
+    .ang-cookie-banner--content {
       max-width: $content-max-width - 2 * $content-margin;
       margin: 0 $content-margin;
     }
 
-    .ang-cookie-banner-actions {
+    .ang-cookie-banner--actions {
       flex-direction: column;
       flex-wrap: nowrap;
       width: $actions-width - $actions-margin-left;
       margin-left: $actions-margin-left;
     }
 
-    .ang-cookie-banner-action {
+    .ang-cookie-banner--action {
       flex: unset;
     }
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .ang-cookie-banner.ang-cookie-banner-opened {
+  .ang-cookie-banner.ang-cookie-banner--opened {
     animation: ang-cookie-banner-opened 1s ease-in forwards;
   }
 
-  .ang-cookie-banner.ang-cookie-banner-closed {
+  .ang-cookie-banner.ang-cookie-banner--closed {
     animation: ang-cookie-banner-closed 1s ease-out forwards;
   }
 
-  .ang-cookie-banner-container.ang-cookie-banner-opened {
+  .ang-cookie-banner--container.ang-cookie-banner--opened {
     animation: ang-cookie-banner-container-opened 1s ease-in forwards;
   }
 
-  .ang-cookie-banner-container.ang-cookie-banner-closed {
+  .ang-cookie-banner--container.ang-cookie-banner--closed {
     animation: ang-cookie-banner-container-closed 1s ease-out forwards;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ang-cookie-banner.ang-cookie-banner-closed {
+  .ang-cookie-banner.ang-cookie-banner--closed {
     display: none;
   }
 
-  .ang-cookie-banner-container.ang-cookie-banner-closed {
+  .ang-cookie-banner--container.ang-cookie-banner--closed {
     padding-bottom: 0;
     scroll-padding-bottom: 0;
   }

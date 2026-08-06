@@ -11,7 +11,7 @@ import { provideEventScope, TrackClick } from '@atlasng/analytics';
   providers: [provideEventScope('navigation-toggle')],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.ang-navigation-toggle-selected]': 'selected()',
+    '[class.ang-navigation-toggle--selected]': 'selected()',
     '(click)': 'selected.update(s => !s)',
   },
 })
