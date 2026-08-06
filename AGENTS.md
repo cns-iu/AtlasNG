@@ -52,6 +52,17 @@
 - Local npm registry target exists at workspace root:
   - `npx nx local-registry @atlasng/monorepo`
 
+## Design-System CSS Class Naming
+
+- Name design-system-owned CSS classes using `ang-<component>` for the component root and `ang-<component>--<class>` for its elements, variants, and states.
+- Use kebab case for both `<component>` and `<class>`. The component name should normally match the Angular selector without the `ang-` prefix or, when more appropriate, the component directory name.
+- Examples: `ang-cookie-banner`, `ang-cookie-banner--title`, `ang-navigation-toggle--selected`, and `ang-text-link--icons`.
+- Do not use a single hyphen to separate the component and class. For example, use `ang-cookie-banner--title`, not `ang-cookie-banner-title`.
+- Apply the convention consistently to static template classes, component or directive host classes, SCSS selectors, classes added through Angular APIs such as `Renderer2`, and design-system classes used in stories and tests.
+- Classes supplied through dynamic bindings such as `[class]="definition.classes"` are consumer- or data-owned and do not have to follow this convention. Do not rename their values solely to satisfy the design-system pattern.
+- Third-party framework classes such as Angular Material icon classes are exempt.
+- When renaming a class, update its templates, styles, TypeScript references, stories, and tests together.
+
 ## Testing Expectations
 
 - Unit tests use `@nx/angular:unit-test` with coverage enabled by default.
