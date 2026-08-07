@@ -1,4 +1,4 @@
-import { APP_ID, inject, Injectable, isDevMode } from '@angular/core';
+import { APP_ID, inject, isDevMode, Service } from '@angular/core';
 import { createConfigurationToken, type } from '@atlasng/core';
 
 /**
@@ -34,9 +34,7 @@ export const provideIdGeneratorConfig = ID_GENERATOR_CONFIG.provide;
 /**
  * Generates stable, incrementing DOM-safe IDs.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class IdGenerator {
   /** Configuration for the ID generator. */
   readonly config = ID_GENERATOR_CONFIG.inject();

@@ -1,12 +1,4 @@
-import {
-  ComponentRef,
-  createComponent,
-  DestroyRef,
-  EnvironmentInjector,
-  inject,
-  Injectable,
-  Type,
-} from '@angular/core';
+import { ComponentRef, createComponent, DestroyRef, EnvironmentInjector, inject, Service, Type } from '@angular/core';
 
 /**
  * Service to load stylesheets dynamically into the application.
@@ -15,9 +7,7 @@ import {
  * This code was adapted from an internal Angular CDK service.
  * The original code can be found at: {@link https://github.com/angular/components/blob/v21.2.10/src/cdk/private/style-loader.ts}
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class StyleLoader {
   /** Reference to the environment injector. */
   readonly #environmentInjector = inject(EnvironmentInjector);

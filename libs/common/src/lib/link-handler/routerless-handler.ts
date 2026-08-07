@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, Injector, Signal } from '@angular/core';
+import { computed, inject, Injector, Service, Signal } from '@angular/core';
 import type { IsActiveMatchOptions, NavigationBehaviorOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
 import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from './handler';
@@ -19,9 +19,7 @@ export interface RouterlessPreparedLink extends PreparedLink {
 /**
  * Default link handler that navigates through `window.location` without Angular Router navigation.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink> {
   /**
    * Browser location object used for hard navigations.

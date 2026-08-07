@@ -1,4 +1,4 @@
-import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Service, signal } from '@angular/core';
 import { createConfigurationToken, LOCAL_STORAGE, type, WINDOW } from '@atlasng/core';
 import { AnalyticsPermissions } from './permissions';
 
@@ -56,9 +56,7 @@ export const provideAnalyticsPermissionsManagerConfig = ANALYTICS_PERMISSIONS_CO
  * synchronized across browser contexts through storage and custom events.
  * This behavior can be customized through the manager configuration.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AnalyticsPermissionsManager {
   /** Resolved manager configuration with defaults applied. */
   readonly config = ANALYTICS_PERMISSIONS_CONFIG.inject();

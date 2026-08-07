@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { ErrorHandler, inject, Injectable, Injector, Signal } from '@angular/core';
+import { ErrorHandler, inject, Injector, Service, Signal } from '@angular/core';
 import { isActive, IsActiveMatchOptions, NavigationBehaviorOptions, Router, UrlTree } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { LinkAttributes, LinkCommand, LinkHandler } from './handler';
@@ -22,9 +22,7 @@ export interface RouterPreparedLink extends RouterlessPreparedLink {
 /**
  * Link handler that supports Angular Router commands while delegating absolute URLs to the routerless handler.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
   /**
    * Optional registry for resolving custom elements that behave like anchors.

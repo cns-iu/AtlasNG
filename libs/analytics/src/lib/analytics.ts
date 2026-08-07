@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor, PageViewAnalyticsEventPayload } from '@atlasng/analytics/events';
 import { createConfigurationToken, type } from '@atlasng/core';
 import { ANALYTICS_BACKEND } from './backend';
@@ -23,9 +23,7 @@ export const ANALYTICS_CONFIG = createConfigurationToken({
  * Log analytics events and page views.
  * If no analytics backend is available, the methods of this class are no-ops.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class Analytics {
   /** Analytics configuration. */
   readonly config = ANALYTICS_CONFIG.inject();
