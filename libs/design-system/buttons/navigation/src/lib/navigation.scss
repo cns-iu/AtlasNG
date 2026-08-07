@@ -20,13 +20,13 @@
     )
   );
 
-  .ang-navigation-button {
+  .ang-navigation--button {
     &:focus-visible {
       outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
     }
 
     :is(&:hover, &:active, &:focus-visible) {
-      .ang-navigation-text {
+      .ang-navigation-button--text {
         text-decoration: underline;
         text-underline-offset: 0.25rem;
         text-decoration-thickness: 0.125rem;

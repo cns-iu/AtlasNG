@@ -20,11 +20,11 @@ describe('NavigationToggle', () => {
 
   it('toggles state when clicked', async () => {
     const { user } = await setup();
-    const toggle = screen.getByText('Category').closest('.ang-navigation-toggle-button');
+    const toggle = screen.getByText('Category').closest('.ang-navigation-toggle--button');
 
     expect(toggle).toBeTruthy();
 
-    const icon = toggle?.querySelector('.ang-navigation-toggle-icon');
+    const icon = toggle?.querySelector('.ang-navigation-toggle--icon');
 
     expect(icon).toHaveAttribute('data-mat-icon-name', 'expand_more');
 

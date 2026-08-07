@@ -1,23 +1,23 @@
-<nav class="ang-breadcrumbs-navigation" aria-label="Breadcrumb">
-  <ol class="ang-breadcrumbs-crumbs">
+<nav class="ang-breadcrumbs--navigation" aria-label="Breadcrumb navigation">
+  <ol class="ang-breadcrumbs--crumbs">
     @for (crumb of items(); track $index) {
-      <li class="ang-breadcrumbs-crumb">
+      <li class="ang-breadcrumbs--crumb">
         @if (crumb.command) {
           <a
             angTextLink
             angAnyLinkActive
-            class="ang-breadcrumbs-label"
+            class="ang-breadcrumbs--label"
             ariaCurrentWhenActive="page"
             [angAnyLink]="crumb.command"
             [angAnyLinkActiveOptions]="{ exact: true }"
             >{{ crumb.name }}</a
           >
         } @else {
-          <span class="ang-breadcrumbs-label">{{ crumb.name }}</span>
+          <span class="ang-breadcrumbs--label">{{ crumb.name }}</span>
         }
 
         @if (!$last) {
-          <span class="ang-breadcrumbs-separator" aria-hidden="true">{{ separator() }}</span>
+          <span class="ang-breadcrumbs--separator" aria-hidden="true">{{ separator() }}</span>
         }
       </li>
     }

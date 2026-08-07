@@ -4,7 +4,7 @@
 :host {
   display: block;
 
-  .ang-breadcrumbs-crumbs {
+  .ang-breadcrumbs--crumbs {
     list-style-type: none;
     margin: 0;
     padding: 0.125rem 0;
@@ -15,14 +15,14 @@
     line-height: token-utils.slot(text-line-height, $config);
     letter-spacing: token-utils.slot(text-tracking, $config);
 
-    .ang-breadcrumbs-crumb {
+    .ang-breadcrumbs--crumb {
       display: contents;
 
-      .ang-breadcrumbs-label {
+      .ang-breadcrumbs--label {
         text-underline-offset: 0.125rem;
       }
 
-      .ang-breadcrumbs-separator {
+      .ang-breadcrumbs--separator {
         display: inline-block;
         padding: 0 0.375rem;
         text-align: center;

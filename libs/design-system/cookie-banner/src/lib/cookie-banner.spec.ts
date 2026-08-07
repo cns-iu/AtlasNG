@@ -124,7 +124,7 @@ describe('CookieBanner', () => {
     await user.click(screen.getByRole('button', { name: 'Allow all' }));
 
     expect(click).toHaveBeenCalledOnce();
-    await waitFor(() => expect(bannerElement).toHaveClass('ang-cookie-banner-closed'));
+    await waitFor(() => expect(bannerElement).toHaveClass('ang-cookie-banner--closed'));
   });
 
   it('keeps the banner open when closeOnClick is disabled', async () => {
@@ -184,7 +184,7 @@ describe('CookieBanner', () => {
     expect(screen.getByText('Custom privacy title')).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'Dismiss' }));
-    await waitFor(() => expect(bannerElement).toHaveClass('ang-cookie-banner-closed'));
+    await waitFor(() => expect(bannerElement).toHaveClass('ang-cookie-banner--closed'));
   });
 
   it('reopens the banner when open is called after close', async () => {
@@ -195,12 +195,12 @@ describe('CookieBanner', () => {
     banner.close();
     fixture.detectChanges();
 
-    await waitFor(() => expect(bannerElement).toHaveClass('ang-cookie-banner-closed'));
+    await waitFor(() => expect(bannerElement).toHaveClass('ang-cookie-banner--closed'));
 
     banner.open();
     fixture.detectChanges();
 
-    expect(bannerElement).toHaveClass('ang-cookie-banner-opened');
+    expect(bannerElement).toHaveClass('ang-cookie-banner--opened');
   });
 
   it('can be anchored to a container component', async () => {
@@ -223,12 +223,12 @@ describe('CookieBanner', () => {
     await user.click(screen.getByRole('button', { name: 'Allow all' }));
 
     expect(allowAll).toHaveBeenCalledOnce();
-    await waitFor(() => expect(bannerElement).toHaveClass('ang-cookie-banner-closed'));
+    await waitFor(() => expect(bannerElement).toHaveClass('ang-cookie-banner--closed'));
   });
 
   it('updates container spacing when resize observer reports a new height', async () => {
     const { emitResize } = await setupContainerHost();
-    const container = document.querySelector('.ang-cookie-banner-container') as HTMLElement;
+    const container = document.querySelector('.ang-cookie-banner--container') as HTMLElement;
 
     emitResize(72);
 
