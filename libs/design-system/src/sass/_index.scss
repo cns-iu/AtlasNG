@@ -7,11 +7,13 @@
 
 // Overrides
 @forward '../../buttons/breadcrumbs/src/lib/tokens' as breadcrumbs-* show $breadcrumbs-overrides;
-@forward '../../buttons/navigation/src/lib/tokens' as navigation-button-* show $navigation-button-overrides;
+@forward '../../buttons/navigation-button/src/lib/tokens' as navigation-button-* show $navigation-button-overrides;
 @forward '../../buttons/navigation-toggle/src/lib/tokens' as navigation-toggle-* show $navigation-toggle-overrides;
-@forward '../../buttons/social-media/src/lib/tokens' as social-media-button-* show $social-media-button-overrides;
+@forward '../../buttons/social-media-button/src/lib/tokens' as social-media-button-* show $social-media-button-overrides;
 @forward '../../cookie-banner/src/lib/tokens' as cookie-banner-* show $cookie-banner-overrides;
-@forward '../../indicators/end-of-results/src/lib/tokens' as end-of-results-indicator-* show
+@forward '../../indicators/end-of-results-indicator/src/lib/tokens' as end-of-results-indicator-* show
   $end-of-results-indicator-overrides;
-@forward '../../indicators/no-results/src/lib/tokens' as no-results-indicator-* show $no-results-indicator-overrides;
-@forward '../../indicators/results/src/lib/tokens' as results-indicator-* show $results-indicator-overrides;
+@forward '../../indicators/no-results-indicator/src/lib/tokens' as no-results-indicator-* show
+  $no-results-indicator-overrides;
+@forward '../../indicators/results-indicator/src/lib/tokens' as results-indicator-* show $results-indicator-overrides;
+@forward '../../text-link/src/lib/tokens' as text-link-* show $text-link-overrides;

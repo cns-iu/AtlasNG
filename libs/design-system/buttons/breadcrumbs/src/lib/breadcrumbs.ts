@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { AnyLink, AnyLinkActive, AnyLinkCommand } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/text-link';
 
@@ -15,7 +15,7 @@ export interface BreadcrumbItem {
   imports: [TextLink, AnyLink, AnyLinkActive],
   templateUrl: './breadcrumbs.html',
   styleUrl: './breadcrumbs.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ang-breadcrumbs' },
 })
 export class Breadcrumbs {
   /** Crumbs to display */

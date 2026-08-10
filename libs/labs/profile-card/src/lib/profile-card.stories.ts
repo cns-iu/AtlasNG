@@ -4,7 +4,7 @@ import { AnyLink } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/text-link';
 import { type Meta, type StoryObj } from '@storybook/angular';
 import { ProfileCard } from './profile-card';
-import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media';
+import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media-button';
 import { GridContainer } from '@atlasng/labs/grid-container';
 
 const meta: Meta<ProfileCard> = {

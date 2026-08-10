@@ -1,6 +1,6 @@
 import { Component, Type, viewChild } from '@angular/core';
 import { RESIZE_OBSERVER } from '@atlasng/core';
-import { render, RenderComponentOptions, screen, waitFor } from '@testing-library/angular';
+import { createEvent, fireEvent, render, RenderComponentOptions, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import {
   CookieBanner,
@@ -201,6 +201,23 @@ describe('CookieBanner', () => {
     fixture.detectChanges();
 
     expect(bannerElement).toHaveClass('ang-cookie-banner--opened');
+  });
+
+  it('hides the banner only when the close animation ends', async () => {
+    await setup();
+    const bannerElement = screen
+      .getByRole('region', { name: 'Manage your privacy preferences' })
+      .closest('.ang-cookie-banner') as HTMLElement;
+
+    const unrelatedAnimationEnd = createEvent.animationEnd(bannerElement);
+    Object.defineProperty(unrelatedAnimationEnd, 'animationName', { value: 'unrelated-animation' });
+    fireEvent(bannerElement, unrelatedAnimationEnd);
+    expect(bannerElement).not.toHaveStyle({ display: 'none' });
+
+    const closeAnimationEnd = createEvent.animationEnd(bannerElement);
+    Object.defineProperty(closeAnimationEnd, 'animationName', { value: 'ang-cookie-banner-closed' });
+    fireEvent(bannerElement, closeAnimationEnd);
+    expect(bannerElement).toHaveStyle({ display: 'none' });
   });
 
   it('can be anchored to a container component', async () => {

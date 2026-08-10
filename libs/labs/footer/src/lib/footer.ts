@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
-import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media';
+import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media-button';
 import { TextLink } from '@atlasng/design-system/text-link';
 
 /**
