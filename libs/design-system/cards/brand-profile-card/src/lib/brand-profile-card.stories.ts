@@ -7,7 +7,7 @@ const meta: Meta<BrandProfileCard> = {
   component: BrandProfileCard,
   subcomponents: { BrandProfileCardAction },
   args: {
-    image: '/assets/placeholder-256x256.png',
+    image: 'assets/placeholder-256x256.png',
     name: 'Jane Doe',
     description: 'Design leader focused on creating clear, inclusive digital experiences.',
     centered: false,
