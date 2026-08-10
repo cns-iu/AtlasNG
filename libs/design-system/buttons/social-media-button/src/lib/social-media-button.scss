@@ -1,0 +1,29 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+// Keep in sync with `DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS` in social-media-button-definitions.ts
+$builtin-icons: (instagram facebook linkedin github bluesky x youtube);
+
+:host {
+  display: inline-block;
+
+  @include mat.icon-button-overrides(
+    (
+      icon-color: token-utils.slot(color, $config),
+      state-layer-color: token-utils.slot(color, $config),
+      disabled-state-layer-color: token-utils.slot(color, $config),
+    )
+  );
+
+  .ang-social-media-button--mask-icon {
+    height: 100%;
+    background-color: currentColor;
+
+    @each $icon in $builtin-icons {
+      &.#{$icon} {
+        mask: url('icons/#{$icon}.svg');
+      }
+    }
+  }
+}

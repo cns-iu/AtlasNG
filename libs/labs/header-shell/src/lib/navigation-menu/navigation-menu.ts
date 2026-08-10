@@ -4,7 +4,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { AnyLink } from '@atlasng/common';
-import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media';
+import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media-button';
 import { HeaderShellNavigationItem } from '../header-shell';
 
 /** Supported social media IDs */
