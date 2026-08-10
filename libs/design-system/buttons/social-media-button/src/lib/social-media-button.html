@@ -1,10 +1,10 @@
-@let def = resolvedDef();
-<a matIconButton angTrackClick target="_blank" [attr.aria-label]="def.label" [attr.href]="def.url">
-  @if (def.icon; as icon) {
-    <mat-icon [class]="def.classes" [svgIcon]="icon" />
-  } @else if (def.fontIcon; as icon) {
-    <mat-icon [class]="def.classes" [fontIcon]="icon" />
+@let definition = resolvedDefinition();
+<a matIconButton angTrackClick target="_blank" [attr.aria-label]="definition.label" [attr.href]="definition.url">
+  @if (definition.icon; as icon) {
+    <mat-icon [class]="definition.classes" [svgIcon]="icon" />
+  } @else if (definition.fontIcon; as icon) {
+    <mat-icon [class]="definition.classes" [fontIcon]="icon" />
   } @else {
-    <div class="ang-social-media-button--mask-icon" [class]="def.classes"></div>
+    <div class="ang-social-media-button--mask-icon" [class]="definition.classes"></div>
   }
 </a>

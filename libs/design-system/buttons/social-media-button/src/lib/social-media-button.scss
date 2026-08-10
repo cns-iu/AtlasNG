@@ -2,7 +2,7 @@
 @use 'internal/token-utils';
 @use './tokens' as *;
 
-// Keep in sync with `DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS` in social-media-button.ts
+// Keep in sync with `DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS` in social-media-button-definitions.ts
 $builtin-icons: (instagram facebook linkedin github bluesky x youtube);
 
 :host {

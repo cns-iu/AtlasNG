@@ -1,22 +1,23 @@
 import { MatIconRegistry } from '@angular/material/icon';
 import { FakeMatIconRegistry } from '@angular/material/icon/testing';
 import { ComponentInput, render, screen } from '@testing-library/angular';
-import { provideSocialMediaButtons, SocialMediaButton, SocialMediaButtonDef } from './social-media-button';
+import { SocialMediaButton } from './social-media-button';
+import { provideSocialMediaButtons, type SocialMediaButtonDefinition } from './social-media-button-definitions';
 
 describe('SocialMediaButton', () => {
   type SetupOptions = {
     detectChangesOnRender?: boolean;
     inputs?: ComponentInput<SocialMediaButton>;
-    defs?: SocialMediaButtonDef[];
+    definitions?: SocialMediaButtonDefinition[];
   };
 
-  function setup({ detectChangesOnRender = true, inputs = {}, defs }: SetupOptions = {}) {
+  function setup({ detectChangesOnRender = true, inputs = {}, definitions }: SetupOptions = {}) {
     return render(SocialMediaButton, {
       detectChangesOnRender,
       inputs,
       providers: [
         { provide: MatIconRegistry, useClass: FakeMatIconRegistry },
-        ...(defs ? [provideSocialMediaButtons(defs)] : []),
+        ...(definitions ? [provideSocialMediaButtons(definitions)] : []),
       ],
     });
   }
@@ -32,10 +33,10 @@ describe('SocialMediaButton', () => {
     expect(link).toHaveAttribute('href', 'https://www.linkedin.com/');
   });
 
-  it('renders a link when an explicit def with an icon is provided', async () => {
+  it('renders a link when an explicit definition with an icon is provided', async () => {
     await setup({
       inputs: {
-        def: {
+        definition: {
           id: 'custom',
           label: 'Custom',
           url: 'https://example.com/custom',
@@ -49,11 +50,11 @@ describe('SocialMediaButton', () => {
     expect(link).toHaveAttribute('href', 'https://example.com/custom');
   });
 
-  it('prefers explicit def input over id lookup', async () => {
+  it('prefers the explicit definition input over id lookup', async () => {
     await setup({
       inputs: {
         id: 'linkedin',
-        def: {
+        definition: {
           id: 'override',
           label: 'Override Label',
           url: 'https://example.com/override',
@@ -71,7 +72,7 @@ describe('SocialMediaButton', () => {
       inputs: {
         id: 'linkedin',
       },
-      defs: [
+      definitions: [
         {
           id: 'linkedin',
           label: 'Injected LinkedIn',
@@ -97,7 +98,7 @@ describe('SocialMediaButton', () => {
       }
     }
 
-    it('renders the fallback when neither id nor def are provided', async () => {
+    it('renders the fallback when neither id nor definition are provided', async () => {
       const { fixture } = await setup({ detectChangesOnRender: false });
 
       runWithProdMode(() => {
@@ -124,9 +125,9 @@ describe('SocialMediaButton', () => {
   });
 
   describe('in development mode', () => {
-    it('throws when neither id nor def are provided', async () => {
+    it('throws when neither id nor definition are provided', async () => {
       await expect(setup()).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: SocialMediaButton requires an id or def input]`,
+        `[Error: SocialMediaButton requires an id or definition input]`,
       );
     });
 

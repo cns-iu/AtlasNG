@@ -1,15 +1,15 @@
 import { Meta, StoryObj } from '@storybook/angular';
+import { SocialMediaButton } from './social-media-button';
 import {
-  DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS,
-  SocialMediaButton,
-  SocialMediaButtonDef,
+  DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS,
   provideSocialMediaButtons,
-} from './social-media-button';
+  type SocialMediaButtonDefinition,
+} from './social-media-button-definitions';
 
-const IDS = DEFAULT_SOCIAL_MEDIA_BUTTON_DEFS.map((def) => def.id);
+const IDS = DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS.map((definition) => definition.id);
 
 // Custom definitions example
-const customDefs: SocialMediaButtonDef[] = [
+const customDefinitions: SocialMediaButtonDefinition[] = [
   {
     id: 'linkedin',
     label: 'LinkedIn',
@@ -83,8 +83,8 @@ export const Default: Story = {
 export const CustomUrl: Story = {
   render: (args) => ({
     component: SocialMediaButton,
-    providers: [provideSocialMediaButtons(customDefs)],
+    providers: [provideSocialMediaButtons(customDefinitions)],
     props: args,
   }),
-  args: { def: customDefs[2] },
+  args: { definition: customDefinitions[2] },
 };
