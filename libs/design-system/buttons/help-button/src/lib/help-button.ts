@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule, MatMenuPanel } from '@angular/material/menu';
@@ -13,7 +13,7 @@ import { AnyLink, AnyLinkCommand } from '@atlasng/common';
   selector: 'ang-help-button',
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, TrackClick, AnyLink],
   templateUrl: './help-button.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ang-help-button' },
 })
 export class HelpButton {
   /** Optional menu attached to the help button trigger. */

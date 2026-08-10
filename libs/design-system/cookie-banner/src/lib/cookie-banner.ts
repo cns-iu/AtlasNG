@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   contentChild,
@@ -136,7 +135,6 @@ export class CookieBannerContainer {
   templateUrl: './cookie-banner.html',
   styleUrl: './cookie-banner.scss',
   providers: [provideEventScope('cookie-banner')],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-cookie-banner',

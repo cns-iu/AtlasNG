@@ -1,7 +1,7 @@
 @use 'internal/token-utils';
 
 $config: (
-  namespace: 'navigation',
+  namespace: 'navigation-toggle',
   tokens: (
     label-color: token-utils.sys-token(on-surface),
     icon-color: token-utils.sys-token(on-surface-variant),

@@ -1,5 +1,5 @@
 import { formatNumber } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, LOCALE_ID } from '@angular/core';
+import { Component, computed, inject, input, LOCALE_ID } from '@angular/core';
 
 /**
  * Displays a localized "value of total" style indicator.
@@ -10,7 +10,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, LOCALE_ID 
   selector: 'ang-results-indicator',
   template: `{{ text() }}`,
   styleUrl: './results-indicator.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ang-results-indicator' },
 })
 export class ResultsIndicator {
   /** Current value to display (for example, number of visible results). */

@@ -16,3 +16,4 @@
 @forward '../../indicators/no-results-indicator/src/lib/tokens' as no-results-indicator-* show
   $no-results-indicator-overrides;
 @forward '../../indicators/results-indicator/src/lib/tokens' as results-indicator-* show $results-indicator-overrides;
+@forward '../../text-link/src/lib/tokens' as text-link-* show $text-link-overrides;

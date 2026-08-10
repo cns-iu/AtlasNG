@@ -1,7 +1,7 @@
 @use 'internal/token-utils';
 
 $config: (
-  namespace: 'text-link-button',
+  namespace: 'text-link',
   tokens: (
     color: token-utils.sys-token(on-surface),
     icon-size: 24px,

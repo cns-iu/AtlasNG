@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
 
@@ -14,7 +14,7 @@ import { provideEventScope, TrackClick } from '@atlasng/analytics';
   templateUrl: './no-results-indicator.html',
   styleUrl: './no-results-indicator.scss',
   providers: [provideEventScope('no-results-indicator')],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ang-no-results-indicator' },
 })
 export class NoResultsIndicator {
   /** Message shown above the action button. */

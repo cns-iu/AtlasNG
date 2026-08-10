@@ -1,5 +1,5 @@
 import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
-import { ChangeDetectionStrategy, Component, ElementRef, inject, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, inject, ViewEncapsulation } from '@angular/core';
 import { TrackClick } from '@atlasng/analytics';
 
 /**
@@ -10,7 +10,6 @@ import { TrackClick } from '@atlasng/analytics';
   selector: 'a[angTextLink]',
   templateUrl: './text-link.html',
   styleUrl: './text-link.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-text-link',

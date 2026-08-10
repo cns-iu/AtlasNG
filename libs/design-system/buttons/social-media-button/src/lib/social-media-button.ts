@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, InjectionToken, input, Provider } from '@angular/core';
+import { Component, computed, inject, InjectionToken, input, Provider } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
@@ -99,7 +99,7 @@ export function provideSocialMediaButtons(defs: SocialMediaButtonDef[]): Provide
   templateUrl: './social-media-button.html',
   styleUrl: './social-media-button.scss',
   providers: [provideEventScope('social-media-button')],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ang-social-media-button' },
 })
 export class SocialMediaButton {
   /** Identifier used to resolve a definition from injected or built-in sets. */

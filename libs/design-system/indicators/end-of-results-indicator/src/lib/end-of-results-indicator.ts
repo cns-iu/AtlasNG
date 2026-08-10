@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 
 /**
@@ -10,7 +10,7 @@ import { MatDividerModule } from '@angular/material/divider';
   imports: [CommonModule, MatDividerModule],
   templateUrl: './end-of-results-indicator.html',
   styleUrl: './end-of-results-indicator.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ang-end-of-results-indicator' },
 })
 export class EndOfResultsIndicator {
   /** Label text placed before the results count */

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
@@ -9,7 +9,7 @@ import { AnyLink, AnyLinkCommand } from '@atlasng/common';
   templateUrl: './navigation-button.html',
   styleUrl: './navigation-button.scss',
   providers: [provideEventScope('navigation-button')],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ang-navigation-button' },
 })
 export class NavigationButton {
   /** The link to navigate to */
