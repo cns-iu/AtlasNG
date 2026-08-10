@@ -1,0 +1,47 @@
+@use 'internal/token-utils';
+@use 'breakpoints';
+@use './tokens' as *;
+
+:host {
+  display: block;
+
+  .ang-end-of-results-indicator--container {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+    gap: 0.75rem;
+    margin-top: 2rem;
+
+    .ang-end-of-results-indicator--results-count,
+    .ang-end-of-results-indicator--end-message {
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 3.5rem;
+      min-width: 7.75rem;
+      padding: 0.5rem 1rem;
+      border-style: solid;
+      border-width: 1px;
+
+      font-family: token-utils.slot(text-font, $config);
+      font-size: token-utils.slot(text-size, $config);
+      font-weight: token-utils.slot(text-weight, $config);
+      line-height: token-utils.slot(text-line-height, $config);
+      letter-spacing: token-utils.slot(text-tracking, $config);
+      color: token-utils.slot(color, $config);
+      background-color: token-utils.slot(background-color, $config);
+      border-color: token-utils.slot(border-color, $config);
+      border-radius: token-utils.sys-slot(corner-small);
+    }
+
+    @include breakpoints.breakpoint(small) {
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      justify-content: center;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}

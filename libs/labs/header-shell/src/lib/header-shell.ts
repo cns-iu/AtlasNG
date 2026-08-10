@@ -8,8 +8,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
-import { HelpButton } from '@atlasng/design-system/buttons/help';
-import { NavigationButton } from '@atlasng/design-system/buttons/navigation';
+import { HelpButton } from '@atlasng/design-system/buttons/help-button';
+import { NavigationButton } from '@atlasng/design-system/buttons/navigation-button';
 import { SkipToContentButton } from '@atlasng/labs/skip-to-content-button';
 
 /** Navigation item rendered in the shell navigation rail. */
