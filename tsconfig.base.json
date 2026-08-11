@@ -43,6 +43,7 @@
       "@atlasng/design-system/cards": ["./libs/design-system/cards/src/index.ts"],
       "@atlasng/design-system/cards/brand-profile-card": ["./libs/design-system/cards/brand-profile-card/src/index.ts"],
       "@atlasng/design-system/cookie-banner": ["./libs/design-system/cookie-banner/src/index.ts"],
+      "@atlasng/design-system/footer": ["./libs/design-system/footer/src/index.ts"],
       "@atlasng/design-system/indicators": ["./libs/design-system/indicators/src/index.ts"],
       "@atlasng/design-system/indicators/end-of-results-indicator": [
         "./libs/design-system/indicators/end-of-results-indicator/src/index.ts"
@@ -56,7 +57,6 @@
       "@atlasng/design-system/text-link": ["./libs/design-system/text-link/src/index.ts"],
       "@atlasng/labs": ["./libs/labs/src/index.ts"],
       "@atlasng/labs/cookie-modal": ["./libs/labs/cookie-modal/src/index.ts"],
-      "@atlasng/labs/footer": ["./libs/labs/footer/src/index.ts"],
       "@atlasng/labs/grid-container": ["./libs/labs/grid-container/src/index.ts"],
       "@atlasng/labs/header-shell": ["./libs/labs/header-shell/src/index.ts"],
       "@atlasng/labs/profile-card": ["./libs/labs/profile-card/src/index.ts"],

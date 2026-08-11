@@ -1,10 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, input, output, OutputEmitterRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
-import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media-button';
+import { SocialMediaButton, SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 import { TextLink } from '@atlasng/design-system/text-link';
+
+@Directive({
+  selector: 'ang-footer-logo, [angFooterLogo]',
+  host: { class: 'ang-footer-logo' },
+})
+export class FooterLogo {}
+
+@Directive({
+  selector: 'ang-footer-action, [angFooterAction]',
+  host: {
+    class: 'ang-footer-action',
+  },
+})
+export class FooterAction {}
 
 /**
  * Bottom section of a webpage, providing essential information and navigation options
@@ -18,15 +32,13 @@ import { TextLink } from '@atlasng/design-system/text-link';
 })
 export class Footer {
   /** An array of social media platforms to display. */
-  readonly socials = input<string[]>();
+  readonly socials = input<SocialMediaButtonDefinition[]>();
   /** The URL of the organization's logo. */
   readonly logoUrl = input<string>();
   /** The alt text for the organization's logo. */
   readonly logoAlt = input<string>();
   /** The name of the organization. */
-  readonly orgName = input<string>();
-  /** The email address for contact purposes. */
-  readonly email = input<string>();
+  readonly org = input<string>();
   /** A command for navigating to the organization's link. */
   readonly orgLink = input<AnyLinkCommand>();
   /** Year used for copyright purposes. */
@@ -35,4 +47,8 @@ export class Footer {
   readonly openPrivacyPolicy = output();
   /** An event emitted when the privacy preferences link is clicked. */
   readonly openPrivacyPreferences = output();
+
+  protected handleClick(ref: OutputEmitterRef<void>): void {
+    ref.emit();
+  }
 }

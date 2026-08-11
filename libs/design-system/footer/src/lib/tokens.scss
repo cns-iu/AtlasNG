@@ -1,0 +1,23 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'footer',
+  tokens: (
+    background-color: token-utils.sys-token(surface-variant),
+    action-font: token-utils.sys-token(label-medium-font),
+    action-size: token-utils.sys-token(label-medium-size),
+    action-weight: token-utils.sys-token(label-medium-weight),
+    action-line-height: token-utils.sys-token(label-medium-line-height),
+    action-tracking: 0.2px,
+    copyright-color: token-utils.sys-token(on-surface-variant),
+    copyright-font: token-utils.sys-token(body-small-font),
+    copyright-size: token-utils.sys-token(body-small-size),
+    copyright-weight: token-utils.sys-token(body-small-weight),
+    copyright-line-height: token-utils.sys-token(body-small-line-height),
+    copyright-tracking: token-utils.sys-token(body-small-tracking),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

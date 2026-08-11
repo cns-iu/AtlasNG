@@ -1,0 +1,25 @@
+<ng-content select="ang-footer-logo, [angFooterLogo]">
+  <a class="ang-footer-logo" target="_blank" [angAnyLink]="orgLink()">
+    <img [attr.alt]="logoAlt()" [src]="logoUrl()" />
+  </a>
+</ng-content>
+
+<div class="ang-footer-socials">
+  @for (social of socials(); track social) {
+    <ang-social-media-button class="ang-footer-social-icon" [definition]="social" />
+  }
+</div>
+
+<div class="ang-footer-actions">
+  <ng-content select="ang-footer-action, [angFooterAction]">
+    <button matButton class="ang-footer-action" (click)="handleClick(openPrivacyPolicy)">Privacy Policy</button>
+    <button matButton class="ang-footer-action" (click)="handleClick(openPrivacyPreferences)">
+      Privacy Preferences
+    </button>
+  </ng-content>
+</div>
+
+<span class="ang-footer-copyright">
+  © {{ copyrightYear() }} <a class="ang-footer-link" angTextLink target="_blank" [angAnyLink]="orgLink()">{{ org() }}</a
+  >.
+</span>

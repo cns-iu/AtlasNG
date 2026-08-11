@@ -6,10 +6,10 @@
   @include mat.button-overrides(
     (
       text-icon-spacing: 0.125rem,
-      text-label-text-font: token-utils.slot(privacy-font-family, $config),
-      text-label-text-size: token-utils.slot(privacy-font-size, $config),
-      text-label-text-tracking: token-utils.slot(privacy-letter-spacing, $config),
-      text-label-text-weight: token-utils.slot(privacy-font-weight, $config),
+      text-label-text-font: token-utils.slot(action-font, $config),
+      text-label-text-size: token-utils.slot(action-size, $config),
+      text-label-text-tracking: token-utils.slot(action-tracking, $config),
+      text-label-text-weight: token-utils.slot(action-weight, $config),
     )
   );
 
@@ -17,7 +17,7 @@
   grid-template-areas:
     'logo'
     'socials'
-    'privacy'
+    'actions'
     'copyright';
   grid-template-columns: 1fr;
   row-gap: 0.5rem;
@@ -45,8 +45,8 @@
     }
   }
 
-  .ang-footer-privacy {
-    grid-area: privacy;
+  .ang-footer-actions {
+    grid-area: actions;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -67,9 +67,9 @@
     text-align: center;
     color: token-utils.slot(copyright-color, $config);
     font-family: token-utils.slot(copyright-font, $config);
-    font-size: token-utils.slot(copyright-font-size, $config);
-    font-weight: token-utils.slot(copyright-font-weight, $config);
-    letter-spacing: token-utils.slot(copyright-letter-spacing, $config);
+    font-size: token-utils.slot(copyright-size, $config);
+    font-weight: token-utils.slot(copyright-weight, $config);
+    letter-spacing: token-utils.slot(copyright-tracking, $config);
     line-height: token-utils.slot(copyright-line-height, $config);
 
     .ang-footer-link {
@@ -81,7 +81,7 @@
 
   @media (min-width: 960px) {
     grid-template-areas:
-      'logo      socials   privacy  '
+      'logo      socials   actions  '
       'copyright copyright copyright';
     grid-template-columns: auto 1fr auto;
     padding: 2.5rem;

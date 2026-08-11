@@ -4,7 +4,29 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { FakeMatIconRegistry } from '@angular/material/icon/testing';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { type SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 import { Footer, FooterAction, FooterLogo } from './footer';
+
+const SOCIALS: SocialMediaButtonDefinition[] = [
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    url: 'https://www.linkedin.com/',
+    classes: ['linkedin'],
+  },
+  {
+    id: 'youtube',
+    label: 'YouTube',
+    url: 'https://www.youtube.com/',
+    classes: ['youtube'],
+  },
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    url: 'https://www.instagram.com/',
+    classes: ['instagram'],
+  },
+];
 
 @Component({
   imports: [Footer],
@@ -23,7 +45,7 @@ import { Footer, FooterAction, FooterLogo } from './footer';
 class FooterHost {
   readonly logoUrl = '/assets/wpp.svg';
   readonly logoAlt = 'App Logo';
-  readonly socials = ['linkedin', 'youtube', 'instagram'];
+  readonly socials = SOCIALS;
   readonly org = 'Whole Person Physiome';
   readonly orgLink = 'https://www.cns.edu';
   readonly openPrivacyPolicy = vi.fn();
@@ -42,7 +64,7 @@ class FooterHost {
 class FooterProjectionHost {
   readonly logoUrl = '/assets/wpp.svg';
   readonly logoAlt = 'App Logo';
-  readonly socials = ['linkedin', 'youtube', 'instagram'];
+  readonly socials = SOCIALS;
   readonly org = 'Whole Person Physiome';
   readonly orgLink = 'https://www.cns.edu';
 }
