@@ -11,7 +11,9 @@
     position: relative;
     align-self: stretch;
     margin-bottom: 2rem;
-    border-left: 6px solid token-utils.slot(image-brand-color, $config);
+    border-left-style: solid;
+    border-left-color: token-utils.slot(image-accent-color, $config);
+    border-left-width: token-utils.slot(image-accent-width, $config);
     aspect-ratio: token-utils.slot(image-aspect-ratio, $config);
     clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 90% 100%, 0% 100%);
 
