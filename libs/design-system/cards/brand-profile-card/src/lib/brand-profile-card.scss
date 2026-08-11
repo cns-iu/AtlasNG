@@ -1,0 +1,77 @@
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 12.5rem;
+  max-width: 17rem;
+
+  .ang-brand-profile-card--image-container {
+    position: relative;
+    align-self: stretch;
+    margin-bottom: 2rem;
+    border-left-style: solid;
+    border-left-color: token-utils.slot(image-accent-color, $config);
+    border-left-width: token-utils.slot(image-accent-width, $config);
+    aspect-ratio: token-utils.slot(image-aspect-ratio, $config);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 90% 100%, 0% 100%);
+
+    .ang-brand-profile-card--image {
+      object-fit: cover;
+    }
+  }
+
+  .ang-brand-profile-card--content {
+    display: contents;
+
+    .ang-brand-profile-card--title {
+      margin-bottom: 0.5rem;
+      color: token-utils.slot(title-color, $config);
+      font-family: token-utils.slot(title-font, $config);
+      font-size: token-utils.slot(title-size, $config);
+      font-weight: token-utils.slot(title-weight, $config);
+      line-height: token-utils.slot(title-line-height, $config);
+      letter-spacing: token-utils.slot(title-tracking, $config);
+    }
+
+    .ang-brand-profile-card--description {
+      margin: 0;
+      color: token-utils.slot(description-color, $config);
+      font-family: token-utils.slot(description-font, $config);
+      font-size: token-utils.slot(description-size, $config);
+      font-weight: token-utils.slot(description-weight, $config);
+      line-height: token-utils.slot(description-line-height, $config);
+      letter-spacing: token-utils.slot(description-tracking, $config);
+    }
+  }
+
+  .ang-brand-profile-card--actions {
+    display: flex;
+    gap: 0.25rem;
+    font-family: token-utils.slot(actions-font, $config);
+    font-size: token-utils.slot(actions-size, $config);
+    font-weight: token-utils.slot(actions-weight, $config);
+    line-height: token-utils.slot(actions-line-height, $config);
+    letter-spacing: token-utils.slot(actions-tracking, $config);
+
+    &:not(:empty) {
+      margin-top: 1rem;
+    }
+  }
+
+  &.ang-brand-profile-card--centered {
+    align-items: center;
+
+    .ang-brand-profile-card--content {
+      .ang-brand-profile-card--title,
+      .ang-brand-profile-card--description {
+        text-align: center;
+      }
+    }
+
+    .ang-brand-profile-card--actions {
+      justify-content: center;
+    }
+  }
+}

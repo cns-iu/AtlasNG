@@ -40,6 +40,8 @@
       "@atlasng/design-system/buttons/social-media-button": [
         "./libs/design-system/buttons/social-media-button/src/index.ts"
       ],
+      "@atlasng/design-system/cards": ["./libs/design-system/cards/src/index.ts"],
+      "@atlasng/design-system/cards/brand-profile-card": ["./libs/design-system/cards/brand-profile-card/src/index.ts"],
       "@atlasng/design-system/cookie-banner": ["./libs/design-system/cookie-banner/src/index.ts"],
       "@atlasng/design-system/indicators": ["./libs/design-system/indicators/src/index.ts"],
       "@atlasng/design-system/indicators/end-of-results-indicator": [

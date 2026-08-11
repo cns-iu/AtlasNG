@@ -1,0 +1,10 @@
+<div class="ang-brand-profile-card--image-container">
+  <img class="ang-brand-profile-card--image" fill [ngSrc]="image()" [attr.alt]="`Profile picture of ${name()}`" />
+</div>
+<div class="ang-brand-profile-card--content">
+  <div class="ang-brand-profile-card--title">{{ name() }}</div>
+  <p class="ang-brand-profile-card--description">{{ description() }}</p>
+</div>
+<div class="ang-brand-profile-card--actions">
+  <ng-content select="ang-brand-profile-card-action, [angBrandProfileCardAction]" />
+</div>
