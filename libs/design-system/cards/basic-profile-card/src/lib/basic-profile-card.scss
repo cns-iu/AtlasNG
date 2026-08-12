@@ -1,0 +1,56 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use 'tokens' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: token-utils.slot(card-color, $config);
+  width: 100%;
+  max-width: 22.75rem;
+  min-width: 16.75rem;
+
+  .picture {
+    position: relative;
+    width: 100%;
+    aspect-ratio: token-utils.slot(image-aspect-ratio, $config);
+    overflow: hidden;
+    border-radius: 0.5rem;
+    max-width: 20rem;
+    height: auto;
+
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .content {
+    margin-bottom: 0;
+    flex-grow: 1;
+
+    .name {
+      font-family: token-utils.slot(name-font, $config);
+      letter-spacing: token-utils.slot(name-tracking, $config);
+      line-height: token-utils.slot(name-line-height, $config);
+      margin-bottom: 0.375rem;
+    }
+
+    .descriptions {
+      font-family: token-utils.slot(description-font, $config);
+      font-size: token-utils.slot(description-size, $config);
+      font-weight: token-utils.slot(description-weight, $config);
+      letter-spacing: token-utils.slot(description-tracking, $config);
+      line-height: token-utils.slot(description-line-height, $config);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .description {
+        margin: 0;
+      }
+    }
+  }
+}

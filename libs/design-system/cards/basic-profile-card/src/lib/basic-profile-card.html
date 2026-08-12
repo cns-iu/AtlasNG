@@ -1,0 +1,17 @@
+<div class="picture">
+  <img fill [ngSrc]="image()" [attr.alt]="`Profile picture of ${name()}`" />
+</div>
+<div class="content">
+  @if (link()) {
+    <a angTextLink class="name" target="_blank" [angAnyLink]="link()">
+      {{ name() }}
+    </a>
+  } @else {
+    <div class="name">{{ name() }}</div>
+  }
+  <div class="descriptions">
+    @for (desc of ensureArray(description()); track desc) {
+      <p class="description">{{ desc }}</p>
+    }
+  </div>
+</div>
