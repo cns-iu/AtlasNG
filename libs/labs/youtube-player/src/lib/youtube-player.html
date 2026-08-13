@@ -1,13 +1,31 @@
-@if (hasCookiesEnabled()) {
-  <youtube-player [videoId]="videoId()" [playerVars]="{ rel: 0, showinfo: 0 }" [disableCookies]="true" #player />
+@if (enabled()) {
+  <youtube-player
+    disableCookies
+    loadApi
+    [videoId]="videoId()"
+    [width]="width()"
+    [height]="height()"
+    [startSeconds]="startSeconds()"
+    [endSeconds]="endSeconds()"
+    [suggestedQuality]="suggestedQuality()"
+    [playerVars]="playerVarsWithDefaults()"
+    [disablePlaceholder]="disablePlaceholder()"
+    [placeholderButtonLabel]="placeholderButtonLabel()"
+    [placeholderImageQuality]="placeholderImageQuality()"
+  />
 } @else {
-  <div class="youtube-thumbnail-container">
-    <a target="_blank" rel="noopener noreferrer" [attr.href]="videoUrl()">
-      <img class="thumbnail-image" [attr.src]="thumbnailUrl()" [attr.alt]="`YouTube video thumbnail for ${label()}`" />
-    </a>
-    <div class="enable-cookies-message">
-      <button class="enable-cookies-button" (click)="enableCookies.emit()">Enable cookies</button>
+  <ang-youtube-player-placeholder
+    [videoId]="videoId()"
+    [width]="width()"
+    [height]="height()"
+    [buttonLabel]="placeholderButtonLabel()"
+    [quality]="placeholderImageQuality()"
+  />
+
+  <ng-content select="[angYouTubePlayerEnableRequest]">
+    <div class="ang-youtube-player--enable-request">
+      <button class="ang-youtube-player--enable-request-button" (click)="enableRequest.emit()">Enable cookies</button>
       to watch videos
     </div>
-  </div>
+  </ng-content>
 }

@@ -5,47 +5,25 @@
   display: block;
   position: relative;
 
-  youtube-player {
-    display: block;
-  }
-
-  ::ng-deep youtube-player {
-    youtube-player-placeholder,
-    iframe {
-      width: 100% !important;
-      aspect-ratio: 16 / 9 !important;
-      height: unset !important;
-    }
-  }
-
-  .thumbnail-image {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-  }
-
-  .enable-cookies-message,
-  .enable-cookies-button {
-    font-family: token-utils.slot(enable-cookies-font-family, tokens.$config);
-    font-size: token-utils.slot(enable-cookies-font-size, tokens.$config);
-    font-weight: token-utils.slot(enable-cookies-font-weight, tokens.$config);
-    line-height: token-utils.slot(enable-cookies-line-height, tokens.$config);
-    letter-spacing: token-utils.slot(enable-cookies-tracking, tokens.$config);
-    color: token-utils.slot(enable-cookies-color, tokens.$config);
-  }
-
-  .enable-cookies-message {
+  .ang-youtube-player--enable-request {
     margin-top: 0.5rem;
-  }
 
-  .enable-cookies-button {
-    font-weight: 600;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    text-decoration: underline;
+    color: token-utils.slot(enable-request-color, tokens.$config);
+    font-family: token-utils.slot(enable-request-font, tokens.$config);
+    font-size: token-utils.slot(enable-request-size, tokens.$config);
+    font-weight: token-utils.slot(enable-request-weight, tokens.$config);
+    line-height: token-utils.slot(enable-request-line-height, tokens.$config);
+    letter-spacing: token-utils.slot(enable-request-tracking, tokens.$config);
+
+    .ang-youtube-player--enable-request-button {
+      color: inherit;
+      font: inherit;
+      font-weight: 600;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      text-decoration: underline;
+    }
   }
 }

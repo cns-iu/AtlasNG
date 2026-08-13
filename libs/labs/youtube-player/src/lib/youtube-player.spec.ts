@@ -1,84 +1,183 @@
-import { ComponentInput, render, screen } from '@testing-library/angular';
+import { EventEmitter } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { YouTubePlayer as NgYouTubePlayer } from '@angular/youtube-player';
+import {
+  AnalyticsPermissions,
+  AnalyticsPermissionsManager,
+  provideAnalyticsPermissionsManagerConfig,
+  provideInitialAnalyticsPermissions,
+} from '@atlasng/analytics/permissions';
+import { ComponentInput, render, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { YoutubePlayer } from './youtube-player';
+import { provideYouTubePlayerConfig, YouTubePlayer, YouTubePlayerEnableRequest } from './youtube-player';
 
-describe('YoutubePlayer', () => {
-  type SetupOptions = {
-    inputs?: ComponentInput<YoutubePlayer>;
-    on?: {
-      enableCookies?: () => void;
-    };
-  };
+describe('YouTubePlayer', () => {
+  const permissionsConfig = provideAnalyticsPermissionsManagerConfig({
+    changeEventName: false,
+    storage: false,
+    storageEvents: false,
+  });
 
-  async function setup({ inputs = {}, on = {} }: SetupOptions = {}) {
-    const user = userEvent.setup();
-
-    await render(YoutubePlayer, {
+  async function setup(
+    options: {
+      enabled?: boolean;
+      inputs?: ComponentInput<YouTubePlayer>;
+      onEnableRequest?: () => void;
+    } = {},
+  ) {
+    const { enabled = false, inputs = {}, onEnableRequest } = options;
+    const result = await render(YouTubePlayer, {
       inputs: {
         videoId: 'pzUFmDhQEO8',
-        label: 'Example video',
         ...inputs,
       },
-      on,
+      on: onEnableRequest ? { enableRequest: onEnableRequest } : undefined,
+      providers: [
+        provideInitialAnalyticsPermissions(enabled ? AnalyticsPermissions.FULL : AnalyticsPermissions.DEFAULT),
+        permissionsConfig,
+      ],
     });
 
     return {
-      user,
+      ...result,
+      permissionsManager: result.fixture.debugElement.injector.get(AnalyticsPermissionsManager),
+      user: userEvent.setup(),
     };
   }
 
-  it('renders a thumbnail link when cookies are disabled', async () => {
-    await setup();
+  function getNgPlayer(fixture: Awaited<ReturnType<typeof setup>>['fixture']): NgYouTubePlayer {
+    return fixture.debugElement.query(By.directive(NgYouTubePlayer)).componentInstance as NgYouTubePlayer;
+  }
 
-    const thumbnailLink = screen.getByRole('link', { name: /YouTube video thumbnail for Example video/i });
-    const image = screen.getByRole('img', { name: /YouTube video thumbnail for Example video/i });
+  it('renders the privacy-preserving placeholder when marketing permission is disabled', async () => {
+    const { fixture } = await setup();
 
-    expect(thumbnailLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=pzUFmDhQEO8');
-    expect(thumbnailLink).toHaveAttribute('target', '_blank');
-    expect(thumbnailLink).toHaveAttribute('rel', 'noopener noreferrer');
-    expect(image).toHaveAttribute('src', 'https://img.youtube.com/vi/pzUFmDhQEO8/sddefault.jpg');
-    expect(screen.getByRole('button', { name: 'Enable cookies' })).toBeInTheDocument();
-    expect(document.querySelector('youtube-player')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Play video' })).toHaveAttribute(
+      'href',
+      'https://www.youtube.com/watch?v=pzUFmDhQEO8',
+    );
+    expect(screen.getByRole('button', { name: 'Enable cookies' })).toBeVisible();
+    expect(fixture.debugElement.query(By.directive(NgYouTubePlayer))).toBeNull();
+    expect(fixture.componentInstance.ngPlayer()).toBeUndefined();
   });
 
-  it('emits enableCookies when the button is clicked', async () => {
-    const onEnableCookies = vi.fn();
-    const { user } = await setup({
-      on: {
-        enableCookies: onEnableCookies,
-      },
-    });
+  it('emits enableRequest when the default request button is clicked', async () => {
+    const enableRequest = vi.fn();
+    const { user } = await setup({ onEnableRequest: enableRequest });
 
     await user.click(screen.getByRole('button', { name: 'Enable cookies' }));
 
-    expect(onEnableCookies).toHaveBeenCalledOnce();
+    expect(enableRequest).toHaveBeenCalledOnce();
   });
 
-  it('renders the embedded YouTube player when cookies are enabled', async () => {
-    await setup({
-      inputs: {
-        hasCookiesEnabled: true,
+  it('projects custom enable-request content instead of the default message', async () => {
+    await render(
+      `<ang-youtube-player videoId="pzUFmDhQEO8">
+        <button angYouTubePlayerEnableRequest>Review privacy settings</button>
+      </ang-youtube-player>`,
+      {
+        imports: [YouTubePlayer, YouTubePlayerEnableRequest],
+        providers: [provideInitialAnalyticsPermissions(AnalyticsPermissions.DEFAULT), permissionsConfig],
       },
+    );
+
+    expect(screen.getByRole('button', { name: 'Review privacy settings' })).toHaveClass(
+      'ang-youtube-player--enable-request',
+    );
+    expect(screen.queryByRole('button', { name: 'Enable cookies' })).not.toBeInTheDocument();
+  });
+
+  it('uses global placeholder configuration when inputs are not provided', async () => {
+    await render(YouTubePlayer, {
+      inputs: { videoId: 'pzUFmDhQEO8' },
+      providers: [
+        provideInitialAnalyticsPermissions(AnalyticsPermissions.DEFAULT),
+        permissionsConfig,
+        provideYouTubePlayerConfig({
+          disablePlaceholder: true,
+          placeholderButtonLabel: 'Watch the example',
+          placeholderImageQuality: 'high',
+        }),
+      ],
     });
 
-    expect(document.querySelector('youtube-player')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Enable cookies' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('img', { name: /YouTube video thumbnail for Example video/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Watch the example' })).toBeVisible();
+    expect(screen.getByRole('presentation')).toHaveAttribute(
+      'src',
+      'https://i.ytimg.com/vi/pzUFmDhQEO8/maxresdefault.jpg',
+    );
   });
 
-  it('uses the provided video id and label in generated URLs and alt text', async () => {
-    await setup({
+  it('renders and exposes the underlying player when marketing permission is enabled', async () => {
+    const { fixture } = await setup({ enabled: true });
+    const ngPlayer = getNgPlayer(fixture);
+
+    expect(ngPlayer).toBeTruthy();
+    expect(fixture.componentInstance.ngPlayer()).toBe(ngPlayer);
+    expect(screen.queryByRole('button', { name: 'Enable cookies' })).not.toBeInTheDocument();
+  });
+
+  it('forwards inputs and merges player variable defaults into the underlying player', async () => {
+    const { fixture } = await setup({
+      enabled: true,
       inputs: {
         videoId: 'dQw4w9WgXcQ',
-        label: 'Demo clip',
+        width: 800,
+        height: 450,
+        startSeconds: 10,
+        endSeconds: 45,
+        suggestedQuality: 'hd720',
+        playerVars: { autoplay: 1, rel: 1 },
+        disablePlaceholder: true,
+        placeholderButtonLabel: 'Play demo',
+        placeholderImageQuality: 'high',
       },
     });
+    const ngPlayer = getNgPlayer(fixture);
 
-    const thumbnailLink = screen.getByRole('link', { name: /YouTube video thumbnail for Demo clip/i });
-    const image = screen.getByRole('img', { name: /YouTube video thumbnail for Demo clip/i });
+    expect(ngPlayer.videoId).toBe('dQw4w9WgXcQ');
+    expect(ngPlayer.width).toBe(800);
+    expect(ngPlayer.height).toBe(450);
+    expect(ngPlayer.startSeconds).toBe(10);
+    expect(ngPlayer.endSeconds).toBe(45);
+    expect(ngPlayer.suggestedQuality).toBe('hd720');
+    expect(ngPlayer.playerVars).toEqual({ autoplay: 1, rel: 1, showinfo: 0 });
+    expect(ngPlayer.disablePlaceholder).toBe(true);
+    expect(ngPlayer.placeholderButtonLabel).toBe('Play demo');
+    expect(ngPlayer.placeholderImageQuality).toBe('high');
+    expect(ngPlayer.disableCookies).toBe(true);
+    expect(ngPlayer.loadApi).toBe(true);
+  });
 
-    expect(thumbnailLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-    expect(image).toHaveAttribute('src', 'https://img.youtube.com/vi/dQw4w9WgXcQ/sddefault.jpg');
-    expect(image).toHaveAttribute('alt', 'YouTube video thumbnail for Demo clip');
+  it('reacts to marketing permission changes', async () => {
+    const { fixture, permissionsManager } = await setup();
+
+    permissionsManager.setFullPermissions();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.ngPlayer()).toBe(getNgPlayer(fixture));
+
+    permissionsManager.setDefaultPermissions();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.debugElement.query(By.directive(NgYouTubePlayer))).toBeNull();
+    expect(fixture.componentInstance.ngPlayer()).toBeUndefined();
+  });
+
+  it('forwards events from the current underlying player', async () => {
+    const ready = vi.fn();
+    const { fixture } = await render(YouTubePlayer, {
+      inputs: { videoId: 'pzUFmDhQEO8' },
+      on: { ready },
+      providers: [provideInitialAnalyticsPermissions(AnalyticsPermissions.FULL), permissionsConfig],
+    });
+    const ngPlayer = getNgPlayer(fixture);
+    const event = { target: {} } as YT.PlayerEvent;
+
+    (ngPlayer.ready as EventEmitter<YT.PlayerEvent>).emit(event);
+
+    await waitFor(() => expect(ready).toHaveBeenCalledWith(event));
   });
 });

@@ -3,12 +3,12 @@
 $config: (
   namespace: 'youtube-player',
   tokens: (
-    enable-cookies-color: token-utils.sys-token(on-surface-variant),
-    enable-cookies-font-family: token-utils.sys-token(body-medium-font),
-    enable-cookies-font-size: token-utils.sys-token(body-medium-size),
-    enable-cookies-font-weight: token-utils.sys-token(body-medium-weight),
-    enable-cookies-line-height: token-utils.sys-token(body-medium-line-height),
-    enable-cookies-tracking: token-utils.sys-token(body-medium-tracking),
+    enable-request-color: token-utils.sys-token(on-surface-variant),
+    enable-request-font: token-utils.sys-token(body-medium-font),
+    enable-request-size: token-utils.sys-token(body-medium-size),
+    enable-request-weight: token-utils.sys-token(body-medium-weight),
+    enable-request-line-height: token-utils.sys-token(body-medium-line-height),
+    enable-request-tracking: token-utils.sys-token(body-medium-tracking),
   ),
 );
 
