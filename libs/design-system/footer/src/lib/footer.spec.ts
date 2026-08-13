@@ -33,10 +33,9 @@ const SOCIALS: SocialMediaButtonDefinition[] = [
   template: `
     <ang-footer
       [logoUrl]="logoUrl"
-      [logoAlt]="logoAlt"
       [socials]="socials"
-      [org]="org"
-      [orgLink]="orgLink"
+      [organization]="organization"
+      [organizationLink]="organizationLink"
       (openPrivacyPolicy)="openPrivacyPolicy()"
       (openPrivacyPreferences)="openPrivacyPreferences()"
     />
@@ -44,10 +43,9 @@ const SOCIALS: SocialMediaButtonDefinition[] = [
 })
 class FooterHost {
   readonly logoUrl = '/assets/wpp.svg';
-  readonly logoAlt = 'App Logo';
   readonly socials = SOCIALS;
-  readonly org = 'Whole Person Physiome';
-  readonly orgLink = 'https://www.cns.edu';
+  readonly organization = 'Whole Person Physiome';
+  readonly organizationLink = 'https://www.cns.edu';
   readonly openPrivacyPolicy = vi.fn();
   readonly openPrivacyPreferences = vi.fn();
 }
@@ -55,18 +53,22 @@ class FooterHost {
 @Component({
   imports: [AnyLink, Footer, FooterAction, FooterLogo],
   template: `
-    <ang-footer [logoUrl]="logoUrl" [logoAlt]="logoAlt" [socials]="socials" [org]="org" [orgLink]="orgLink">
-      <a angFooterLogo target="_blank" [angAnyLink]="orgLink">Projected logo</a>
+    <ang-footer
+      [logoUrl]="logoUrl"
+      [socials]="socials"
+      [organization]="organization"
+      [organizationLink]="organizationLink"
+    >
+      <a angFooterLogo target="_blank" [angAnyLink]="organizationLink">Projected logo</a>
       <a angFooterAction target="_blank" href="https://example.com/privacy">Projected privacy policy</a>
     </ang-footer>
   `,
 })
 class FooterProjectionHost {
   readonly logoUrl = '/assets/wpp.svg';
-  readonly logoAlt = 'App Logo';
   readonly socials = SOCIALS;
-  readonly org = 'Whole Person Physiome';
-  readonly orgLink = 'https://www.cns.edu';
+  readonly organization = 'Whole Person Physiome';
+  readonly organizationLink = 'https://www.cns.edu';
 }
 
 describe('Footer', () => {
@@ -79,8 +81,9 @@ describe('Footer', () => {
   it('renders the logo image with the configured source', async () => {
     await setup();
 
-    const logo = screen.getByRole('img', { name: 'App Logo' });
+    const logo = screen.getByRole('img', { name: 'Visit Whole Person Physiome' });
     expect(logo).toHaveAttribute('src', '/assets/wpp.svg');
+    expect(logo).toHaveClass('ang-footer--logo-image');
   });
 
   it('renders social media buttons from the socials input', async () => {
@@ -112,11 +115,11 @@ describe('Footer', () => {
   it('renders copyright text with current year and organization link', async () => {
     await setup();
 
-    const orgLink = screen.getByRole('link', { name: 'Whole Person Physiome' });
+    const orgLink = screen.getByRole('link', { name: 'Visit Whole Person Physiome' });
     expect(orgLink).toHaveAttribute('href', 'https://www.cns.edu/');
 
     const year = new Date().getFullYear();
-    expect(screen.getByText(new RegExp(`© ${year}`))).toBeInTheDocument();
+    expect(screen.getAllByText(new RegExp(`© ${year}`))).toHaveLength(2);
   });
 
   it('renders projected logo and action content when provided', async () => {

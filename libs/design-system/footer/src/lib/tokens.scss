@@ -8,7 +8,7 @@ $config: (
     action-size: token-utils.sys-token(label-medium-size),
     action-weight: token-utils.sys-token(label-medium-weight),
     action-line-height: token-utils.sys-token(label-medium-line-height),
-    action-tracking: 0.2px,
+    action-tracking: token-utils.sys-token(label-medium-tracking),
     copyright-color: token-utils.sys-token(on-surface-variant),
     copyright-font: token-utils.sys-token(body-small-font),
     copyright-size: token-utils.sys-token(body-small-size),

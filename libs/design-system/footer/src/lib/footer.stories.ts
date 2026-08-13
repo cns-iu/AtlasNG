@@ -63,15 +63,14 @@ const meta: Meta = {
   },
   decorators: [
     moduleMetadata({
-      imports: [FooterAction, FooterLogo, MatButton],
+      imports: [MatButton],
     }),
   ],
   args: {
-    logoUrl: 'assets/logo-placeholder.svg',
-    logoAlt: 'Organization Logo',
     socials: SOCIALS,
-    org: '[Name with hyperlink]',
-    orgLink: 'https://www.example.com',
+    logoUrl: 'assets/logo-placeholder.svg',
+    organization: '[Organization Name]',
+    organizationLink: 'https://www.example.com',
   },
 };
 
@@ -84,10 +83,10 @@ export const CustomLogo: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <ang-footer ${argsToTemplate(args)} data-testid="footer" #footer>
-        <a angFooterLogo target="_blank" [angAnyLink]="orgLink">
-          Custom logo (or anything else) can be projected here
-        </a>
+      <ang-footer ${argsToTemplate(args)}>
+        <ang-footer-logo>
+          Custom logo (or something else) can be projected here
+        </ang-footer-logo>
       </ang-footer>
     `,
   }),
@@ -97,8 +96,9 @@ export const CustomActions: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <ang-footer ${argsToTemplate(args)} data-testid="footer" #footer>
-        <a matButton="tonal" angFooterAction href="https://www.example.com" target="_blank">Learn more</a>
+      <ang-footer ${argsToTemplate(args)}>
+        <a angFooterAction matButton="tonal">Custom Action</a>
+        <a angFooterAction matButton="tonal">Custom Action</a>
       </ang-footer>
     `,
   }),

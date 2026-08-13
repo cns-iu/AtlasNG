@@ -3,64 +3,64 @@
 @use './tokens' as *;
 
 :host {
-  @include mat.button-overrides(
-    (
-      text-icon-spacing: 0.125rem,
-      text-label-text-font: token-utils.slot(action-font, $config),
-      text-label-text-size: token-utils.slot(action-size, $config),
-      text-label-text-tracking: token-utils.slot(action-tracking, $config),
-      text-label-text-weight: token-utils.slot(action-weight, $config),
-    )
-  );
-
-  display: grid;
-  grid-template-areas:
-    'logo'
-    'socials'
-    'actions'
-    'copyright';
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   row-gap: 0.5rem;
   padding: 2.5rem 1.25rem;
   background: token-utils.slot(background-color, $config);
+  min-width: 20rem;
 
-  .ang-footer-logo {
-    grid-area: logo;
+  .ang-footer--logo-container {
+    position: relative;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 3rem;
+    justify-content: center;
+
+    .ang-footer--logo-image {
+      width: auto;
+    }
+
+    .ang-footer--copyright {
+      display: none;
+    }
   }
 
-  .ang-footer-socials {
-    grid-area: socials;
+  .ang-footer--socials {
     display: grid;
     grid-template-columns: repeat(4, max-content);
     justify-content: center;
     padding: 0.75rem 0.75rem 1rem;
 
-    .ang-footer-social-icon {
+    .ang-footer--social-icon {
       height: 2.5rem;
       margin: 0.25rem;
     }
   }
 
-  .ang-footer-actions {
-    grid-area: actions;
+  .ang-footer--actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     justify-content: center;
     column-gap: 0.25rem;
 
-    button {
+    .ang-footer--action {
+      @include mat.button-overrides(
+        (
+          text-icon-spacing: 0.125rem,
+          text-label-text-font: token-utils.slot(action-font, $config),
+          text-label-text-size: token-utils.slot(action-size, $config),
+          text-label-text-tracking: token-utils.slot(action-tracking, $config),
+          text-label-text-weight: token-utils.slot(action-weight, $config),
+        )
+      );
+
       text-wrap: nowrap;
     }
   }
 
-  .ang-footer-copyright {
-    grid-area: copyright;
-    display: block;
+  .ang-footer--copyright {
     text-wrap: nowrap;
     align-content: center;
     height: 3rem;
@@ -71,31 +71,32 @@
     font-weight: token-utils.slot(copyright-weight, $config);
     letter-spacing: token-utils.slot(copyright-tracking, $config);
     line-height: token-utils.slot(copyright-line-height, $config);
-
-    .ang-footer-link {
-      font-weight: 400;
-      text-decoration: none;
-      --ang-text-link-button-color: token-utils.slot(copyright-color, $config);
-    }
   }
 
   @media (min-width: 960px) {
-    grid-template-areas:
-      'logo      socials   actions  '
-      'copyright copyright copyright';
-    grid-template-columns: auto 1fr auto;
+    flex-direction: row;
     padding: 2.5rem;
     row-gap: 0;
 
-    .ang-footer-socials {
+    .ang-footer--socials {
       grid-auto-columns: max-content;
       grid-auto-flow: column;
       grid-template-columns: none;
       padding: 0 0.75rem;
     }
 
-    .ang-footer-copyright {
-      text-align: left;
+    .ang-footer--logo-container {
+      align-items: flex-start;
+      max-width: 11rem;
+
+      .ang-footer--copyright {
+        display: block;
+        text-align: left;
+      }
+    }
+
+    > .ang-footer--copyright {
+      display: none;
     }
   }
 }
