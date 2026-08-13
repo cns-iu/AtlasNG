@@ -10,6 +10,7 @@
 @forward '../../buttons/navigation-button/src/lib/tokens' as navigation-button-* show $navigation-button-overrides;
 @forward '../../buttons/navigation-toggle/src/lib/tokens' as navigation-toggle-* show $navigation-toggle-overrides;
 @forward '../../buttons/social-media-button/src/lib/tokens' as social-media-button-* show $social-media-button-overrides;
+@forward '../../cards/basic-profile-card/src/lib/tokens' as basic-profile-card-* show $basic-profile-card-overrides;
 @forward '../../cards/brand-profile-card/src/lib/tokens' as brand-profile-card-* show $brand-profile-card-overrides;
 @forward '../../cookie-banner/src/lib/tokens' as cookie-banner-* show $cookie-banner-overrides;
 @forward '../../footer/src/lib/tokens' as footer-* show footer-overrides;
