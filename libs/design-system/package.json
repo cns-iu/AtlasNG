@@ -24,9 +24,12 @@
     "@angular/common": "^22.0.7",
     "@angular/core": "^22.0.7",
     "@angular/material": "^22.0.5",
+    "@angular/youtube-player": "^22.0.5",
     "@atlasng/analytics": "^0.0.6",
     "@atlasng/common": "^0.0.6",
-    "@atlasng/core": "^0.0.6"
+    "@atlasng/core": "^0.0.6",
+    "rxjs": "~7.8.2",
+    "type-fest": "^5.5.0"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",

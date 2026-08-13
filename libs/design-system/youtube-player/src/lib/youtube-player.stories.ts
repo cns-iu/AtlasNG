@@ -66,7 +66,7 @@ class YouTubePlayerPermissionStoryComponent {
 
 const meta: Meta<YouTubePlayer> = {
   component: YouTubePlayer,
-  title: 'Labs/YouTube Player',
+  title: 'Design System/YouTube Player',
   args: {
     videoId: 'pzUFmDhQEO8',
     width: 640,

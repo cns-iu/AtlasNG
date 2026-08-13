@@ -54,6 +54,7 @@
         "./libs/design-system/indicators/results-indicator/src/index.ts"
       ],
       "@atlasng/design-system/text-link": ["./libs/design-system/text-link/src/index.ts"],
+      "@atlasng/design-system/youtube-player": ["./libs/design-system/youtube-player/src/index.ts"],
       "@atlasng/labs": ["./libs/labs/src/index.ts"],
       "@atlasng/labs/cookie-modal": ["./libs/labs/cookie-modal/src/index.ts"],
       "@atlasng/labs/footer": ["./libs/labs/footer/src/index.ts"],
@@ -62,8 +63,7 @@
       "@atlasng/labs/profile-card": ["./libs/labs/profile-card/src/index.ts"],
       "@atlasng/labs/section-header": ["./libs/labs/section-header/src/index.ts"],
       "@atlasng/labs/skip-to-content-button": ["./libs/labs/skip-to-content-button/src/index.ts"],
-      "@atlasng/labs/table": ["./libs/labs/table/src/index.ts"],
-      "@atlasng/labs/youtube-player": ["./libs/labs/youtube-player/src/index.ts"]
+      "@atlasng/labs/table": ["./libs/labs/table/src/index.ts"]
     },
     "types": ["*"]
   },
