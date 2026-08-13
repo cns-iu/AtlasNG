@@ -11,7 +11,7 @@
   max-width: 22.75rem;
   min-width: 16.75rem;
 
-  .picture {
+  .ang-basic-profile-card--image-container {
     position: relative;
     width: 100%;
     aspect-ratio: token-utils.slot(image-aspect-ratio, $config);
@@ -20,35 +20,39 @@
     max-width: 20rem;
     height: auto;
 
-    img {
-      height: 100%;
-      width: 100%;
+    .ang-basic-profile-card--image {
       object-fit: cover;
     }
   }
 
-  .content {
+  .ang-basic-profile-card--content {
     margin-bottom: 0;
     flex-grow: 1;
 
-    .name {
-      font-family: token-utils.slot(name-font, $config);
-      letter-spacing: token-utils.slot(name-tracking, $config);
-      line-height: token-utils.slot(name-line-height, $config);
+    .ang-basic-profile-card--name {
+      font-family: token-utils.slot(title-font, $config);
+      font-size: token-utils.slot(title-size, $config);
+      font-weight: token-utils.slot(title-weight, $config);
+      letter-spacing: token-utils.slot(title-tracking, $config);
+      line-height: token-utils.slot(title-line-height, $config);
+      color: token-utils.slot(title-color, $config);
+
       margin-bottom: 0.375rem;
     }
 
-    .descriptions {
+    .ang-basic-profile-card--descriptions {
       font-family: token-utils.slot(description-font, $config);
       font-size: token-utils.slot(description-size, $config);
       font-weight: token-utils.slot(description-weight, $config);
       letter-spacing: token-utils.slot(description-tracking, $config);
       line-height: token-utils.slot(description-line-height, $config);
+      color: token-utils.slot(description-color, $config);
+
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
 
-      .description {
+      .ang-basic-profile-card--description {
         margin: 0;
       }
     }

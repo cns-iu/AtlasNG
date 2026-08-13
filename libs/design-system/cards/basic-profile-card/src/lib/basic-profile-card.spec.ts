@@ -47,13 +47,4 @@ describe('BasicProfileCard', () => {
     expect(screen.getByText('Accessibility advocate')).toBeVisible();
     expect(screen.getByText('Public speaker')).toBeVisible();
   });
-
-  it('normalizes string and array descriptions with ensureArray', async () => {
-    const { fixture } = await setup();
-    const component = fixture.componentInstance;
-    const descriptions = ['One', 'Two'];
-
-    expect(component.ensureArray('One')).toEqual(['One']);
-    expect(component.ensureArray(descriptions)).toBe(descriptions);
-  });
 });

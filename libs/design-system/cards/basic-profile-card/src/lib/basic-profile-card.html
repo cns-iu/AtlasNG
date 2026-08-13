@@ -1,17 +1,17 @@
-<div class="picture">
-  <img fill [ngSrc]="image()" [attr.alt]="`Profile picture of ${name()}`" />
+<div class="ang-basic-profile-card--image-container">
+  <img class="ang-basic-profile-card--image" fill [ngSrc]="image()" [attr.alt]="`Profile picture of ${name()}`" />
 </div>
-<div class="content">
+<div class="ang-basic-profile-card--content">
   @if (link()) {
-    <a angTextLink class="name" target="_blank" [angAnyLink]="link()">
+    <a angTextLink class="ang-basic-profile-card--name" target="_blank" [angAnyLink]="link()">
       {{ name() }}
     </a>
   } @else {
-    <div class="name">{{ name() }}</div>
+    <div class="ang-basic-profile-card--name">{{ name() }}</div>
   }
-  <div class="descriptions">
-    @for (desc of ensureArray(description()); track desc) {
-      <p class="description">{{ desc }}</p>
+  <div class="ang-basic-profile-card--descriptions">
+    @for (desc of description(); track desc) {
+      <p class="ang-basic-profile-card--description">{{ desc }}</p>
     }
   </div>
 </div>
