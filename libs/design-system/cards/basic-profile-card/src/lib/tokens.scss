@@ -16,7 +16,7 @@ $config: (
     description-font: token-utils.sys-token(body-medium-font),
     description-size: token-utils.sys-token(body-medium-size),
     description-weight: token-utils.sys-token(body-medium-weight),
-    description-line-height: 1.25rem,
+    description-line-height: token-utils.sys-token(body-medium-line-height),
     description-tracking: token-utils.sys-token(body-medium-tracking),
   ),
 );
