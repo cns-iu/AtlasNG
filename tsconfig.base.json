@@ -56,15 +56,14 @@
       ],
       "@atlasng/design-system/section-header": ["./libs/design-system/section-header/src/index.ts"],
       "@atlasng/design-system/text-link": ["./libs/design-system/text-link/src/index.ts"],
-
+      "@atlasng/design-system/youtube-player": ["./libs/design-system/youtube-player/src/index.ts"],
       "@atlasng/labs": ["./libs/labs/src/index.ts"],
       "@atlasng/labs/cookie-modal": ["./libs/labs/cookie-modal/src/index.ts"],
       "@atlasng/labs/footer": ["./libs/labs/footer/src/index.ts"],
       "@atlasng/labs/grid-container": ["./libs/labs/grid-container/src/index.ts"],
       "@atlasng/labs/header-shell": ["./libs/labs/header-shell/src/index.ts"],
       "@atlasng/labs/skip-to-content-button": ["./libs/labs/skip-to-content-button/src/index.ts"],
-      "@atlasng/labs/table": ["./libs/labs/table/src/index.ts"],
-      "@atlasng/labs/youtube-player": ["./libs/labs/youtube-player/src/index.ts"]
+      "@atlasng/labs/table": ["./libs/labs/table/src/index.ts"]
     },
     "types": ["*"]
   },

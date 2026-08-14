@@ -1,0 +1,17 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'youtube-player',
+  tokens: (
+    enable-request-color: token-utils.sys-token(on-surface-variant),
+    enable-request-font: token-utils.sys-token(body-medium-font),
+    enable-request-size: token-utils.sys-token(body-medium-size),
+    enable-request-weight: token-utils.sys-token(body-medium-weight),
+    enable-request-line-height: token-utils.sys-token(body-medium-line-height),
+    enable-request-tracking: token-utils.sys-token(body-medium-tracking),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

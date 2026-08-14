@@ -2,7 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { LOCAL_STORAGE, WINDOW } from '@atlasng/core';
 import { AnalyticsPermissions } from './permissions';
-import { AnalyticsPermissionsManager, provideAnalyticsPermissionsManagerConfig } from './permissions-manager';
+import {
+  AnalyticsPermissionsManager,
+  provideAnalyticsPermissionsManagerConfig,
+  provideInitialAnalyticsPermissions,
+} from './permissions-manager';
 
 describe('PermissionsManager', () => {
   const DEFAULT_CHANGE_EVENT_NAME = 'atlasng:analytics:permissions-change';
@@ -32,6 +36,7 @@ describe('PermissionsManager', () => {
   function setup(options?: {
     storage?: Storage | false;
     config?: Parameters<typeof provideAnalyticsPermissionsManagerConfig>[0];
+    initialPermissions?: AnalyticsPermissions;
   }) {
     const storage = options?.storage ?? createStorage();
     const fakeWindow = new EventTarget() as Window;
@@ -41,6 +46,7 @@ describe('PermissionsManager', () => {
         { provide: WINDOW, useValue: fakeWindow },
         { provide: LOCAL_STORAGE, useValue: storage === false ? undefined : storage },
         ...(options?.config ? [provideAnalyticsPermissionsManagerConfig(options.config)] : []),
+        ...(options?.initialPermissions ? [provideInitialAnalyticsPermissions(options.initialPermissions)] : []),
       ],
     });
 
@@ -76,6 +82,17 @@ describe('PermissionsManager', () => {
     expect(manager.config.storage).toBe(false);
   });
 
+  it('uses the provided initial permissions', () => {
+    const initialPermissions = AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Marketing);
+    const { manager } = setup({
+      storage: false,
+      config: { storage: false },
+      initialPermissions,
+    });
+
+    expect(manager.permissions()).toBe(initialPermissions);
+  });
+
   it('sets permissions, broadcasts change event, and syncs to storage', () => {
     const storage = createStorage();
     const { manager, fakeWindow } = setup({ storage });
@@ -92,6 +109,38 @@ describe('PermissionsManager', () => {
 
     const event = eventSpy.mock.calls[0]?.[0] as CustomEvent;
     expect(event.detail).toBe(JSON.stringify(AnalyticsPermissions.FULL));
+  });
+
+  it('updates permissions from the current value, broadcasts, and syncs to storage', () => {
+    const storage = createStorage();
+    const { manager, fakeWindow } = setup({ storage });
+    const eventSpy = vi.fn();
+    fakeWindow.addEventListener(getChangeEventName(manager), eventSpy);
+    const updater = vi.fn((permissions: AnalyticsPermissions) =>
+      permissions.enableCategory(AnalyticsEventCategory.Preferences),
+    );
+    const currentPermissions = manager.permissions();
+
+    manager.updatePermissions(updater);
+
+    expect(updater).toHaveBeenCalledWith(currentPermissions);
+    expect(manager.permissions().isCategoryEnabled(AnalyticsEventCategory.Preferences)).toBe(true);
+    expect(storage.setItem).toHaveBeenCalledWith(manager.config.storageKey, JSON.stringify(manager.permissions()));
+    expect(eventSpy).toHaveBeenCalledOnce();
+  });
+
+  it('does not replace, broadcast, or persist permissions when an update is unchanged', () => {
+    const storage = createStorage();
+    const { manager, fakeWindow } = setup({ storage });
+    const eventSpy = vi.fn();
+    fakeWindow.addEventListener(getChangeEventName(manager), eventSpy);
+    const currentPermissions = manager.permissions();
+
+    manager.updatePermissions((permissions) => permissions.disableCategory(AnalyticsEventCategory.Marketing));
+
+    expect(manager.permissions()).toBe(currentPermissions);
+    expect(storage.setItem).not.toHaveBeenCalled();
+    expect(eventSpy).not.toHaveBeenCalled();
   });
 
   it('applies default and full presets', () => {
