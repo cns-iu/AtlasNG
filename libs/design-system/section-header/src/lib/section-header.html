@@ -1,14 +1,12 @@
-@if (anchor()) {
-  <span class="ang-section-header-link-container">
-    <a mat-icon-button class="ang-section-header-link" [attr.aria-labelledby]="headerId" [attr.href]="`#${anchor()}`">
-      <mat-icon class="ang-section-header-icon" fontIcon="link" />
+@if (id()) {
+  <span class="ang-section-header--link-container">
+    <a mat-icon-button class="ang-section-header--link" angAnyLink="." [fragment]="id()">
+      <mat-icon class="ang-section-header--icon" fontIcon="link" />
     </a>
   </span>
 }
 
-<div class="ang-section-header-content" [attr.id]="headerId">
-  <ng-content />
-</div>
+<ng-content />
 
 @if (underlined()) {
   <mat-divider />

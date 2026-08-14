@@ -17,7 +17,7 @@ const meta: Meta<SectionHeader & ExtraArgs> = {
   },
   args: {
     level: 1,
-    anchor: 'anchor',
+    id: 'anchor',
     content: 'Content Text',
     underlined: true,
   },
@@ -26,7 +26,7 @@ const meta: Meta<SectionHeader & ExtraArgs> = {
       control: { type: 'number', min: 1, max: 6 },
       description: 'The heading level (1-6) to determine the appropriate HTML tag.',
     },
-    anchor: {
+    id: {
       control: 'text',
       description: 'The anchor ID for the section header link.',
     },
