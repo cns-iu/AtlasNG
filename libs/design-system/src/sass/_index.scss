@@ -15,8 +15,9 @@
 @forward '../../cookie-banner/src/lib/tokens' as cookie-banner-* show $cookie-banner-overrides;
 @forward '../../footer/src/lib/tokens' as footer-* show footer-overrides;
 @forward '../../indicators/end-of-results-indicator/src/lib/tokens' as end-of-results-indicator-* show
-  $end-of-results-indicator-overrides;
+  end-of-results-indicator-overrides;
 @forward '../../indicators/no-results-indicator/src/lib/tokens' as no-results-indicator-* show
-  $no-results-indicator-overrides;
-@forward '../../indicators/results-indicator/src/lib/tokens' as results-indicator-* show $results-indicator-overrides;
-@forward '../../text-link/src/lib/tokens' as text-link-* show $text-link-overrides;
+  no-results-indicator-overrides;
+@forward '../../indicators/results-indicator/src/lib/tokens' as results-indicator-* show results-indicator-overrides;
+@forward '../../text-link/src/lib/tokens' as text-link-* show text-link-overrides;
+@forward '../../youtube-player/src/lib/tokens' as youtube-player-* show youtube-player-overrides;

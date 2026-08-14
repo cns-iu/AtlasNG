@@ -23,7 +23,6 @@
     "@angular/cdk": "^22.0.5",
     "@angular/core": "^22.0.7",
     "@angular/material": "^22.0.5",
-    "@angular/youtube-player": "^22.0.5",
     "@atlasng/analytics": "0.0.6",
     "@atlasng/common": "0.0.6",
     "@atlasng/design-system": "0.0.6"

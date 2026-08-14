@@ -1,4 +1,4 @@
-import { DestroyRef, inject, Service, signal } from '@angular/core';
+import { DestroyRef, inject, InjectionToken, Provider, Service, signal } from '@angular/core';
 import { createConfigurationToken, LOCAL_STORAGE, type, WINDOW } from '@atlasng/core';
 import { AnalyticsPermissions } from './permissions';
 
@@ -45,9 +45,30 @@ const ANALYTICS_PERMISSIONS_CONFIG = createConfigurationToken({
  * Provides configuration for {@link AnalyticsPermissionsManager}.
  *
  * @param config Partial manager configuration.
- * @returns Angular provider entry for the config token.
+ * @returns Provider entry for the config token.
  */
 export const provideAnalyticsPermissionsManagerConfig = ANALYTICS_PERMISSIONS_CONFIG.provide;
+
+/**
+ * Initial permissions for {@link AnalyticsPermissionsManager}.
+ */
+const INITIAL_ANALYTICS_PERMISSIONS = new InjectionToken<AnalyticsPermissions>('ANALYTICS_PERMISSIONS', {
+  providedIn: 'root',
+  factory: () => AnalyticsPermissions.DEFAULT,
+});
+
+/**
+ * Provides initial permissions for {@link AnalyticsPermissionsManager}.
+ *
+ * @param permissions Initial permissions to set.
+ * @returns Provider entry for the initial permissions.
+ */
+export function provideInitialAnalyticsPermissions(permissions: AnalyticsPermissions): Provider {
+  return {
+    provide: INITIAL_ANALYTICS_PERMISSIONS,
+    useValue: permissions,
+  };
+}
 
 /**
  * Manages active analytics permissions.
@@ -65,7 +86,7 @@ export class AnalyticsPermissionsManager {
   readonly #window = inject(WINDOW);
 
   /** Writable permission state signal. */
-  readonly #permissions = signal(AnalyticsPermissions.DEFAULT);
+  readonly #permissions = signal(inject(INITIAL_ANALYTICS_PERMISSIONS));
 
   /** Current permissions. */
   readonly permissions = this.#permissions.asReadonly();
@@ -82,9 +103,7 @@ export class AnalyticsPermissionsManager {
    * @param permissions Permissions to set.
    */
   setPermissions(permissions: AnalyticsPermissions): void {
-    this.#permissions.set(permissions);
-    this.#broadcastPermissionsChange();
-    this.syncToStorage();
+    this.updatePermissions(() => permissions);
   }
 
   /** Sets the default permissions preset. */
@@ -95,6 +114,23 @@ export class AnalyticsPermissionsManager {
   /** Sets the full permissions preset. */
   setFullPermissions(): void {
     this.setPermissions(AnalyticsPermissions.FULL);
+  }
+
+  /**
+   * Updates the active permissions through a callback and broadcasts the change.
+   *
+   * @param updater Callback that receives the current permissions and returns the new permissions.
+   */
+  updatePermissions(updater: (permissions: AnalyticsPermissions) => AnalyticsPermissions): void {
+    const permissions = this.#permissions();
+    const newPermissions = updater(permissions);
+    if (newPermissions.equals(permissions)) {
+      return;
+    }
+
+    this.#permissions.set(newPermissions);
+    this.#broadcastPermissionsChange();
+    this.syncToStorage();
   }
 
   /**
