@@ -12,7 +12,7 @@ const SOCIALS = ['linkedin', 'youtube', 'instagram'];
   imports: [Footer],
   template: `
     <ang-footer
-      [logoUrl]="logoUrl"
+      [logoImage]="logoImage"
       [socials]="socials"
       [organization]="organization"
       [organizationLink]="organizationLink"
@@ -22,7 +22,7 @@ const SOCIALS = ['linkedin', 'youtube', 'instagram'];
   `,
 })
 class FooterHost {
-  readonly logoUrl = '/assets/wpp.svg';
+  readonly logoImage = '/assets/wpp.svg';
   readonly socials = SOCIALS;
   readonly organization = 'Whole Person Physiome';
   readonly organizationLink = 'https://www.cns.edu';
@@ -34,7 +34,7 @@ class FooterHost {
   imports: [AnyLink, Footer, FooterAction, FooterLogo],
   template: `
     <ang-footer
-      [logoUrl]="logoUrl"
+      [logoImage]="logoImage"
       [socials]="socials"
       [organization]="organization"
       [organizationLink]="organizationLink"
@@ -45,7 +45,7 @@ class FooterHost {
   `,
 })
 class FooterProjectionHost {
-  readonly logoUrl = '/assets/wpp.svg';
+  readonly logoImage = '/assets/wpp.svg';
   readonly socials = SOCIALS;
   readonly organization = 'Whole Person Physiome';
   readonly organizationLink = 'https://www.cns.edu';
