@@ -1,32 +1,12 @@
 import { Component } from '@angular/core';
-import { AnyLink } from '@atlasng/common';
 import { MatIconRegistry } from '@angular/material/icon';
 import { FakeMatIconRegistry } from '@angular/material/icon/testing';
+import { AnyLink } from '@atlasng/common';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { type SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 import { Footer, FooterAction, FooterLogo } from './footer';
 
-const SOCIALS: SocialMediaButtonDefinition[] = [
-  {
-    id: 'linkedin',
-    label: 'LinkedIn',
-    url: 'https://www.linkedin.com/',
-    classes: ['linkedin'],
-  },
-  {
-    id: 'youtube',
-    label: 'YouTube',
-    url: 'https://www.youtube.com/',
-    classes: ['youtube'],
-  },
-  {
-    id: 'instagram',
-    label: 'Instagram',
-    url: 'https://www.instagram.com/',
-    classes: ['instagram'],
-  },
-];
+const SOCIALS = ['linkedin', 'youtube', 'instagram'];
 
 @Component({
   imports: [Footer],

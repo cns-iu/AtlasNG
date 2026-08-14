@@ -1,5 +1,5 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Directive, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, input, output, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
@@ -34,12 +34,16 @@ export class FooterAction {}
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  host: {
+    class: 'ang-footer',
+  },
 })
 export class Footer {
   /** An array of social media platforms to display. */
-  readonly socials = input<string | SocialMediaButtonDefinition[]>();
+  readonly socials = input<(string | SocialMediaButtonDefinition)[]>();
   /** The URL of the organization's logo. */
-  readonly logoUrl = input.required<string>();
+  readonly logoImage = input.required<string>();
   /** The name of the organization. */
   readonly organization = input<string>();
   /** A command for navigating to the organization's link. */

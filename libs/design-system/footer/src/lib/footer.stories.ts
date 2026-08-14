@@ -1,50 +1,16 @@
 import { MatButton } from '@angular/material/button';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Footer, FooterAction, FooterLogo } from './footer';
+import { SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 
-const SOCIALS = [
-  {
-    id: 'linkedin',
-    label: 'LinkedIn',
-    url: 'https://www.linkedin.com/aaa',
-    classes: ['linkedin'],
-  },
-  {
-    id: 'youtube',
-    label: 'YouTube',
-    url: 'https://www.youtube.com/bbb',
-    classes: ['youtube'],
-  },
-  {
-    id: 'instagram',
-    label: 'Instagram',
-    url: 'https://www.instagram.com/ccc',
-    classes: ['instagram'],
-  },
-  {
-    id: 'facebook',
-    label: 'Facebook',
-    url: 'https://www.facebook.com/ddd',
-    classes: ['facebook'],
-  },
-  {
-    id: 'github',
-    label: 'GitHub',
-    url: 'https://github.com/eee',
-    classes: ['github'],
-  },
-  {
-    id: 'bluesky',
-    label: 'Bluesky',
-    url: 'https://bsky.app/fff',
-    classes: ['bluesky'],
-  },
-  {
-    id: 'x',
-    label: 'X (formerly Twitter)',
-    url: 'https://twitter.com/ggg',
-    classes: ['x'],
-  },
+const SOCIALS: (string | SocialMediaButtonDefinition)[] = [
+  'linkedin',
+  'youtube',
+  'instagram',
+  'facebook',
+  'github',
+  'bluesky',
+  'x',
   { id: 'mail', label: 'Email', url: 'mailto:example@gmail.com', fontIcon: 'mail' },
 ];
 
@@ -63,13 +29,13 @@ const meta: Meta = {
   },
   decorators: [
     moduleMetadata({
-      imports: [MatButton],
+      imports: [FooterAction, MatButton],
     }),
   ],
   args: {
     socials: SOCIALS,
-    logoUrl: 'assets/logo-placeholder.svg',
-    organization: '[Organization Name]',
+    logoImage: 'assets/logo-placeholder.svg',
+    organization: 'Cyberinfrastructure for Network Science Center',
     organizationLink: 'https://www.example.com',
   },
 };
@@ -97,8 +63,12 @@ export const CustomActions: Story = {
     props: args,
     template: `
       <ang-footer ${argsToTemplate(args)}>
-        <a angFooterAction matButton="tonal">Custom Action</a>
-        <a angFooterAction matButton="tonal">Custom Action</a>
+        <a angFooterAction matButton>Privacy Policy</a>
+        <a angFooterAction matButton>Terms of Service</a>
+        <a angFooterAction matButton>Contact Us</a>
+        <a angFooterAction matButton>Help</a>
+        <a angFooterAction matButton>Feedback</a>
+        <a angFooterAction matButton>Careers</a>
       </ang-footer>
     `,
   }),
