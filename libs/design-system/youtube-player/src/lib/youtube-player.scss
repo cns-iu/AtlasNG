@@ -1,0 +1,29 @@
+@use 'internal/token-utils';
+@use './tokens';
+
+:host {
+  display: block;
+  position: relative;
+
+  .ang-youtube-player--enable-request {
+    margin-top: 0.5rem;
+
+    color: token-utils.slot(enable-request-color, tokens.$config);
+    font-family: token-utils.slot(enable-request-font, tokens.$config);
+    font-size: token-utils.slot(enable-request-size, tokens.$config);
+    font-weight: token-utils.slot(enable-request-weight, tokens.$config);
+    line-height: token-utils.slot(enable-request-line-height, tokens.$config);
+    letter-spacing: token-utils.slot(enable-request-tracking, tokens.$config);
+
+    .ang-youtube-player--enable-request-button {
+      color: inherit;
+      font: inherit;
+      font-weight: 600;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+}

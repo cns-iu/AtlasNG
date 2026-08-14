@@ -1,0 +1,61 @@
+:host {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #000;
+
+  &::after {
+    position: absolute;
+    content: '';
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    // YouTube has a slight drop shadow on the preview that we try to imitate here.
+    // Note that they use a base64 image, likely for performance reasons. We can't use the
+    // image, because it can break users with a CSP that doesn't allow `data:` URLs.
+    box-shadow: inset 0 120px 90px -90px rgba(0, 0, 0, 0.8);
+  }
+
+  :fullscreen & {
+    min-width: 100vw;
+    min-height: 100vh;
+  }
+
+  .ang-youtube-player-placeholder--image {
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .ang-youtube-player-placeholder--link {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+    z-index: 2;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .ang-youtube-player-placeholder--button {
+    display: flex;
+
+    svg {
+      width: 68px;
+      height: 48px;
+    }
+  }
+
+  .ang-youtube-player-placeholder--link:focus-visible .ang-youtube-player-placeholder--button {
+    outline-color: currentColor;
+    outline-style: auto;
+    outline-width: 1px;
+  }
+}
