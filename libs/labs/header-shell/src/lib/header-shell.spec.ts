@@ -29,6 +29,18 @@ describe('HeaderShell', () => {
     }
   });
 
+  it('does not render local navigation when disabled', async () => {
+    await render(HeaderShell, {
+      inputs: {
+        hasLocalNavigation: false,
+      },
+    });
+    window.dispatchEvent(new Event('resize'));
+
+    expect(screen.queryByRole('button', { name: 'Expand local navigation' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Collapse local navigation' })).not.toBeInTheDocument();
+  });
+
   it('renders app switcher button by default', async () => {
     await render(
       `
