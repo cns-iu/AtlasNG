@@ -28,7 +28,9 @@
     "@atlasng/analytics": "^0.0.6",
     "@atlasng/common": "^0.0.6",
     "@atlasng/core": "^0.0.6",
-    "rxjs": "~7.8.2",
+    "rxjs": "~7.8.2"
+  },
+  "dependencies": {
     "type-fest": "^5.5.0"
   },
   "devDependencies": {
