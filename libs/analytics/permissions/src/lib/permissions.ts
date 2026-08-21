@@ -1,29 +1,40 @@
 import { AnalyticsEvent, AnalyticsEventCategory, getAnalyticsEventCategory } from '@atlasng/analytics/events';
-import { Tagged } from 'type-fest';
 
 /** A mapping of analytics categories to their permission status. */
-type CategoryPermissions = Tagged<Readonly<Record<AnalyticsEventCategory, boolean>>, 'CategoryPermissions'>;
+type CategoryPermissions = Readonly<Record<AnalyticsEventCategory, boolean>>;
 
 /** Default category permissions. */
-const DEFAULT_CATEGORY_PERMISSIONS = {
+export const DEFAULT_CATEGORY_PERMISSIONS: CategoryPermissions = {
   [AnalyticsEventCategory.Necessary]: true,
   [AnalyticsEventCategory.Statistics]: false,
   [AnalyticsEventCategory.Preferences]: false,
   [AnalyticsEventCategory.Marketing]: false,
-} as CategoryPermissions;
+};
 
 /** Full category permissions. */
-const FULL_CATEGORY_PERMISSIONS = {
+export const FULL_CATEGORY_PERMISSIONS: CategoryPermissions = {
   [AnalyticsEventCategory.Necessary]: true,
   [AnalyticsEventCategory.Statistics]: true,
   [AnalyticsEventCategory.Preferences]: true,
   [AnalyticsEventCategory.Marketing]: true,
-} as CategoryPermissions;
+};
 
 /** Categories with fixed permissions. */
 const REQUIRED_CATEGORY_PERMISSIONS: Pick<CategoryPermissions, AnalyticsEventCategory.Necessary> = {
   [AnalyticsEventCategory.Necessary]: true,
 };
+
+/**
+ * Creates a permissions instance without exposing a public constructor.
+ *
+ * The module-scoped factory and its assignment in the class initializer are a
+ * workaround for the variable collision described in
+ * [esbuild issue #4520](https://github.com/evanw/esbuild/issues/4520).
+ *
+ * @param permissions The internal permission state for the new instance.
+ * @returns A permissions value object containing the supplied state.
+ */
+let rawCreateAnalyticsPermissions: (permissions: CategoryPermissions) => AnalyticsPermissions;
 
 /**
  * Immutable analytics permission state.
@@ -32,37 +43,31 @@ const REQUIRED_CATEGORY_PERMISSIONS: Pick<CategoryPermissions, AnalyticsEventCat
  * {@link AnalyticsPermissions} instance instead of changing the current one.
  */
 export class AnalyticsPermissions {
-  /** Lazily initialized cache for {@link AnalyticsPermissions.DEFAULT}. */
-  static #default: AnalyticsPermissions | undefined;
-
-  /** Lazily initialized cache for {@link AnalyticsPermissions.FULL}. */
-  static #full: AnalyticsPermissions | undefined;
+  // Initializes the module-scoped factory with access to private instance state.
+  static {
+    rawCreateAnalyticsPermissions = (permissions) => {
+      const instance = new AnalyticsPermissions();
+      (instance.#permissions as CategoryPermissions) = permissions;
+      return instance;
+    };
+  }
 
   /**
    * Default analytics permissions.
    */
   static get DEFAULT(): AnalyticsPermissions {
-    return (this.#default ??= new AnalyticsPermissions(DEFAULT_CATEGORY_PERMISSIONS));
+    return rawCreateAnalyticsPermissions(DEFAULT_CATEGORY_PERMISSIONS);
   }
 
   /**
    * All analytics permissions enabled.
    */
   static get FULL(): AnalyticsPermissions {
-    return (this.#full ??= new AnalyticsPermissions(FULL_CATEGORY_PERMISSIONS));
+    return rawCreateAnalyticsPermissions(FULL_CATEGORY_PERMISSIONS);
   }
 
   /** The internal permission state. */
-  readonly #permissions: CategoryPermissions;
-
-  /**
-   * Creates a new permissions value object.
-   *
-   * @param permissions The internal permission state (for internal use only).
-   */
-  constructor(permissions?: CategoryPermissions) {
-    this.#permissions = permissions ?? DEFAULT_CATEGORY_PERMISSIONS;
-  }
+  readonly #permissions = DEFAULT_CATEGORY_PERMISSIONS;
 
   /**
    * Checks whether a category is enabled.
@@ -134,7 +139,7 @@ export class AnalyticsPermissions {
    * @returns A new permissions value object.
    */
   #updateCategories(updates: Partial<CategoryPermissions>): AnalyticsPermissions {
-    return new AnalyticsPermissions({ ...this.#permissions, ...updates, ...REQUIRED_CATEGORY_PERMISSIONS });
+    return rawCreateAnalyticsPermissions({ ...this.#permissions, ...updates, ...REQUIRED_CATEGORY_PERMISSIONS });
   }
 
   /**
@@ -144,6 +149,10 @@ export class AnalyticsPermissions {
    * @returns Whether both values contain the same category flags.
    */
   equals(other: AnalyticsPermissions): boolean {
+    if (this === other || this.#permissions === other.#permissions) {
+      return true;
+    }
+
     const categories = Object.values(AnalyticsEventCategory);
     return categories.every((category) => this.#permissions[category] === other.#permissions[category]);
   }
