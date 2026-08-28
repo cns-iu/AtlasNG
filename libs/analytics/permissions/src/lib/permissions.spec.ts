@@ -1,24 +1,10 @@
 import { AnalyticsEventCategory, createAnalyticsEvent } from '@atlasng/analytics/events';
-import { AnalyticsPermissions } from './permissions';
+import { AnalyticsPermissions, DEFAULT_CATEGORY_PERMISSIONS, FULL_CATEGORY_PERMISSIONS } from './permissions';
 
 describe('Permissions', () => {
-  const defaultPermissions = {
-    [AnalyticsEventCategory.Necessary]: true,
-    [AnalyticsEventCategory.Statistics]: false,
-    [AnalyticsEventCategory.Preferences]: false,
-    [AnalyticsEventCategory.Marketing]: false,
-  };
-
-  const fullPermissions = {
-    [AnalyticsEventCategory.Necessary]: true,
-    [AnalyticsEventCategory.Statistics]: true,
-    [AnalyticsEventCategory.Preferences]: true,
-    [AnalyticsEventCategory.Marketing]: true,
-  };
-
   it('exposes the default and full permission sets', () => {
-    expect(AnalyticsPermissions.DEFAULT.toJSON()).toEqual(defaultPermissions);
-    expect(AnalyticsPermissions.FULL.toJSON()).toEqual(fullPermissions);
+    expect(AnalyticsPermissions.DEFAULT.toJSON()).toEqual(DEFAULT_CATEGORY_PERMISSIONS);
+    expect(AnalyticsPermissions.FULL.toJSON()).toEqual(FULL_CATEGORY_PERMISSIONS);
   });
 
   it('treats updates as immutable copies and keeps necessary permissions enabled', () => {
@@ -87,6 +73,6 @@ describe('Permissions', () => {
   });
 
   it('serializes to a plain JSON object', () => {
-    expect(JSON.stringify(AnalyticsPermissions.FULL)).toBe(JSON.stringify(fullPermissions));
+    expect(JSON.stringify(AnalyticsPermissions.FULL)).toBe(JSON.stringify(FULL_CATEGORY_PERMISSIONS));
   });
 });
