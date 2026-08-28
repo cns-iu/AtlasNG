@@ -13,5 +13,6 @@
   "lib": {
     "entryFile": "src/index.ts",
     "styleIncludePaths": ["./src/sass"]
-  }
+  },
+  "allowedNonPeerDependencies": ["^type-fest$"]
 }

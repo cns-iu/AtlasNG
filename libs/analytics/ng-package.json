@@ -3,5 +3,6 @@
   "dest": "../../dist/libs/analytics",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["^analytics$", "^qs$", "^type-fest$"]
 }
