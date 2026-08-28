@@ -1,0 +1,33 @@
+<div class="ang-footer--container">
+  <div class="ang-footer--logo-container">
+    <ng-content select="ang-footer-logo, [angFooterLogo]">
+      <a class="ang-footer--logo" target="_blank" [angAnyLink]="organizationLink()">
+        <img class="ang-footer--logo-image" fill [ngSrc]="logoImage()" [attr.alt]="`Visit ${organization()}`" />
+      </a>
+    </ng-content>
+    <ng-container [ngTemplateOutlet]="copyrightTemplate" />
+  </div>
+
+  <div class="ang-footer--socials">
+    @for (social of socials(); track social) {
+      @if (typeof social === 'string') {
+        <ang-social-media-button class="ang-footer--social-icon" [id]="social" />
+      } @else {
+        <ang-social-media-button class="ang-footer--social-icon" [definition]="social" />
+      }
+    }
+  </div>
+
+  <div class="ang-footer--actions">
+    <ng-content select="ang-footer-action, [angFooterAction]">
+      <button matButton class="ang-footer--action" (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
+      <button matButton class="ang-footer--action" (click)="openPrivacyPreferences.emit()">Privacy Preferences</button>
+    </ng-content>
+  </div>
+
+  <ng-container [ngTemplateOutlet]="copyrightTemplate" />
+</div>
+
+<ng-template #copyrightTemplate>
+  <span class="ang-footer--copyright"> © {{ copyrightYear() }} {{ organization() }} </span>
+</ng-template>
