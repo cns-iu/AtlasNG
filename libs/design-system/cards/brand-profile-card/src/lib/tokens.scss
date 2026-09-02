@@ -1,10 +1,11 @@
 @use 'internal/sass-utils';
 @use 'internal/token-utils';
+@use 'sass:math';
 
 $config: (
   namespace: 'brand-profile-card',
   tokens: (
-    image-aspect-ratio: 4 / 5,
+    image-aspect-ratio: math.div(4, 5),
     image-accent-color: #ff0043,
     image-accent-width: 6px,
     title-color: token-utils.sys-token(on-surface),

@@ -1,10 +1,11 @@
 @use 'internal/sass-utils';
 @use 'internal/token-utils';
+@use 'sass:math';
 
 $config: (
   namespace: 'ang-basic-profile-card',
   tokens: (
-    image-aspect-ratio: 4 / 5,
+    image-aspect-ratio: math.div(4, 5),
     card-color: token-utils.sys-token(on-surface-variant),
     title-color: token-utils.sys-token(on-surface),
     title-font: token-utils.sys-token(title-medium-font),
