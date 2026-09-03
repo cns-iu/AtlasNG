@@ -39,16 +39,19 @@ type Story = StoryObj<CustomizationControls>;
 
 export const Input: Story = {
   render: (args) => ({
-    props: args,
+    props: {
+      ...args,
+      formControl: new FormControl({ value: '', disabled: args.disabled }),
+    },
     template: `
       <mat-form-field [appearance]="appearance">
         <mat-label>Input</mat-label>
         @if (showPrefixIcon) {
           <mat-icon matPrefix>search</mat-icon>
         }
-        <input matInput [disabled]="disabled" placeholder="Placeholder">
-        @if (showClearButton) {
-          <button matIconButton matSuffix aria-label="Clear input">
+        <input matInput [formControl]="formControl" [disabled]="disabled" placeholder="Placeholder">
+        @if (formControl.value && showClearButton) {
+          <button matIconButton matSuffix aria-label="Clear input" (click)="formControl.setValue('')">
             <mat-icon>cancel</mat-icon>
           </button>
         }
