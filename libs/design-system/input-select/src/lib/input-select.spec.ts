@@ -10,7 +10,7 @@ describe('InputSelect', () => {
 
   /** Renders the search list with its default empty search term. */
   function setup() {
-    return render(InputSelect, { inputs: { options } });
+    return render(InputSelect, { inputs: { options, label: 'Search' } });
   }
 
   it('opens the options list when the search field is clicked', async () => {

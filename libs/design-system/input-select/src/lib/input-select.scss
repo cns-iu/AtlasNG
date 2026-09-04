@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
 
+  // Animations taken from Angular select dropdown
   @keyframes input-select-open {
     from {
       opacity: 0;
@@ -24,6 +25,19 @@
     to {
       opacity: 0;
     }
+  }
+
+  @keyframes hint-open {
+    from {
+      height: 0;
+    }
+    to {
+      height: auto;
+    }
+  }
+
+  .ang-input-select--hint-open {
+    animation: hint-open 120ms cubic-bezier(0, 0, 0.2, 1);
   }
 
   .ang-input-select--opening {
@@ -47,11 +61,6 @@
     &.ang-input-select--active {
       transform: rotate(180deg);
     }
-  }
-
-  mat-hint {
-    color: token-utils.slot(hint-color, $config);
-    height: 0;
   }
 
   mat-selection-list {

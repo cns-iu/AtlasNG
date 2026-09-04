@@ -6,9 +6,9 @@
   <mat-icon
     class="ang-input-select--toggle-icon"
     matSuffix
-    [class.ang-input-select--active]="optionsOpen()"
+    [class.ang-input-select--active]="optionsActive()"
     (mousedown)="$event.preventDefault()"
-    (click)="optionsOpen.set(!optionsOpen())"
+    (click)="optionsActive.set(!optionsActive())"
     >arrow_drop_down</mat-icon
   >
   <input
@@ -20,7 +20,7 @@
     (blur)="closeOptions()"
   />
   @if (supportingText() && !optionsOpen()) {
-    <mat-hint>{{ supportingText() }}</mat-hint>
+    <mat-hint animate.enter="ang-input-select--hint-open">{{ supportingText() }}</mat-hint>
   }
 </mat-form-field>
 
@@ -28,7 +28,7 @@
   <mat-selection-list
     animate.enter="ang-input-select--opening"
     animate.leave="ang-input-select--closing"
-    [class.hidden]="!optionsOpen()"
+    [class.hidden]="!optionsActive()"
     [disableRipple]="disableRipple()"
     (mousedown)="$event.preventDefault()"
     (selectionChange)="selectionUpdate(list.selectedOptions.selected)"

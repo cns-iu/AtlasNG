@@ -62,20 +62,23 @@ export class InputSelect<T extends InputSelectOption> {
   /** Current search bar value */
   readonly search = model<string>('');
 
-  /** Whether the options list has been opened by the user. */
-  protected readonly optionsOpen = signal(false);
+  /** Whether the options list is currently active */
+  protected readonly optionsActive = signal(false);
 
   /** Filtered options (after typing in search bar) */
   readonly filteredOptions = computed(() => this.doSearch());
 
+  /** Whether to open the options list. */
+  readonly optionsOpen = computed(() => this.optionsActive() && this.filteredOptions().length > 0);
+
   /** Opens the options list. */
   protected openOptions(): void {
-    this.optionsOpen.set(true);
+    this.optionsActive.set(true);
   }
 
   /** Closes the options list. */
   protected closeOptions(): void {
-    this.optionsOpen.set(false);
+    this.optionsActive.set(false);
   }
 
   /**
