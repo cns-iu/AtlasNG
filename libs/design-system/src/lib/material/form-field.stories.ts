@@ -62,7 +62,7 @@ export const Input: Story = {
         }
       </mat-form-field>
     `,
-    styles: [`mat-form-field { --mat-icon-button-state-layer-size: 3rem; width: 13.125rem; }`],
+    styles: [`mat-form-field { width: 13.125rem; }`],
   }),
 };
 
@@ -100,6 +100,6 @@ export const RequiredInputWithValidation: Story = {
         }
       </mat-form-field>
     `,
-    styles: [`mat-form-field { --mat-icon-button-state-layer-size: 3rem; width: 13.125rem; }`],
+    styles: [`mat-form-field { width: 13.125rem; }`],
   }),
 };
