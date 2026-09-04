@@ -22,6 +22,17 @@ $button-defaults: (
   @include mat.button-overrides($button-defaults);
 }
 
+@mixin form-field-defaults {
+  .mdc-icon-button {
+    --mat-icon-button-state-layer-size: 3rem;
+  }
+
+  mat-hint {
+    color: token-utils.sys-slot(on-surface-variant);
+  }
+}
+
 @mixin all-defaults {
   @include button-defaults;
+  @include form-field-defaults;
 }
