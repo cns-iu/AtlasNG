@@ -1,0 +1,14 @@
+@use 'internal/sass-utils';
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'snackbar',
+  tokens: (
+    actions-color: token-utils.sys-token(inverse-primary),
+    close-button-color: token-utils.sys-token(inverse-on-surface),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

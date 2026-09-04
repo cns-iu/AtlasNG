@@ -1,0 +1,88 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use 'tokens' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &.multiline {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .label {
+    padding: 1rem;
+  }
+
+  &:has([matSnackBarActions]) {
+    .label {
+      padding: 0.875rem 0.25rem 0.875rem 1rem;
+    }
+
+    &:has(.position-end) {
+      .label {
+        padding: 0.875rem 1rem 0.5rem 1rem;
+      }
+    }
+  }
+
+  &:has(button[matIconButton]) {
+    .label {
+      padding: 0.8438rem 1rem;
+    }
+  }
+
+  &:has(.position-end) {
+    flex-direction: column;
+    gap: 0;
+
+    [matSnackBarLabel] {
+      padding-top: 0.875rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .actions {
+      align-self: flex-end;
+    }
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+
+    .position-end {
+      align-self: flex-end;
+    }
+
+    [matSnackBarActions]:not(:has(+ button[matIconButton])) {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+::ng-deep .ang-snackbar--panel {
+  max-width: 30rem;
+
+  .mat-mdc-snackbar-surface {
+    padding: 0;
+    // box-shadow: 0px 5px 16px 0px rgb(from #{vars.$secondary} r g b / 0.24);
+
+    .mat-mdc-snack-bar-label {
+      padding: 0;
+    }
+  }
+
+  button[matButton][matSnackBarAction] {
+    color: token-utils.slot(actions-color, $config);
+  }
+
+  button[matIconButton] {
+    @include mat.icon-button-overrides(
+      (
+        icon-color: token-utils.slot(close-button-color, $config),
+      )
+    );
+  }
+}
