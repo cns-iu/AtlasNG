@@ -15,14 +15,14 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/core": "^22.0.7",
-    "@angular/common": "^22.0.7",
+    "@angular/core": "^22.1.5",
+    "@angular/common": "^22.1.5",
     "@atlasng/core": "0.0.6"
   },
   "dependencies": {
     "analytics": "^0.8.19",
-    "type-fest": "^5.5.0",
-    "qs": "^6.15.2"
+    "type-fest": "^5.9.0",
+    "qs": "^6.16.0"
   },
   "sideEffects": false
 }
