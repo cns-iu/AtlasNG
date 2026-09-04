@@ -15,10 +15,10 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/core": "^22.0.7"
+    "@angular/core": "^22.1.5"
   },
   "dependencies": {
-    "type-fest": "^5.5.0"
+    "type-fest": "^5.9.0"
   },
   "sideEffects": false
 }
