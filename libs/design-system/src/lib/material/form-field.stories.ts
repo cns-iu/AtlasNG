@@ -9,6 +9,7 @@ interface CustomizationControls {
   disabled: boolean;
   showPrefixIcon: boolean;
   showClearButton: boolean;
+  showSupportingText: boolean;
   supportingText: string;
   appearance: MatFormFieldAppearance;
 }
@@ -24,6 +25,7 @@ const meta: Meta<CustomizationControls> = {
     disabled: false,
     showPrefixIcon: false,
     showClearButton: false,
+    showSupportingText: false,
     supportingText: 'Supporting text',
     appearance: 'fill',
   },
@@ -44,7 +46,7 @@ export const Input: Story = {
       formControl: new FormControl({ value: '', disabled: args.disabled }),
     },
     template: `
-      <mat-form-field [appearance]="appearance">
+      <mat-form-field [appearance]="appearance" subscriptSizing="dynamic">
         <mat-label>Input</mat-label>
         @if (showPrefixIcon) {
           <mat-icon matPrefix>search</mat-icon>
@@ -55,7 +57,9 @@ export const Input: Story = {
             <mat-icon>cancel</mat-icon>
           </button>
         }
-        <mat-hint>${args.supportingText}</mat-hint>
+        @if (showSupportingText) {
+          <mat-hint>${args.supportingText}</mat-hint>
+        }
       </mat-form-field>
     `,
     styles: [`mat-form-field { --mat-icon-button-state-layer-size: 3rem; width: 13.125rem; }`],
@@ -72,7 +76,7 @@ export const RequiredInputWithValidation: Story = {
       ]),
     },
     template: `
-      <mat-form-field [appearance]="appearance">
+      <mat-form-field [appearance]="appearance" subscriptSizing="dynamic">
         <mat-label>Input</mat-label>
         @if (showPrefixIcon) {
           <mat-icon matPrefix>search</mat-icon>
@@ -91,7 +95,9 @@ export const RequiredInputWithValidation: Story = {
             <mat-icon>cancel</mat-icon>
           </button>
         }
-        <mat-hint>${args.supportingText}</mat-hint>
+        @if (showSupportingText) {
+          <mat-hint>${args.supportingText}</mat-hint>
+        }
       </mat-form-field>
     `,
     styles: [`mat-form-field { --mat-icon-button-state-layer-size: 3rem; width: 13.125rem; }`],
