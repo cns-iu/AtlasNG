@@ -1,0 +1,21 @@
+@use 'internal/sass-utils';
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'input-select',
+  tokens: (
+    hint-color: token-utils.sys-token(on-surface-variant),
+    list-color: token-utils.sys-token(surface-container),
+    list-border-radius: token-utils.sys-token(corner-small),
+    label-primary-color: token-utils.sys-token(on-surface-variant),
+    label-primary-font: token-utils.sys-token(label-small-font),
+    label-primary-line-height: token-utils.sys-token(label-small-line-height),
+    label-primary-size: token-utils.sys-token(label-small-size),
+    label-primary-tracking: token-utils.sys-token(label-small-tracking),
+    label-primary-weight: token-utils.sys-token(label-small-weight),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

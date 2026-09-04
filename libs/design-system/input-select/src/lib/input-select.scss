@@ -1,0 +1,81 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+
+  @keyframes input-select-open {
+    from {
+      opacity: 0;
+      transform: scaleY(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes input-select-close {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .ang-input-select--opening {
+    animation: input-select-open 120ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  .ang-input-select--closing {
+    animation: input-select-close 120ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  @include mat.list-overrides(
+    (
+      list-item-one-line-container-height: 2.5rem,
+    )
+  );
+
+  .ang-input-select--toggle-icon {
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+
+    &.ang-input-select--active {
+      transform: rotate(180deg);
+    }
+  }
+
+  mat-hint {
+    color: token-utils.slot(hint-color, $config);
+    height: 0;
+  }
+
+  mat-selection-list {
+    transform-origin: top center;
+    max-height: 22.25rem;
+    overflow: auto;
+    box-shadow: 0px 5px 4px 0px rgba(32, 30, 61, 0.16);
+    background-color: token-utils.slot(list-color, $config);
+    border-radius: token-utils.slot(list-border-radius, $config);
+  }
+
+  .ang-input-select--option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ang-input-select--option-secondary-label,
+  .ang-input-select--option-count {
+    color: token-utils.slot(label-primary-color, $config);
+    font-family: token-utils.slot(label-primary-font, $config);
+    font-size: token-utils.slot(label-primary-size, $config);
+    font-weight: token-utils.slot(label-primary-weight, $config);
+    letter-spacing: token-utils.slot(label-primary-tracking, $config);
+    line-height: token-utils.slot(label-primary-line-height, $config);
+  }
+}

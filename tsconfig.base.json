@@ -54,6 +54,7 @@
       "@atlasng/design-system/indicators/results-indicator": [
         "./libs/design-system/indicators/results-indicator/src/index.ts"
       ],
+      "@atlasng/design-system/input-select": ["./libs/design-system/input-select/src/index.ts"],
       "@atlasng/design-system/text-link": ["./libs/design-system/text-link/src/index.ts"],
       "@atlasng/design-system/youtube-player": ["./libs/design-system/youtube-player/src/index.ts"],
       "@atlasng/labs": ["./libs/labs/src/index.ts"],
