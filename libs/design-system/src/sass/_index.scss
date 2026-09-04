@@ -7,6 +7,7 @@
 
 // Overrides
 @forward '../../buttons/breadcrumbs/src/lib/tokens' as breadcrumbs-* show breadcrumbs-overrides;
+@forward '../../input-select/src/lib/tokens' as input-select-* show input-select-overrides;
 @forward '../../buttons/navigation-button/src/lib/tokens' as navigation-button-* show navigation-button-overrides;
 @forward '../../buttons/navigation-toggle/src/lib/tokens' as navigation-toggle-* show navigation-toggle-overrides;
 @forward '../../buttons/social-media-button/src/lib/tokens' as social-media-button-* show social-media-button-overrides;

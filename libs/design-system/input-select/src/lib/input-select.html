@@ -1,0 +1,58 @@
+<mat-form-field class="ang-input-select--field" subscriptSizing="dynamic">
+  <mat-label class="ang-input-select--search-label">{{ label() }}</mat-label>
+  @if (icon()) {
+    <mat-icon class="ang-input-select--search-icon" matPrefix>{{ icon() }}</mat-icon>
+  }
+  <mat-icon
+    class="ang-input-select--toggle-icon"
+    matSuffix
+    [class.ang-input-select--active]="optionsActive()"
+    (mousedown)="$event.preventDefault()"
+    (click)="optionsActive.set(!optionsActive())"
+    >arrow_drop_down</mat-icon
+  >
+  <input
+    matInput
+    type="text"
+    [required]="required()"
+    [(ngModel)]="search"
+    (focus)="openOptions()"
+    (blur)="closeOptions()"
+  />
+  @if (supportingText() && !optionsOpen()) {
+    <mat-hint animate.enter="ang-input-select--hint-open">{{ supportingText() }}</mat-hint>
+  }
+</mat-form-field>
+
+@if (optionsOpen()) {
+  <mat-selection-list
+    animate.enter="ang-input-select--opening"
+    animate.leave="ang-input-select--closing"
+    [class.hidden]="!optionsActive()"
+    [disableRipple]="disableRipple()"
+    (mousedown)="$event.preventDefault()"
+    (selectionChange)="selectionUpdate(list.selectedOptions.selected)"
+    #list
+  >
+    @for (option of filteredOptions(); track option.id) {
+      <mat-list-option
+        togglePosition="before"
+        [value]="option"
+        [selected]="selected().includes(option)"
+        [attr.aria-label]="`Toggle ${option.id}`"
+      >
+        <mat-label class="ang-input-select--option">
+          <span class="ang-input-select--option-labels">
+            <div class="ang-input-select--option-primary-label">{{ option.label }}</div>
+            @if (option.secondaryLabel) {
+              <div class="ang-input-select--option-secondary-label">{{ option.secondaryLabel }}</div>
+            }
+          </span>
+          @if (option.count) {
+            <span class="ang-input-select--option-count">{{ option.count }}</span>
+          }
+        </mat-label>
+      </mat-list-option>
+    }
+  </mat-selection-list>
+}
