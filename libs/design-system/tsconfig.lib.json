@@ -7,6 +7,17 @@
     "inlineSources": true,
     "types": []
   },
-  "include": ["**/*.ts"],
-  "exclude": [".storybook/**/*", "**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "**/*.stories.js"]
+  "include": ["**/*.ts", "table/**/*.ts"],
+  "exclude": [
+    ".storybook/**/*",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.stories.ts",
+    "**/*.stories.js",
+    "table/.storybook/**/*",
+    "table/**/*.spec.ts",
+    "table/**/*.test.ts",
+    "table/**/*.stories.ts",
+    "table/**/*.stories.js"
+  ]
 }
