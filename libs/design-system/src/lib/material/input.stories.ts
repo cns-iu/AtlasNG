@@ -4,21 +4,31 @@ import { MatFormFieldAppearance, MatFormFieldModule } from '@angular/material/fo
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 interface CustomizationControls {
   disabled: boolean;
   showPrefixIcon: boolean;
   showClearButton: boolean;
   showSupportingText: boolean;
+  showPlaceholder: boolean;
   supportingText: string;
   appearance: MatFormFieldAppearance;
+  autocompleteOptions?: string[];
 }
 
 const meta: Meta<CustomizationControls> = {
-  title: 'Material/Form Field',
+  title: 'Material/Form Field/Input',
   decorators: [
     moduleMetadata({
-      imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatButtonModule],
+      imports: [
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatButtonModule,
+        MatAutocompleteModule,
+      ],
     }),
   ],
   args: {
@@ -26,6 +36,7 @@ const meta: Meta<CustomizationControls> = {
     showPrefixIcon: false,
     showClearButton: false,
     showSupportingText: false,
+    showPlaceholder: true,
     supportingText: 'Supporting text',
     appearance: 'fill',
   },
@@ -51,7 +62,49 @@ export const Input: Story = {
         @if (showPrefixIcon) {
           <mat-icon matPrefix>search</mat-icon>
         }
-        <input matInput [formControl]="formControl" [disabled]="disabled" placeholder="Placeholder">
+        <input matInput [formControl]="formControl" [disabled]="disabled" [placeholder]="showPlaceholder ? 'Placeholder' : null">
+        @if (formControl.value && showClearButton) {
+          <button matIconButton matSuffix aria-label="Clear input" (click)="formControl.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        }
+        @if (showSupportingText) {
+          <mat-hint>${args.supportingText}</mat-hint>
+        }
+      </mat-form-field>
+    `,
+    styles: [`mat-form-field { width: 13.125rem; }`],
+  }),
+};
+
+function doSearch(formControl: FormControl, values: string[]): string[] {
+  const searchTerm = formControl.value.toLowerCase();
+  return values.filter((option) => option.toLowerCase().includes(searchTerm));
+}
+
+export const Autocomplete: Story = {
+  render: (args) => ({
+    props: {
+      ...args,
+      placeholder: undefined,
+      formControl: new FormControl({ value: '', disabled: args.disabled }),
+      autocompleteOptions: ['Heart', 'Lungs', 'Kidney', 'Liver', 'Spleen', 'Pancreas'],
+      doSearch: doSearch,
+    },
+    template: `
+      <mat-form-field [appearance]="appearance" subscriptSizing="dynamic">
+        <mat-label>Search organs</mat-label>
+        <input type="text"
+          matInput
+          [formControl]="formControl"
+          [matAutocomplete]="auto"
+          [placeholder]="placeholder"
+        >
+        <mat-autocomplete #auto="matAutocomplete">
+          @for (option of doSearch(formControl, autocompleteOptions); track option) {
+            <mat-option [value]="option">{{option}}</mat-option>
+          }
+        </mat-autocomplete>
         @if (formControl.value && showClearButton) {
           <button matIconButton matSuffix aria-label="Clear input" (click)="formControl.setValue('')">
             <mat-icon>cancel</mat-icon>
@@ -81,7 +134,7 @@ export const RequiredInputWithValidation: Story = {
         @if (showPrefixIcon) {
           <mat-icon matPrefix>search</mat-icon>
         }
-        <input type="email" matInput [formControl]="emailFormControl" placeholder="Enter email">
+        <input type="email" matInput [formControl]="emailFormControl" [placeholder]="showPlaceholder ? 'Enter email' : null">
         @if (emailFormControl.hasError('email') && !emailFormControl.hasError('required')) {
           <mat-error>Please enter a valid email address</mat-error>
         }
