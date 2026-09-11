@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import {
@@ -15,24 +15,30 @@ export interface SnackBarData {
   message: string;
   /** Action button text */
   action?: string;
-  multiline?: boolean;
+  /** Whether to put snackbar actions on a separate bottom row */
+  actionRow?: boolean;
   /** Flag to show/hide the close button */
   showClose?: boolean;
+  /** Duration in milliseconds before the snackbar closes */
+  duration?: number;
 }
 
 export interface SnackBarConfig extends MatSnackBarConfig<never>, Omit<SnackBarData, 'message'> {}
 
 export function createSnackBarConfig(message: string, config: SnackBarConfig = {}): MatSnackBarConfig<SnackBarData> {
-  const { action, multiline = false, showClose = false, panelClass = [] } = config;
+  const { action, actionRow = false, showClose = false, panelClass = [] } = config;
+
+  const duration = action || showClose ? undefined : config.duration;
 
   return {
     ...config,
     data: {
       message,
       action,
-      multiline,
+      actionRow,
       showClose,
     },
+    duration,
     panelClass: [...panelClass, 'ang-snackbar--panel'],
   };
 }
@@ -44,9 +50,10 @@ export function createSnackBarConfig(message: string, config: SnackBarConfig = {
   templateUrl: './snackbar.html',
   styleUrl: './snackbar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-snackbar',
-    '[class.multiline]': '(data.action || data.showClose) && data.multiline',
+    '[class.action-row]': '(data.action || data.showClose) && data.actionRow',
   },
 })
 export class Snackbar {
@@ -56,8 +63,3 @@ export class Snackbar {
   /** Injection token for the snackbar data*/
   protected readonly data = inject<SnackBarData>(MAT_SNACK_BAR_DATA);
 }
-
-// function foo() {
-//   const snackbar = inject(MatSnackBar);
-//   snackbar.openFromComponent(Snackbar, createSnackBarConfig(''));
-// }

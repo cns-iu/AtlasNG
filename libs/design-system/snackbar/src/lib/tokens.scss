@@ -4,8 +4,8 @@
 $config: (
   namespace: 'snackbar',
   tokens: (
-    actions-color: token-utils.sys-token(inverse-primary),
     close-button-color: token-utils.sys-token(inverse-on-surface),
+    max-width: 22.5rem,
   ),
 );
 

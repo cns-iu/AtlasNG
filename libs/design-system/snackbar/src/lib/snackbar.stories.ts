@@ -1,8 +1,8 @@
 import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Meta, StoryObj } from '@storybook/angular';
 import { createSnackBarConfig, Snackbar } from './snackbar';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'ang-snackbar-demo',
@@ -12,17 +12,19 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 class SnackbarDemoComponent {
   readonly snackbar = inject(MatSnackBar);
   readonly message = input<string>('');
-  readonly action = input<string>('');
-  readonly showClose = input<boolean>(false);
-  readonly multiline = input<boolean>(false);
+  readonly action = input<string>();
+  readonly showClose = input<boolean>();
+  readonly actionRow = input<boolean>();
+  readonly duration = input<number>();
 
   open() {
     this.snackbar.openFromComponent(
       Snackbar,
       createSnackBarConfig(this.message(), {
         action: this.action(),
-        multiline: this.multiline(),
+        actionRow: this.actionRow(),
         showClose: this.showClose(),
+        duration: this.duration(),
       }),
     );
   }
@@ -44,12 +46,15 @@ const meta: Meta<SnackbarDemoComponent> = {
     action: {
       type: 'string',
     },
+    duration: {
+      type: 'number',
+    },
   },
   args: {
-    message: 'test message',
-    action: 'test action',
+    action: 'Action',
     showClose: false,
-    multiline: false,
+    actionRow: false,
+    duration: 5000,
   },
 };
 export default meta;
@@ -58,7 +63,7 @@ type Story = StoryObj;
 export const SingleLineSnackbar: Story = {
   args: {
     message: 'Single-line snackbar',
-    action: '',
+    action: undefined,
     showClose: false,
   },
 };
@@ -66,75 +71,67 @@ export const SingleLineSnackbar: Story = {
 export const SingleLineSnackbarWithAction: Story = {
   args: {
     message: 'Single-line snackbar with action',
-    action: 'Action',
     showClose: false,
   },
 };
 
-export const TwoLineSnackbarWithOutAction: Story = {
+export const TwoLineSnackbarWithoutAction: Story = {
   args: {
-    message: 'Two-line snackbar without action. This is some extra text',
-    action: '',
+    message: 'Two-line snackbar without action. This is a longer message that will wrap.',
+    action: undefined,
     showClose: false,
   },
 };
 
 export const TwoLineSnackbarWithAction: Story = {
   args: {
-    message: 'Two-line snackbar with action. This is some extra text',
-    action: 'Action',
+    message: 'Two-line snackbar with action. This is a longer message that will wrap.',
     showClose: false,
   },
 };
 
 export const TwoLineSnackbarWithLongerAction: Story = {
   args: {
-    message:
-      'Two-line snackbar with action. This is some extra text along with some more additional textTwo-line snackbar with action. This is some extra text along with some more additional textTwo-line snackbar with action. This is some extra text along with some more additional textTwo-line snackbar with action. This is some extra text along with some more additional text',
-    action: 'Action',
+    message: 'Two-line snackbar with longer action. This is a longer message that will wrap.',
     showClose: false,
-    multiline: true,
+    actionRow: true,
   },
 };
 
 export const SingleLineSnackbarWithClose: Story = {
   args: {
-    message: 'Single-line snackbar with close',
-    action: '',
+    message: 'Single-line snackbar with close affordance',
+    action: undefined,
     showClose: true,
   },
 };
 
 export const SingleLineSnackbarWithActionAndClose: Story = {
   args: {
-    message: 'Single-line with action & close',
-    action: 'Action',
+    message: 'Single-line snackbar with action',
     showClose: true,
   },
 };
 
-export const TwoLineSnackbarWithoutActionAndClose: Story = {
+export const TwoLineSnackbarWithClose: Story = {
   args: {
-    message: 'Two-line snackbar without action, with close',
-    action: '',
+    message: 'Two-line snackbar with close affordance. This is a longer message that will wrap.',
+    action: undefined,
     showClose: true,
   },
 };
 
 export const TwoLineSnackbarWithActionAndClose: Story = {
   args: {
-    message: 'Two-line snackbar with action and close',
-    action: 'Action',
+    message: 'Two-line snackbar with action and close affordance.',
     showClose: true,
   },
 };
 
 export const TwoLineSnackbarWithLongerActionAndClose: Story = {
   args: {
-    message:
-      'Two-line snackbar with action. This is some extra text along with some more additional textTwo-line snackbar with action. This is some extra text along with some more additional textTwo-line snackbar with action. This is some extra text along with some more additional textTwo-line snackbar with action. This is some extra text along with some more additional text',
-    action: 'Action',
+    message: 'Two-line snackbar with longer action and close affordance.',
     showClose: true,
-    multiline: true,
+    actionRow: true,
   },
 };
