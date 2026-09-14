@@ -30,6 +30,7 @@ export class LinkSnippet {
       duration: 2000,
       panelClass: 'copy-snackbar',
       verticalPosition: 'top',
+      politeness: 'polite',
     });
   }
 }

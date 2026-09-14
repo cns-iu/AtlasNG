@@ -9,20 +9,21 @@
   flex-wrap: wrap;
   width: 100%;
 
-  .link {
-    font-family: token-utils.slot(font-family, tokens.$config);
-    font-size: token-utils.slot(font-size, tokens.$config);
-    font-weight: token-utils.slot(font-weight, tokens.$config);
-    line-height: token-utils.slot(line-height, tokens.$config);
-    letter-spacing: token-utils.slot(letter-spacing, tokens.$config);
-    color: token-utils.slot(color, tokens.$config);
+  .ang-link-snippet--link {
+    font-family: token-utils.slot(link-font, tokens.$config);
+    font-size: token-utils.slot(link-size, tokens.$config);
+    font-weight: token-utils.slot(link-weight, tokens.$config);
+    line-height: token-utils.slot(link-line-height, tokens.$config);
+    letter-spacing: token-utils.slot(link-tracking, tokens.$config);
+    color: token-utils.slot(link-color, tokens.$config);
+    background-color: token-utils.slot(link-background, tokens.$config);
+    border-radius: token-utils.slot(border-radius, tokens.$config);
+
     display: flex;
     align-items: center;
     gap: 0.25rem;
     padding-left: 0.5rem;
     padding-right: 1rem;
-    border-radius: token-utils.slot(radius, tokens.$config);
-    background-color: token-utils.slot(background, tokens.$config);
     text-wrap: nowrap;
     overflow: hidden;
 
@@ -31,14 +32,14 @@
     }
   }
 
-  .text {
+  .ang-link-snippet--text {
     overflow-x: auto;
     height: 40px;
     display: flex;
     align-items: center;
   }
 
-  .copy {
+  .ang-link-snippet--copy {
     mat-icon {
       height: 1.5rem;
       width: 1.5rem;
@@ -49,5 +50,7 @@
 }
 
 .copy-snackbar .mat-mdc-snackbar-surface {
+  width: auto !important;
   min-width: 0px !important;
+  padding: 0.125rem 1.5rem 0.125rem 1rem;
 }
