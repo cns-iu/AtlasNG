@@ -1,0 +1,20 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'link-snippet',
+  tokens: (
+    radius: token-utils.sys-token(corner-full),
+    font-family: 'Roboto Mono',
+    font-size: 14px,
+    font-weight: 400,
+    line-height: 20px,
+    letter-spacing: 0px,
+    color: token-utils.sys-token(on-surface-variant),
+    background: token-utils.sys-token(surface-variant),
+    // copy-font: token-utils.sys-token(label-large),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
