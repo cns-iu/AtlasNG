@@ -1,0 +1,12 @@
+<div class="ang-link-snippet--link">
+  <a mat-icon-button aria-label="Open link" tabindex="0" [attr.href]="url()">
+    <mat-icon>open_in_new</mat-icon>
+  </a>
+  <div class="ang-link-snippet--text">
+    {{ url() }}
+  </div>
+</div>
+<button mat-button class="ang-link-snippet--copy" (click)="copyUrl()">
+  <mat-icon>content_copy</mat-icon>
+  Copy
+</button>
