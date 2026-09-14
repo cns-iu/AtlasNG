@@ -46,6 +46,7 @@ describe('LinkSnippet', () => {
     expect(open).toHaveBeenCalledWith('Link copied', '', {
       duration: 2000,
       panelClass: 'copy-snackbar',
+      politeness: 'polite',
       verticalPosition: 'top',
     });
   });
