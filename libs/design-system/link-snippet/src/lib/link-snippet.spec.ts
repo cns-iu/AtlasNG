@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LinkActions } from './link-actions';
+import { LinkSnippet } from './link-snippet';
 
-describe('LinkActions', () => {
-  let component: LinkActions;
-  let fixture: ComponentFixture<LinkActions>;
+describe('LinkSnippet', () => {
+  let component: LinkSnippet;
+  let fixture: ComponentFixture<LinkSnippet>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LinkActions],
+      imports: [LinkSnippet],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LinkActions);
+    fixture = TestBed.createComponent(LinkSnippet);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

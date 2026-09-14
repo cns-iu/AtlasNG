@@ -1,9 +1,9 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { LinkActions } from './link-actions';
+import { LinkSnippet } from './link-snippet';
 
 const meta: Meta = {
-  title: 'Design System/Link Actions',
-  component: LinkActions,
+  title: 'Design System/Link Snippet',
+  component: LinkSnippet,
   parameters: {
     design: {
       type: 'figma',
