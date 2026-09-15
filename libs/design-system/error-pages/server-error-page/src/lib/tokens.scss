@@ -1,0 +1,18 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'server-error-page',
+  tokens: (
+    background: token-utils.sys-token(background),
+    title-font: token-utils.sys-token(headline-large),
+    title-letter-spacing: token-utils.sys-token(headline-large-tracking),
+    title-color: token-utils.sys-token(on-background),
+    description-font: token-utils.sys-token(body-large),
+    description-letter-spacing: token-utils.sys-token(body-large-tracking),
+    description-color: token-utils.sys-token(on-surface-variant),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
