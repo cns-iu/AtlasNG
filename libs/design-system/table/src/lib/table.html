@@ -1,1 +1,22 @@
-<p>table works!</p>
+<ngx-datatable
+  class="ang-table--datatable"
+  checkRowListChanges="false"
+  checkRowPropertyChanges="false"
+  columnMode="flex"
+  enableClearingSortState="true"
+  headerHeight="auto"
+  reorderable="false"
+  scrollbarV="true"
+  scrollbarVDynamic="true"
+  virtualization="true"
+  [columns]="resolvedColumns()"
+  [rows]="rows()"
+  [rowHeight]="rowHeight()"
+  [scrollbarH]="scrollbarH()"
+  [selectionType]="selectionType()"
+  [sortType]="sortType()"
+  [(selected)]="selected"
+  [(sorts)]="sorts"
+>
+  <ng-content select="[empty-content]" ngProjectAs="[empty-content]" />
+</ngx-datatable>

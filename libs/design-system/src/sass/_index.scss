@@ -18,5 +18,6 @@
 @forward '../../indicators/no-results-indicator/src/lib/tokens' as no-results-indicator-* show
   no-results-indicator-overrides;
 @forward '../../indicators/results-indicator/src/lib/tokens' as results-indicator-* show results-indicator-overrides;
+@forward '../../table/src/lib/tokens' as table-* show table-overrides;
 @forward '../../text-link/src/lib/tokens' as text-link-* show text-link-overrides;
 @forward '../../youtube-player/src/lib/tokens' as youtube-player-* show youtube-player-overrides;

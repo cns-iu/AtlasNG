@@ -1,0 +1,23 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'table',
+  tokens: (
+    background-color: token-utils.sys-token(surface),
+    border-color: token-utils.sys-token(outline-variant),
+    cell-text-color: token-utils.sys-token(on-surface),
+    checkbox-column-width: 48px,
+    header-background-color: token-utils.sys-token(surface-container),
+    header-height: 40px,
+    header-text-color: token-utils.sys-token(on-surface-variant),
+    hover-background-color: token-utils.sys-token(surface-container-high),
+    row-height: 48px,
+    selected-background-color: token-utils.sys-token(secondary-container),
+    sort-indicator-color: token-utils.sys-token(primary),
+  ),
+);
+
+/** Applies consumer-provided table token overrides. */
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
