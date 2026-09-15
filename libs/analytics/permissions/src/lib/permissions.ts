@@ -24,17 +24,36 @@ const REQUIRED_CATEGORY_PERMISSIONS: Pick<CategoryPermissions, AnalyticsEventCat
   [AnalyticsEventCategory.Necessary]: true,
 };
 
+/** Arguments used to privately initialize an {@link AnalyticsPermissions} instance. */
+type AnalyticsPermissionsArgs = [permissions: CategoryPermissions];
+
+/** The default arguments for the {@link AnalyticsPermissions} constructor. */
+const DEFAULT_CONSTRUCTOR_ARGS: AnalyticsPermissionsArgs = [DEFAULT_CATEGORY_PERMISSIONS];
+
+/** Arguments staged for the next {@link AnalyticsPermissions} construction. */
+let constructorArgs: AnalyticsPermissionsArgs | undefined;
+
 /**
- * Creates a permissions instance without exposing a public constructor.
+ * Creates a permissions instance with privately supplied constructor arguments.
  *
- * The module-scoped factory and its assignment in the class initializer are a
- * workaround for the variable collision described in
- * [esbuild issue #4520](https://github.com/evanw/esbuild/issues/4520).
+ * The staged arguments are cleared after construction, even if the constructor throws.
  *
- * @param permissions The internal permission state for the new instance.
+ * @param args The internal permission state for the new instance.
  * @returns A permissions value object containing the supplied state.
  */
-let rawCreateAnalyticsPermissions: (permissions: CategoryPermissions) => AnalyticsPermissions;
+function createAnalyticsPermissions(...args: AnalyticsPermissionsArgs): AnalyticsPermissions {
+  try {
+    constructorArgs = args;
+    return new AnalyticsPermissions();
+  } finally {
+    constructorArgs = undefined;
+  }
+}
+
+/** Cached {@link AnalyticsPermissions.DEFAULT} instance. */
+let cachedDefaultPermissions: AnalyticsPermissions | undefined;
+/** Cached {@link AnalyticsPermissions.FULL} instance. */
+let cachedFullPermissions: AnalyticsPermissions | undefined;
 
 /**
  * Immutable analytics permission state.
@@ -43,31 +62,28 @@ let rawCreateAnalyticsPermissions: (permissions: CategoryPermissions) => Analyti
  * {@link AnalyticsPermissions} instance instead of changing the current one.
  */
 export class AnalyticsPermissions {
-  // Initializes the module-scoped factory with access to private instance state.
-  static {
-    rawCreateAnalyticsPermissions = (permissions) => {
-      const instance = new AnalyticsPermissions();
-      (instance.#permissions as CategoryPermissions) = permissions;
-      return instance;
-    };
-  }
-
-  /**
-   * Default analytics permissions.
-   */
+  /** Default analytics permissions. */
   static get DEFAULT(): AnalyticsPermissions {
-    return rawCreateAnalyticsPermissions(DEFAULT_CATEGORY_PERMISSIONS);
+    cachedDefaultPermissions ??= createAnalyticsPermissions(DEFAULT_CATEGORY_PERMISSIONS);
+    return cachedDefaultPermissions;
   }
 
-  /**
-   * All analytics permissions enabled.
-   */
+  /** All analytics permissions enabled. */
   static get FULL(): AnalyticsPermissions {
-    return rawCreateAnalyticsPermissions(FULL_CATEGORY_PERMISSIONS);
+    cachedFullPermissions ??= createAnalyticsPermissions(FULL_CATEGORY_PERMISSIONS);
+    return cachedFullPermissions;
   }
 
   /** The internal permission state. */
-  readonly #permissions = DEFAULT_CATEGORY_PERMISSIONS;
+  readonly #permissions: CategoryPermissions;
+
+  /**
+   * Create a fresh instance of {@link AnalyticsPermissions}.
+   */
+  constructor() {
+    const [permissions] = constructorArgs ?? DEFAULT_CONSTRUCTOR_ARGS;
+    this.#permissions = permissions;
+  }
 
   /**
    * Checks whether a category is enabled.
@@ -139,7 +155,7 @@ export class AnalyticsPermissions {
    * @returns A new permissions value object.
    */
   #updateCategories(updates: Partial<CategoryPermissions>): AnalyticsPermissions {
-    return rawCreateAnalyticsPermissions({ ...this.#permissions, ...updates, ...REQUIRED_CATEGORY_PERMISSIONS });
+    return createAnalyticsPermissions({ ...this.#permissions, ...updates, ...REQUIRED_CATEGORY_PERMISSIONS });
   }
 
   /**

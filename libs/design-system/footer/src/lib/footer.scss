@@ -1,0 +1,121 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+@use 'breakpoints';
+
+.ang-footer {
+  display: block;
+  background: token-utils.slot(background-color, $config);
+
+  .ang-footer--container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 20rem;
+    padding: 2.5rem;
+    margin: 0 auto;
+  }
+
+  .ang-footer--logo-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+
+    .ang-footer--logo {
+      position: relative;
+      width: 100%;
+      height: 3rem;
+    }
+
+    .ang-footer--copyright {
+      display: none;
+    }
+  }
+
+  .ang-footer--socials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    .ang-footer--social-icon {
+      height: 2.5rem;
+      margin: 0.25rem;
+    }
+  }
+
+  .ang-footer--actions {
+    display: grid;
+    grid-template-columns: repeat(2, 9.375rem);
+    justify-content: center;
+    max-width: 18.75rem;
+    margin: 0 auto;
+    margin-bottom: 0.5rem;
+  }
+
+  .ang-footer--action {
+    @include mat.button-overrides(
+      (
+        text-label-text-font: token-utils.slot(action-font, $config),
+        text-label-text-size: token-utils.slot(action-size, $config),
+        text-label-text-tracking: token-utils.slot(action-tracking, $config),
+        text-label-text-weight: token-utils.slot(action-weight, $config),
+      )
+    );
+  }
+
+  .ang-footer--copyright {
+    color: token-utils.slot(copyright-color, $config);
+    font-family: token-utils.slot(copyright-font, $config);
+    font-size: token-utils.slot(copyright-size, $config);
+    font-weight: token-utils.slot(copyright-weight, $config);
+    letter-spacing: token-utils.slot(copyright-tracking, $config);
+    line-height: token-utils.slot(copyright-line-height, $config);
+    align-content: center;
+    text-align: center;
+    height: 3rem;
+  }
+
+  @include breakpoints.breakpoint(medium) {
+    .ang-footer--container {
+      flex-direction: row;
+      max-width: 80rem;
+      padding: 2.5rem;
+
+      > .ang-footer--copyright {
+        display: none;
+      }
+    }
+
+    .ang-footer--logo-container {
+      align-items: flex-start;
+      justify-content: flex-start;
+      max-width: 10rem;
+      margin: 0;
+
+      .ang-footer--logo-image {
+        object-position: left;
+        object-fit: contain;
+      }
+
+      .ang-footer--copyright {
+        display: block;
+        text-align: left;
+        height: auto;
+      }
+    }
+
+    .ang-footer--socials {
+      align-items: flex-start;
+      margin: 0;
+    }
+
+    .ang-footer--actions {
+      margin: 0;
+    }
+  }
+}
