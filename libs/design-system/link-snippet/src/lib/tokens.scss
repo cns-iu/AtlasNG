@@ -3,13 +3,18 @@
 $config: (
   namespace: 'link-snippet',
   tokens: (
-    link-font: 'Roboto Mono',
+    link-font: 'Roboto Mono Variable',
     link-size: 0.875rem,
     link-weight: 400,
     link-line-height: 1.25rem,
     link-tracking: 0rem,
     link-color: token-utils.sys-token(on-surface-variant),
     link-background: token-utils.sys-token(surface-variant),
+    copy-notification-font: token-utils.sys-token(body-medium-font),
+    copy-notification-size: token-utils.sys-token(body-medium-size),
+    copy-notification-weight: token-utils.sys-token(body-medium-weight),
+    copy-notification-line-height: token-utils.sys-token(body-medium-line-height),
+    copy-notification-tracking: token-utils.sys-token(body-medium-tracking),
     border-radius: token-utils.sys-token(corner-full),
   ),
 );

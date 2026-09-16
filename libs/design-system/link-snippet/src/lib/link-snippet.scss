@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use './tokens';
 
@@ -22,7 +23,7 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    padding-left: 0.5rem;
+    // padding-left: 0.5rem; // Ask Libby!
     padding-right: 1rem;
     text-wrap: nowrap;
     overflow: hidden;
@@ -49,8 +50,20 @@
   }
 }
 
-.copy-snackbar .mat-mdc-snackbar-surface {
-  width: auto !important;
-  min-width: 0px !important;
-  padding: 0.125rem 1.5rem 0.125rem 1rem;
+.ang-link-snippet--copy-notification-panel {
+  @include mat.snack-bar-overrides(
+    (
+      supporting-text-font: token-utils.slot(copy-notification-font, tokens.$config),
+      supporting-text-size: token-utils.slot(copy-notification-size, tokens.$config),
+      supporting-text-weight: token-utils.slot(copy-notification-weight, tokens.$config),
+      supporting-text-line-height: token-utils.slot(copy-notification-line-height, tokens.$config),
+    )
+  );
+
+  letter-spacing: token-utils.slot(copy-notification-tracking, tokens.$config);
+
+  .mat-mdc-snackbar-surface {
+    min-width: 0px !important;
+    padding: 0.125rem 1.5rem 0.125rem 1rem;
+  }
 }
