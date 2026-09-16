@@ -15,15 +15,16 @@
   @include mat.icon-button-overrides(
     (
       icon-color: token-utils.slot(close-button-color, $config),
+      state-layer-size: 2rem,
     )
   );
 
-  &.action-row {
+  &.ang-snackbar--action-row {
     flex-direction: column;
     align-items: flex-end;
   }
 
-  [matSnackBarActions]:not(:has(+ button[matIconButton])) {
-    margin-right: 0.5rem;
+  .ang-snackbar--actions {
+    gap: 0.5rem;
   }
 }

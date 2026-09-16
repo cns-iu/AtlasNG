@@ -53,7 +53,7 @@ export function createSnackBarConfig(message: string, config: SnackBarConfig = {
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-snackbar',
-    '[class.action-row]': '(data.action || data.showClose) && data.actionRow',
+    '[class.ang-snackbar--action-row]': '(data.action || data.showClose) && data.actionRow',
   },
 })
 export class Snackbar {

@@ -65,7 +65,7 @@ describe('SnackbarComponent', () => {
     const label = await screen.findByText(MESSAGE);
     expect(screen.getByRole('button', { name: 'Action', hidden: true })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { hidden: true })).toHaveLength(1);
-    expect(label.closest('ang-snackbar')).not.toHaveClass('action-row');
+    expect(label.closest('ang-snackbar')).not.toHaveClass('ang-snackbar--action-row');
   });
 
   it('should place the action and close button on their own row when actionRow is true', async () => {
@@ -81,7 +81,7 @@ describe('SnackbarComponent', () => {
     const label = await screen.findByText(MESSAGE);
     expect(screen.getByRole('button', { name: 'Action', hidden: true })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { hidden: true })).toHaveLength(2);
-    expect(label.closest('ang-snackbar')).toHaveClass('action-row');
+    expect(label.closest('ang-snackbar')).toHaveClass('ang-snackbar--action-row');
   });
 
   it('should keep the snackbar on one row when actionRow is true without actions', async () => {

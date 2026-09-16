@@ -1,11 +1,9 @@
-<span matSnackBarLabel class="label">{{ data.message }}</span>
-<div matSnackBarActions class="actions">
+<span matSnackBarLabel class="ang-snackbar--label">{{ data.message }}</span>
+<div matSnackBarActions class="ang-snackbar--actions">
   @if (data.action) {
-    <span matSnackBarActions>
-      <button matButton matSnackBarAction disableRipple (click)="snackbarRef.dismissWithAction()">
-        {{ data.action }}
-      </button>
-    </span>
+    <button matButton matSnackBarAction disableRipple (click)="snackbarRef.dismissWithAction()">
+      {{ data.action }}
+    </button>
   }
 
   @if (data.showClose) {
