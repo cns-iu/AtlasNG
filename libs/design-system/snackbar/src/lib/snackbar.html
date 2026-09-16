@@ -7,7 +7,7 @@
   }
 
   @if (data.showClose) {
-    <button matIconButton matSnackBarAction alt="Close snack bar" (click)="snackbarRef.dismiss()">
+    <button matIconButton matSnackBarAction aria-label="Close snack bar" (click)="snackbarRef.dismiss()">
       <mat-icon fontIcon="close" />
     </button>
   }
