@@ -1,27 +1,7 @@
-import { inject, InjectionToken, TemplateRef, Type } from '@angular/core';
+import { computed, Directive, inject, InjectionToken, viewChild } from '@angular/core';
 import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
 import type { Table } from '../table';
-
-type TableColumnTemplateRefFields<TPrefix extends string, TContext, TConfig> = {
-  [P in TPrefix as `${P}Template`]?: TemplateRef<TContext>;
-} & ([TConfig] extends [void]
-  ? { [P in TPrefix as `${P}Config`]?: undefined }
-  : { [P in TPrefix as `${P}Config`]?: never });
-
-type TableColumnTemplateDefinitionFields<TPrefix extends string, TDefinition, TConfig> = {
-  [P in TPrefix as `${P}Template`]: Type<TDefinition>;
-} & ([TConfig] extends [void]
-  ? { [P in TPrefix as `${P}Config`]?: TConfig }
-  : { [P in TPrefix as `${P}Config`]: TConfig });
-
-export type TableColumnTemplateFields<
-  TPrefix extends string,
-  TDefinition extends TableTemplateDefinition<unknown, unknown>,
-> =
-  TDefinition extends TableTemplateDefinition<infer TContext, infer TConfig>
-    ? | TableColumnTemplateRefFields<TPrefix, TContext, TConfig>
-      | TableColumnTemplateDefinitionFields<TPrefix, TDefinition, TConfig>
-    : never;
+import { CellTemplateContext, HeaderCellTemplateContext, TemplateContext } from './template-context';
 
 /** Injection token for the table that owns a template definition. */
 export const TABLE = new InjectionToken<Table>('ANG_TABLE');
@@ -43,7 +23,10 @@ export abstract class TableTemplateDefinition<TContext, TConfig = void> {
   readonly config = inject<TConfig>(TABLE_TEMPLATE_DEFINITION_CONFIG);
 
   /** Template rendered by ngx-datatable. */
-  abstract readonly template: () => TemplateRef<TContext>;
+  readonly template = computed(() => this.contextDir().template);
+
+  /** Directive that owns the embedded template exposed by this definition. */
+  protected abstract readonly contextDir: () => TemplateContext<TContext>;
 }
 
 /**
@@ -52,17 +35,25 @@ export abstract class TableTemplateDefinition<TContext, TConfig = void> {
  * @typeParam TRow Row rendered by the table.
  * @typeParam TConfig Configuration supplied by the owning column.
  */
+@Directive()
 export abstract class CellDefinition<TRow extends Row = Row, TConfig = void> extends TableTemplateDefinition<
   CellContext<TRow>,
   TConfig
-> {}
+> {
+  /** Body-cell context directive declared in the component template. */
+  protected override readonly contextDir = viewChild.required<CellTemplateContext<TRow>>(CellTemplateContext);
+
+  /** Type-only value bound to {@link CellTemplateContext.rowType} for row inference. */
+  protected readonly rowType = undefined as unknown as TRow;
+}
 
 /**
  * Base class for injectable components that provide header-cell templates.
  *
  * @typeParam TConfig Configuration supplied by the owning column.
  */
-export abstract class HeaderCellDefinition<TConfig = void> extends TableTemplateDefinition<
-  HeaderCellContext,
-  TConfig
-> {}
+@Directive()
+export abstract class HeaderCellDefinition<TConfig = void> extends TableTemplateDefinition<HeaderCellContext, TConfig> {
+  /** Header-cell context directive declared in the component template. */
+  protected override readonly contextDir = viewChild.required(HeaderCellTemplateContext);
+}

@@ -1,0 +1,14 @@
+@use 'internal/token-utils';
+@use '../../../src/lib/tokens' as *;
+
+/** Base styles for most body cells. */
+@mixin body-cell-base() {
+  margin-left: 16px;
+  margin-right: 24px;
+  color: token-utils.slot('cell-text-color', $config);
+  font-family: token-utils.slot('cell-text-font', $config);
+  font-size: token-utils.slot('cell-text-size', $config);
+  font-weight: token-utils.slot('cell-text-weight', $config);
+  line-height: token-utils.slot('cell-text-line-height', $config);
+  letter-spacing: token-utils.slot('cell-text-tracking', $config);
+}

@@ -1,0 +1,66 @@
+@use 'internal/token-utils';
+@use '../../../../src/lib/tokens' as *;
+
+// Button resets
+button.ang-table--text-header {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+// Disable builtin sort indicator
+.datatable-header-cell:has(.ang-table--text-header) .sort-btn {
+  display: none;
+}
+
+.ang-table--text-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  // min/max width?
+  min-height: 44px;
+  padding: 0 0 0 16px;
+  font-family: token-utils.slot('header-text-font', $config);
+  font-size: token-utils.slot('header-text-size', $config);
+  font-weight: token-utils.slot('header-text-weight', $config);
+  line-height: token-utils.slot('header-text-line-height', $config);
+  letter-spacing: token-utils.slot('header-text-tracking', $config);
+
+  &.ang-table--text-header-align-start {
+    justify-content: flex-start;
+  }
+
+  &.ang-table--text-header-align-center {
+    justify-content: center;
+  }
+
+  &.ang-table--text-header-align-end {
+    justify-content: flex-end;
+  }
+
+  .datatable-header-cell:not(.sortable) & {
+    padding-right: 24px;
+  }
+
+  .datatable-header-cell.sortable & .ang-table--sort-indicator {
+    color: token-utils.slot('sort-indicator-color', $config);
+  }
+
+  .datatable-header-cell.sortable:not(.sort-active) & .ang-table--sort-indicator {
+    opacity: 0;
+  }
+
+  .datatable-header-cell.sortable:not(.sort-active) &:hover .ang-table--sort-indicator {
+    opacity: 0.38; // Check w/ Libby
+  }
+
+  .datatable-header-cell.sortable.sort-active & .ang-table--sort-indicator {
+    opacity: 1;
+  }
+
+  .datatable-header-cell.sortable.sort-active.sort-desc & .ang-table--sort-indicator {
+    transform: rotate(180deg);
+  }
+
+  // TODO active state etc.
+}

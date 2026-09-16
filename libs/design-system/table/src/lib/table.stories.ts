@@ -1,36 +1,71 @@
-import { Component, TemplateRef, Type, viewChild } from '@angular/core';
+import { Component, Type } from '@angular/core';
 import {
-  CellContext,
-  CellDefinition,
-  CellTemplateContext,
-  DatatableSummaryRowDirective,
-  Row,
-  Table,
-  TableColumn,
-} from '../index';
-import { CheckboxCellDefinition, CheckboxHeaderCellDefinition } from '@atlasng/design-system/table/columns';
+  CheckboxCellDefinition,
+  CheckboxHeaderCellDefinition,
+  CodeCellDefinition,
+  LinkCellDefinition,
+  NumberCellDefinition,
+  TextCellDefinition,
+  TextHeaderCellDefinition,
+} from '@atlasng/design-system/table/columns';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { CellDefinition, CellTemplateContext, Row, Table, TableColumn } from '../index';
 
 /** Row displayed in table stories. */
 interface Person extends Row {
   name: string;
   role: string;
   score: number;
+  profile: string;
+  source: string;
 }
 
 /** Representative story data. */
 const ROWS: Person[] = [
-  { name: 'Ada Lovelace', role: 'Mathematician', score: 96 },
-  { name: 'Grace Hopper', role: 'Computer scientist', score: 94 },
-  { name: 'Katherine Johnson', role: 'Mathematician', score: 98 },
-  { name: 'Margaret Hamilton', role: 'Software engineer', score: 97 },
+  { name: 'Ada Lovelace', role: 'Mathematician', score: 1234.5, profile: '/people/ada', source: 'ada' },
+  { name: 'Grace Hopper', role: 'Computer scientist', score: 942, profile: '/people/grace', source: 'grace' },
+  { name: 'Katherine Johnson', role: 'Mathematician', score: 98, profile: '/people/katherine', source: 'katherine' },
+  { name: 'Margaret Hamilton', role: 'Software engineer', score: 97, profile: '/people/margaret', source: 'margaret' },
 ];
 
 /** Default story columns. */
 const COLUMNS: TableColumn<Person>[] = [
-  { name: 'Name', prop: 'name', flexGrow: 2 },
-  { name: 'Role', prop: 'role', flexGrow: 2 },
-  { name: 'Score', prop: 'score' },
+  {
+    name: 'Name',
+    prop: 'name',
+    cellTemplate: TextCellDefinition,
+    headerTemplate: TextHeaderCellDefinition,
+    headerConfig: { align: 'start' },
+  },
+  {
+    name: 'Role',
+    prop: 'role',
+    cellTemplate: TextCellDefinition,
+    headerTemplate: TextHeaderCellDefinition,
+    headerConfig: { align: 'start' },
+  },
+  {
+    name: 'Score',
+    prop: 'score',
+    cellTemplate: NumberCellDefinition,
+    headerTemplate: TextHeaderCellDefinition,
+    headerConfig: { align: 'end' },
+  },
+  {
+    name: 'Profile',
+    prop: 'profile',
+    cellTemplate: LinkCellDefinition,
+    cellConfig: { labelFn: (row: Person) => `${row.name} profile` },
+    headerTemplate: TextHeaderCellDefinition,
+    headerConfig: { align: 'start' },
+  },
+  {
+    name: 'Code',
+    prop: 'source',
+    cellTemplate: CodeCellDefinition,
+    headerTemplate: TextHeaderCellDefinition,
+    headerConfig: { align: 'start' },
+  },
 ];
 
 /** Custom story definition that emphasizes high scores. */
@@ -38,22 +73,19 @@ const COLUMNS: TableColumn<Person>[] = [
   selector: 'ang-table-score-cell-definition',
   imports: [CellTemplateContext],
   template: `
-    <ng-template let-value="value" angCellTemplateContext #template>
+    <ng-template let-value="value" [angCellTemplateContext]="rowType">
       <strong>{{ value }}%</strong>
     </ng-template>
   `,
 })
-class ScoreCellDefinition extends CellDefinition<Person> {
-  /** Template rendered for every score cell. */
-  readonly template = viewChild.required<TemplateRef<CellContext<Person>>>('template');
-}
+class ScoreCellDefinition extends CellDefinition<Person> {}
 
 const meta: Meta<Table<Person>> = {
   title: 'Design System/Table',
   component: Table as Type<Table<Person>>,
   decorators: [
     moduleMetadata({
-      imports: [Table, DatatableSummaryRowDirective],
+      imports: [Table],
     }),
   ],
   parameters: {
@@ -64,8 +96,15 @@ const meta: Meta<Table<Person>> = {
     layout: 'padded',
   },
   args: {
+    appearance: 'striped',
     rows: ROWS,
     columns: COLUMNS,
+  },
+  argTypes: {
+    appearance: {
+      control: 'select',
+      options: ['striped', 'grid', 'vertical-rules', 'none'],
+    },
   },
   render: (args) => ({
     props: args,
@@ -110,39 +149,89 @@ export const WithSorting: Story = {
   },
 };
 
-/** Table displaying the standard loading indicator. */
-export const WithLoading: Story = {
+/** Sortable and static headers using reusable logical alignment configuration. */
+export const WithHeaderAlignment: Story = {
   args: {
-    rows: [],
-    loadingIndicator: true,
-  },
-};
-
-/** Table with a computed score summary. */
-export const WithSummaryRow: Story = {
-  args: {
-    summaryRow: true,
     columns: [
-      { name: 'Name', prop: 'name', flexGrow: 2 },
-      { name: 'Role', prop: 'role', flexGrow: 2 },
       {
-        name: 'Score',
+        name: 'Start (sortable)',
+        prop: 'name',
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+      },
+      {
+        name: 'Center (static)',
+        prop: 'role',
+        sortable: false,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'center' },
+      },
+      {
+        name: 'End (sortable)',
         prop: 'score',
-        summaryFunc: (values: number[]) =>
-          Math.round(values.reduce((total, value) => total + value, 0) / values.length),
+        cellTemplate: NumberCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'end' },
       },
     ],
   },
 };
 
-/** Header cells aligned using public header classes. */
-export const WithHeaderAlignment: Story = {
+/** Link labels supplied by static, row-property, and computed configurations. */
+export const WithLinkLabels: Story = {
   args: {
     columns: [
-      { name: 'Start', prop: 'name', headerClass: 'ang-table--header-align-start' },
-      { name: 'Center', prop: 'role', headerClass: 'ang-table--header-align-center' },
-      { name: 'End', prop: 'score', headerClass: 'ang-table--header-align-end' },
+      {
+        name: 'Static',
+        prop: 'profile',
+        cellTemplate: LinkCellDefinition,
+        cellConfig: { label: 'View profile' },
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+      },
+      {
+        name: 'Property',
+        prop: 'profile',
+        cellTemplate: LinkCellDefinition,
+        cellConfig: { labelProp: 'name' },
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+      },
+      {
+        name: 'Function',
+        prop: 'profile',
+        cellTemplate: LinkCellDefinition,
+        cellConfig: { labelFn: (row: Person) => `Open ${row.name}` },
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+      },
     ],
+  },
+};
+
+/** All supported appearance variants displayed together. */
+export const Appearances: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <div style="display: grid; gap: 32px;">
+        @for (variant of ['stripes', 'grid', 'vertical-rules', 'none']; track variant) {
+          <section>
+            <h2>{{ variant }}</h2>
+            <div style="height: 260px;">
+              <ang-table [appearance]="variant" [rows]="rows" [columns]="columns" />
+            </div>
+          </section>
+        }
+      </div>
+    `,
+  }),
+};
+
+/** A column without a reusable header uses ngx-datatable's native fallback. */
+export const WithNativeHeaderFallback: Story = {
+  args: {
+    columns: [{ name: 'Native header', prop: 'name' }],
   },
 };
 

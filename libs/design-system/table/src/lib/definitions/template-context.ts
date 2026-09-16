@@ -1,11 +1,28 @@
-import { Directive } from '@angular/core';
-import type { CellContext, HeaderCellContext } from '@swimlane/ngx-datatable';
+import { Directive, inject, input, TemplateRef } from '@angular/core';
+import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
 
-/** Narrows an annotated template to the body-cell context provided by ngx-datatable. */
+/**
+ * Captures the template associated with a table template-context directive.
+ *
+ * @typeParam TContext Context supplied when the template is instantiated.
+ */
+export class TemplateContext<TContext> {
+  /** Template whose embedded views receive {@link TContext}. */
+  readonly template = inject<TemplateRef<TContext>>(TemplateRef);
+}
+
+/**
+ * Narrows an annotated template to the body-cell context provided by ngx-datatable.
+ *
+ * @typeParam TRow Row represented by the annotated template context.
+ */
 @Directive({
   selector: 'ng-template[angCellTemplateContext]',
 })
-export class CellTemplateContext {
+export class CellTemplateContext<TRow extends Row = Row> extends TemplateContext<CellContext<TRow>> {
+  /** Type-only row value used to infer the template's generic row context. */
+  readonly rowType = input.required<TRow>({ alias: 'angCellTemplateContext' });
+
   /**
    * Narrows the template context for Angular's template type checker.
    *
@@ -13,7 +30,10 @@ export class CellTemplateContext {
    * @param _context Context supplied when the template is instantiated.
    * @returns True because this guard exists only to communicate the context type.
    */
-  static ngTemplateContextGuard(_definition: CellTemplateContext, _context: unknown): _context is CellContext {
+  static ngTemplateContextGuard<TRow extends Row = Row>(
+    _definition: CellTemplateContext<TRow>,
+    _context: unknown,
+  ): _context is CellContext<TRow> {
     return true;
   }
 }
@@ -22,7 +42,7 @@ export class CellTemplateContext {
 @Directive({
   selector: 'ng-template[angHeaderCellTemplateContext]',
 })
-export class HeaderCellTemplateContext {
+export class HeaderCellTemplateContext extends TemplateContext<HeaderCellContext> {
   /**
    * Narrows the template context for Angular's template type checker.
    *

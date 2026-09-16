@@ -1,6 +1,6 @@
-import { Component, computed, TemplateRef, viewChild } from '@angular/core';
+import { Component, computed, ViewEncapsulation } from '@angular/core';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { HeaderCellDefinition, HeaderCellTemplateContext, type HeaderCellContext } from '@atlasng/design-system/table';
+import { HeaderCellDefinition, HeaderCellTemplateContext } from '@atlasng/design-system/table';
 
 /**
  * Reusable Material checkbox header-cell definition.
@@ -12,7 +12,7 @@ import { HeaderCellDefinition, HeaderCellTemplateContext, type HeaderCellContext
   selector: 'ang-table-checkbox-header-cell-definition',
   imports: [HeaderCellTemplateContext, MatCheckbox],
   template: `
-    <ng-template let-allRowsSelected="allRowsSelected" let-selectFn="selectFn" angHeaderCellTemplateContext #template>
+    <ng-template let-allRowsSelected="allRowsSelected" let-selectFn="selectFn" angHeaderCellTemplateContext>
       <mat-checkbox
         class="ang-table--checkbox-header"
         aria-label="Select all rows"
@@ -22,11 +22,11 @@ import { HeaderCellDefinition, HeaderCellTemplateContext, type HeaderCellContext
       />
     </ng-template>
   `,
+  styleUrl: './checkbox-header-cell.scss',
+  encapsulation: ViewEncapsulation.None,
 })
 export class CheckboxHeaderCellDefinition extends HeaderCellDefinition {
-  /** Template rendered for the checkbox column header. */
-  readonly template = viewChild.required<TemplateRef<HeaderCellContext>>('template');
-
+  /** Whether the table currently has both rows and a non-empty selection. */
   protected readonly someRowsSelected = computed(
     () => this.table.selected().length > 0 && this.table.rows().length !== 0,
   );

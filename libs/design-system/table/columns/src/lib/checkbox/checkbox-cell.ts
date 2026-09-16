@@ -1,12 +1,14 @@
-import { Component, TemplateRef, viewChild } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { type CellContext, CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-system/table';
+import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-system/table';
 
 /**
  * Reusable Material checkbox body-cell definition.
  *
  * Configure it as a column's `cellTemplate`; do not also enable ngx-datatable's
  * `checkboxable` flag because that flag renders a second native checkbox.
+ *
+ * @typeParam TRow Row represented by the checkbox cell.
  */
 @Component({
   selector: 'ang-table-checkbox-cell-definition',
@@ -16,8 +18,7 @@ import { type CellContext, CellDefinition, CellTemplateContext, type Row } from 
       let-disabled="disabled"
       let-isSelected="isSelected"
       let-onCheckboxChangeFn="onCheckboxChangeFn"
-      angCellTemplateContext
-      #template
+      [angCellTemplateContext]="rowType"
     >
       <mat-checkbox
         class="ang-table--checkbox-cell"
@@ -28,8 +29,7 @@ import { type CellContext, CellDefinition, CellTemplateContext, type Row } from 
       />
     </ng-template>
   `,
+  styleUrl: './checkbox-cell.scss',
+  encapsulation: ViewEncapsulation.None,
 })
-export class CheckboxCellDefinition<TRow extends Row = Row> extends CellDefinition<TRow> {
-  /** Template rendered for each checkbox cell. */
-  readonly template = viewChild.required<TemplateRef<CellContext<TRow>>>('template');
-}
+export class CheckboxCellDefinition<TRow extends Row = Row> extends CellDefinition<TRow> {}
