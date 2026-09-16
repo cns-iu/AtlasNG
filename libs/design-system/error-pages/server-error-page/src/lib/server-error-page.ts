@@ -1,15 +1,26 @@
-import { Component, input } from '@angular/core';
+import { Component, Directive, input, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
-import { AnyLink } from '@atlasng/common';
+import { AnyLink, AnyLinkCommand } from '@atlasng/common';
+
+@Directive({
+  selector: 'ang-server-error-page-title, [angServerErrorPageTitle]',
+  host: {
+    class: 'ang-server-error-page--title',
+  },
+})
+export class ServerErrorPageTitle {}
 
 @Component({
   selector: 'ang-server-error-page',
-  imports: [MatButtonModule, RouterModule, AnyLink],
+  imports: [MatButtonModule, AnyLink],
   templateUrl: './server-error-page.html',
   styleUrl: './server-error-page.scss',
+  encapsulation: ViewEncapsulation.None,
+  host: {
+    class: 'ang-server-error-page',
+  },
 })
 export class ServerErrorPage {
   /** Link for the report issue CTA */
-  readonly reportIssueLink = input.required<string>();
+  readonly reportIssueLink = input.required<AnyLinkCommand>();
 }

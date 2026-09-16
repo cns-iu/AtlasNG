@@ -2,10 +2,10 @@
 @use './tokens' as *;
 @use 'breakpoints';
 
-:host {
+.ang-not-found-page {
   background: token-utils.slot(background, $config);
   display: flex;
-  height: 100vh;
+  height: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;

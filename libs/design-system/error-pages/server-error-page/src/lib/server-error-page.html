@@ -1,4 +1,7 @@
-<div class="ang-server-error-page--title">Oops! We’re having a moment.</div>
+<ng-content select="ang-server-error-page-title, [angServerErrorPageTitle]">
+  <div class="ang-server-error-page--title">Oops! We’re having a moment.</div>
+</ng-content>
+
 <div class="ang-server-error-page--description">Try refreshing the page or report the issue if it continues.</div>
 <div class="ang-server-error-page--actions">
   <a matButton="filled" target="_blank" [angAnyLink]="reportIssueLink()"> Report issue </a>
