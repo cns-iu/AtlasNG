@@ -13,13 +13,15 @@
 @forward '../../cards/basic-profile-card/src/lib/tokens' as basic-profile-card-* show $basic-profile-card-overrides;
 @forward '../../cards/brand-profile-card/src/lib/tokens' as brand-profile-card-* show $brand-profile-card-overrides;
 @forward '../../cookie-banner/src/lib/tokens' as cookie-banner-* show $cookie-banner-overrides;
+@forward '../../error-pages/not-found-page/src/lib/tokens' as not-found-page-* show not-found-page-overrides;
+@forward '../../error-pages/server-error-page/src/lib/tokens' as server-error-page-* show server-error-page-overrides;
 @forward '../../footer/src/lib/tokens' as footer-* show footer-overrides;
 @forward '../../indicators/end-of-results-indicator/src/lib/tokens' as end-of-results-indicator-* show
   end-of-results-indicator-overrides;
 @forward '../../indicators/no-results-indicator/src/lib/tokens' as no-results-indicator-* show
   no-results-indicator-overrides;
 @forward '../../indicators/results-indicator/src/lib/tokens' as results-indicator-* show results-indicator-overrides;
-@forward '../../error-pages/not-found-page/src/lib/tokens' as not-found-page-* show not-found-page-overrides;
-@forward '../../error-pages/server-error-page/src/lib/tokens' as server-error-page-* show server-error-page-overrides;
+@forward '../../link-snippet/src/lib/tokens.scss' as link-snippet-* show link-snippet-overrides;
+@forward '../../snackbar/src/lib/tokens' as snackbar-* show snackbar-overrides;
 @forward '../../text-link/src/lib/tokens' as text-link-* show text-link-overrides;
 @forward '../../youtube-player/src/lib/tokens' as youtube-player-* show youtube-player-overrides;
