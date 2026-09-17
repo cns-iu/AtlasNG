@@ -1,0 +1,30 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+.ang-snackbar--panel {
+  width: 100vw;
+  max-width: min(token-utils.slot(max-width, $config), calc(100% - 1rem));
+  margin: 0.5rem auto;
+}
+
+.ang-snackbar {
+  display: flex;
+  gap: 0.25rem;
+
+  @include mat.icon-button-overrides(
+    (
+      icon-color: token-utils.slot(close-button-color, $config),
+      state-layer-size: 2rem,
+    )
+  );
+
+  &.ang-snackbar--action-row {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .ang-snackbar--actions {
+    gap: 0.5rem;
+  }
+}
