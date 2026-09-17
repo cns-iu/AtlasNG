@@ -3,8 +3,6 @@ import { CellDefinition, CellTemplateContext, Row } from '@atlasng/design-system
 
 /**
  * Reusable body cell that renders its value with standard table typography.
- *
- * @typeParam TRow Row represented by the text cell.
  */
 @Component({
   selector: 'ang-table-text-cell-definition',

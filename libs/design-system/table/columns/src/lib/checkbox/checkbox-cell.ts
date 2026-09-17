@@ -7,8 +7,6 @@ import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-s
  *
  * Configure it as a column's `cellTemplate`; do not also enable ngx-datatable's
  * `checkboxable` flag because that flag renders a second native checkbox.
- *
- * @typeParam TRow Row represented by the checkbox cell.
  */
 @Component({
   selector: 'ang-table-checkbox-cell-definition',

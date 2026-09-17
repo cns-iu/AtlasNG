@@ -33,8 +33,6 @@ export type TableAppearance = 'striped' | 'grid' | 'vertical-rules' | 'none';
 
 /**
  * Public table column with support for native and reusable definition templates.
- *
- * @typeParam TRow Row rendered by the column.
  */
 export type TableColumn<TRow extends Row = Row> = Simplify<
   Omit<NgxTableColumn<TRow>, 'cellTemplate' | 'headerTemplate'> & {
@@ -61,8 +59,6 @@ export const TABLE_ROW_HEIGHT = 48;
 /**
  * AtlasNG data table with curated appearance, sorting, selection, reusable
  * templates, and virtualization behavior.
- *
- * @typeParam TRow Row displayed by the table.
  */
 @Component({
   selector: 'ang-table',

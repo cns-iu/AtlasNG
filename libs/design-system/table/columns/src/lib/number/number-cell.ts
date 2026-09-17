@@ -4,8 +4,6 @@ import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-s
 
 /**
  * Reusable localized, end-aligned number body cell.
- *
- * @typeParam TRow Row represented by the number cell.
  */
 @Component({
   selector: 'ang-table-number-cell-definition',

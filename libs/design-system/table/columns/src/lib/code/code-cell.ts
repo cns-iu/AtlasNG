@@ -3,8 +3,6 @@ import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-s
 
 /**
  * Empty reusable code-cell scaffold reserved for a future content implementation.
- *
- * @typeParam TRow Row represented by the code cell.
  */
 @Component({
   selector: 'ang-table-code-cell-definition',

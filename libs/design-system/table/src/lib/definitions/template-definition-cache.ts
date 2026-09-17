@@ -16,9 +16,6 @@ import { TABLE_TEMPLATE_DEFINITION_CONFIG, TableTemplateDefinition } from './tem
  *
  * Entries are keyed by column identity. Reusing a key retains the definition's
  * original type and configuration until the entry is swept or cleared.
- *
- * @typeParam TContext Context supplied to cached embedded templates.
- * @typeParam TConfig Configuration injected into cached definitions.
  */
 export class TemplateDefinitionCache<TContext, TConfig> {
   /** Application used to attach dynamically created definition views. */

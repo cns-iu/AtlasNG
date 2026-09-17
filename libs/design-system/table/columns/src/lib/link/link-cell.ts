@@ -6,8 +6,6 @@ import { RequireExactlyOne, Simplify } from 'type-fest';
 
 /**
  * Supported mutually exclusive link-label strategies.
- *
- * @typeParam TRow Row used to derive property- and function-based labels.
  */
 export type LinkCellConfig<TRow extends Row = Row> = Simplify<
   RequireExactlyOne<
@@ -25,8 +23,6 @@ export type LinkCellConfig<TRow extends Row = Row> = Simplify<
 
 /**
  * Reusable link cell whose value is forwarded to {@link AnyLink}.
- *
- * @typeParam TRow Row used by the configured label strategy.
  */
 @Component({
   selector: 'ang-table-link-cell-definition',
