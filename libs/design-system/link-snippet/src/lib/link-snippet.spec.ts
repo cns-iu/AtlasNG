@@ -31,8 +31,8 @@ describe('LinkSnippet', () => {
   it('renders the URL and links to it', async () => {
     await setup();
 
-    expect(screen.getByText(url)).toBeVisible();
-    expect(screen.getByRole('link', { name: 'Open link' })).toHaveAttribute('href', url);
+    expect(screen.getByText('example.com/resources/example')).toBeVisible();
+    expect(screen.getByRole('link', { name: 'example.com/resources/example' })).toHaveAttribute('href', url);
   });
 
   it('copies the URL and displays a confirmation snackbar', async () => {
@@ -45,7 +45,7 @@ describe('LinkSnippet', () => {
     expect(open).toHaveBeenCalledOnce();
     expect(open).toHaveBeenCalledWith('Link copied', '', {
       duration: 2000,
-      panelClass: 'copy-snackbar',
+      panelClass: 'ang-link-snippet--copy-notification-panel',
       politeness: 'polite',
       verticalPosition: 'top',
     });
