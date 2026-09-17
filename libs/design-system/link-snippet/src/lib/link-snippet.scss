@@ -1,0 +1,68 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens';
+
+.ang-link-snippet {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 16.25rem;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .ang-link-snippet--link {
+    font-family: token-utils.slot(link-font, tokens.$config);
+    font-size: token-utils.slot(link-size, tokens.$config);
+    font-weight: token-utils.slot(link-weight, tokens.$config);
+    line-height: token-utils.slot(link-line-height, tokens.$config);
+    letter-spacing: token-utils.slot(link-tracking, tokens.$config);
+    color: token-utils.slot(link-color, tokens.$config);
+    background-color: token-utils.slot(link-background, tokens.$config);
+    border-radius: token-utils.slot(border-radius, tokens.$config);
+
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding-right: 1rem;
+    text-wrap: nowrap;
+    overflow: hidden;
+
+    mat-icon {
+      min-width: 1.5rem;
+    }
+  }
+
+  .ang-link-snippet--text {
+    overflow-x: auto;
+    height: 40px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ang-link-snippet--copy {
+    mat-icon {
+      height: 1.5rem;
+      width: 1.5rem;
+      padding-left: 4px;
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.ang-link-snippet--copy-notification-panel {
+  @include mat.snack-bar-overrides(
+    (
+      supporting-text-font: token-utils.slot(copy-notification-font, tokens.$config),
+      supporting-text-size: token-utils.slot(copy-notification-size, tokens.$config),
+      supporting-text-weight: token-utils.slot(copy-notification-weight, tokens.$config),
+      supporting-text-line-height: token-utils.slot(copy-notification-line-height, tokens.$config),
+    )
+  );
+
+  letter-spacing: token-utils.slot(copy-notification-tracking, tokens.$config);
+
+  .mat-mdc-snackbar-surface {
+    min-width: 0px !important;
+    padding: 0.125rem 1.5rem 0.125rem 1rem;
+  }
+}
