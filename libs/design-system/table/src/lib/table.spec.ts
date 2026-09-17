@@ -117,35 +117,38 @@ describe('Table', () => {
     }
   });
 
-  it('renders a full-cell button only for sortable reusable headers', async () => {
+  it('attaches the full-cell sort trigger only to sortable reusable headers', async () => {
     const { user, sortsChange } = await setup([
       { name: 'Sortable', prop: 'name', ...textHeader('start') },
       { name: 'Static', prop: 'score', sortable: false, ...textHeader('center') },
     ]);
-    const sortable = screen.getByRole('button', { name: 'Sortable' });
+    const sortableHeader = screen.getByRole('columnheader', { name: 'Sortable' });
+    const sortable = screen.getByText('Sortable').parentElement;
+    const staticHeader = screen.getByText('Static').parentElement;
 
-    expect(sortable).toHaveClass('ang-table--text-header', 'ang-table--text-header-align-start');
-    expect(screen.queryByRole('button', { name: 'Static' })).not.toBeInTheDocument();
-    expect(screen.getByText('Static').parentElement).toHaveClass(
+    expect(sortable).toHaveClass(
+      'ang-table--header-sort-trigger',
       'ang-table--text-header',
-      'ang-table--text-header-align-center',
+      'ang-table--text-header-align-start',
     );
+    expect(staticHeader).toHaveClass('ang-table--text-header', 'ang-table--text-header-align-center');
+    expect(staticHeader).not.toHaveClass('ang-table--header-sort-trigger');
 
-    await user.click(sortable);
+    await user.click(sortableHeader);
     expect(sortsChange).toHaveBeenCalled();
   });
 
   it('uses a Material arrow icon for unsorted, ascending, and descending states', async () => {
     const columns: TableColumn<TestRow>[] = [{ name: 'Score', prop: 'score', ...textHeader('end') }];
     const { fixture, sorts } = await setup(columns);
-    const button = screen.getByRole('button', { name: 'Score' });
-    const icon = button.querySelector('mat-icon');
+    const headerCell = screen.getByRole('columnheader', { name: 'Score' });
+    const headerContent = screen.getByText('Score').parentElement;
+    const icon = headerContent?.querySelector('mat-icon');
 
-    expect(button).toHaveClass('ang-table--text-header-align-end');
+    expect(headerContent).toHaveClass('ang-table--text-header-align-end');
     expect(icon).toHaveClass('mat-icon');
     expect(icon).toHaveAttribute('fonticon', 'arrow_upward_alt');
 
-    const headerCell = button.closest('datatable-header-cell');
     expect(headerCell).not.toHaveClass('sort-active', 'sort-asc', 'sort-desc');
 
     sorts.set([{ prop: 'score', dir: 'asc' }]);

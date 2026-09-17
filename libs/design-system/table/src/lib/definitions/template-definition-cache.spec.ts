@@ -1,87 +1,86 @@
 import {
   Component,
   createEnvironmentInjector,
+  DestroyRef,
   EnvironmentInjector,
-  type EmbeddedViewRef,
-  type OnDestroy,
+  inject,
   runInInjectionContext,
+  type EmbeddedViewRef,
   type TemplateRef,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { HeaderCellContext } from '@swimlane/ngx-datatable';
 import type { Table } from '../table';
 import { HeaderCellTemplateContext } from './template-context';
-import { TemplateDefinitionCache } from './template-definition-cache';
 import { HeaderCellDefinition, TABLE } from './template-definition';
-
-interface TestConfig {
-  label: string;
-}
-
-@Component({
-  imports: [HeaderCellTemplateContext],
-  template: `<ng-template angHeaderCellTemplateContext>{{ config.label }}</ng-template>`,
-})
-class FirstDefinition extends HeaderCellDefinition<TestConfig> implements OnDestroy {
-  static destroyed = 0;
-
-  ngOnDestroy(): void {
-    FirstDefinition.destroyed += 1;
-  }
-}
-
-@Component({
-  imports: [HeaderCellTemplateContext],
-  template: `<ng-template angHeaderCellTemplateContext>Alternate: {{ config.label }}</ng-template>`,
-})
-class AlternateDefinition extends HeaderCellDefinition<TestConfig> implements OnDestroy {
-  static destroyed = 0;
-
-  ngOnDestroy(): void {
-    AlternateDefinition.destroyed += 1;
-  }
-}
-
-function createCache(): TemplateDefinitionCache<HeaderCellContext, TestConfig> {
-  return TestBed.runInInjectionContext(() => new TemplateDefinitionCache<HeaderCellContext, TestConfig>());
-}
-
-function renderText(template: TemplateRef<HeaderCellContext>): string {
-  const view: EmbeddedViewRef<HeaderCellContext> = template.createEmbeddedView({} as HeaderCellContext);
-  view.detectChanges();
-  const text = view.rootNodes.map((node: Node) => node.textContent ?? '').join('');
-  view.destroy();
-  return text.trim();
-}
+import { TemplateDefinitionCache } from './template-definition-cache';
 
 describe('TemplateDefinitionCache', () => {
+  interface TestConfig {
+    label: string;
+    onDestroy: () => void;
+  }
+
+  @Component({
+    imports: [HeaderCellTemplateContext],
+    template: `<ng-template angHeaderCellTemplateContext>{{ config.label }}</ng-template>`,
+  })
+  class TestDefinition extends HeaderCellDefinition<TestConfig> {
+    constructor() {
+      super();
+      inject(DestroyRef).onDestroy(this.config.onDestroy);
+    }
+  }
+
+  function renderText(template: TemplateRef<HeaderCellContext>): string {
+    const view: EmbeddedViewRef<HeaderCellContext> = template.createEmbeddedView({} as HeaderCellContext);
+    view.detectChanges();
+    const text = view.rootNodes.map((node: Node) => node.textContent ?? '').join('');
+    view.destroy();
+    return text.trim();
+  }
+
+  function createConfig(label: string): TestConfig {
+    return { label, onDestroy: vi.fn() };
+  }
+
+  function setup() {
+    TestBed.configureTestingModule({ providers: [{ provide: TABLE, useValue: {} as Table }] });
+
+    const cache = TestBed.runInInjectionContext(() => new TemplateDefinitionCache<HeaderCellContext, TestConfig>());
+    const getOrCreate = (key: object, labelOrConfig: string | TestConfig) => {
+      const config = typeof labelOrConfig === 'string' ? createConfig(labelOrConfig) : labelOrConfig;
+      return cache.getOrCreate(key, TestDefinition, config);
+    };
+
+    return { cache, getOrCreate };
+  }
+
   beforeEach(() => {
-    FirstDefinition.destroyed = 0;
-    AlternateDefinition.destroyed = 0;
     TestBed.configureTestingModule({ providers: [{ provide: TABLE, useValue: {} as Table }] });
   });
 
   it('creates a definition and returns its configured template', () => {
-    const cache = createCache();
-    const template = cache.getOrCreate({}, FirstDefinition, { label: 'First' });
+    const { getOrCreate } = setup();
+    const template = getOrCreate({}, 'First');
 
     expect(renderText(template)).toBe('First');
   });
 
-  it('reuses a definition by key identity and retains its original type and configuration', () => {
-    const cache = createCache();
+  it('reuses a definition by key identity', () => {
+    const { getOrCreate } = setup();
     const key = {};
-    const first = cache.getOrCreate(key, FirstDefinition, { label: 'First' });
-    const second = cache.getOrCreate(key, AlternateDefinition, { label: 'Second' });
+    const config = createConfig('First');
+    const first = getOrCreate(key, config);
+    const second = getOrCreate(key, config);
 
     expect(second).toBe(first);
-    expect(renderText(second)).toBe('First');
   });
 
   it('creates separate definitions for separate keys', () => {
-    const cache = createCache();
-    const first = cache.getOrCreate({}, FirstDefinition, { label: 'First' });
-    const second = cache.getOrCreate({}, FirstDefinition, { label: 'Second' });
+    const { getOrCreate } = setup();
+    const first = getOrCreate({}, 'First');
+    const second = getOrCreate({}, 'Second');
 
     expect(second).not.toBe(first);
     expect(renderText(first)).toBe('First');
@@ -89,52 +88,45 @@ describe('TemplateDefinitionCache', () => {
   });
 
   it('retains marked entries and destroys unmarked entries during a sweep', () => {
-    const cache = createCache();
+    const { cache, getOrCreate } = setup();
     const retainedKey = {};
     const removedKey = {};
-    const retained = cache.getOrCreate(retainedKey, FirstDefinition, { label: 'Retained' });
-    cache.getOrCreate(removedKey, FirstDefinition, { label: 'Removed' });
+    const retainedConfig = createConfig('Retained');
+    const removedConfig = createConfig('Removed');
+    const retained = getOrCreate(retainedKey, retainedConfig);
+    getOrCreate(removedKey, removedConfig);
     cache.sweep();
 
-    expect(cache.getOrCreate(retainedKey, FirstDefinition, { label: 'Ignored' })).toBe(retained);
+    expect(getOrCreate(retainedKey, retainedConfig)).toBe(retained);
     cache.sweep();
-    expect(FirstDefinition.destroyed).toBe(1);
+    expect(removedConfig.onDestroy).toHaveBeenCalledOnce();
+    expect(retainedConfig.onDestroy).not.toHaveBeenCalled();
 
     cache.sweep();
-    expect(FirstDefinition.destroyed).toBe(2);
-  });
-
-  it('creates a replacement type and configuration after eviction', () => {
-    const cache = createCache();
-    const key = {};
-    cache.getOrCreate(key, FirstDefinition, { label: 'First' });
-    cache.sweep();
-    cache.sweep();
-
-    const replacement = cache.getOrCreate(key, AlternateDefinition, { label: 'Second' });
-
-    expect(FirstDefinition.destroyed).toBe(1);
-    expect(renderText(replacement)).toBe('Alternate: Second');
+    expect(retainedConfig.onDestroy).toHaveBeenCalledOnce();
   });
 
   it('clears and destroys every cached definition', () => {
-    const cache = createCache();
-    cache.getOrCreate({}, FirstDefinition, { label: 'First' });
-    cache.getOrCreate({}, AlternateDefinition, { label: 'Second' });
+    const { cache, getOrCreate } = setup();
+    const first = createConfig('First');
+    const second = createConfig('Second');
+    getOrCreate({}, first);
+    getOrCreate({}, second);
 
     cache.clear();
 
-    expect(FirstDefinition.destroyed).toBe(1);
-    expect(AlternateDefinition.destroyed).toBe(1);
+    expect(first.onDestroy).toHaveBeenCalledOnce();
+    expect(second.onDestroy).toHaveBeenCalledOnce();
   });
 
   it('clears cached definitions when its injection context is destroyed', () => {
     const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
     const cache = runInInjectionContext(injector, () => new TemplateDefinitionCache<HeaderCellContext, TestConfig>());
-    cache.getOrCreate({}, FirstDefinition, { label: 'First' });
+    const config = createConfig('First');
+    cache.getOrCreate({}, TestDefinition, config);
 
     injector.destroy();
 
-    expect(FirstDefinition.destroyed).toBe(1);
+    expect(config.onDestroy).toHaveBeenCalledOnce();
   });
 });

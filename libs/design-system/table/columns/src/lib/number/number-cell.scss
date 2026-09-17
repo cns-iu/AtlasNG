@@ -1,8 +1,9 @@
 @use '../cell';
 
 .ang-table--number-cell {
+  @include cell.body-cell-base();
+
   display: flex;
   justify-content: flex-end;
-
-  @include cell.body-cell-base();
+  margin-right: 24px;
 }

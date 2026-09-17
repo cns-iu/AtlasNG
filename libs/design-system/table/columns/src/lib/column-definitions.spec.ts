@@ -279,17 +279,13 @@ describe('column template definitions', () => {
   });
 
   describe('TextHeaderCellDefinition', () => {
-    it('renders an aligned sortable button and invokes the sort callback', async () => {
-      const sortFn = vi.fn();
-      const { user } = await setupHeader('text', headerContext({ sortFn }), {
+    it('renders aligned sortable header content with a sort trigger', async () => {
+      await setupHeader('text', headerContext(), {
         align: 'end',
       } satisfies TextHeaderCellConfig);
-      const button = screen.getByRole('button', { name: 'Name' });
+      const header = screen.getByText('Name').parentElement;
 
-      expect(button).toHaveClass('ang-table--text-header-align-end');
-      expect(button.querySelector('mat-icon')).toHaveAttribute('fonticon', 'arrow_upward_alt');
-      await user.click(button);
-      expect(sortFn).toHaveBeenCalledOnce();
+      expect(header).toHaveClass('ang-table--header-sort-trigger', 'ang-table--text-header-align-end');
     });
 
     it('renders a non-interactive header for a static column', async () => {
@@ -297,8 +293,10 @@ describe('column template definitions', () => {
         align: 'center',
       } satisfies TextHeaderCellConfig);
 
-      expect(screen.queryByRole('button')).not.toBeInTheDocument();
-      expect(screen.getByText('Static').parentElement).toHaveClass('ang-table--text-header-align-center');
+      const header = screen.getByText('Static').parentElement;
+
+      expect(header).toHaveClass('ang-table--text-header-align-center');
+      expect(header).not.toHaveClass('ang-table--header-sort-trigger');
     });
   });
 });

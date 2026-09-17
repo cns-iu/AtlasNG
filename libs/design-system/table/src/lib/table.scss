@@ -20,37 +20,22 @@
 
   &.ang-table--appearance-grid,
   &.ang-table--appearance-striped {
-    // .datatable-grid {
-    //   border-radius: 8px;
-    //   border: 1px solid token-utils.slot('border-color', $config);
-    // }
-
-    // .datatable-header {
-    //   border-top-left-radius: 8px;
-    //   border-top-right-radius: 8px;
-    //   border-top: 1px solid token-utils.slot('border-color', $config);
-    //   border-left: 1px solid token-utils.slot('border-color', $config);
+    // .datatable-header-cell,
+    // .datatable-body-cell {
     //   border-right: 1px solid token-utils.slot('border-color', $config);
-    // }
-
-    // .datatable-scroll {
-    //   border-bottom-left-radius: 8px;
-    //   border-bottom-right-radius: 8px;
     //   border-bottom: 1px solid token-utils.slot('border-color', $config);
-    //   border-left: 1px solid token-utils.slot('border-color', $config);
-    //   border-right: 1px solid token-utils.slot('border-color', $config);
+
+    //   &:first-child {
+    //     border-left: 1px solid token-utils.slot('border-color', $config);
+    //   }
     // }
 
-    .datatable-header-cell,
-    .datatable-body-cell {
-      &:not(:last-child) {
-        border-right: 1px solid token-utils.slot('border-color', $config);
-      }
-    }
+    // .datatable-header-cell:first-child {
+    //   border-top-left-radius: 8px;
+    // }
 
-    .datatable-header,
-    .datatable-row-wrapper:not(:last-child) {
-      border-bottom: 1px solid token-utils.slot('border-color', $config);
-    }
+    // .datatable-header-cell:last-child {
+    //   border-top-right-radius: 8px;
+    // }
   }
 }

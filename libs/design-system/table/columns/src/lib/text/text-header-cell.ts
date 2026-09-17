@@ -1,8 +1,7 @@
-import { CdkMonitorFocus } from '@angular/cdk/a11y';
 import { Component, ViewEncapsulation } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
 import { MatIcon } from '@angular/material/icon';
-import { HeaderCellDefinition, HeaderCellTemplateContext } from '@atlasng/design-system/table';
+import { HeaderCellDefinition, HeaderCellTemplateContext, HeaderSortTrigger } from '@atlasng/design-system/table';
 
 /** Logical alignments supported by the standard text header. */
 export type TextHeaderAlignment = 'start' | 'center' | 'end';
@@ -16,7 +15,7 @@ export interface TextHeaderCellConfig {
 /** Reusable text header with optional sorting and logical alignment. */
 @Component({
   selector: 'ang-table-text-header-cell-definition',
-  imports: [CdkMonitorFocus, HeaderCellTemplateContext, MatIcon, MatRipple],
+  imports: [HeaderCellTemplateContext, HeaderSortTrigger, MatIcon, MatRipple],
   templateUrl: './text-header-cell.html',
   styleUrl: './text-header-cell.scss',
   encapsulation: ViewEncapsulation.None,
