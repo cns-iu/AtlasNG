@@ -2,26 +2,17 @@ import { Directive, inject, input, TemplateRef } from '@angular/core';
 import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
 
 /**
- * Captures the template associated with a table template-context directive.
- *
- * @typeParam TContext Context supplied when the template is instantiated.
- */
-export class TemplateContext<TContext> {
-  /** Template whose embedded views receive {@link TContext}. */
-  readonly template = inject<TemplateRef<TContext>>(TemplateRef);
-}
-
-/**
  * Narrows an annotated template to the body-cell context provided by ngx-datatable.
- *
- * @typeParam TRow Row represented by the annotated template context.
  */
 @Directive({
   selector: 'ng-template[angCellTemplateContext]',
 })
-export class CellTemplateContext<TRow extends Row = Row> extends TemplateContext<CellContext<TRow>> {
+export class CellTemplateContext<TRow extends Row = Row> {
   /** Type-only row value used to infer the template's generic row context. */
   readonly rowType = input.required<TRow>({ alias: 'angCellTemplateContext' });
+
+  /** Template whose embedded views receive {@link CellContext}. */
+  readonly template = inject<TemplateRef<CellContext<TRow>>>(TemplateRef);
 
   /**
    * Narrows the template context for Angular's template type checker.
@@ -42,7 +33,10 @@ export class CellTemplateContext<TRow extends Row = Row> extends TemplateContext
 @Directive({
   selector: 'ng-template[angHeaderCellTemplateContext]',
 })
-export class HeaderCellTemplateContext extends TemplateContext<HeaderCellContext> {
+export class HeaderCellTemplateContext {
+  /** Template whose embedded views receive {@link HeaderCellContext}. */
+  readonly template = inject<TemplateRef<HeaderCellContext>>(TemplateRef);
+
   /**
    * Narrows the template context for Angular's template type checker.
    *

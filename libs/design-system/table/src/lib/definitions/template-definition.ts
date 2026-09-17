@@ -1,7 +1,7 @@
-import { computed, Directive, inject, InjectionToken, viewChild } from '@angular/core';
+import { computed, Directive, inject, InjectionToken, TemplateRef, viewChild } from '@angular/core';
 import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
 import type { Table } from '../table';
-import { CellTemplateContext, HeaderCellTemplateContext, TemplateContext } from './template-context';
+import { CellTemplateContext, HeaderCellTemplateContext } from './template-context';
 
 /** Injection token for the table that owns a template definition. */
 export const TABLE = new InjectionToken<Table>('ANG_TABLE');
@@ -11,9 +11,6 @@ export const TABLE_TEMPLATE_DEFINITION_CONFIG = new InjectionToken<unknown>('TAB
 
 /**
  * Base class for injectable components that provide table templates.
- *
- * @typeParam TContext Context supplied to the embedded template.
- * @typeParam TConfig Configuration supplied by the owning column.
  */
 export abstract class TableTemplateDefinition<TContext, TConfig = void> {
   /** Table that owns this definition instance. */
@@ -23,37 +20,35 @@ export abstract class TableTemplateDefinition<TContext, TConfig = void> {
   readonly config = inject<TConfig>(TABLE_TEMPLATE_DEFINITION_CONFIG);
 
   /** Template rendered by ngx-datatable. */
-  readonly template = computed(() => this.contextDir().template);
-
-  /** Directive that owns the embedded template exposed by this definition. */
-  protected abstract readonly contextDir: () => TemplateContext<TContext>;
+  abstract readonly template: () => TemplateRef<TContext>;
 }
 
 /**
  * Base class for injectable components that provide body-cell templates.
- *
- * @typeParam TRow Row rendered by the table.
- * @typeParam TConfig Configuration supplied by the owning column.
  */
 @Directive()
 export abstract class CellDefinition<TRow extends Row = Row, TConfig = void> extends TableTemplateDefinition<
   CellContext<TRow>,
   TConfig
 > {
-  /** Body-cell context directive declared in the component template. */
-  protected override readonly contextDir = viewChild.required<CellTemplateContext<TRow>>(CellTemplateContext);
+  /** Template rendered by ngx-datatable. */
+  override readonly template = computed(() => this.contextDir().template);
 
   /** Type-only value bound to {@link CellTemplateContext.rowType} for row inference. */
   protected readonly rowType = undefined as unknown as TRow;
+
+  /** Body-cell context directive declared in the component template. */
+  private readonly contextDir = viewChild.required<CellTemplateContext<TRow>>(CellTemplateContext);
 }
 
 /**
  * Base class for injectable components that provide header-cell templates.
- *
- * @typeParam TConfig Configuration supplied by the owning column.
  */
 @Directive()
 export abstract class HeaderCellDefinition<TConfig = void> extends TableTemplateDefinition<HeaderCellContext, TConfig> {
+  /** Template rendered by ngx-datatable. */
+  override readonly template = computed(() => this.contextDir().template);
+
   /** Header-cell context directive declared in the component template. */
-  protected override readonly contextDir = viewChild.required(HeaderCellTemplateContext);
+  private readonly contextDir = viewChild.required(HeaderCellTemplateContext);
 }

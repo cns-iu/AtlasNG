@@ -2,12 +2,12 @@ import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatabl
 import { expectTypeOf } from 'vitest';
 import { CellTemplateContext, HeaderCellTemplateContext } from './template-context';
 
-interface TestRow extends Row {
-  name: string;
-}
-
 describe('CellTemplateContext', () => {
   it('narrows an unknown value to CellContext', () => {
+    interface TestRow extends Row {
+      name: string;
+    }
+
     const definition = null as unknown as CellTemplateContext<TestRow>;
     const context: unknown = {};
 
