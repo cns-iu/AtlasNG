@@ -1,9 +1,8 @@
-@use '../cell';
-
 .ang-table--number-cell {
-  @include cell.body-cell-base();
-
   display: flex;
   justify-content: flex-end;
-  margin-right: 24px;
+}
+
+.datatable-body-cell-label:has(.ang-table--number-cell) {
+  padding-right: 24px;
 }

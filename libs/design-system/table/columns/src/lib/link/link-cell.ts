@@ -32,7 +32,6 @@ export type LinkCellConfig<TRow extends Row = Row> = Simplify<
       <a angTextLink class="ang-table--link-cell" [angAnyLink]="value">{{ getLabel(row) }}</a>
     </ng-template>
   `,
-  styleUrl: './link-cell.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class LinkCellDefinition<TRow extends Row = Row> extends CellDefinition<TRow, LinkCellConfig<TRow>> {

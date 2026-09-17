@@ -4,6 +4,8 @@ $config: (
   namespace: 'table',
   tokens: (
     border-color: token-utils.sys-token(outline),
+    border-radius: token-utils.sys-token(corner-small),
+    header-background-color: token-utils.sys-token(surface-variant),
     header-text-color: token-utils.sys-token(on-surface),
     header-text-font: token-utils.sys-token(title-small-font),
     header-text-line-height: token-utils.sys-token(title-small-line-height),
@@ -11,6 +13,7 @@ $config: (
     header-text-tracking: token-utils.sys-token(title-small-tracking),
     header-text-weight: token-utils.sys-token(title-small-weight),
     header-state-layer-color: token-utils.sys-token(on-surface-variant),
+    cell-background-color: transparent,
     cell-text-color: token-utils.sys-token(on-surface-variant),
     cell-text-font: token-utils.sys-token(body-medium-font),
     cell-text-line-height: token-utils.sys-token(body-medium-line-height),
@@ -18,6 +21,7 @@ $config: (
     cell-text-tracking: token-utils.sys-token(body-medium-tracking),
     cell-text-weight: token-utils.sys-token(body-medium-weight),
     sort-indicator-color: token-utils.sys-token(on-surface-variant),
+    striped-row-background-color: token-utils.sys-token(surface-container-low),
   ),
 );
 

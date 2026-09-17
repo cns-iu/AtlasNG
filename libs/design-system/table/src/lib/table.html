@@ -18,5 +18,7 @@
   [(selected)]="selected"
   [(sorts)]="sorts"
 >
-  <ng-content select="[empty-content]" ngProjectAs="[empty-content]" />
+  <ng-content select="[empty-content]" ngProjectAs="[empty-content]">
+    <!-- TODO default empty state -->
+  </ng-content>
 </ngx-datatable>

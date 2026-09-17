@@ -13,13 +13,14 @@ import { HeaderCellDefinition, HeaderCellTemplateContext } from '@atlasng/design
   imports: [HeaderCellTemplateContext, MatCheckbox],
   template: `
     <ng-template let-allRowsSelected="allRowsSelected" let-selectFn="selectFn" angHeaderCellTemplateContext>
-      <mat-checkbox
-        class="ang-table--checkbox-header"
-        aria-label="Select all rows"
-        [checked]="allRowsSelected ?? false"
-        [indeterminate]="!allRowsSelected && someRowsSelected()"
-        (change)="selectFn()"
-      />
+      <div class="ang-table--checkbox-header">
+        <mat-checkbox
+          aria-label="Select all rows"
+          [checked]="allRowsSelected ?? false"
+          [indeterminate]="!allRowsSelected && someRowsSelected()"
+          (change)="selectFn()"
+        />
+      </div>
     </ng-template>
   `,
   styleUrl: './checkbox-header-cell.scss',

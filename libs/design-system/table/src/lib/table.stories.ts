@@ -1,4 +1,4 @@
-import { Component, Type } from '@angular/core';
+import { Type } from '@angular/core';
 import {
   CheckboxCellDefinition,
   CheckboxHeaderCellDefinition,
@@ -9,7 +9,7 @@ import {
   TextHeaderCellDefinition,
 } from '@atlasng/design-system/table/columns';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { CellDefinition, CellTemplateContext, Row, Table, TableColumn } from '../index';
+import { Row, Table, TableColumn } from '../index';
 
 /** Row displayed in table stories. */
 interface Person extends Row {
@@ -27,6 +27,19 @@ const ROWS: Person[] = [
   { name: 'Katherine Johnson', role: 'Mathematician', score: 98, profile: '/people/katherine', source: 'katherine' },
   { name: 'Margaret Hamilton', role: 'Software engineer', score: 97, profile: '/people/margaret', source: 'margaret' },
 ];
+
+/** Extended story data for demonstrating vertical scrolling. */
+const MANY_ROWS: Person[] = Array.from({ length: 100 }, (_, index) => {
+  const person = ROWS[index % ROWS.length];
+  const rowNumber = index + 1;
+
+  return {
+    ...person,
+    name: `${person.name} ${rowNumber}`,
+    profile: `${person.profile}-${rowNumber}`,
+    source: `${person.source}-${rowNumber}`,
+  };
+});
 
 /** Default story columns. */
 const COLUMNS: TableColumn<Person>[] = [
@@ -68,18 +81,6 @@ const COLUMNS: TableColumn<Person>[] = [
   },
 ];
 
-/** Custom story definition that emphasizes high scores. */
-@Component({
-  selector: 'ang-table-score-cell-definition',
-  imports: [CellTemplateContext],
-  template: `
-    <ng-template let-value="value" [angCellTemplateContext]="rowType">
-      <strong>{{ value }}%</strong>
-    </ng-template>
-  `,
-})
-class ScoreCellDefinition extends CellDefinition<Person> {}
-
 const meta: Meta<Table<Person>> = {
   title: 'Design System/Table',
   component: Table as Type<Table<Person>>,
@@ -108,11 +109,7 @@ const meta: Meta<Table<Person>> = {
   },
   render: (args) => ({
     props: args,
-    template: `
-      <div style="height: 320px;">
-        <ang-table ${argsToTemplate(args)} />
-      </div>
-    `,
+    template: `<ang-table style="max-height: 320px;" ${argsToTemplate(args)} />`,
   }),
 };
 
@@ -122,6 +119,13 @@ type Story = StoryObj<Table<Person>>;
 /** Basic virtualized table. */
 export const Default: Story = {};
 
+/** Virtualized table with enough rows to demonstrate vertical scrolling. */
+export const WithManyRows: Story = {
+  args: {
+    rows: MANY_ROWS,
+  },
+};
+
 /** Table with an explicit Material checkbox selection column. */
 export const WithSelection: Story = {
   args: {
@@ -130,10 +134,9 @@ export const WithSelection: Story = {
     columns: [
       {
         name: 'Select',
-        prop: '$select',
         sortable: false,
+        flexGrow: 0,
         width: 48,
-        maxWidth: 48,
         cellTemplate: CheckboxCellDefinition,
         headerTemplate: CheckboxHeaderCellDefinition,
       },
@@ -215,7 +218,7 @@ export const Appearances: Story = {
     props: args,
     template: `
       <div style="display: grid; gap: 32px;">
-        @for (variant of ['stripes', 'grid', 'vertical-rules', 'none']; track variant) {
+        @for (variant of ['striped', 'grid', 'vertical-rules', 'none']; track variant) {
           <section>
             <h2>{{ variant }}</h2>
             <div style="height: 260px;">
@@ -226,20 +229,6 @@ export const Appearances: Story = {
       </div>
     `,
   }),
-};
-
-/** A column without a reusable header uses ngx-datatable's native fallback. */
-export const WithNativeHeaderFallback: Story = {
-  args: {
-    columns: [{ name: 'Native header', prop: 'name' }],
-  },
-};
-
-/** Table using a reusable component type as a body-cell template. */
-export const WithCustomCellDefinition: Story = {
-  args: {
-    columns: [...COLUMNS.slice(0, 2), { name: 'Score', prop: 'score', cellTemplate: ScoreCellDefinition }],
-  },
 };
 
 /** Default and projected empty states displayed together. */

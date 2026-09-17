@@ -3,10 +3,53 @@
 
 .ang-table {
   display: block;
-  height: 100%;
+  overflow: hidden;
 
-  .ang-table--datatable {
-    height: 100%;
+  .ang-table--datatable,
+  .datatable-wrapper,
+  .datatable-grid {
+    max-height: inherit;
+  }
+
+  .datatable-grid {
+    flex-basis: auto !important;
+  }
+
+  .datatable-header-cell.sortable {
+    cursor: pointer;
+  }
+
+  .datatable-header {
+    background-color: token-utils.slot('header-background-color', $config);
+    color: token-utils.slot('header-text-color', $config);
+    font-family: token-utils.slot('header-text-font', $config);
+    font-size: token-utils.slot('header-text-size', $config);
+    font-weight: token-utils.slot('header-text-weight', $config);
+    line-height: token-utils.slot('header-text-line-height', $config);
+    letter-spacing: token-utils.slot('header-text-tracking', $config);
+
+    .datatable-header-cell {
+      height: 100%;
+      padding: 0 16px;
+
+      &.sortable {
+        padding-right: 0;
+      }
+    }
+  }
+
+  .datatable-body-row {
+    background-color: token-utils.slot('cell-background-color', $config);
+    color: token-utils.slot('cell-text-color', $config);
+    font-family: token-utils.slot('cell-text-font', $config);
+    font-size: token-utils.slot('cell-text-size', $config);
+    font-weight: token-utils.slot('cell-text-weight', $config);
+    line-height: token-utils.slot('cell-text-line-height', $config);
+    letter-spacing: token-utils.slot('cell-text-tracking', $config);
+
+    .datatable-body-cell-label {
+      padding: 0 16px;
+    }
   }
 
   &.ang-table--appearance-vertical-rules {
@@ -20,22 +63,25 @@
 
   &.ang-table--appearance-grid,
   &.ang-table--appearance-striped {
-    // .datatable-header-cell,
-    // .datatable-body-cell {
-    //   border-right: 1px solid token-utils.slot('border-color', $config);
-    //   border-bottom: 1px solid token-utils.slot('border-color', $config);
+    border: 1px solid token-utils.slot('border-color', $config);
+    border-radius: token-utils.slot('border-radius', $config);
 
-    //   &:first-child {
-    //     border-left: 1px solid token-utils.slot('border-color', $config);
-    //   }
-    // }
+    .datatable-header-cell,
+    .datatable-row-wrapper:not(:last-child) .datatable-body-cell {
+      border-bottom: 1px solid token-utils.slot('border-color', $config);
+    }
 
-    // .datatable-header-cell:first-child {
-    //   border-top-left-radius: 8px;
-    // }
+    .datatable-header-cell,
+    .datatable-body-cell {
+      &:not(:last-child) {
+        border-right: 1px solid token-utils.slot('border-color', $config);
+      }
+    }
+  }
 
-    // .datatable-header-cell:last-child {
-    //   border-top-right-radius: 8px;
-    // }
+  &.ang-table--appearance-striped {
+    .datatable-row-wrapper:nth-child(even) .datatable-body-row {
+      background-color: token-utils.slot('striped-row-background-color', $config);
+    }
   }
 }

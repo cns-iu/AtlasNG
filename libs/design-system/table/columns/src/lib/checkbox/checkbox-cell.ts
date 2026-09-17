@@ -18,13 +18,14 @@ import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-s
       let-onCheckboxChangeFn="onCheckboxChangeFn"
       [angCellTemplateContext]="rowType"
     >
-      <mat-checkbox
-        class="ang-table--checkbox-cell"
-        aria-label="Select row"
-        [checked]="isSelected ?? false"
-        [disabled]="disabled ?? false"
-        (click)="onCheckboxChangeFn($event)"
-      />
+      <div class="ang-table--checkbox-cell">
+        <mat-checkbox
+          aria-label="Select row"
+          [checked]="isSelected ?? false"
+          [disabled]="disabled ?? false"
+          (click)="onCheckboxChangeFn($event)"
+        />
+      </div>
     </ng-template>
   `,
   styleUrl: './checkbox-cell.scss',

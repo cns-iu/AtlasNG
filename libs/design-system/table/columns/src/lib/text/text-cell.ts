@@ -14,7 +14,6 @@ import { CellDefinition, CellTemplateContext, Row } from '@atlasng/design-system
       </div>
     </ng-template>
   `,
-  styleUrl: './text-cell.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class TextCellDefinition<TRow extends Row = Row> extends CellDefinition<TRow> {}

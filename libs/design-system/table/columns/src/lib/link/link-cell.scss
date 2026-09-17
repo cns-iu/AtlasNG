@@ -1,5 +1,0 @@
-@use '../cell';
-
-.ang-table--link-cell {
-  @include cell.body-cell-base();
-}
