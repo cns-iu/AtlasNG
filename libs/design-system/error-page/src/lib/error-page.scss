@@ -1,0 +1,45 @@
+@use 'internal/token-utils';
+@use './tokens' as *;
+@use 'breakpoints';
+
+.ang-error-page {
+  background: token-utils.slot(background, $config);
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1.5rem;
+
+  .ang-error-page--title {
+    margin-top: 0rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+
+    ang-error-page-title {
+      font: token-utils.slot(title-font, $config);
+      letter-spacing: token-utils.slot(title-letter-spacing, $config);
+      color: token-utils.slot(title-color, $config);
+    }
+  }
+
+  .ang-error-page--description {
+    margin-bottom: 4rem;
+    text-align: center;
+
+    ang-error-page-description {
+      font: token-utils.slot(description-font, $config);
+      letter-spacing: token-utils.slot(description-letter-spacing, $config);
+      color: token-utils.slot(description-color, $config);
+    }
+  }
+
+  ang-error-page-actions {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  @include breakpoints.breakpoint(medium) {
+    padding: 0 2.5rem;
+  }
+}
