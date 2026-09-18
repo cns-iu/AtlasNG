@@ -1,9 +1,9 @@
 import { render } from '@testing-library/angular';
-import { NotFoundPage } from './not-found-page';
+import { ErrorPage } from './error-page';
 
-describe('NotFoundPage', () => {
+describe('ErrorPage', () => {
   it('should render', async () => {
-    const promise = render(NotFoundPage, {});
+    const promise = render(ErrorPage, {});
     await expect(promise).resolves.toBeTruthy();
   });
 });

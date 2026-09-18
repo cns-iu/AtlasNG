@@ -2,7 +2,7 @@
 @use './tokens' as *;
 @use 'breakpoints';
 
-.ang-server-error-page {
+.ang-error-page {
   background: token-utils.slot(background, $config);
   display: flex;
   height: 100%;
@@ -11,15 +11,16 @@
   align-items: center;
   padding: 0 1.5rem;
 
-  .ang-server-error-page--title {
+  .ang-error-page--title {
     font: token-utils.slot(title-font, $config);
     letter-spacing: token-utils.slot(title-letter-spacing, $config);
     color: token-utils.slot(title-color, $config);
-    margin-bottom: 1.5rem;
+    margin-top: 0rem;
+    margin-bottom: 0.5rem;
     text-align: center;
   }
 
-  .ang-server-error-page--description {
+  .ang-error-page--description {
     font: token-utils.slot(description-font, $config);
     letter-spacing: token-utils.slot(description-letter-spacing, $config);
     color: token-utils.slot(description-color, $config);
@@ -27,7 +28,7 @@
     text-align: center;
   }
 
-  .ang-server-error-page--actions {
+  .ang-error-page--actions {
     display: flex;
     gap: 1.5rem;
   }

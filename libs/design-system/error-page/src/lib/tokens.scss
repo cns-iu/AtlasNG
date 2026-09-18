@@ -1,7 +1,7 @@
 @use 'internal/token-utils';
 
 $config: (
-  namespace: 'not-found-page',
+  namespace: 'error-page',
   tokens: (
     background: token-utils.sys-token(background),
     title-font: token-utils.sys-token(headline-large),
