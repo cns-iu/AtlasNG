@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { AnyLink } from '@atlasng/common';
 import { ErrorPage, ErrorPageActions, ErrorPageDescription, ErrorPageTitle } from '../error-page';
-import { MatButtonModule } from '@angular/material/button';
 
+/**
+ * A component that displays a 404 Not Found page.
+ */
 @Component({
   selector: 'ang-not-found-page',
   imports: [ErrorPage, ErrorPageTitle, ErrorPageDescription, ErrorPageActions, MatButtonModule, AnyLink],
   templateUrl: './not-found-page.html',
-  host: {
-    class: 'ang-not-found-page',
-  },
 })
 export class NotFoundPage {}

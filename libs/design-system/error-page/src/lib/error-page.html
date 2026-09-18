@@ -1,3 +1,9 @@
-<ng-content select="ang-error-page-title, [angErrorPageTitle]" />
-<ng-content select="ang-error-page-description, [angErrorPageDescription]" />
+<h1 class="ang-error-page--title">
+  <ng-content select="ang-error-page-title, [angErrorPageTitle]" />
+</h1>
+
+<p class="ang-error-page--description">
+  <ng-content select="ang-error-page-description, [angErrorPageDescription]" />
+</p>
+
 <ng-content select="ang-error-page-actions, [angErrorPageActions]" />

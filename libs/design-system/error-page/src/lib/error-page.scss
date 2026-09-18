@@ -12,23 +12,29 @@
   padding: 0 1.5rem;
 
   .ang-error-page--title {
-    font: token-utils.slot(title-font, $config);
-    letter-spacing: token-utils.slot(title-letter-spacing, $config);
-    color: token-utils.slot(title-color, $config);
     margin-top: 0rem;
     margin-bottom: 0.5rem;
     text-align: center;
+
+    ang-error-page-title {
+      font: token-utils.slot(title-font, $config);
+      letter-spacing: token-utils.slot(title-letter-spacing, $config);
+      color: token-utils.slot(title-color, $config);
+    }
   }
 
   .ang-error-page--description {
-    font: token-utils.slot(description-font, $config);
-    letter-spacing: token-utils.slot(description-letter-spacing, $config);
-    color: token-utils.slot(description-color, $config);
     margin-bottom: 4rem;
     text-align: center;
+
+    ang-error-page-description {
+      font: token-utils.slot(description-font, $config);
+      letter-spacing: token-utils.slot(description-letter-spacing, $config);
+      color: token-utils.slot(description-color, $config);
+    }
   }
 
-  .ang-error-page--actions {
+  ang-error-page-actions {
     display: flex;
     gap: 1.5rem;
   }
