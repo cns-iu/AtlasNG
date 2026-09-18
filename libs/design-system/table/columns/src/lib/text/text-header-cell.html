@@ -1,0 +1,14 @@
+@let alignClass = `ang-table--text-header-align-${config.align ?? 'start'}`;
+
+<ng-template let-column="column" let-sortFn="sortFn" angHeaderCellTemplateContext>
+  @if (column.sortable) {
+    <div matRipple class="ang-table--text-header" [class]="alignClass" [angHeaderSortTrigger]="sortFn">
+      <span class="ang-table--text-header-label">{{ column.name }}</span>
+      <mat-icon class="ang-table--sort-indicator" iconPositionEnd fontIcon="arrow_upward_alt" />
+    </div>
+  } @else {
+    <div class="ang-table--text-header" [class]="alignClass">
+      <span class="ang-table--text-header-label">{{ column.name }}</span>
+    </div>
+  }
+</ng-template>

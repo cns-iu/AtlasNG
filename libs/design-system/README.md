@@ -32,7 +32,13 @@ bootstrapApplication(AppComponent, {
 });
 ```
 
-### TODO: Component Catalog
+### Component Catalog
+
+- Table: import `Table`, `TableColumn`, and its supporting API from
+  `@atlasng/design-system/table`. Reusable text and number headers plus checkbox,
+  number, link, and code cell definitions are available from
+  `@atlasng/design-system/table/columns`. Tables default to the `stripes`
+  appearance and also support `grid`, `vertical-rules`, and `none`.
 
 ### TODO: Design Tokens
 

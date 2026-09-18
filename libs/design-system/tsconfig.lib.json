@@ -7,6 +7,22 @@
     "inlineSources": true,
     "types": []
   },
-  "include": ["**/*.ts"],
-  "exclude": [".storybook/**/*", "**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "**/*.stories.js"]
+  "include": ["**/*.ts", "table/**/*.ts", "table/columns/**/*.ts"],
+  "exclude": [
+    ".storybook/**/*",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.stories.ts",
+    "**/*.stories.js",
+    "table/.storybook/**/*",
+    "table/**/*.spec.ts",
+    "table/**/*.test.ts",
+    "table/**/*.stories.ts",
+    "table/**/*.stories.js",
+    "table/columns/.storybook/**/*",
+    "table/columns/**/*.spec.ts",
+    "table/columns/**/*.test.ts",
+    "table/columns/**/*.stories.ts",
+    "table/columns/**/*.stories.js"
+  ]
 }

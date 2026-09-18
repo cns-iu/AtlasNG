@@ -1,0 +1,8 @@
+.ang-table--number-cell {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.datatable-body-cell-label:has(.ang-table--number-cell) {
+  padding-right: 24px;
+}

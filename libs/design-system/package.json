@@ -28,6 +28,7 @@
     "@atlasng/analytics": "^0.0.6",
     "@atlasng/common": "^0.0.6",
     "@atlasng/core": "^0.0.6",
+    "@swimlane/ngx-datatable": "^25.1.0",
     "rxjs": "^7.8.2"
   },
   "dependencies": {

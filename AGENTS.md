@@ -87,8 +87,10 @@
 ## Documentation Expectations
 
 - Generate JSDoc blocks for all code, including private and protected members and non-exported functions, types, constants, and helpers when they add clarity.
+- Do not add JSDoc blocks in test files; they are rarely helpful and tend to bloat the tests.
 - Place JSDoc blocks for angular components, directives, and similar classes immediately before the class declaration, not between the decorator and the class.
 - Document functions with `@param` tags for each parameter and `@returns` when the function returns a value.
+- Use only JSDoc tags supported by TypeScript and the workspace tooling. Do not use `@typeParam`, because TypeScript already infers generic type parameters, or other unsupported tags; describe type-parameter intent in prose when it adds clarity.
 - Use `@throws`, `@see`, `@deprecated`, and inline links like `{@link ...}` when they improve the API documentation.
 - Keep documentation concise and accurate; prefer documenting intent, contracts, and edge cases over restating obvious implementation details.
 
