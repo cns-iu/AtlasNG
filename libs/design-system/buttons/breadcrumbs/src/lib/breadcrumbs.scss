@@ -19,6 +19,8 @@
       display: contents;
 
       .ang-breadcrumbs--label {
+        --ang-text-link-color: #{token-utils.slot(link-color, $config)};
+        font-weight: token-utils.slot(text-weight, $config);
         text-underline-offset: 0.125rem;
       }
 
