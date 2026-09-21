@@ -1,0 +1,27 @@
+{
+  "name": "@atlasng/apps/kg-explorer",
+  "version": "0.0.1",
+  "description": "Knowledge graph explorer application library for AtlasNG",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cns-iu/AtlasNG"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@angular/core": "^22.1.5"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "*",
+    "@storybook/addon-designs": "*",
+    "@storybook/addon-docs": "*",
+    "@storybook/addon-themes": "*"
+  },
+  "sideEffects": false
+}

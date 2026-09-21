@@ -1,0 +1,34 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+@use '@angular/material' as mat;
+@use './hra/theme' as hra-theme;
+@use './fonts';
+@use '../../../../design-system/src/sass/index' as ds;
+
+$variables: meta.module-variables('hra-theme');
+$theme: (
+  color: (
+    primary: map.get($variables, 'primary-palette'),
+    tertiary: map.get($variables, 'tertiary-palette'),
+  ),
+  typography: map.get($variables, 'typography'),
+  density: 0,
+);
+$overrides: ();
+
+@each $key, $value in $variables {
+  @if (string.index($key, '-overrides')) {
+    $overrides: map.merge($overrides, $value);
+  }
+}
+
+.hra-light-theme {
+  @include mat.theme(map.set($theme, color, theme-type, light), $overrides);
+}
+
+.hra-dark-theme {
+  @include mat.theme(map.set($theme, color, theme-type, dark), $overrides);
+}
+
+@include ds.mat-all-defaults;

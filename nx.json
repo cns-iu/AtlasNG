@@ -313,7 +313,7 @@
     }
   },
   "release": {
-    "projects": ["libs/*"],
+    "projects": ["libs/*", "libs/applications/*"],
     "version": {
       "preVersionCommand": "npx nx run-many -t build --projects=tag:library",
       "manifestRootsToUpdate": [
