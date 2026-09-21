@@ -101,7 +101,7 @@
     "build-storybook": {
       "executor": "@storybook/angular:build-storybook",
       "cache": true,
-      "dependsOn": ["pre-build-storybook"],
+      "dependsOn": ["build-storybook-compodoc"],
       "inputs": [
         "default",
         "^production",
@@ -161,7 +161,7 @@
         "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
       }
     },
-    "pre-build-storybook": {
+    "build-storybook-compodoc": {
       "executor": "nx:run-commands",
       "cache": true,
       "inputs": [
@@ -176,19 +176,6 @@
           "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal"
         ],
         "cwd": "{projectRoot}"
-      }
-    },
-    "pre-storybook": {
-      "executor": "nx:run-commands",
-      "continuous": true,
-      "options": {
-        "commands": [
-          "mkdir -p .storybook/compodoc",
-          "echo 'null' > .storybook/compodoc/documentation.json",
-          "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal --serve --watch"
-        ],
-        "cwd": "{projectRoot}",
-        "parallel": false
       }
     },
     "serve": {
@@ -231,7 +218,7 @@
     "storybook": {
       "executor": "@storybook/angular:start-storybook",
       "continuous": true,
-      "dependsOn": ["pre-storybook"],
+      "dependsOn": ["build-storybook-compodoc"],
       "options": {
         "port": 4400,
         "configDir": "{projectRoot}/.storybook",

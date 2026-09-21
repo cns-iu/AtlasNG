@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true
+  },
+  "exclude": ["${configDir}/../**/*.spec.ts"],
+  "include": [
+    "${configDir}/../**/*.stories.ts",
+    "${configDir}/../**/*.stories.js",
+    "${configDir}/../**/*.stories.jsx",
+    "${configDir}/../**/*.stories.tsx",
+    "${configDir}/../**/*.stories.mdx",
+    "${configDir}/*.js",
+    "${configDir}/*.ts"
+  ]
+}

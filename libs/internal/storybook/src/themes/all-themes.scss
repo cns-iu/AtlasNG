@@ -2,11 +2,11 @@
 @use 'sass:meta';
 @use 'sass:string';
 @use '@angular/material' as mat;
-@use './cns/theme' as cns-theme;
-@use './hra/theme' as hra-theme;
-@use './wpp/theme' as wpp-theme;
-@use './fonts';
-@use '../../src/sass/index' as ds;
+@use 'cns/theme' as cns-theme;
+@use 'hra/theme' as hra-theme;
+@use 'wpp/theme' as wpp-theme;
+@use 'fonts';
+@use '../../../../design-system/src/sass/index' as ds;
 
 $themes: (cns, hra, wpp);
 

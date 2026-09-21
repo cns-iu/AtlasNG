@@ -12,21 +12,20 @@
     "build-compodoc": {},
     "build-storybook": {
       "options": {
-        "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
+        "styles": ["libs/internal/storybook/src/themes/all-themes.scss"],
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/design-system/src/sass"]
+          "includePaths": ["libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
         }
       }
     },
     "compodoc": {},
-    "pre-build-storybook": {},
-    "pre-storybook": {},
+    "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {
       "options": {
-        "styles": ["libs/design-system/.storybook/themes/all-themes.scss"],
+        "styles": ["libs/internal/storybook/src/themes/all-themes.scss"],
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/design-system/src/sass"]
+          "includePaths": ["libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
         }
       }
     },

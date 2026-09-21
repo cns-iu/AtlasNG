@@ -62,6 +62,7 @@
       "@atlasng/design-system/table/columns": ["./libs/design-system/table/columns/src/index.ts"],
       "@atlasng/design-system/text-link": ["./libs/design-system/text-link/src/index.ts"],
       "@atlasng/design-system/youtube-player": ["./libs/design-system/youtube-player/src/index.ts"],
+      "@atlasng/internal/storybook": ["./libs/internal/storybook/src/index.ts"],
       "@atlasng/labs": ["./libs/labs/src/index.ts"],
       "@atlasng/labs/cookie-modal": ["./libs/labs/cookie-modal/src/index.ts"],
       "@atlasng/labs/grid-container": ["./libs/labs/grid-container/src/index.ts"],
