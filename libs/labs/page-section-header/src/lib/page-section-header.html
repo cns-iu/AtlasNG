@@ -1,0 +1,33 @@
+@if (showBreadcrumbs() && breadcrumbs()?.length) {
+  <ang-breadcrumbs class="ang-page-section-header--breadcrumbs" [items]="breadcrumbs()!" />
+}
+
+<div class="ang-page-section-header--top-content">
+  <ng-content select="[angPageSectionHeaderTopContent]" />
+</div>
+
+<h1 angSectionHeader class="ang-page-section-header--title" [underlined]="showDivider()">
+  <ng-content />
+</h1>
+
+<div class="ang-page-section-header--bottom-content">
+  <ng-content select="[angPageSectionHeaderBottomContent]" />
+</div>
+
+@if (showDescription() && description()) {
+  <p class="ang-page-section-header--description">{{ description() }}</p>
+}
+
+@if (showButtonGroup()) {
+  <div class="ang-page-section-header--actions">
+    <button matButton="filled" class="ang-page-section-header--primary-action" (click)="primaryAction.emit()">
+      <ng-content select="[angPageSectionHeaderPrimaryAction]">{{ primaryActionLabel() }}</ng-content>
+    </button>
+
+    @if (showSecondaryButton()) {
+      <button matButton="outlined" class="ang-page-section-header--secondary-action" (click)="secondaryAction.emit()">
+        <ng-content select="[angPageSectionHeaderSecondaryAction]">{{ secondaryActionLabel() }}</ng-content>
+      </button>
+    }
+  </div>
+}
