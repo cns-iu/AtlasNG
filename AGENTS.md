@@ -30,6 +30,12 @@
   - `AtlasNG` (application)
   - `analytics`, `cdk`, `common`, `core`, `design-system` (publishable libraries)
 
+## AI Customizations
+
+- This root `AGENTS.md` is the shared, always-on instruction source for Codex and GitHub Copilot.
+- Reusable task workflows live in `.agents/skills/`; do not create duplicate skills under `.github/skills/`.
+- GitHub Copilot-specific, file-pattern guidance lives in `.github/instructions/`.
+
 ## High-Value Commands
 
 - Install deps: `npm install`
@@ -39,6 +45,13 @@
 - Test all: `npx nx run-many -t test`
 - Lint all: `npx nx run-many -t lint`
 - Test a single project: `npx nx test <project>` (example: `npx nx test cdk`)
+
+## Focused Validation
+
+| Change                                | First validation                                    |
+| ------------------------------------- | --------------------------------------------------- |
+| Single-library implementation or test | `npx nx test <project>` and `npx nx lint <project>` |
+| Cross-library or configuration change | `npx nx affected -t lint,test,build`                |
 
 ## Project-Specific Workflows
 

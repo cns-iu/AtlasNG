@@ -41,8 +41,38 @@ const baseConfig = [
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
           depConstraints: [
             {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
+              sourceTag: 'layer:core',
+              onlyDependOnLibsWithTags: [],
+            },
+            {
+              sourceTag: 'layer:common',
+              onlyDependOnLibsWithTags: ['layer:core'],
+            },
+            {
+              sourceTag: 'layer:cdk',
+              onlyDependOnLibsWithTags: ['layer:common', 'layer:core'],
+            },
+            {
+              sourceTag: 'layer:analytics',
+              onlyDependOnLibsWithTags: ['layer:core'],
+            },
+            {
+              sourceTag: 'layer:design-system',
+              onlyDependOnLibsWithTags: ['layer:cdk', 'layer:analytics', 'layer:common', 'layer:core'],
+            },
+            {
+              sourceTag: 'layer:labs',
+              onlyDependOnLibsWithTags: [
+                'layer:design-system',
+                'layer:analytics',
+                'layer:cdk',
+                'layer:common',
+                'layer:core',
+              ],
+            },
+            {
+              sourceTag: 'layer:application',
+              onlyDependOnLibsWithTags: ['layer:*'],
             },
           ],
         },

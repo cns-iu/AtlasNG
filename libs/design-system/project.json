@@ -4,7 +4,7 @@
   "sourceRoot": "libs/design-system/src",
   "prefix": "ang",
   "projectType": "library",
-  "tags": ["library"],
+  "tags": ["library", "layer:design-system"],
   "targets": {
     "build": {
       "executor": "@nx/angular:package"
