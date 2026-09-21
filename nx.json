@@ -5,6 +5,15 @@
     {
       "plugin": "@nx/eslint/plugin",
       "options": {}
+    },
+    {
+      "plugin": "@nx/storybook/plugin",
+      "options": {
+        "buildStorybookTargetName": "build-storybook",
+        "serveStorybookTargetName": "storybook",
+        "staticStorybookTargetName": "serve-static-storybook",
+        "testStorybookTargetName": "test-storybook"
+      }
     }
   ],
   "namedInputs": {
@@ -99,36 +108,32 @@
       }
     },
     "build-storybook": {
-      "executor": "@storybook/angular:build-storybook",
-      "cache": true,
       "dependsOn": ["build-storybook-compodoc"],
-      "inputs": [
-        "default",
-        "^production",
-        "{projectRoot}/.storybook/**/*",
-        "{projectRoot}/tsconfig.storybook.json",
-        {
-          "externalDependencies": [
-            "storybook",
-            "@storybook/addon-a11y",
-            "@storybook/addon-designs",
-            "@storybook/addon-docs",
-            "@storybook/addon-themes",
-            "@storybook/angular"
-          ]
-        }
-      ],
       "outputs": ["{options.outputDir}"],
       "options": {
-        "outputDir": "{workspaceRoot}/dist/storybook/{projectName}",
-        "configDir": "{projectRoot}/.storybook",
-        "browserTarget": "{projectName}:build-storybook",
-        "compodoc": false
+        "outputDir": "{workspaceRoot}/dist/storybook/{projectName}"
       },
       "configurations": {
         "ci": {
           "quiet": true
         }
+      }
+    },
+    "build-storybook-compodoc": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "default",
+        {
+          "externalDependencies": ["@compodoc/compodoc"]
+        }
+      ],
+      "outputs": ["{projectRoot}/.storybook/compodoc/documentation.json"],
+      "options": {
+        "commands": [
+          "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal"
+        ],
+        "cwd": "{projectRoot}"
       }
     },
     "compodoc": {
@@ -161,23 +166,6 @@
         "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
       }
     },
-    "build-storybook-compodoc": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": [
-        "default",
-        {
-          "externalDependencies": ["@compodoc/compodoc"]
-        }
-      ],
-      "outputs": ["{projectRoot}/.storybook/compodoc/documentation.json"],
-      "options": {
-        "commands": [
-          "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal"
-        ],
-        "cwd": "{projectRoot}"
-      }
-    },
     "serve": {
       "executor": "@nx/angular:dev-server",
       "continuous": true,
@@ -201,34 +189,14 @@
       }
     },
     "serve-static-storybook": {
-      "executor": "@nx/web:file-server",
-      "continuous": true,
-      "dependsOn": ["build-storybook"],
       "options": {
-        "buildTarget": "{projectName}:build-storybook",
-        "staticFilePath": "{workspaceRoot}/dist/storybook/{projectName}",
-        "spa": true
-      },
-      "configurations": {
-        "ci": {
-          "buildTarget": "{projectName}:build-storybook:ci"
-        }
+        "staticFilePath": "{workspaceRoot}/dist/storybook/{projectName}"
       }
     },
     "storybook": {
-      "executor": "@storybook/angular:start-storybook",
-      "continuous": true,
       "dependsOn": ["build-storybook-compodoc"],
       "options": {
-        "port": 4400,
-        "configDir": "{projectRoot}/.storybook",
-        "browserTarget": "{projectName}:build-storybook",
-        "compodoc": false
-      },
-      "configurations": {
-        "ci": {
-          "quiet": true
-        }
+        "port": 4400
       }
     },
     "test": {
@@ -259,12 +227,6 @@
         "watch": {
           "watch": true
         }
-      }
-    },
-    "test-storybook": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "test-storybook -c {projectRoot}/.storybook --url=http://localhost:4400"
       }
     }
   },
