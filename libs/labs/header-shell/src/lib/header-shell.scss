@@ -104,7 +104,7 @@
     }
   }
 
-  @include breakpoints.breakpoint(medium, large, x-large) {
+  @include breakpoints.breakpoint(medium) {
     .ang-header-shell {
       padding: 0 0.5rem;
     }
