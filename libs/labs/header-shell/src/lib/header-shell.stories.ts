@@ -38,7 +38,7 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
   ],
   args: {
     logoLink: '/',
-    logoUrl: 'assets/placeholder.svg',
+    logoUrl: 'assets/placeholder.png',
     hasLocalNavigation: true,
     localNavigationIcon: 'menu',
     navigationItems: NAVIGATION_ITEMS,

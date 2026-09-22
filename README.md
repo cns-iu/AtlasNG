@@ -4,14 +4,15 @@ An Angular monorepo providing a suite of libraries for building consistent, acce
 
 ## Packages
 
-| Package                                                  | Description                                               |
-| -------------------------------------------------------- | --------------------------------------------------------- |
-| [`@atlasng/analytics`](libs/analytics/README.md)         | User interaction logging and privacy consent management   |
-| [`@atlasng/cdk`](libs/cdk/README.md)                     | Low-level primitives: overlays, portals, focus management |
-| [`@atlasng/common`](libs/common/README.md)               | Shared pipes, directives, guards, and utilities           |
-| [`@atlasng/core`](libs/core/README.md)                   | Platform bootstrap, environment config, and DI tokens     |
-| [`@atlasng/design-system`](libs/design-system/README.md) | UI component catalog, design tokens, and theming          |
-| [`@atlasng/labs`](libs/labs/README.md)                   | Experimental UI components without a stable public API    |
+| Package                                                                | Description                                               |
+| ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| [`@atlasng/analytics`](libs/analytics/README.md)                       | User interaction logging and privacy consent management   |
+| [`@atlasng/apps/kg-explorer`](libs/applications/kg-explorer/README.md) | Knowledge graph explorer application library              |
+| [`@atlasng/cdk`](libs/cdk/README.md)                                   | Low-level primitives: overlays, portals, focus management |
+| [`@atlasng/common`](libs/common/README.md)                             | Shared pipes, directives, guards, and utilities           |
+| [`@atlasng/core`](libs/core/README.md)                                 | Platform bootstrap, environment config, and DI tokens     |
+| [`@atlasng/design-system`](libs/design-system/README.md)               | UI component catalog, design tokens, and theming          |
+| [`@atlasng/labs`](libs/labs/README.md)                                 | Experimental UI components without a stable public API    |
 
 ## Development
 

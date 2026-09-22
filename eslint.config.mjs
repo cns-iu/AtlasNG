@@ -80,6 +80,24 @@ const baseConfig = [
     },
   },
   {
+    files: ['**/.storybook/*.ts'],
+    rules: {
+      '@nx/enforce-module-boundaries': [
+        'error',
+        {
+          enforceBuildableLibDependency: true,
+          allow: ['^@atlasng/internal/storybook$', '^(?:\\.\\./)+internal/storybook/src/index\\.ts$'],
+          depConstraints: [
+            {
+              sourceTag: '*',
+              onlyDependOnLibsWithTags: ['*'],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts', '**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],
     rules: {
       curly: ['error', 'all'],

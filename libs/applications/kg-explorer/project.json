@@ -1,10 +1,10 @@
 {
-  "name": "design-system",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/design-system/src",
+  "name": "kg-explorer",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/applications/kg-explorer/src",
   "prefix": "ang",
   "projectType": "library",
-  "tags": ["library", "layer:design-system"],
+  "tags": ["library"],
   "targets": {
     "build": {
       "executor": "@nx/angular:package"
