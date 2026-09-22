@@ -53,6 +53,13 @@
 | Single-library implementation or test | `npx nx test <project>` and `npx nx lint <project>` |
 | Cross-library or configuration change | `npx nx affected -t lint,test,build`                |
 
+## Token/Context Efficiency
+
+- Prefer scoped commands (`npx nx test <project>`) over workspace-wide `run-many`/`affected` when only one project changed.
+- Use `npx nx show project <name> --json` for non-interactive output; without `--json` it can open an interactive graph UI.
+- Never read files under `coverage/` (generated reports, e.g. `lcov.info`, `*.html`); grep for a specific value instead of reading whole reports.
+- Pipe verbose command output through `grep`/`head`/`tail` when only a subset is relevant (e.g. `npx nx run-many -t lint 2>&1 | tail -50`).
+
 ## Project-Specific Workflows
 
 - Design-system Storybook:
