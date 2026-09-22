@@ -2,11 +2,11 @@ import { render, screen } from '@testing-library/angular';
 import { SectionHeader } from './section-header';
 
 describe('SectionHeader', () => {
-  function setup({ anchor, underlined }: { anchor?: string; underlined?: boolean } = {}) {
-    const anchorBinding = anchor !== undefined ? ` [anchor]="'${anchor}'"` : '';
+  function setup({ id, underlined }: { id?: string; underlined?: boolean } = {}) {
+    const idBinding = id !== undefined ? ` [id]="'${id}'"` : '';
     const underlinedBinding = underlined !== undefined ? ` [underlined]="${underlined}"` : '';
 
-    return render(`<h2 angSectionHeader${anchorBinding}${underlinedBinding}>Section Title</h2>`, {
+    return render(`<h2 angSectionHeader${idBinding}${underlinedBinding}>Section Title</h2>`, {
       imports: [SectionHeader],
     });
   }
@@ -17,15 +17,12 @@ describe('SectionHeader', () => {
     expect(screen.getByRole('heading', { name: 'Section Title' })).toBeInTheDocument();
   });
 
-  it('renders an anchor link to the matching hash when anchor is provided', async () => {
-    const { container } = await setup({ anchor: 'docs' });
+  it('renders an anchor link to the matching hash when id is provided', async () => {
+    const { container } = await setup({ id: 'docs' });
 
-    const link = container.querySelector('a.ang-section-header-link');
-    const content = container.querySelector('.ang-section-header-content');
+    const link = container.querySelector('a.ang-section-header--link');
 
-    expect(link).toHaveAttribute('href', '#docs');
-    expect(content).toHaveAttribute('id');
-    expect(link).toHaveAttribute('aria-labelledby', content?.getAttribute('id'));
+    expect(link).toHaveAttribute('href', '/#docs');
   });
 
   it('does not render an anchor link when anchor is not provided', async () => {
