@@ -1,7 +1,7 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { BreadcrumbItem, Breadcrumbs } from '@atlasng/design-system/buttons/breadcrumbs';
-import { SectionHeader } from '@atlasng/labs/section-header';
+import { SectionHeader } from '@atlasng/design-system/section-header';
 
 /**
  * Page-level section header combining breadcrumbs, an `h1` page label (using

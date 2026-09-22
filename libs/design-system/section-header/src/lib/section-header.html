@@ -1,0 +1,13 @@
+@if (id()) {
+  <span class="ang-section-header--link-container">
+    <a mat-icon-button class="ang-section-header--link" angAnyLink="." [fragment]="id()">
+      <mat-icon class="ang-section-header--icon" fontIcon="link" />
+    </a>
+  </span>
+}
+
+<ng-content />
+
+@if (underlined()) {
+  <mat-divider />
+}

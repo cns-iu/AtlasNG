@@ -24,6 +24,7 @@
       "@atlasng/analytics": ["./libs/analytics/src/index.ts"],
       "@atlasng/analytics/events": ["./libs/analytics/events/src/index.ts"],
       "@atlasng/analytics/permissions": ["./libs/analytics/permissions/src/index.ts"],
+      "@atlasng/apps/kg-explorer": ["./libs/applications/kg-explorer/src/index.ts"],
       "@atlasng/cdk": ["./libs/cdk/src/index.ts"],
       "@atlasng/common": ["./libs/common/src/index.ts"],
       "@atlasng/core": ["./libs/core/src/index.ts"],
@@ -55,18 +56,18 @@
       "@atlasng/design-system/indicators/results-indicator": [
         "./libs/design-system/indicators/results-indicator/src/index.ts"
       ],
+      "@atlasng/design-system/section-header": ["./libs/design-system/section-header/src/index.ts"],
       "@atlasng/design-system/link-snippet": ["./libs/design-system/link-snippet/src/index.ts"],
       "@atlasng/design-system/snackbar": ["./libs/design-system/snackbar/src/index.ts"],
       "@atlasng/design-system/table": ["./libs/design-system/table/src/index.ts"],
       "@atlasng/design-system/table/columns": ["./libs/design-system/table/columns/src/index.ts"],
       "@atlasng/design-system/text-link": ["./libs/design-system/text-link/src/index.ts"],
       "@atlasng/design-system/youtube-player": ["./libs/design-system/youtube-player/src/index.ts"],
+      "@atlasng/internal/storybook": ["./libs/internal/storybook/src/index.ts"],
       "@atlasng/labs": ["./libs/labs/src/index.ts"],
       "@atlasng/labs/cookie-modal": ["./libs/labs/cookie-modal/src/index.ts"],
       "@atlasng/labs/grid-container": ["./libs/labs/grid-container/src/index.ts"],
       "@atlasng/labs/header-shell": ["./libs/labs/header-shell/src/index.ts"],
-      "@atlasng/labs/page-section-header": ["./libs/labs/page-section-header/src/index.ts"],
-      "@atlasng/labs/section-header": ["./libs/labs/section-header/src/index.ts"],
       "@atlasng/labs/skip-to-content-button": ["./libs/labs/skip-to-content-button/src/index.ts"]
     },
     "types": ["*"]
