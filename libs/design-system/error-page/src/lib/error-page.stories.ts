@@ -1,6 +1,6 @@
 import { MatButtonModule } from '@angular/material/button';
 import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
-import { ErrorPage, ErrorPageActions, ErrorPageDescription, ErrorPageTitle } from './error-page';
+import { ErrorPage, ErrorPageAction, ErrorPageDescription, ErrorPageTitle } from './error-page';
 import { NotFoundPage } from './not-found-page/not-found-page';
 import { ServerErrorPage } from './server-error-page/server-error-page';
 
@@ -16,7 +16,7 @@ const meta: Meta = {
   },
   decorators: [
     moduleMetadata({
-      imports: [ErrorPageTitle, ErrorPageDescription, ErrorPageActions, MatButtonModule, NotFoundPage, ServerErrorPage],
+      imports: [ErrorPageTitle, ErrorPageDescription, ErrorPageAction, MatButtonModule, NotFoundPage, ServerErrorPage],
     }),
   ],
 };
@@ -31,10 +31,8 @@ export const CustomContent: Story = {
         <ang-error-page>
           <ang-error-page-title>Custom title</ang-error-page-title>
           <ang-error-page-description>Custom description</ang-error-page-description>
-          <ang-error-page-actions>
-            <a matButton="filled">Custom action 1</a>
-            <a matButton>Custom action 2</a>
-          </ang-error-page-actions>
+          <a angErrorPageAction matButton="filled">Custom action 1</a>
+          <a angErrorPageAction matButton>Custom action 2</a>
         </ang-error-page>
       </div>
     `,
@@ -46,7 +44,7 @@ export const NotFound: Story = {
   render: () => ({
     template: `
       <div class="container">
-        <ang-not-found-page/>
+        <ang-not-found-page />
       </div>
     `,
     styles: [`.container { height: 100vh; }`],

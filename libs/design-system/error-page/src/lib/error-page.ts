@@ -12,11 +12,11 @@ export class ErrorPageTitle {}
 })
 export class ErrorPageDescription {}
 
-/** Actions for the error page */
+/** Action for the error page */
 @Directive({
-  selector: 'ang-error-page-actions, [angErrorPageActions]',
+  selector: 'ang-error-page-action, [angErrorPageAction]',
 })
-export class ErrorPageActions {}
+export class ErrorPageAction {}
 
 /**
  * A component that displays a customizable error page.
