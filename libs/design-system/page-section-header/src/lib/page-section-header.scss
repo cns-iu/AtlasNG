@@ -9,16 +9,21 @@
     margin-bottom: 2rem;
   }
 
-  .ang-page-section-header--top-content {
+  .ang-page-section-header--top {
     margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  .ang-page-section-header--bottom-content {
-    margin-bottom: 2rem;
+  .ang-page-section-header--bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
 
   .ang-page-section-header--description {
-    margin: 2rem 0;
+    margin: 0;
     color: token-utils.slot(description-color, $config);
     font-family: token-utils.slot(description-font, $config);
     font-size: token-utils.slot(description-size, $config);

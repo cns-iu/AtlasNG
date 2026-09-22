@@ -5,7 +5,7 @@ import { SectionHeader } from '@atlasng/design-system/section-header';
 
 /**
  * Page-level section header combining breadcrumbs, an `h1` page label (using
- * `@atlasng/labs/section-header` for its optional deep link and divider), an optional short
+ * `@atlasng/design-system/section-header` for its optional deep link and divider), an optional short
  * description, and a primary/secondary action button group.
  */
 @Component({

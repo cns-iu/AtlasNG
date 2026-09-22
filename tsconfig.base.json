@@ -56,6 +56,7 @@
       "@atlasng/design-system/indicators/results-indicator": [
         "./libs/design-system/indicators/results-indicator/src/index.ts"
       ],
+      "@atlasng/design-system/page-section-header": ["./libs/design-system/page-section-header/src/index.ts"],
       "@atlasng/design-system/section-header": ["./libs/design-system/section-header/src/index.ts"],
       "@atlasng/design-system/link-snippet": ["./libs/design-system/link-snippet/src/index.ts"],
       "@atlasng/design-system/snackbar": ["./libs/design-system/snackbar/src/index.ts"],

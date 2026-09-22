@@ -1,10 +1,11 @@
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { PageSectionHeader } from './page-section-header';
 import { LinkSnippet } from '@atlasng/design-system/link-snippet';
+import { MatButtonModule } from '@angular/material/button';
 
 const meta: Meta<PageSectionHeader> = {
   component: PageSectionHeader,
-  title: 'Labs/Page Section Header',
+  title: 'Design System/Page Section Header',
   parameters: {
     design: {
       type: 'figma',
@@ -13,7 +14,7 @@ const meta: Meta<PageSectionHeader> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [LinkSnippet],
+      imports: [LinkSnippet, MatButtonModule],
     }),
   ],
   args: {
@@ -82,12 +83,13 @@ export const CustomContent: Story = {
     props: args,
     template: `
       <ang-page-section-header ${argsToTemplate(args)}>
-        Page Section Header With Link Snippet
         <div angPageSectionHeaderTopContent style="display: flex; gap: .75rem;">
           <img src="assets/logo1.png" alt="Placeholder image"/>
           <img src="assets/logo2.png" alt="Placeholder image"/>
         </div>
+        Page Section Header With Link Snippet
         <ang-link-snippet angPageSectionHeaderBottomContent url="https://purl.humanatlas.io/2d-ftu/skin-hair-follicle" />
+        <button matButton="filled" angPageSectionHeaderBottomContent style="width: fit-content;">Custom Action</button>
       </ang-page-section-header>
     `,
   }),

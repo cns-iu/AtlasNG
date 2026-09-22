@@ -20,6 +20,7 @@
   no-results-indicator-overrides;
 @forward '../../indicators/results-indicator/src/lib/tokens' as results-indicator-* show results-indicator-overrides;
 @forward '../../link-snippet/src/lib/tokens.scss' as link-snippet-* show link-snippet-overrides;
+@forward '../../page-section-header/src/lib/tokens.scss' as page-section-header-* show page-section-header-overrides;
 @forward '../../snackbar/src/lib/tokens' as snackbar-* show snackbar-overrides;
 @forward '../../table/src/lib/tokens' as table-* show table-overrides;
 @forward '../../text-link/src/lib/tokens' as text-link-* show text-link-overrides;
