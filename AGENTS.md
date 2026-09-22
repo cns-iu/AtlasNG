@@ -28,7 +28,7 @@
 - Use `npx nx` for local commands in this repo (matches existing README examples and avoids global CLI drift).
 - Primary projects:
   - `AtlasNG` (application)
-  - `analytics`, `cdk`, `common`, `core`, `design-system` (publishable libraries)
+  - `analytics`, `cdk`, `common`, `core`, `design-system`, `kg-explorer` (publishable libraries)
 
 ## AI Customizations
 
