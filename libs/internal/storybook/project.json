@@ -1,0 +1,8 @@
+{
+  "name": "internal-storybook",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/internal/storybook/src",
+  "prefix": "ang",
+  "projectType": "library",
+  "tags": ["internal"]
+}

@@ -1,150 +1,285 @@
 @use 'sass:list';
 @use 'sass:map';
+@use 'sass:math';
 @use 'sass:meta';
+@use 'sass:string';
 
-$_breakpoint-min: 0px;
-$_breakpoint-max: 1000000px;
-$_breakpoint-keywords: ('boundary');
-$_breakpoint-boundary-modes: ('open', 'open-start', 'open-end', 'closed');
-
+/// Named breakpoint minimum widths, ordered from smallest to largest.
+///
+/// The first breakpoint must begin at zero. Non-zero widths may use `px`, `em`,
+/// `rem`, or an absolute CSS length unit, and must be mutually comparable.
+/// Configure this map with Sass's `@use ... with` syntax to replace the default
+/// names or widths.
+///
+/// @type Map
 $breakpoints: (
-  x-small: (
-    $_breakpoint-min,
-    599.98px,
-  ),
-  small: (
-    600px,
-    959.98px,
-  ),
-  medium: (
-    960px,
-    1279.98px,
-  ),
-  large: (
-    1280px,
-    1919.98px,
-  ),
-  x-large: (
-    1920px,
-    $_breakpoint-max,
-  ),
+  x-small: 0,
+  small: 600px,
+  medium: 960px,
+  large: 1280px,
+  x-large: 1920px,
+) !default;
+
+/// The largest named breakpoint whose mixin output also applies to print.
+///
+/// Print receives every named breakpoint up to and including this one so the
+/// cascade produces a predictable print layout. Queries above it are limited
+/// to screens. Configure this value alongside {@link $breakpoints}.
+///
+/// @type String
+$print-breakpoint: large !default;
+
+$_breakpoint-directions: (up, down, only);
+$_relative-breakpoint-intervals: (
+  em: 0.00125em,
+  rem: 0.00125rem,
 );
 
-// Create a media query for the given breakpoint(s) and boundary mode (default: 'closed').
-@mixin breakpoint($breakpoint, $args...) {
-  $keywords: meta.keywords($args);
-  $invalid-keywords: map.remove($keywords, $_breakpoint-keywords...);
-  $breakpoint-keys: list.join(($breakpoint), $args);
-  $boundary-mode: map.get($keywords, 'boundary') or 'closed';
+/// Generates a width condition for a named breakpoint or length value.
+///
+/// A bare named breakpoint selects that width and larger widths. Add `only` to
+/// stop immediately before the next named breakpoint, or `down` to select the
+/// named breakpoint and every smaller width. The returned condition intentionally
+/// omits media types so it can be composed in a custom `@media` rule.
+///
+/// @param {String|Number|List} $value [first breakpoint] - A breakpoint name or
+///   length value, optionally followed by `up`, `down`, or `only`. Unitless
+///   numbers are interpreted as pixels.
+/// @returns {String} A media query condition, or an empty string when the value
+///   covers every possible width.
+/// @example scss
+///   @media screen and #{breakpoint(medium)} { /* 960px and wider */ }
+///   @media screen and #{breakpoint(medium)} and #{breakpoint(large down)} {
+///     /* Medium through large */
+///   }
+@function breakpoint($value: null) {
+  $breakpoint-keys: map.keys($breakpoints);
 
-  @if list.length($invalid-keywords) != 0 {
-    @error 'Invalid keyword arguments: #{map.keys($invalid-keywords)}.';
+  @if $value == null {
+    $value: list.nth($breakpoint-keys, 1);
   }
 
-  @if not list.index($_breakpoint-boundary-modes, $boundary-mode) {
-    @error 'Invalid boundary mode: #{$boundary-mode}. Valid boundary modes are: #{$_breakpoint-boundary-modes}.';
+  @if list.length($value) > 2 {
+    @error 'Invalid breakpoint expression: #{$value}. Expected a breakpoint followed by up, down, or only.';
   }
 
-  @each $key in $breakpoint-keys {
-    @if not map.has-key($breakpoints, $key) {
-      @error 'Invalid breakpoint: #{$key}. Valid breakpoints are: #{map.keys($breakpoints)}.';
+  $bp: list.nth($value, 1);
+  $direction: up;
+
+  @if list.length($value) == 2 {
+    $direction: list.nth($value, 2);
+  }
+
+  @if not list.index($_breakpoint-directions, $direction) {
+    @error 'Invalid breakpoint direction: #{$direction}. Valid directions are #{$_breakpoint-directions}.';
+  }
+
+  $name: null;
+  $width: null;
+  $next-width: null;
+
+  @if meta.type-of($bp) == 'string' {
+    @if not map.has-key($breakpoints, $bp) {
+      @error 'Invalid breakpoint: #{$bp}. Valid breakpoints are #{$breakpoint-keys}.';
     }
-  }
 
-  $ranges: _select-ranges($breakpoint-keys);
-  $ranges: _merge-adjacent-ranges($ranges);
-  $ranges: _trim-boundaries($ranges, $boundary-mode);
-  $queries: ();
-  @each $range in $ranges {
-    $queries: list.append($queries, _range-to-query($range), $separator: comma);
-  }
-
-  @if list.length($queries) != 0 {
-    @media #{$queries} {
-      @content;
-    }
+    $name: $bp;
+    $width: _normalize-width(map.get($breakpoints, $name));
+    $next-width: _next-breakpoint-width($name);
+  } @else if meta.type-of($bp) == 'number' {
+    $width: _normalize-width($bp);
   } @else {
-    @warn 'Breakpoints cover the entire range of possible widths. This is likely a mistake, please check the specified breakpoints and boundary mode.';
-    @content;
+    @error 'Invalid breakpoint: #{$bp}. Expected a breakpoint name or length value.';
   }
-}
 
-@function _select-ranges($keys) {
-  $ranges: ();
-  @each $key, $range in $breakpoints {
-    @if list.index($keys, $key) {
-      $ranges: list.append($ranges, $range);
+  @if $direction == only and $name == null {
+    @error 'Only named breakpoints can use the only direction.';
+  }
+
+  $min: null;
+  $max: null;
+
+  @if ($direction == up or $direction == only) and $width > 0 {
+    $min: $width;
+  }
+
+  @if $direction == down or $direction == only {
+    @if $name != null and $next-width != null {
+      $max: _exclusive-upper-bound($next-width);
+    } @else if $name == null {
+      $max: $width;
     }
   }
 
-  @return $ranges;
+  @return _join-width-conditions($min, $max);
 }
 
-@function _merge-adjacent-ranges($ranges, $tolerance: 1px) {
-  $merged: ();
-  $current: null;
-  @each $range in $ranges {
-    @if $current == null {
-      $current: $range;
-    } @else {
-      $currentMax: list.nth($current, 2);
-      $min: list.nth($range, 1);
-      $max: list.nth($range, 2);
-      $diff: $min - $currentMax;
+/// Wraps content in media queries for one or more breakpoint expressions.
+///
+/// Named breakpoints through {@link $print-breakpoint} apply to `print` as well
+/// as matching screens. Higher named breakpoints and raw length values apply only
+/// to `screen`. Expressions that cover every width emit their content directly.
+///
+/// @param {ArgList} $values - Breakpoint names or length values, optionally
+///   followed by `up`, `down`, or `only`.
+/// @content Styles emitted inside each resulting media query.
+/// @example scss
+///   @include breakpoint(medium) { /* Medium and wider */ }
+///   @include breakpoint(medium only) { /* Medium only */ }
+///   @include breakpoint(medium down) { /* Medium and narrower */ }
+@mixin breakpoint($values...) {
+  @if list.length($values) == 0 {
+    @error 'breakpoint() requires at least one breakpoint expression.';
+  }
 
-      @if $diff <= $tolerance {
-        $current: list.set-nth($current, 2, $max);
-      } @else {
-        $merged: list.append($merged, $current);
-        $current: $range;
+  $breakpoint-keys: map.keys($breakpoints);
+  $print-index: list.index($breakpoint-keys, $print-breakpoint);
+
+  @each $value in $values {
+    $query: breakpoint($value);
+    $bp: list.nth($value, 1);
+    $direction: up;
+
+    @if list.length($value) == 2 {
+      $direction: list.nth($value, 2);
+    }
+
+    $breakpoint-index: null;
+
+    @if meta.type-of($bp) == 'string' {
+      $breakpoint-index: list.index($breakpoint-keys, $bp);
+    }
+
+    @if $query == '' {
+      @content;
+    } @else if $breakpoint-index != null and ($breakpoint-index <= $print-index or $direction == down) {
+      @media print, screen and #{$query} {
+        @content;
+      }
+    } @else {
+      @media screen and #{$query} {
+        @content;
       }
     }
   }
-
-  @if $current != null {
-    $merged: list.append($merged, $current);
-  }
-
-  @return $merged;
 }
 
-@function _trim-boundaries($ranges, $boundary-mode) {
-  $length: list.length($ranges);
-  $first: list.nth($ranges, 1);
-  $last: list.nth($ranges, $length);
-
-  @if list.index(('open', 'open-start'), $boundary-mode) or list.nth($first, 1) == $_breakpoint-min {
-    $first: list.set-nth($first, 1, null);
+/// Normalizes and validates a configured width.
+///
+/// @param {Number} $width - A unitless number or supported CSS length.
+/// @returns {Number} The validated length, with unitless values converted to px.
+@function _normalize-width($width) {
+  @if meta.type-of($width) != 'number' {
+    @error 'Breakpoint widths must be numbers; received #{$width}.';
   }
 
-  @if list.index(('open', 'open-end'), $boundary-mode) or list.nth($last, 2) == $_breakpoint-max {
-    $last: list.set-nth($last, 2, null);
+  @if $width == 0 {
+    @return 0;
   }
 
-  @if $length == 1 {
-    $min: list.nth($first, 1);
-    $max: list.nth($last, 2);
-    @if $min == null and $max == null {
-      @return ();
+  @if math.is-unitless($width) {
+    @return $width * 1px;
+  }
+
+  @if math.compatible($width, 1px) or map.has-key($_relative-breakpoint-intervals, math.unit($width)) {
+    @return $width;
+  }
+
+  @error 'Breakpoint widths must use px, em, rem, or an absolute CSS length unit; received #{$width}.';
+}
+
+/// Creates an inclusive maximum immediately below a breakpoint width.
+///
+/// @param {Number} $width - The next named breakpoint's minimum width.
+/// @returns {Number} A maximum width below the supplied breakpoint.
+@function _exclusive-upper-bound($width) {
+  $normalized-width: _normalize-width($width);
+  $unit: math.unit($normalized-width);
+
+  @if math.compatible($normalized-width, 1px) {
+    @return $normalized-width - 0.02px;
+  }
+
+  @return $normalized-width - map.get($_relative-breakpoint-intervals, $unit);
+}
+
+/// Finds the width immediately after a named breakpoint.
+///
+/// @param {String} $name - A key in {@link $breakpoints}.
+/// @returns {Number|null} The next width, or null for the final breakpoint.
+@function _next-breakpoint-width($name) {
+  $keys: map.keys($breakpoints);
+  $index: list.index($keys, $name);
+
+  @if $index == null or $index >= list.length($keys) {
+    @return null;
+  }
+
+  @return map.get($breakpoints, list.nth($keys, $index + 1));
+}
+
+/// Joins minimum and maximum widths into a composable media condition.
+///
+/// @param {Number|null} $min - Inclusive minimum width.
+/// @param {Number|null} $max - Inclusive maximum width.
+/// @returns {String} The combined media condition.
+@function _join-width-conditions($min: null, $max: null) {
+  $query: '';
+
+  @if $min != null {
+    $query: '(min-width: #{$min})';
+  }
+
+  @if $max != null {
+    $max-condition: '(max-width: #{$max})';
+
+    @if $query == '' {
+      $query: $max-condition;
+    } @else {
+      $query: '#{$query} and #{$max-condition}';
+    }
+  }
+
+  @return string.unquote($query);
+}
+
+/// Validates the configurable breakpoint values used by the public API.
+///
+/// @returns {Boolean} True when the configuration is valid.
+@function _validate-configuration() {
+  $keys: map.keys($breakpoints);
+
+  @if list.length($keys) == 0 {
+    @error '$breakpoints must contain at least one breakpoint.';
+  }
+
+  @if not map.has-key($breakpoints, $print-breakpoint) {
+    @error '$print-breakpoint must name a breakpoint in $breakpoints; received #{$print-breakpoint}.';
+  }
+
+  $previous-width: null;
+
+  @each $name, $configured-width in $breakpoints {
+    $width: _normalize-width($configured-width);
+
+    @if $previous-width == null and $width != 0 {
+      @error 'The first breakpoint in $breakpoints must begin at 0; #{$name} begins at #{$configured-width}.';
     }
 
-    @return list.append((), ($min, $max));
+    @if $previous-width != null {
+      @if $previous-width != 0 and not math.compatible($width, $previous-width) {
+        @error 'Widths in $breakpoints must use mutually comparable units; #{$name} is #{$configured-width}.';
+      }
+
+      @if $width <= $previous-width {
+        @error '$breakpoints must be ordered by ascending width; #{$name} is #{$configured-width}.';
+      }
+    }
+
+    $previous-width: $width;
   }
 
-  $ranges: list.set-nth($ranges, 1, $first);
-  $ranges: list.set-nth($ranges, $length, $last);
-  @return $ranges;
+  @return true;
 }
 
-@function _range-to-query($range) {
-  $min: list.nth($range, 1);
-  $max: list.nth($range, 2);
-
-  @if $min == null {
-    @return '(max-width: #{$max})';
-  } @else if $max == null {
-    @return '(min-width: #{$min})';
-  } @else {
-    @return '(min-width: #{$min}) and (max-width: #{$max})';
-  }
-}
+$_configuration-valid: _validate-configuration();
