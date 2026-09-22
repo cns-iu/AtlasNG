@@ -1,4 +1,4 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { booleanAttribute, Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,7 +12,10 @@ import { AnyLink } from '@atlasng/common';
   imports: [MatDividerModule, MatIconModule, MatButtonModule, AnyLink],
   templateUrl: './section-header.html',
   styleUrl: './section-header.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'ang-section-header',
+    '[attr.id]': 'id() || null',
+  },
 })
 export class SectionHeader {
   /** Unique ID for the section header */
