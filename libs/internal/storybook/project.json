@@ -4,5 +4,5 @@
   "sourceRoot": "libs/internal/storybook/src",
   "prefix": "ang",
   "projectType": "library",
-  "tags": ["internal"]
+  "tags": ["internal", "layer:internal"]
 }
