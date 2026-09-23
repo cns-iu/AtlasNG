@@ -1,0 +1,29 @@
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: block;
+}
+
+h2,
+h3,
+h4 {
+  margin-bottom: 1rem;
+}
+
+h5,
+h6 {
+  margin-bottom: 0.75rem;
+}
+
+.ang-page-section--content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-family: token-utils.slot('font', $config);
+  line-height: token-utils.slot('line-height', $config);
+  font-size: token-utils.slot('size', $config);
+  letter-spacing: token-utils.slot('tracking', $config);
+  font-weight: token-utils.slot('weight', $config);
+  color: token-utils.slot('color', $config);
+}

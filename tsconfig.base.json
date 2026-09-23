@@ -59,6 +59,7 @@
       ],
       "@atlasng/design-system/section-header": ["./libs/design-system/section-header/src/index.ts"],
       "@atlasng/design-system/link-snippet": ["./libs/design-system/link-snippet/src/index.ts"],
+      "@atlasng/design-system/page-section": ["./libs/design-system/page-section/src/index.ts"],
       "@atlasng/design-system/snackbar": ["./libs/design-system/snackbar/src/index.ts"],
       "@atlasng/design-system/table": ["./libs/design-system/table/src/index.ts"],
       "@atlasng/design-system/table/columns": ["./libs/design-system/table/columns/src/index.ts"],

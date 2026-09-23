@@ -1,0 +1,32 @@
+<section class="ang-page-section--section">
+  @switch (sectionLevel()) {
+    @case (2) {
+      <h2 angSectionHeader class="ang-page-section--title" [id]="id()" [underlined]="underlined()">
+        {{ title() }}
+      </h2>
+    }
+    @case (3) {
+      <h3 angSectionHeader class="ang-page-section--title" [id]="id()" [underlined]="underlined()">
+        {{ title() }}
+      </h3>
+    }
+    @case (4) {
+      <h4 angSectionHeader class="ang-page-section--title" [id]="id()" [underlined]="underlined()">
+        {{ title() }}
+      </h4>
+    }
+    @case (5) {
+      <h5 angSectionHeader class="ang-page-section--title" [id]="id()" [underlined]="underlined()">
+        {{ title() }}
+      </h5>
+    }
+    @case (6) {
+      <h6 angSectionHeader class="ang-page-section--title" [id]="id()" [underlined]="underlined()">
+        {{ title() }}
+      </h6>
+    }
+  }
+  <div class="ang-page-section--content">
+    <ng-content select="[angPageSectionContent]" />
+  </div>
+</section>
