@@ -4,5 +4,31 @@
   "sourceRoot": "libs/internal/storybook/src",
   "prefix": "ang",
   "projectType": "library",
-  "tags": ["internal", "layer:internal"]
+  "tags": ["internal", "layer:internal"],
+  "targets": {
+    "build-storybook": {
+      "dependsOn": [
+        {
+          "projects": ["design-system", "labs", "kg-explorer"],
+          "target": "build-storybook"
+        }
+      ],
+      "configurations": {
+        "gh-pages": {
+          "outputDir": "{workspaceRoot}"
+        }
+      }
+    },
+    "storybook": {
+      "dependsOn": [
+        {
+          "projects": ["design-system", "labs", "kg-explorer"],
+          "target": "storybook"
+        }
+      ],
+      "options": {
+        "port": 4400
+      }
+    }
+  }
 }
