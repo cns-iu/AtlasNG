@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "ang",
   "sourceRoot": "apps/AtlasNG/src",
-  "tags": ["application"],
+  "tags": ["application", "layer:application"],
   "targets": {
     "build": {
       "executor": "@nx/angular:application"

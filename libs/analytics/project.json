@@ -4,7 +4,7 @@
   "sourceRoot": "libs/analytics/src",
   "prefix": "ang",
   "projectType": "library",
-  "tags": ["library"],
+  "tags": ["library", "layer:analytics"],
   "targets": {
     "build": {
       "executor": "@nx/angular:package"

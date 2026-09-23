@@ -72,20 +72,11 @@ jobs:
         if: failure()
         run: npx nx fix-ci
 
-      - name: Check if build output exists
-        id: check-build
-        if: github.event_name == 'pull_request' && !cancelled()
-        run: |
-          if [ -d "dist" ] && [ -n "$(ls -A "dist" 2>/dev/null)" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Deploy preview
-        if: steps.check-build.outputs.exists == 'true' && !cancelled()
+        if: github.event_name == 'pull_request' && !cancelled()
         uses: ./.github/actions/deploy-preview
         with:
           issue-number: ${{ github.event.pull_request.number }}
+          commit-sha: ${{ github.event.pull_request.head.sha }}
           netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
