@@ -12,7 +12,6 @@
     "build-compodoc": {},
     "build-storybook": {
       "options": {
-        "styles": ["libs/internal/storybook/src/themes/all-themes.scss"],
         "stylePreprocessorOptions": {
           "includePaths": ["libs/labs/src/sass", "libs/internal/storybook/src/themes"]
         }
@@ -23,7 +22,7 @@
     "serve-static-storybook": {},
     "storybook": {
       "options": {
-        "styles": ["libs/internal/storybook/src/themes/all-themes.scss"],
+        "port": 4402,
         "stylePreprocessorOptions": {
           "includePaths": ["libs/labs/src/sass", "libs/internal/storybook/src/themes"]
         }
@@ -31,7 +30,6 @@
     },
     "test": {
       "options": {
-        "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"],
         "setupFiles": ["{projectRoot}/src/test-setup.ts"]
       }
     },

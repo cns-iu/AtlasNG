@@ -20,6 +20,9 @@
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
+      "!{projectRoot}/AGENTS.md",
+      "!{projectRoot}/README.md",
+      "!{projectRoot}/**/*.mdx",
       "!{projectRoot}/eslint.config.mjs",
       "!{projectRoot}/tsconfig.spec.json",
       "!{projectRoot}/**/test-setup.[jt]s",
@@ -111,7 +114,11 @@
       "dependsOn": ["build-storybook-compodoc"],
       "outputs": ["{options.outputDir}"],
       "options": {
-        "outputDir": "{workspaceRoot}/dist/storybook/{projectName}"
+        "outputDir": "{workspaceRoot}/dist/storybook/{projectName}",
+        "styles": ["libs/internal/storybook/src/themes/all-themes.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
+        }
       },
       "configurations": {
         "ci": {
@@ -196,7 +203,11 @@
     "storybook": {
       "dependsOn": ["build-storybook-compodoc"],
       "options": {
-        "port": 4400
+        "port": 4400,
+        "styles": ["libs/internal/storybook/src/themes/all-themes.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
+        }
       }
     },
     "test": {
