@@ -79,26 +79,22 @@ mkdir -p "$DEPLOY_DIR"
 cp -r "${DIST_DIR}"/!(libs) "${DEPLOY_DIR}/"
 cp -r "${ACTION_PATH}/assets"/* "${DEPLOY_DIR}/"
 
-# -- step 2: move applications out of their browser/ subdirectory -----------
-for browser_dir in "${DEPLOY_DIR}/apps"/*/browser; do
-  [[ -d "$browser_dir" ]] || continue
-  mv "${browser_dir}"/* "$(dirname "$browser_dir")/"
-  rm -rf "$browser_dir"
-done
-
-# -- step 3: write preview metadata ----------------------------------------
+# -- step 2: write preview metadata and SPA redirects ------------------------
+# A project's output root is any directory containing an index.html, found at any depth
+# (e.g. apps/AtlasNG/browser, storybook/applications/kg-explorer, compodoc/design-system).
 echo "preview.setIssueNumber(\"${ISSUE_NUMBER}\");" >>"$METADATA_FILE"
 
 for section in apps compodoc storybook; do
-  for dir in "${DEPLOY_DIR}/${section}"/*/; do
-    [[ -d "$dir" ]] || continue
-    echo "preview.addDirectory(\"${dir%/}\");" >>"$METADATA_FILE"
-  done
-done
+  section_dir="${DEPLOY_DIR}/${section}"
+  [[ -d "$section_dir" ]] || continue
 
-# -- step 4: create SPA redirects -------------------------------------------
-for dir in "${DEPLOY_DIR}/apps"/*/; do
-  [[ -d "$dir" ]] || continue
-  name=$(basename "$dir")
-  echo "/apps/${name}/* /apps/${name}/index.html 200" >>"${DEPLOY_DIR}/_redirects"
+  while IFS= read -r -d '' index_file; do
+    project_dir=$(dirname "$index_file")
+    rel_path="${project_dir#"${DEPLOY_DIR}"/}"
+    echo "preview.addDirectory(\"${section}\", \"${rel_path}\");" >>"$METADATA_FILE"
+
+    if [[ "$section" == "apps" ]]; then
+      echo "/${rel_path}/* /${rel_path}/index.html 200" >>"${DEPLOY_DIR}/_redirects"
+    fi
+  done < <(find "$section_dir" -type f -name index.html -print0 | sort -z)
 done
