@@ -34,18 +34,19 @@ mat-nav-list {
 a[mat-list-item] {
   margin-left: calc((var(--ang-table-of-contents-level, 2) - 2) * 1rem);
   width: calc(100% - (var(--ang-table-of-contents-level, 2) - 2) * 1rem);
-  margin-top: 4px;
-  margin-bottom: 4px;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 
   @include mat.list-overrides(
     (
       active-indicator-color: transparent,
-      list-item-label-text-color: token-utils.slot(text-color, $config),
-      list-item-label-text-font: token-utils.slot(entry-font, $config),
-      list-item-label-text-size: token-utils.slot(entry-size, $config),
-      list-item-label-text-weight: token-utils.slot(entry-weight, $config),
-      list-item-label-text-line-height: token-utils.slot(entry-line-height, $config),
-      list-item-label-text-tracking: token-utils.slot(entry-tracking, $config),
+      list-item-one-line-container-height: token-utils.slot(item-height, $config),
+      list-item-label-text-color: token-utils.slot(item-color, $config),
+      list-item-label-text-font: token-utils.slot(item-font, $config),
+      list-item-label-text-size: token-utils.slot(item-size, $config),
+      list-item-label-text-weight: token-utils.slot(item-weight, $config),
+      list-item-label-text-line-height: token-utils.slot(item-line-height, $config),
+      list-item-label-text-tracking: token-utils.slot(item-tracking, $config),
     )
   );
 }
@@ -64,7 +65,7 @@ a[mat-list-item] {
     a[mat-list-item] {
       @include mat.list-overrides(
         (
-          active-indicator-color: token-utils.slot(active-color, $config),
+          active-indicator-color: token-utils.slot(active-item-background-color, $config),
         )
       );
     }
