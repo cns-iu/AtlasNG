@@ -81,7 +81,6 @@ const SAMPLE_TEXT =
  */
 const meta: Meta<PageSection> = {
   title: 'Design System/Page Section',
-  tags: ['autodocs'],
   parameters: {
     design: {
       type: 'figma',
