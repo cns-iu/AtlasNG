@@ -1,0 +1,28 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'table-of-contents',
+  tokens: (
+    list-border-radius: token-utils.sys-token(corner-small),
+    title-background-color: token-utils.sys-token(surface-container-low),
+    border-color: token-utils.sys-token(outline-variant),
+    active-color: token-utils.sys-token(primary-container),
+    title-color: token-utils.sys-token(on-surface),
+    title-font: token-utils.sys-token(title-small-font),
+    title-line-height: token-utils.sys-token(title-small-line-height),
+    title-size: token-utils.sys-token(title-small-size),
+    title-weight: token-utils.sys-token(title-small-weight),
+    title-tracking: token-utils.sys-token(title-small-tracking),
+    text-color: token-utils.sys-token(on-surface-variant),
+    active-text-color: token-utils.sys-token(on-surface),
+    entry-font: token-utils.sys-token(body-medium-font),
+    entry-line-height: token-utils.sys-token(body-medium-line-height),
+    entry-size: token-utils.sys-token(body-medium-size),
+    entry-weight: token-utils.sys-token(body-medium-weight),
+    entry-tracking: token-utils.sys-token(body-medium-tracking),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}

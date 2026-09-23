@@ -1,0 +1,21 @@
+<nav aria-label="Table of contents">
+  <div class="ang-table-of-contents--title">{{ title() }}</div>
+  <mat-nav-list>
+    @for (section of sections(); track section.anchor) {
+      @if (showFirstSection() || !$first) {
+        <a
+          mat-list-item
+          angAnyLink="."
+          tabindex="0"
+          [fragment]="section.anchor"
+          [activated]="activeSection() === section.anchor"
+          [style.--ang-table-of-contents-level]="section.level"
+          (click)="selectSection(section.anchor)"
+          (keydown.enter)="selectSection(section.anchor)"
+        >
+          <span matListItemTitle>{{ section.tagline }}</span>
+        </a>
+      }
+    }
+  </mat-nav-list>
+</nav>
