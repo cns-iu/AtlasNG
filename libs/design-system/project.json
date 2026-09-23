@@ -4,34 +4,23 @@
   "sourceRoot": "libs/design-system/src",
   "prefix": "ang",
   "projectType": "library",
-  "tags": ["library"],
+  "tags": ["library", "layer:design-system"],
   "targets": {
     "build": {
       "executor": "@nx/angular:package"
     },
     "build-compodoc": {},
-    "build-storybook": {
-      "options": {
-        "styles": ["libs/internal/storybook/src/themes/all-themes.scss"],
-        "stylePreprocessorOptions": {
-          "includePaths": ["libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
-        }
-      }
-    },
+    "build-storybook": {},
     "compodoc": {},
     "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {
       "options": {
-        "styles": ["libs/internal/storybook/src/themes/all-themes.scss"],
-        "stylePreprocessorOptions": {
-          "includePaths": ["libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
-        }
+        "port": 4401
       }
     },
     "test": {
       "options": {
-        "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"],
         "setupFiles": ["{projectRoot}/src/test-setup.ts"]
       }
     },

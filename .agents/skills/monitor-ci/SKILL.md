@@ -56,6 +56,14 @@ Before starting the monitoring loop, verify the workspace is connected to Nx Clo
 3. **ci-poll-decide.mjs (deterministic script)**: takes ci_information result + state, returns action + status message
 4. **ci-state-update.mjs (deterministic script)**: manages budget gates, post-action state transitions, and cycle classification
 
+## Execution and Approval Policy
+
+- Delegate every Nx Cloud MCP request to a dedicated `ci-monitor-subagent`. Each invocation makes exactly one MCP call, returns its structured result, and exits.
+- The orchestrator may run the deterministic scripts and perform read-only local Git or Nx checks directly, but must not independently poll CI or call Nx Cloud MCP tools.
+- Do not request confirmation for read-only status retrieval, deterministic decision scripts, or local verification already required by this workflow.
+- Request confirmation before applying or rejecting a self-healing fix, rerunning environment state, creating commits, or pushing changes, unless the user has explicitly authorized that action in the current request.
+- Do not use CI-provider watch or polling commands. Let the subagent-driven Nx Cloud flow control polling.
+
 ## Status Reporting
 
 The decision script handles message formatting based on verbosity. When printing messages to the user:
