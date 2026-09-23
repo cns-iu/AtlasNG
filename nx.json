@@ -112,6 +112,14 @@
     },
     "build-storybook": {
       "dependsOn": ["build-storybook-compodoc"],
+      "inputs": [
+        "default",
+        "^production",
+        "{projectRoot}/.storybook/**/*",
+        {
+          "externalDependencies": ["storybook", "@storybook/angular"]
+        }
+      ],
       "outputs": ["{options.outputDir}"],
       "options": {
         "outputDir": "{workspaceRoot}/dist/storybook/{projectName}",

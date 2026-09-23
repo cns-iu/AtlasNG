@@ -1,4 +1,3 @@
-import { posix } from 'node:path';
 import { createStorybookMainConfig } from '../src/index.ts';
 
 /** Maximum time to wait for a referenced Storybook to start. */
@@ -42,52 +41,56 @@ async function waitForStorybook(url: string): Promise<void> {
   throw new Error(`Timed out waiting for Storybook at ${url}`);
 }
 
-/**
- * Selects the appropriate URL for a referenced Storybook based on the current configuration.
- *
- * @param path Output path of the referenced Storybook.
- * @param port Port number for the referenced Storybook in development mode.
- * @param outputDir Output directory for the current Storybook build.
- * @param production Whether the current build is a production build.
- * @returns The appropriate URL for the referenced Storybook.
- */
-function resolveRefPath(path: string, port: number, outputDir: string | undefined, production: boolean): string {
-  if (production) {
-    outputDir ??= 'dist/storybook/internal-storybook/';
-    return posix.relative(outputDir, path);
-  }
-
-  return `http://localhost:${port}`;
-}
+const LIBRARIES = [
+  {
+    id: 'design-system',
+    title: 'Design System',
+    sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/design-system',
+    port: 4401,
+  },
+  {
+    id: 'labs',
+    title: 'Labs',
+    sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/labs',
+    port: 4402,
+    expanded: false,
+  },
+  {
+    id: 'kg-explorer',
+    title: 'KG Explorer',
+    sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/applications/kg-explorer',
+    port: 4403,
+  },
+];
 
 const config = createStorybookMainConfig({
-  refs: async (_refs, { configType, outputDir }) => {
+  refs: async (_refs, { configType }) => {
     const production = configType === 'PRODUCTION';
 
-    const refs = {
-      'design-system': {
-        title: 'Design System',
-        url: resolveRefPath('dist/storybook/design-system/', 4401, outputDir, production),
-        sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/design-system',
-      },
-      labs: {
-        title: 'Labs',
-        url: resolveRefPath('dist/storybook/labs/', 4402, outputDir, production),
-        sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/labs',
-        expanded: false,
-      },
-      'kg-explorer': {
-        title: 'KG Explorer',
-        url: resolveRefPath('dist/storybook/kg-explorer/', 4403, outputDir, production),
-        sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/applications/kg-explorer',
-      },
-    };
+    type Ref = { title: string; url: string; sourceUrl?: string; expanded?: boolean };
+    const refs = LIBRARIES.reduce<Record<string, Ref>>((acc, ref) => {
+      acc[ref.id] = {
+        title: ref.title,
+        url: production ? `./${ref.id}` : `http://localhost:${ref.port}`,
+        sourceUrl: ref.sourceUrl,
+        expanded: ref.expanded ?? true,
+      };
+      return acc;
+    }, {});
 
     if (!production) {
       await Promise.all(Object.values(refs).map(({ url }) => waitForStorybook(url)));
     }
 
     return refs;
+  },
+  staticDirs: (_dirs, { configType }) => {
+    if (configType === 'PRODUCTION') {
+      const outputDir = '../../../../dist/storybook';
+      return LIBRARIES.map((ref) => ({ from: `${outputDir}/${ref.id}/`, to: ref.id }));
+    }
+
+    return [];
   },
 });
 

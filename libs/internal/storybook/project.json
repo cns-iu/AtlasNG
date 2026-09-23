@@ -12,12 +12,7 @@
           "projects": ["design-system", "labs", "kg-explorer"],
           "target": "build-storybook"
         }
-      ],
-      "configurations": {
-        "gh-pages": {
-          "outputDir": "{workspaceRoot}"
-        }
-      }
+      ]
     },
     "storybook": {
       "dependsOn": [
