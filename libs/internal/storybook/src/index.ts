@@ -44,7 +44,7 @@ export function createStorybookPreview({ docJson }: StorybookPreviewOptions): Pr
   }
 
   return {
-    tags: ['autodocs'],
+    // NOTE: Do not define `tags` here! They must be defined inline in `preview.ts`
     decorators: [
       withThemeByClassName({
         themes: {

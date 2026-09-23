@@ -9,7 +9,7 @@
     "${configDir}/../**/*.stories.js",
     "${configDir}/../**/*.stories.jsx",
     "${configDir}/../**/*.stories.tsx",
-    "${configDir}/../**/*.stories.mdx",
+    "${configDir}/../**/*.mdx",
     "${configDir}/*.js",
     "${configDir}/*.ts"
   ]

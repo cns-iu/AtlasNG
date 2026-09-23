@@ -12,12 +12,13 @@ An Angular monorepo providing a suite of libraries for building consistent, acce
 | [`@atlasng/common`](libs/common/README.md)                             | Shared pipes, directives, guards, and utilities           |
 | [`@atlasng/core`](libs/core/README.md)                                 | Platform bootstrap, environment config, and DI tokens     |
 | [`@atlasng/design-system`](libs/design-system/README.md)               | UI component catalog, design tokens, and theming          |
+| [`@atlasng/labs`](libs/labs/README.md)                                 | Experimental UI components without a stable public API    |
 
 ## Development
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 24+
 - npm 10+
 
 ### Install dependencies
@@ -39,7 +40,7 @@ npx nx serve AtlasNG
 npx nx run-many -t build
 
 # Build a specific library
-npx nx test analytics
+npx nx build analytics
 ```
 
 ### Test

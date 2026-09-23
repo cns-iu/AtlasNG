@@ -4,6 +4,9 @@ inputs:
   issue-number:
     description: The pull request number for which to deploy the preview
     required: true
+  commit-sha:
+    description: The commit SHA being deployed
+    required: true
   netlify-auth-token:
     description: The authentication token for Netlify
     required: true
@@ -14,7 +17,18 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Check if build output exists
+      id: check-build
+      shell: bash
+      run: |
+        if [ -d "dist" ] && [ -n "$(ls -A "dist" 2>/dev/null)" ]; then
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Prepare deploy directory
+      if: steps.check-build.outputs.exists == 'true'
       shell: bash
       run: ${{ github.action_path }}/prepare-deploy.sh
       env:
@@ -23,6 +37,7 @@ runs:
 
     - name: Deploy to Netlify
       id: netlify
+      if: steps.check-build.outputs.exists == 'true'
       shell: bash
       run: ${{ github.action_path }}/deploy.sh
       env:
@@ -30,8 +45,19 @@ runs:
         NETLIFY_AUTH_TOKEN: ${{ inputs.netlify-auth-token }}
         NETLIFY_SITE_ID: ${{ inputs.netlify-site-id }}
 
+    - name: Get commit info
+      id: commit-info
+      if: steps.check-build.outputs.exists == 'true'
+      shell: bash
+      run: |
+        echo "sha=$(git rev-parse --short "$COMMIT_SHA")" >> "$GITHUB_OUTPUT"
+        echo "message=$(git log -1 --pretty=%s "$COMMIT_SHA")" >> "$GITHUB_OUTPUT"
+      env:
+        COMMIT_SHA: ${{ inputs.commit-sha }}
+
     - name: Find existing deployment comment
       id: deployment-comment
+      if: steps.check-build.outputs.exists == 'true'
       uses: peter-evans/find-comment@v4
       with:
         issue-number: ${{ inputs.issue-number }}
@@ -39,6 +65,7 @@ runs:
         body-includes: 'Preview Deploy Report'
 
     - name: Create or update deployment comment
+      if: steps.check-build.outputs.exists == 'true'
       uses: peter-evans/create-or-update-comment@v5
       with:
         comment-id: ${{ steps.deployment-comment.outputs.comment-id }}
@@ -48,3 +75,5 @@ runs:
           # :rocket: Preview Deploy Report
 
           ✅ Successfully deployed preview [here](${{ steps.netlify.outputs.url }})
+
+          Commit: `${{ steps.commit-info.outputs.sha }}` ${{ steps.commit-info.outputs.message }}

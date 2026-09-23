@@ -12,14 +12,19 @@ window.preview = (() => {
 
     /**
      * Add a subdirectory link
+     * @param {string} type
      * @param {string} dir
      */
-    addDirectory(dir) {
-      const [, base, name] = dir.split('/');
-      const sectionList = document.querySelector(`#${base} .list`);
+    addDirectory(type, dir) {
+      const sectionList = document.querySelector(`#${type} .list`);
       if (!sectionList) {
+        // eslint-disable-next-line no-console
+        console.warn(`No section list found for type "${type}"`);
         return;
       }
+
+      // Remove the type prefix and any trailing `/browser` suffix to get the display name
+      const name = dir.slice(type.length + 1).replace(/\/browser$/, '');
 
       const template = /** @type {HTMLTemplateElement} */ (document.querySelector('template#section-link'));
       const fragment = /** @type {DocumentFragment} */ (template.content.cloneNode(true));
@@ -28,7 +33,7 @@ window.preview = (() => {
       listEl.dataset.sortKey = name;
 
       const linkEl = /** @type {HTMLAnchorElement} */ (fragment.querySelector('a.link'));
-      linkEl.href = `${base}/${name}/index.html`;
+      linkEl.href = `${dir}/index.html`;
       linkEl.textContent = name;
 
       /** @type {Element | null} */

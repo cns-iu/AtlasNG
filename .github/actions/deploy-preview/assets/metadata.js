@@ -5,7 +5,7 @@
  * The content will look like:
  * ```
  * preview.setIssueNumber("[PR number]");
- * preview.addDirectory("[path to project output]");
+ * preview.addDirectory("[apps|storybook|compodoc]", "[path to project output]");
  * // Additional addDirectory calls...
  * ```
  */
