@@ -1,6 +1,6 @@
 {
   "lib": {
     "entryFile": "src/index.ts",
-    "styleIncludePaths": ["../src/sass"]
+    "styleIncludePaths": ["../../src/sass"]
   }
 }

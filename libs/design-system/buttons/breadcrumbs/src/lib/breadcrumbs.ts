@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { AnyLink, AnyLinkActive, AnyLinkCommand } from '@atlasng/common';
-import { TextLink } from '@atlasng/design-system/text-link';
+import { TextLink } from '@atlasng/design-system/links/text-link';
 
 /** Breadcrumb item */
 export interface BreadcrumbItem {
