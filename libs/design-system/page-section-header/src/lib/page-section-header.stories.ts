@@ -1,6 +1,6 @@
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { PageSectionHeader } from './page-section-header';
-import { LinkSnippet } from '@atlasng/design-system/link-snippet';
+import { LinkSnippet } from '@atlasng/design-system/links/link-snippet';
 import { MatButtonModule } from '@angular/material/button';
 
 const meta: Meta<PageSectionHeader> = {
