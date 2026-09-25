@@ -1,0 +1,17 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'page-section',
+  tokens: (
+    font: token-utils.sys-token(body-large-font),
+    line-height: token-utils.sys-token(body-large-line-height),
+    size: token-utils.sys-token(body-large-size),
+    tracking: token-utils.sys-token(body-large-tracking),
+    weight: token-utils.sys-token(body-large-weight),
+    color: token-utils.sys-token(on-surface-variant),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
