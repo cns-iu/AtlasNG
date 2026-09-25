@@ -1,7 +1,7 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { PageSectionInstance, TableOfContents } from './table-of-contents';
+import { TableOfContents, TableOfContentsItem } from './table-of-contents';
 
-const sections: PageSectionInstance[] = [
+const items: TableOfContentsItem[] = [
   { tagline: 'Page Title (Generally hidden)', level: 2, anchor: 'overview' },
   { tagline: 'Data sources', level: 2, anchor: 'data-sources' },
   { tagline: 'Methods', level: 3, anchor: 'methods' },
@@ -27,13 +27,7 @@ const meta: Meta<TableOfContents> = {
       imports: [TableOfContents],
     }),
   ],
-  args: { sections, showFirstSection: false },
-  argTypes: {
-    showFirstSection: {
-      control: 'boolean',
-      description: 'Whether to show the first section in the table of contents.',
-    },
-  },
+  args: { items },
 };
 
 export default meta;

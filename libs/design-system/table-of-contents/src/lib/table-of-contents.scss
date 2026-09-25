@@ -6,63 +6,58 @@
 :host {
   display: block;
   width: 100%;
-  z-index: 1;
-}
 
-nav {
-  width: 100%;
-  border: 1px solid token-utils.slot(border-color, $config);
-  border-radius: token-utils.slot(list-border-radius, $config);
-  overflow: hidden;
-}
+  .ang-table-of-contents--nav {
+    width: 100%;
+    border: 1px solid token-utils.slot(border-color, $config);
+    border-radius: token-utils.slot(list-border-radius, $config);
+    overflow: hidden;
+  }
 
-.ang-table-of-contents--title {
-  padding: 0.75rem 1rem;
-  color: token-utils.slot(title-color, $config);
-  font-family: token-utils.slot(title-font, $config);
-  font-size: token-utils.slot(title-size, $config);
-  font-weight: token-utils.slot(title-weight, $config);
-  line-height: token-utils.slot(title-line-height, $config);
-  letter-spacing: token-utils.slot(title-tracking, $config);
-  background: token-utils.slot(title-background-color, $config);
-  border-bottom: 1px solid token-utils.slot(border-color, $config);
-}
-mat-nav-list {
-  padding: 0;
-}
+  .ang-table-of-contents--title {
+    padding: 0.75rem 1rem;
+    color: token-utils.slot(title-color, $config);
+    font-family: token-utils.slot(title-font, $config);
+    font-size: token-utils.slot(title-size, $config);
+    font-weight: token-utils.slot(title-weight, $config);
+    line-height: token-utils.slot(title-line-height, $config);
+    letter-spacing: token-utils.slot(title-tracking, $config);
+    background: token-utils.slot(title-background-color, $config);
+    border-bottom: 1px solid token-utils.slot(border-color, $config);
+  }
 
-a[mat-list-item] {
-  margin-left: calc((var(--ang-table-of-contents-level, 2) - 2) * 1rem);
-  width: calc(100% - (var(--ang-table-of-contents-level, 2) - 2) * 1rem);
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+  .ang-table-of-contents--nav-list {
+    padding: 0;
+  }
 
-  @include mat.list-overrides(
-    (
-      active-indicator-color: transparent,
-      list-item-one-line-container-height: token-utils.slot(item-height, $config),
-      list-item-label-text-color: token-utils.slot(item-color, $config),
-      list-item-label-text-font: token-utils.slot(item-font, $config),
-      list-item-label-text-size: token-utils.slot(item-size, $config),
-      list-item-label-text-weight: token-utils.slot(item-weight, $config),
-      list-item-label-text-line-height: token-utils.slot(item-line-height, $config),
-      list-item-label-text-tracking: token-utils.slot(item-tracking, $config),
-    )
-  );
-}
+  .ang-table-of-contents--item {
+    margin-left: calc((var(--ang-table-of-contents--level, 2) - 2) * 1rem);
+    width: calc(100% - (var(--ang-table-of-contents--level, 2) - 2) * 1rem);
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
 
-@include breakpoints.breakpoint(medium) {
-  :host {
-    position: sticky;
-    top: 1rem;
-    justify-self: end;
+    @include mat.list-overrides(
+      (
+        active-indicator-color: transparent,
+        list-item-one-line-container-height: token-utils.slot(item-height, $config),
+        list-item-label-text-color: token-utils.slot(item-color, $config),
+        list-item-label-text-font: token-utils.slot(item-font, $config),
+        list-item-label-text-size: token-utils.slot(item-size, $config),
+        list-item-label-text-weight: token-utils.slot(item-weight, $config),
+        list-item-label-text-line-height: token-utils.slot(item-line-height, $config),
+        list-item-label-text-tracking: token-utils.slot(item-tracking, $config),
+      )
+    );
+  }
+
+  @include breakpoints.breakpoint(medium) {
     max-width: 18.75rem;
 
-    nav {
+    .ang-table-of-contents--nav {
       border: none;
     }
 
-    a[mat-list-item] {
+    .ang-table-of-contents--item {
       @include mat.list-overrides(
         (
           active-indicator-color: token-utils.slot(active-item-background-color, $config),

@@ -1,18 +1,18 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { AnyLink } from '@atlasng/common';
 
-/** Information used to render one page section in the table of contents. */
-export interface PageSectionInstance {
-  /** Text displayed for the section entry. */
+/** Information used to render one page item in the table of contents. */
+export interface TableOfContentsItem {
+  /** Text displayed for the item. */
   tagline: string;
-  /** Heading level of the corresponding page section. */
+  /** Heading level of the corresponding page item. */
   level: number;
-  /** Anchor used to identify and navigate to the corresponding section. */
+  /** Anchor used to identify and navigate to the corresponding item. */
   anchor: string;
 }
 
-/** Responsive navigation list for page sections. */
+/** Responsive navigation list for page items. */
 @Component({
   selector: 'ang-table-of-contents',
   imports: [AnyLink, MatListModule],
@@ -25,20 +25,9 @@ export class TableOfContents {
   /** Text displayed above the navigation entries. */
   readonly title = input('On this page');
 
-  /** Page sections displayed in the navigation list. */
-  readonly sections = input.required<PageSectionInstance[]>();
+  /** Page items displayed in the navigation list. */
+  readonly items = input.required<TableOfContentsItem[]>();
 
-  readonly showFirstSection = input(false, { transform: booleanAttribute });
-
-  /** Emits the anchor of the selected page section. */
-  readonly anchorSelected = output<string>();
-
-  /** Section currently highlighted in the navigation list. */
-  protected readonly activeSection = signal<string | undefined>(undefined);
-
-  /** Selects a section and emits its anchor. */
-  protected selectSection(anchor: string): void {
-    this.activeSection.set(anchor);
-    this.anchorSelected.emit(anchor);
-  }
+  /** Item currently highlighted in the navigation list. */
+  readonly activeItem = model<TableOfContentsItem | undefined>(undefined);
 }
