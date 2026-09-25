@@ -52,13 +52,11 @@ describe('FilterForm', () => {
     expect(onItemSelected).toHaveBeenCalledWith(items[1]);
   });
 
-  it('renders chips for active filters and emits chipRemoved when one is removed', async () => {
+  it('renders chips for active filters and removes chips when clicked', async () => {
     const user = userEvent.setup();
-    const onChipRemoved = vi.fn();
 
     await render(FilterForm, {
       inputs: { category: 'Organ', chips },
-      on: { chipRemoved: onChipRemoved },
     });
 
     const chip = screen.getByText('Liver').closest('mat-chip');
@@ -66,7 +64,7 @@ describe('FilterForm', () => {
 
     await user.click(screen.getByRole('button', { name: 'Remove Liver' }));
 
-    expect(onChipRemoved).toHaveBeenCalledWith(chips[0]);
+    expect(chip).not.toBeInTheDocument();
   });
 
   it('does not render a divider when disabled', async () => {
