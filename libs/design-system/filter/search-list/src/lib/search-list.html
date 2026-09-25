@@ -1,0 +1,7 @@
+@for (item of items(); track item.value) {
+  <button mat-menu-item type="button" (click)="itemSelected.emit(item)">
+    {{ item.label }}
+  </button>
+} @empty {
+  <div class="ang-search-list--empty">No items found</div>
+}

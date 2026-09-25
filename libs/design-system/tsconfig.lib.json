@@ -7,7 +7,13 @@
     "inlineSources": true,
     "types": []
   },
-  "include": ["**/*.ts", "table/**/*.ts", "table/columns/**/*.ts"],
+  "include": [
+    "**/*.ts",
+    "table/**/*.ts",
+    "table/columns/**/*.ts",
+    "filter/filter-form/**/*.ts",
+    "filter/search-list/**/*.ts"
+  ],
   "exclude": [
     ".storybook/**/*",
     "**/*.spec.ts",
@@ -23,6 +29,16 @@
     "table/columns/**/*.spec.ts",
     "table/columns/**/*.test.ts",
     "table/columns/**/*.stories.ts",
-    "table/columns/**/*.stories.js"
+    "table/columns/**/*.stories.js",
+    "filter/filter-form/.storybook/**/*",
+    "filter/filter-form/**/*.spec.ts",
+    "filter/filter-form/**/*.test.ts",
+    "filter/filter-form/**/*.stories.ts",
+    "filter/filter-form/**/*.stories.js",
+    "filter/search-list/.storybook/**/*",
+    "filter/search-list/**/*.spec.ts",
+    "filter/search-list/**/*.test.ts",
+    "filter/search-list/**/*.stories.ts",
+    "filter/search-list/**/*.stories.js"
   ]
 }

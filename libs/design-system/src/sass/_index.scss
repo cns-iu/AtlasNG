@@ -14,6 +14,7 @@
 @forward '../../cards/brand-profile-card/src/lib/tokens' as brand-profile-card-* show $brand-profile-card-overrides;
 @forward '../../cookie-banner/src/lib/tokens' as cookie-banner-* show $cookie-banner-overrides;
 @forward '../../error-page/src/lib/tokens' as error-page-* show $error-page-overrides;
+@forward '../../filter/filter-form/src/lib/tokens' as filter-form-* show filter-form-overrides;
 @forward '../../footer/src/lib/tokens' as footer-* show footer-overrides;
 @forward '../../indicators/end-of-results-indicator/src/lib/tokens' as end-of-results-indicator-* show
   end-of-results-indicator-overrides;
@@ -24,4 +25,5 @@
 @forward '../../snackbar/src/lib/tokens' as snackbar-* show snackbar-overrides;
 @forward '../../table/src/lib/tokens' as table-* show table-overrides;
 @forward '../../links/text-link/src/lib/tokens' as text-link-* show text-link-overrides;
+@forward '../../filter/search-list/src/lib/tokens' as search-list-* show search-list-overrides;
 @forward '../../youtube-player/src/lib/tokens' as youtube-player-* show youtube-player-overrides;

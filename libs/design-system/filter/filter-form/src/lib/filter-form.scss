@@ -1,0 +1,50 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: block;
+
+  .ang-filter-form--row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ang-filter-form--button-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .ang-filter-form--info {
+    @include mat.icon-button-overrides(
+      (
+        state-layer-size: 3rem,
+      )
+    );
+  }
+
+  .ang-filter-form--category {
+    color: token-utils.slot(category-text-color, $config);
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .ang-filter-form--counter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    min-height: 3rem;
+
+    font-family: token-utils.slot(counter-text-font, $config);
+    font-size: token-utils.slot(counter-text-size, $config);
+    font-weight: token-utils.slot(counter-text-weight, $config);
+    line-height: token-utils.slot(counter-text-line-height, $config);
+    letter-spacing: token-utils.slot(counter-text-tracking, $config);
+    color: token-utils.slot(counter-text-color, $config);
+  }
+
+  .ang-filter-form--divider {
+    margin-top: 2px;
+  }
+}

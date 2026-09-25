@@ -1,0 +1,12 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'search-list',
+  tokens: (
+    empty-text-color: token-utils.sys-token(on-surface-variant),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
