@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { LinkSnippet } from './link-snippet';
 
 const meta: Meta = {
-  title: 'Design System/Link Snippet',
+  title: 'Design System/Links/Link Snippet',
   component: LinkSnippet,
   parameters: {
     design: {

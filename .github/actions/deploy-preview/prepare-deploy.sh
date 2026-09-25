@@ -80,21 +80,20 @@ cp -r "${DIST_DIR}"/!(libs) "${DEPLOY_DIR}/"
 cp -r "${ACTION_PATH}/assets"/* "${DEPLOY_DIR}/"
 
 # -- step 2: write preview metadata and SPA redirects ------------------------
-# A project's output root is any directory containing an index.html, found at any depth
-# (e.g. apps/AtlasNG/browser, storybook/applications/kg-explorer, compodoc/design-system).
+# A project's output root is the outermost directory containing an index.html.
+# Nested output roots (for example composed Storybooks or Compodoc demos) are not listed.
 echo "preview.setIssueNumber(\"${ISSUE_NUMBER}\");" >>"$METADATA_FILE"
 
 for section in apps compodoc storybook; do
   section_dir="${DEPLOY_DIR}/${section}"
   [[ -d "$section_dir" ]] || continue
 
-  while IFS= read -r -d '' index_file; do
-    project_dir=$(dirname "$index_file")
+  while IFS= read -r -d '' project_dir; do
     rel_path="${project_dir#"${DEPLOY_DIR}"/}"
     echo "preview.addDirectory(\"${section}\", \"${rel_path}\");" >>"$METADATA_FILE"
 
     if [[ "$section" == "apps" ]]; then
       echo "/${rel_path}/* /${rel_path}/index.html 200" >>"${DEPLOY_DIR}/_redirects"
     fi
-  done < <(find "$section_dir" -type f -name index.html -print0 | sort -z)
+  done < <(find "$section_dir" -type d -exec test -f '{}/index.html' \; -print0 -prune)
 done
