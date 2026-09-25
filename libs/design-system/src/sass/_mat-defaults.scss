@@ -28,7 +28,20 @@ $button-defaults: (
   }
 }
 
+@mixin chip-defaults {
+  [stateless] {
+    mat-chip {
+      pointer-events: none;
+
+      span {
+        user-select: all;
+      }
+    }
+  }
+}
+
 @mixin all-defaults {
   @include button-defaults;
   @include form-field-defaults;
+  @include chip-defaults;
 }
