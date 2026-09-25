@@ -7,7 +7,7 @@ interface WithIcon {
 }
 
 const meta: Meta<TextLink & WithIcon> = {
-  title: 'Design System/Buttons/Text Link',
+  title: 'Design System/Links/Text Link',
   component: TextLink,
   decorators: [
     moduleMetadata({

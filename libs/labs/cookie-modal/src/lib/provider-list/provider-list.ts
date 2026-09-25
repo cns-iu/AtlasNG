@@ -3,7 +3,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { EventScope } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { AnyLink, IdGenerator } from '@atlasng/common';
-import { TextLink } from '@atlasng/design-system/text-link';
+import { TextLink } from '@atlasng/design-system/links/text-link';
 
 /**
  * Represents a single provider link shown in the cookie permissions list.

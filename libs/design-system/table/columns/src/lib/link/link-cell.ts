@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { AnyLink } from '@atlasng/common';
+import { TextLink } from '@atlasng/design-system/links/text-link';
 import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-system/table';
-import { TextLink } from '@atlasng/design-system/text-link';
 import { RequireExactlyOne, Simplify } from 'type-fest';
 
 /**

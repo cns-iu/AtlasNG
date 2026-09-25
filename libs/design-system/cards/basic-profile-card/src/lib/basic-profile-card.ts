@@ -2,7 +2,7 @@ import { coerceArray } from '@angular/cdk/coercion';
 import { NgOptimizedImage } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
-import { TextLink } from '@atlasng/design-system/text-link';
+import { TextLink } from '@atlasng/design-system/links/text-link';
 
 /**
  * A basic profile card component that displays a profile picture, name, description(s), and an optional link.
