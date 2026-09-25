@@ -1,0 +1,12 @@
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: block;
+
+  .ang-search-list--empty {
+    padding: 0.5rem 1rem;
+    color: token-utils.slot(empty-text-color, $config);
+    font-size: 0.875rem;
+  }
+}

@@ -1,0 +1,45 @@
+<div class="ang-filter-form--row">
+  <div class="ang-filter-form--button-group">
+    @if (info()) {
+      <button
+        class="ang-filter-form--info"
+        matIconButton
+        type="button"
+        angTrackClick
+        aria-label="Info"
+        [matTooltip]="info()"
+      >
+        <mat-icon fontIcon="info" />
+      </button>
+    }
+
+    <button class="ang-filter-form--category" mat-button type="button" angTrackClick [matMenuTriggerFor]="searchMenu">
+      {{ category() }}
+    </button>
+
+    <mat-menu #searchMenu="matMenu">
+      <ang-search-list [items]="items()" (itemSelected)="itemSelected.emit($event)" />
+    </mat-menu>
+
+    <span class="ang-filter-form--counter" matTooltip="Number of unique items per filter category">
+      {{ uniqueItemCount() | number }}
+    </span>
+  </div>
+
+  @if (hasChips()) {
+    <mat-chip-set class="ang-filter-form--chips" aria-label="Active filters">
+      @for (chip of chips(); track chip) {
+        <mat-chip disableRipple (removed)="removeChip(chip)">
+          {{ chip.label }}
+          <button matChipRemove type="button" [aria-label]="`Remove ${chip.label}`">
+            <mat-icon fontIcon="cancel" />
+          </button>
+        </mat-chip>
+      }
+    </mat-chip-set>
+  }
+</div>
+
+@if (showDivider()) {
+  <mat-divider class="ang-filter-form--divider" />
+}

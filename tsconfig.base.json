@@ -46,6 +46,9 @@
       "@atlasng/design-system/cards/brand-profile-card": ["./libs/design-system/cards/brand-profile-card/src/index.ts"],
       "@atlasng/design-system/cookie-banner": ["./libs/design-system/cookie-banner/src/index.ts"],
       "@atlasng/design-system/error-page": ["./libs/design-system/error-page/src/index.ts"],
+      "@atlasng/design-system/filter": ["./libs/design-system/filter/src/index.ts"],
+      "@atlasng/design-system/filter/filter-form": ["./libs/design-system/filter/filter-form/src/index.ts"],
+      "@atlasng/design-system/filter/search-list": ["./libs/design-system/filter/search-list/src/index.ts"],
       "@atlasng/design-system/footer": ["./libs/design-system/footer/src/index.ts"],
       "@atlasng/design-system/indicators": ["./libs/design-system/indicators/src/index.ts"],
       "@atlasng/design-system/indicators/end-of-results-indicator": [
