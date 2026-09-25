@@ -34,3 +34,7 @@ export default meta;
 type Story = StoryObj<TableOfContents>;
 
 export const Default: Story = {};
+
+export const ActiveItem: Story = {
+  args: { activeItem: items[2] },
+};
