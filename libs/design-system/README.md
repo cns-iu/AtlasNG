@@ -39,6 +39,9 @@ bootstrapApplication(AppComponent, {
   number, link, and code cell definitions are available from
   `@atlasng/design-system/table/columns`. Tables default to the `stripes`
   appearance and also support `grid`, `vertical-rules`, and `none`.
+- Version control: import `VersionControl` and its supporting data types from
+  `@atlasng/design-system/version-control` to select a version and download one
+  of its available file formats.
 
 ### TODO: Design Tokens
 

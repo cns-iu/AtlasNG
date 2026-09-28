@@ -1,0 +1,35 @@
+@use 'internal/token-utils';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 30rem;
+  background-color: token-utils.sys-slot(surface-container-low);
+  border-radius: token-utils.sys-slot(corner-small);
+  border: 1px solid token-utils.sys-slot(outline);
+}
+
+.ang-version-control--top {
+  margin: 1.5rem;
+}
+
+.ang-version-control--version {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.ang-version-control--heading {
+  margin: 0.75rem 1.5rem;
+}
+
+.ang-version-control--version-heading,
+.ang-version-control--heading {
+  color: token-utils.sys-slot(on-surface);
+  font: token-utils.sys-slot(title-medium);
+  letter-spacing: token-utils.sys-slot(title-medium-tracking);
+}
+
+.ang-version-control--download-options {
+  padding: 0;
+}

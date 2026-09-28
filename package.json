@@ -89,7 +89,8 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.69.0",
     "verdaccio": "^6.10.2",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "yaml": "^2.9.1"
   },
   "allowScripts": {
     "@parcel/watcher": true,
