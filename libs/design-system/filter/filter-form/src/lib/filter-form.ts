@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { Component, computed, input, model, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -20,6 +21,7 @@ export interface FilterChip {
 @Component({
   selector: 'ang-filter-form',
   imports: [
+    DecimalPipe,
     MatButtonModule,
     MatChipsModule,
     MatDividerModule,
