@@ -1,0 +1,35 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 19.5rem;
+  border-radius: token-utils.slot(radius, $config);
+  background: token-utils.slot(background, $config);
+  box-shadow: 0px 5px 4px 0px token-utils.slot(elevation, $config);
+
+  .ang-search-list--search {
+    width: calc(100% - 2rem);
+    padding: 1rem 1rem 0rem 1rem;
+  }
+
+  .ang-search-list--list {
+    @include mat.list-overrides(
+      (
+        list-item-one-line-container-height: 2.5rem,
+      )
+    );
+
+    overflow-y: auto;
+
+    .ang-search-list--label {
+      .ang-search-list--labels {
+        width: 100%;
+        display: inline-flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}

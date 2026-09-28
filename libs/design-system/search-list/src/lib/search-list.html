@@ -1,0 +1,36 @@
+@if (!disableSearch()) {
+  <mat-form-field class="ang-search-list--search" subscriptSizing="dynamic">
+    <mat-label>Search</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput type="text" [(ngModel)]="search" />
+  </mat-form-field>
+}
+
+<mat-selection-list
+  class="ang-search-list--list"
+  [disableRipple]="disableRipple()"
+  (selectionChange)="selectionUpdate(list.selectedOptions.selected)"
+  #list
+>
+  @for (option of filteredOptions(); track option.id) {
+    <mat-list-option
+      togglePosition="before"
+      [value]="option"
+      [selected]="selected().includes(option)"
+      [attr.aria-label]="`Toggle ${option.id}`"
+    >
+      <span class="ang-search-list--label" matListItemTitle>
+        <div class="ang-search-list--labels">
+          <span>{{ option.label }}</span>
+          <span>{{ option.count }}</span>
+        </div>
+      </span>
+      @if (option.description) {
+        <span matListItemLine>{{ option.description }}</span>
+      }
+      @if (option.description2) {
+        <span matListItemLine>{{ option.description2 }}</span>
+      }
+    </mat-list-option>
+  }
+</mat-selection-list>
