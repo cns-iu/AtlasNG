@@ -4,14 +4,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule, MatListOption } from '@angular/material/list';
+
 /** Search list option interface */
 export interface SearchListOption {
   /** Option id */
   id: string;
   /** Option label */
   label: string;
-  /** Secondary label */
+  /** Description */
   description?: string;
+  /** Secondary description */
   description2?: string;
   /** Number of results for the filter option in the data */
   count?: number;
