@@ -11,7 +11,7 @@ export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
  * @returns The corresponding heading level from 1 through 6.
  * @throws When the value is not an integer from 1 through 6 in development mode.
  */
-export function headingLevelAttribute(value: unknown): HeadingLevel {
+export function headingLevelAttribute(value: number | string): HeadingLevel {
   const level = numberAttribute(value);
 
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -31,6 +31,7 @@ export function headingLevelAttribute(value: unknown): HeadingLevel {
   imports: [NgTemplateOutlet],
   templateUrl: './heading.html',
   styleUrl: './heading.scss',
+  host: { class: 'ang-heading' },
 })
 export class Heading {
   /** Native heading level used to select the rendered `h1` through `h6` element. */
