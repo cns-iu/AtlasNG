@@ -22,7 +22,7 @@
       <span class="ang-search-list--label" matListItemTitle>
         <div class="ang-search-list--labels">
           <span>{{ option.label }}</span>
-          <span>{{ option.count }}</span>
+          <span class="ang-search-list--count">{{ option.count | number }}</span>
         </div>
       </span>
       @if (option.description) {

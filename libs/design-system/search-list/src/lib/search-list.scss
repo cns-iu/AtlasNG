@@ -16,12 +16,6 @@
   }
 
   .ang-search-list--list {
-    @include mat.list-overrides(
-      (
-        list-item-one-line-container-height: 2.5rem,
-      )
-    );
-
     overflow-y: auto;
 
     .ang-search-list--label {
@@ -30,6 +24,21 @@
         display: inline-flex;
         justify-content: space-between;
       }
+
+      .ang-search-list--count {
+        color: token-utils.slot(count-color, $config);
+        font-family: token-utils.slot(count-font, $config);
+        font-size: token-utils.slot(count-size, $config);
+        line-height: token-utils.slot(count-line-height, $config);
+        font-weight: token-utils.slot(count-weight, $config);
+        letter-spacing: token-utils.slot(count-tracking, $config);
+      }
     }
+
+    @include mat.list-overrides(
+      (
+        list-item-one-line-container-height: 2.5rem,
+      )
+    );
   }
 }

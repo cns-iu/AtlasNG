@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +22,7 @@ export interface SearchListOption {
 
 @Component({
   selector: 'ang-search-list',
-  imports: [FormsModule, MatButtonModule, MatIconModule, MatInputModule, MatListModule],
+  imports: [DecimalPipe, FormsModule, MatButtonModule, MatIconModule, MatInputModule, MatListModule],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

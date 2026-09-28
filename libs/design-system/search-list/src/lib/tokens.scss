@@ -7,6 +7,12 @@ $config: (
     background: token-utils.sys-token(surface-container-low),
     radius: token-utils.sys-token(corner-small),
     elevation: sass-utils.color-with-opacity(token-utils.sys-token(shadow), 16%),
+    count-font: token-utils.sys-token(label-small-font),
+    count-size: token-utils.sys-token(label-small-size),
+    count-line-height: token-utils.sys-token(label-small-line-height),
+    count-weight: token-utils.sys-token(label-small-weight),
+    count-tracking: token-utils.sys-token(label-small-tracking),
+    count-color: token-utils.sys-token(on-surface-variant),
   ),
 );
 

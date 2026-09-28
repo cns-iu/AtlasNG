@@ -1,5 +1,4 @@
 import { type Meta, type StoryObj } from '@storybook/angular';
-
 import { SearchList, SearchListOption } from './search-list';
 
 const FILTER_OPTIONS = [
@@ -96,7 +95,7 @@ const meta: Meta<SearchList<SearchListOption>> = {
   parameters: {
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/design/gQEMLugLjweDvbsNNUVffD/HRA-Design-System-Repository?node-id=12492-44301&t=P7zcWFRIyuDoIlRW-4',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=4926-38210',
     },
   },
   args: {
