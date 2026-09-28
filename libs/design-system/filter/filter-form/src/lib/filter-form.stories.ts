@@ -1,5 +1,4 @@
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { fn } from 'storybook/test';
 import { FilterChip, FilterForm } from './filter-form';
 
 const meta: Meta<FilterForm<FilterChip>> = {
@@ -13,19 +12,10 @@ const meta: Meta<FilterForm<FilterChip>> = {
   },
   args: {
     category: 'Category',
-    items: [
-      { value: 'heart', label: 'Heart' },
-      { value: 'lungs', label: 'Lungs' },
-      { value: 'kidney', label: 'Kidney' },
-      { value: 'liver', label: 'Liver' },
-      { value: 'spleen', label: 'Spleen' },
-    ],
     uniqueItemCount: 1000,
     chips: [{ label: 'Liver' }, { label: 'Spleen' }, { label: 'Heart' }, { label: 'Lungs' }, { label: 'Kidney' }],
     info: 'This is some information about the filter.',
     showDivider: true,
-    itemSelected: fn().mockName('itemSelected'),
-    chipRemoved: fn().mockName('chipRemoved'),
   },
   argTypes: {
     info: { control: 'text' },
@@ -41,8 +31,6 @@ const meta: Meta<FilterForm<FilterChip>> = {
     template: `
       <ang-filter-form
         ${argsToTemplate(args)}
-        (itemSelected)="itemSelected($event)"
-        (chipRemoved)="chipRemoved($event)"
         style="width: 296px; display: block;"
       />
     `,

@@ -3,10 +3,6 @@ import userEvent from '@testing-library/user-event';
 import { FilterForm } from './filter-form';
 
 describe('FilterForm', () => {
-  const items = [
-    { value: 'liver', label: 'Liver' },
-    { value: 'kidney', label: 'Kidney' },
-  ];
   const chips = [
     { value: 'liver', label: 'Liver' },
     { value: 'kidney', label: 'Kidney' },
@@ -37,19 +33,18 @@ describe('FilterForm', () => {
     expect(screen.getByText('1,000')).toBeInTheDocument();
   });
 
-  it('opens the search list flyout and emits itemSelected when an item is chosen', async () => {
+  it('emits actionClick when the category button is clicked', async () => {
     const user = userEvent.setup();
-    const onItemSelected = vi.fn();
+    const onActionClick = vi.fn();
 
     await render(FilterForm, {
-      inputs: { category: 'Organ', items },
-      on: { itemSelected: onItemSelected },
+      inputs: { category: 'Organ' },
+      on: { actionClick: onActionClick },
     });
 
     await user.click(screen.getByRole('button', { name: 'Organ' }));
-    await user.click(await screen.findByRole('menuitem', { name: 'Kidney' }));
 
-    expect(onItemSelected).toHaveBeenCalledWith(items[1]);
+    expect(onActionClick).toHaveBeenCalledOnce();
   });
 
   it('renders chips for active filters and removes chips when clicked', async () => {
