@@ -1,0 +1,37 @@
+fileFormats:
+  - fileFormat: AI
+    supportingText: Editable vector artwork for Adobe Illustrator.
+  - fileFormat: CSV
+    supportingText: Spreadsheet-friendly data organized in rows and columns.
+  - fileFormat: GLB
+    supportingText: 3D models packaged with geometry, materials, and textures.
+  - fileFormat: JPEG
+    supportingText: Compressed raster images suited for photos and web use.
+  - fileFormat: JSON
+    supportingText: Structured data for use in applications and workflows.
+  - fileFormat: JSON-LD
+    supportingText: Structured linked data that connects entities and relationships.
+  - fileFormat: JSON-LD (graph data)
+    supportingText: Connected entities and relationships from the knowledge graph.
+  - fileFormat: JSON-LD (raw data)
+    supportingText: Source records preserved before graph processing.
+  - fileFormat: N-Quads
+    supportingText: RDF statements with additional graph context.
+  - fileFormat: N-Triples
+    supportingText: RDF statements stored one per line.
+  - fileFormat: Parquet
+    supportingText: Column-based data optimized for large-scale analysis.
+  - fileFormat: PDF
+    supportingText: Fixed-layout documents that preserve text, graphics, and formatting.
+  - fileFormat: PNG
+    supportingText: High-quality raster images with transparency support.
+  - fileFormat: RDF/XML
+    supportingText: RDF data encoded using XML.
+  - fileFormat: SVG
+    supportingText: Scalable vector graphics for web, print, and editing.
+  - fileFormat: TSV
+    supportingText: Tabular data with values separated by tabs.
+  - fileFormat: Turtle
+    supportingText: Human-readable RDF data in a compact text format.
+  - fileFormat: YAML
+    supportingText: Human-readable structured data using indentation.
