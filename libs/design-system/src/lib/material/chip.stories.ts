@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const meta: Meta = {
-  title: 'Design System/Buttons/Chips',
+  title: 'Material/Chips',
   parameters: {
     design: {
       type: 'figma',
@@ -73,7 +73,7 @@ export const Group: Story = {
 export const Stateless: Story = {
   render: () => ({
     template: `
-      <mat-chip-set [disabled]="disabled" [attr.stateless]="true">
+      <mat-chip-set [disabled]="disabled">
         <mat-chip>Label</mat-chip>
         <mat-chip>
           <mat-icon matChipAvatar fontIcon="check_circle" />
@@ -81,5 +81,6 @@ export const Stateless: Story = {
         </mat-chip>
       </mat-chip-set>
     `,
+    styles: [`mat-chip { --mat-chip-hover-state-layer-opacity: 0; span { user-select: all; } }`],
   }),
 };
