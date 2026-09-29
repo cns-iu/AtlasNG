@@ -13,7 +13,7 @@ describe('FilterForm', () => {
       inputs: { category: 'Organ', info: 'About this filter' },
     });
 
-    expect(screen.getByRole('button', { name: 'Info' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Filter info' })).toBeInTheDocument();
   });
 
   it('hides the info button when info text is omitted', async () => {
