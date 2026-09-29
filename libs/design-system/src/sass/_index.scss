@@ -6,14 +6,16 @@
 @forward './breakpoints' show $breakpoints, $print-breakpoint, breakpoint;
 
 // Overrides
-@forward '../../buttons/breadcrumbs/src/lib/tokens' as breadcrumbs-* show $breadcrumbs-overrides;
-@forward '../../buttons/navigation-button/src/lib/tokens' as navigation-button-* show $navigation-button-overrides;
-@forward '../../buttons/navigation-toggle/src/lib/tokens' as navigation-toggle-* show $navigation-toggle-overrides;
-@forward '../../buttons/social-media-button/src/lib/tokens' as social-media-button-* show $social-media-button-overrides;
-@forward '../../cards/basic-profile-card/src/lib/tokens' as basic-profile-card-* show $basic-profile-card-overrides;
-@forward '../../cards/brand-profile-card/src/lib/tokens' as brand-profile-card-* show $brand-profile-card-overrides;
-@forward '../../cookie-banner/src/lib/tokens' as cookie-banner-* show $cookie-banner-overrides;
-@forward '../../error-page/src/lib/tokens' as error-page-* show $error-page-overrides;
+@forward '../../buttons/breadcrumbs/src/lib/tokens' as breadcrumbs-* show breadcrumbs-overrides;
+@forward '../../buttons/navigation-button/src/lib/tokens' as navigation-button-* show navigation-button-overrides;
+@forward '../../buttons/navigation-toggle/src/lib/tokens' as navigation-toggle-* show navigation-toggle-overrides;
+@forward '../../buttons/social-media-button/src/lib/tokens' as social-media-button-* show social-media-button-overrides;
+@forward '../../cards/basic-profile-card/src/lib/tokens' as basic-profile-card-* show basic-profile-card-overrides;
+@forward '../../cards/brand-profile-card/src/lib/tokens' as brand-profile-card-* show brand-profile-card-overrides;
+@forward '../../content/content-header/src/lib/tokens' as content-header-* show content-header-overrides;
+@forward '../../content/content-paragraph/src/lib/tokens' as content-paragraph-* show content-paragraph-overrides;
+@forward '../../cookie-banner/src/lib/tokens' as cookie-banner-* show cookie-banner-overrides;
+@forward '../../error-page/src/lib/tokens' as error-page-* show error-page-overrides;
 @forward '../../footer/src/lib/tokens' as footer-* show footer-overrides;
 @forward '../../indicators/end-of-results-indicator/src/lib/tokens' as end-of-results-indicator-* show
   end-of-results-indicator-overrides;

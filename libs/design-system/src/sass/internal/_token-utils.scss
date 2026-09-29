@@ -36,6 +36,8 @@
   $sys-fallback: map.get($tokens, $token);
   @if (sass-utils.is-css-var-name($sys-fallback)) {
     $sys-fallback: sass-utils.create-var($sys-fallback, $fallback);
+  } @else if ($sys-fallback == null) {
+    $sys-fallback: $fallback;
   }
 
   @return sass-utils.create-var(token($token, $tokens-config), $sys-fallback);
