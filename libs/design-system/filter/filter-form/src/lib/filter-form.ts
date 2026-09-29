@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
-import { RichTooltipModule } from '../../../../rich-tooltip/src';
+import { RichTooltipModule } from '@atlasng/design-system/rich-tooltip';
 
 /** A single active filter rendered as a removable chip. */
 export interface FilterChip {
