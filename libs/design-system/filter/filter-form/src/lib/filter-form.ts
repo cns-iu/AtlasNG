@@ -43,7 +43,7 @@ export class FilterForm<T extends FilterChip> {
   readonly uniqueItemCount = input(0);
 
   /** Info tooltip text. */
-  readonly info = input<string>();
+  readonly info = input<string>('Info');
 
   /** Whether the trailing divider is shown. Defaults to true. */
   readonly showDivider = input(true);

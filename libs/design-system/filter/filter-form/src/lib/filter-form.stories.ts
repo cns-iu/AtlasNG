@@ -14,7 +14,6 @@ const meta: Meta<FilterForm<FilterChip>> = {
     category: 'Category',
     uniqueItemCount: 1000,
     chips: [{ label: 'Liver' }, { label: 'Spleen' }, { label: 'Heart' }, { label: 'Lungs' }, { label: 'Kidney' }],
-    info: 'This is some information about the filter.',
     showDivider: true,
   },
   argTypes: {
