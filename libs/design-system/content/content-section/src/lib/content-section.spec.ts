@@ -1,14 +1,11 @@
 import { render, screen } from '@testing-library/angular';
-import { PageSection } from './page-section';
+import { ContentSection } from './content-section';
 
-describe('PageSection', () => {
+describe('ContentSection', () => {
   it('renders a titled section with projected content', async () => {
-    await render(
-      '<ang-page-section title="Overview"><span angPageSectionContent>Section content</span></ang-page-section>',
-      {
-        imports: [PageSection],
-      },
-    );
+    await render('<ang-content-section title="Overview" level="2"><span>Section content</span></ang-content-section>', {
+      imports: [ContentSection],
+    });
 
     expect(screen.getByRole('heading', { level: 2, name: 'Overview' })).toBeInTheDocument();
     expect(screen.getByText('Section content')).toBeInTheDocument();
@@ -17,8 +14,8 @@ describe('PageSection', () => {
 
   it('passes the heading ID to the section header', async () => {
     await render(
-      '<ang-page-section title="Overview" id="overview"><span angPageSectionContent>Section content</span></ang-page-section>',
-      { imports: [PageSection] },
+      '<ang-content-section title="Overview" level="2" id="overview"><span>Section content</span></ang-content-section>',
+      { imports: [ContentSection] },
     );
 
     expect(screen.getByRole('heading', { name: 'Overview' })).toHaveAttribute('id', 'overview');
@@ -26,8 +23,8 @@ describe('PageSection', () => {
 
   it('can hide the heading divider', async () => {
     await render(
-      '<ang-page-section title="Overview" [underlined]="false"><span angPageSectionContent>Section content</span></ang-page-section>',
-      { imports: [PageSection] },
+      '<ang-content-section title="Overview" level="2" [underlined]="false"><span>Section content</span></ang-content-section>',
+      { imports: [ContentSection] },
     );
 
     expect(screen.queryByRole('separator')).not.toBeInTheDocument();

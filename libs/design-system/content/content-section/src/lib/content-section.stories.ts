@@ -11,7 +11,7 @@ import {
 } from '@atlasng/design-system/table/columns';
 import { YouTubePlayer } from '@atlasng/design-system/youtube-player';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { PageSection } from './page-section';
+import { ContentSection } from './content-section';
 
 interface Person extends Row {
   name: string;
@@ -79,8 +79,8 @@ const SAMPLE_TEXT =
  * - Do not use a CTA button if the section header has a CTA button.
  * - If content becomes lengthy in one section, consider nesting lower level sections within it.
  */
-const meta: Meta<PageSection> = {
-  title: 'Design System/Page Section',
+const meta: Meta<ContentSection> = {
+  title: 'Design System/Content/Content Section',
   parameters: {
     design: {
       type: 'figma',
@@ -89,7 +89,7 @@ const meta: Meta<PageSection> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [PageSection, Table, MatButtonModule, YouTubePlayer, MatFormFieldModule, MatInputModule],
+      imports: [ContentSection, Table, MatButtonModule, YouTubePlayer, MatFormFieldModule, MatInputModule],
     }),
   ],
   args: {
@@ -98,24 +98,24 @@ const meta: Meta<PageSection> = {
 };
 
 export default meta;
-type Story = StoryObj<PageSection>;
+type Story = StoryObj<ContentSection>;
 
 export const Default: Story = {
   render: (args) => ({
     props: args,
     template: `
       @for (level of [2, 3, 4, 5, 6]; track level) {
-        <ang-page-section
+        <ang-content-section
           [title]="'Section title h' + level"
           [id]="'section-title-' + level"
           [underlined]="underlined"
           [level]="level"
         >
-          <span angPageSectionContent>${SAMPLE_TEXT}</span>
-        </ang-page-section>
+          <span>${SAMPLE_TEXT}</span>
+        </ang-content-section>
       }
     `,
-    styles: ['ang-page-section { margin: 0 2rem 2rem; }'],
+    styles: ['ang-content-section { margin: 0 2rem 2rem; }'],
   }),
 };
 
@@ -123,24 +123,24 @@ export const WithContent: Story = {
   render: (args) => ({
     props: { ...args, rows: ROWS, columns: COLUMNS },
     template: `
-      <ang-page-section title="People" id="people">
-        <span angPageSectionContent>${SAMPLE_TEXT}</span>
-        <span angPageSectionContent>${SAMPLE_TEXT}</span>
-        <ang-table angPageSectionContent [rows]="rows" [columns]="columns" />
-        <div angPageSectionContent>
+      <ang-content-section title="People" id="people" level="2">
+        <span>${SAMPLE_TEXT}</span>
+        <span>${SAMPLE_TEXT}</span>
+        <ang-table [rows]="rows" [columns]="columns" />
+        <div>
           <button matButton="filled">Action button</button>
           <button matButton>Action button</button>
         </div>
-        <img angPageSectionContent [attr.src]="'assets/placeholder-256x256.png'" alt="Placeholder image" />
-        <ang-youtube-player angPageSectionContent videoId="dQw4w9WgXcQ"></ang-youtube-player>
-        <mat-form-field angPageSectionContent>
+        <img [attr.src]="'assets/placeholder-256x256.png'" alt="Placeholder image" />
+        <ang-youtube-player videoId="dQw4w9WgXcQ"></ang-youtube-player>
+        <mat-form-field>
           <mat-label>Input</mat-label>
           <input matInput />
         </mat-form-field>
-      </ang-page-section>
+      </ang-content-section>
     `,
     styles: [
-      'ang-page-section { margin: 0 2rem; }',
+      'ang-content-section { margin: 0 2rem; }',
       'div {display: flex; gap: 1rem;}',
       'button, mat-form-field { width: fit-content; }',
       'ang-table { max-height: 240px; }',

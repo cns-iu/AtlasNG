@@ -1,7 +1,7 @@
 @use 'internal/token-utils';
 
 $config: (
-  namespace: 'page-section',
+  namespace: 'content-section',
   tokens: (
     font: token-utils.sys-token(body-large-font),
     line-height: token-utils.sys-token(body-large-line-height),
