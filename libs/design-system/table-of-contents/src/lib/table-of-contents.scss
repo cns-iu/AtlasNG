@@ -14,15 +14,15 @@
     overflow: hidden;
   }
 
-  .ang-table-of-contents--title {
+  .ang-table-of-contents--tagline {
     padding: 0.75rem 1rem;
-    color: token-utils.slot(title-color, $config);
-    font-family: token-utils.slot(title-font, $config);
-    font-size: token-utils.slot(title-size, $config);
-    font-weight: token-utils.slot(title-weight, $config);
-    line-height: token-utils.slot(title-line-height, $config);
-    letter-spacing: token-utils.slot(title-tracking, $config);
-    background: token-utils.slot(title-background-color, $config);
+    color: token-utils.slot(tagline-color, $config);
+    font-family: token-utils.slot(tagline-font, $config);
+    font-size: token-utils.slot(tagline-size, $config);
+    font-weight: token-utils.slot(tagline-weight, $config);
+    line-height: token-utils.slot(tagline-line-height, $config);
+    letter-spacing: token-utils.slot(tagline-tracking, $config);
+    background: token-utils.slot(tagline-background-color, $config);
     border-bottom: 1px solid token-utils.slot(border-color, $config);
   }
 
@@ -65,7 +65,7 @@
       );
     }
 
-    .ang-table-of-contents--title {
+    .ang-table-of-contents--tagline {
       background: unset;
       border-bottom: unset;
     }

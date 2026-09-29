@@ -23,7 +23,7 @@ export interface TableOfContentsItem {
 })
 export class TableOfContents {
   /** Text displayed above the navigation entries. */
-  readonly title = input('On this page');
+  readonly tagline = input('On this page');
 
   /** Page items displayed in the navigation list. */
   readonly items = input.required<TableOfContentsItem[]>();
