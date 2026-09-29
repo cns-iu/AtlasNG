@@ -1,9 +1,30 @@
 <div class="ang-filter-form--row">
   <div class="ang-filter-form--button-group">
     @if (info()) {
-      <button class="ang-filter-form--info" matIconButton angTrackClick aria-label="Filter info" [matTooltip]="info()">
+      <button
+        class="ang-filter-form--info"
+        matIconButton
+        angTrackClick
+        aria-label="Filter info"
+        [matTooltip]="info()"
+        [angRichTooltip]="tooltip"
+      >
         <mat-icon fontIcon="info" />
       </button>
+
+      <ang-rich-tooltip-container #tooltip>
+        <ang-rich-tooltip-tagline>
+          <ng-content select="[angInfoButtonTagline]">
+            <span>{{ category() }}</span>
+          </ng-content>
+        </ang-rich-tooltip-tagline>
+        <ang-rich-tooltip-content>
+          <ng-content />
+        </ang-rich-tooltip-content>
+        <ang-rich-tooltip-actions>
+          <ng-content select="[angInfoButtonActions]" />
+        </ang-rich-tooltip-actions>
+      </ang-rich-tooltip-container>
     }
 
     <button class="ang-filter-form--category" matButton angTrackClick (click)="actionClick.emit()">

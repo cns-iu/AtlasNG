@@ -1,3 +1,4 @@
+import { MatButtonModule } from '@angular/material/button';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { FilterChip, FilterForm } from './filter-form';
 
@@ -22,7 +23,7 @@ const meta: Meta<FilterForm<FilterChip>> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [FilterForm],
+      imports: [FilterForm, MatButtonModule],
     }),
   ],
   render: (args) => ({
@@ -30,8 +31,14 @@ const meta: Meta<FilterForm<FilterChip>> = {
     template: `
       <ang-filter-form
         ${argsToTemplate(args)}
-        style="width: 296px; display: block;"
-      />
+        style="width: 18.5rem"
+      >
+        <span angInfoButtonTagline>Filter Info</span>
+        This filter allows you to refine your search by selecting specific options from the available choices.
+        <div angInfoButtonActions>
+          <button matButton>Learn more</button>
+        </div>
+      </ang-filter-form>
     `,
   }),
 };
