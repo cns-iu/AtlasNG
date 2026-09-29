@@ -4,14 +4,15 @@
 :host {
   display: block;
 
-  [ang-content-section--level='2'],
-  [ang-content-section--level='3'],
-  [ang-content-section--level='4'] {
+  .ang-content-section--level-1,
+  .ang-content-section--level-2,
+  .ang-content-section--level-3,
+  .ang-content-section--level-4 {
     margin-top: 0.75rem;
   }
 
-  [ang-content-section--level='5'],
-  [ang-content-section--level='6'] {
+  .ang-content-section--level-5,
+  .ang-content-section--level-6 {
     margin-top: 0.5rem;
   }
 

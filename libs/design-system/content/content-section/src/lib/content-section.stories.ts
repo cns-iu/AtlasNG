@@ -104,7 +104,7 @@ export const Default: Story = {
   render: (args) => ({
     props: args,
     template: `
-      @for (level of [2, 3, 4, 5, 6]; track level) {
+      @for (level of [1, 2, 3, 4, 5, 6]; track level) {
         <ang-content-section
           [title]="'Section title h' + level"
           [id]="'section-title-' + level"
@@ -115,7 +115,7 @@ export const Default: Story = {
         </ang-content-section>
       }
     `,
-    styles: ['ang-content-section { margin: 0 2rem 2rem; }'],
+    styles: ['ang-content-section { margin-bottom: 2rem; }'],
   }),
 };
 
@@ -140,7 +140,6 @@ export const WithContent: Story = {
       </ang-content-section>
     `,
     styles: [
-      'ang-content-section { margin: 0 2rem; }',
       'div {display: flex; gap: 1rem;}',
       'button, mat-form-field { width: fit-content; }',
       'ang-table { max-height: 240px; }',
