@@ -51,6 +51,7 @@ class ContentScope {
    * @param type Component class.
    * @param bindings Input bindings.
    * @param projectableNodes Nodes projected into the component's `ng-content` slots.
+   * @param host Tag name of the host element to create, if not derived from the selector.
    * @returns The component's host element.
    */
   createComponent(
@@ -58,10 +59,12 @@ class ContentScope {
     type: Type<unknown>,
     bindings: Binding[],
     projectableNodes?: Node[][],
+    host?: string,
   ): Node {
     const ref = createComponent(type, {
       environmentInjector: context.environmentInjector,
       elementInjector: context.elementInjector,
+      hostElement: host === undefined ? undefined : (context.renderer.createElement(host) as Element),
       bindings,
       projectableNodes,
     });
@@ -310,7 +313,7 @@ class ContentBuilder {
 
     const bindings = createInputBindings(mirror, config, data, definition.name);
     const projectableNodes = await this.#project(mirror.ngContentSelectors, definition, element);
-    return this.#scope.createComponent(this.#context, component, bindings, projectableNodes);
+    return this.#scope.createComponent(this.#context, component, bindings, projectableNodes, definition.host);
   }
 
   /**

@@ -21,6 +21,10 @@ const string: StandardSchemaV1<string, string> = {
   },
 };
 
+// eslint-disable-next-line @angular-eslint/component-selector -- mirrors attribute-selector components like TextLink
+@Component({ selector: 'a[angTestLink]', template: '<ng-content />' })
+class Link {}
+
 @Component({ selector: 'ang-test-paragraph', template: '<p><ng-content /></p>' })
 class Paragraph {}
 
@@ -75,6 +79,7 @@ const definitions: ContentComponentDefinition[] = [
   { name: 'card', component: Card, slots: { title: '[slot=title]', body: '*' }, defaultSlot: 'body' },
   { name: 'list', component: () => List, data: { rows: 'any' }, placeholder: Placeholder, error: ErrorView },
   { name: 'eager-list', component: List, data: { rows: 'any' } },
+  { name: 'link', component: Link, host: 'a', slots: { content: '*' }, defaultSlot: 'content' },
 ];
 
 function doc(content: ContentDocument['content']): ContentDocument {
@@ -106,6 +111,12 @@ describe('ContentRenderer', () => {
     expect(await screen.findByRole('heading', { name: 'Overview' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'docs' }).closest('p')).toHaveTextContent('Read the docs.');
     expect(screen.getByText('Tail', { exact: false })).toBeInTheDocument();
+  });
+
+  it('creates the host element named by the definition', async () => {
+    await setup(doc({ component: 'link', content: 'Docs' }));
+
+    expect((await screen.findByText('Docs')).tagName).toBe('A');
   });
 
   it('projects content into named slots', async () => {
