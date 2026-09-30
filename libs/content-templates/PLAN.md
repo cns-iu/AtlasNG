@@ -5,13 +5,13 @@ Async work happens in several places: definition lookup, lazy component imports,
 
 ## Status
 
-| Phase                                                  | State                                                    |
-| ------------------------------------------------------ | -------------------------------------------------------- |
-| 1. JSON document and definition contracts              | Done (types in `src/lib/`)                               |
-| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`)                               |
-| 3. Resolver (eager loading + validation)               | Done (`src/lib/resolver/`)                               |
-| 4. Renderer, outlet host, boundaries, errors           | Done (`src/lib/renderer/`)                               |
-| 5. Built-in loaders/parsers, design-system definitions | Loaders/parsers done (`src/lib/data/`); definitions next |
+| Phase                                                  | State                                                |
+| ------------------------------------------------------ | ---------------------------------------------------- |
+| 1. JSON document and definition contracts              | Done (types in `src/lib/`)                           |
+| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`)                           |
+| 3. Resolver (eager loading + validation)               | Done (`src/lib/resolver/`)                           |
+| 4. Renderer, outlet host, boundaries, errors           | Done (`src/lib/renderer/`)                           |
+| 5. Built-in loaders/parsers, design-system definitions | Done (`src/lib/data/`, `design-system-definitions/`) |
 
 ## Decisions
 
@@ -57,7 +57,7 @@ Discrimination rules (`isContentElementNode`, `isContentDataSource`):
 
 - `content`: string -> text node; array -> node list; object **with** `component` -> single node (all three target
   the default slot); object **without** `component` -> slot record. A slot therefore cannot be named `component`.
-- `data`: string -> `{ type: <defaultLoader>, source: <string> }` config for the configured default loader (no
+- `data`: string -> `{ type: <defaultLoader>, url: <string> }` config for the configured default loader (no
   default configured -> error); array -> inline data used as is; object -> `ContentDataSource`. Inline objects use the built-in
   `inline` loader: `{ "loader": { "type": "inline", "value": { ... } } }`.
 - `loader` / `parser`: a string names a registered loader/parser; an object names it in `type` and is itself the
@@ -83,7 +83,7 @@ Example:
         "content": {
           "component": "table",
           "data": {
-            "rows": { "loader": { "type": "http", "source": "/api/sales.csv", "responseType": "text" }, "parser": "csv" },
+            "rows": { "loader": { "type": "http", "url": "/api/sales.csv", "responseType": "text" }, "parser": "csv" },
             "columns": [{ "id": "region" }, { "id": "total" }],
             "summary": "/api/summary.json"
           }
@@ -108,6 +108,7 @@ type ContentComponentDataSchema = Record<string, 'any' | StandardSchemaV1<unknow
 interface ContentComponentDefinition<TComponent = unknown> {
   name: string; // matches ContentElementNode.component
   component: ComponentOrLoader<TComponent>;
+  host?: string; // host element tag, e.g. 'a' for `a[angTextLink]`; defaults to Angular's choice
   config?: ContentComponentConfigSchema; // absent -> node must not provide config
   data?: ContentComponentDataSchema; // unknown data keys are errors
   slots?: Record<string, string>; // friendly name -> ng-content selector, e.g. { content: '*' }
@@ -176,11 +177,32 @@ interface ContentDataContext {
 Built-ins (`src/lib/data/`), registered like any other loader or parser:
 
 - `HttpContentDataLoader`: GET through `HttpClient` (create it in an injection context). Config
-  `{ type, source, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`.
+  `{ type, url, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`.
 - `InlineContentDataLoader`: config `{ type, value }`, returns `value`.
 - `JsonContentDataParser`: `JSON.parse` for strings; other input is returned unchanged.
 - `CsvContentDataParser`: RFC 4180, no dependency. Config `{ type, delimiter?: ',', header?: true }`; returns
   `Record<string, string>[]` with a header row, `string[][]` without.
+
+### Design-system definitions (`@atlasng/content-templates/design-system-definitions`)
+
+A secondary entry point, so the main entry does not depend on the design system. Each definition is a factory that
+takes a schema library modeled after zod (`ContentSchemaLibrary`: `string()`, `number()`, `boolean()`, and
+`.optional()` on schemas; zod's `z` satisfies it) and returns the definition with a lazily imported component:
+
+```ts
+provideContentTemplates(withDefinitions(createDesignSystemDefinitions(z)));
+```
+
+| Name                | Factory                              | Config                                              | Slots                       |
+| ------------------- | ------------------------------------ | --------------------------------------------------- | --------------------------- |
+| `content-header`    | `createContentHeaderDefinition(s)`   | `tagline`, `level` (number), `id?`, `underlined?`   | none                        |
+| `content-paragraph` | `createContentParagraphDefinition()` | none                                                | `content` (default)         |
+| `heading`           | `createHeadingDefinition(s)`         | `level` (number), `id?`, `tagline?` (fallback text) | `content` (default)         |
+| `link-snippet`      | `createLinkSnippetDefinition(s)`     | `url`                                               | none                        |
+| `text-link`         | `createTextLinkDefinition()`         | none; `host: 'a'`                                   | `content` (default), `icon` |
+
+Factories for definitions without config take no schema library. The unit-test build picks up the design-system Sass
+include path from `ng-package.json` (`styleIncludePaths`).
 
 ## 4. Registration (phase 2)
 
@@ -256,4 +278,7 @@ mode, unmatched input keys are skipped and content for unknown slots is dropped 
 - Compile-time checking of config/data keys against component inputs (input aliases make this unreliable).
 - Re-rendering and diffing when the document changes (nodes currently have no `key`).
 - Whether `AsyncValue` should also accept Angular `Resource` or `Signal`.
+- `text-link` has no way to set `href`: `TextLink` has no inputs, and definitions only bind inputs. Options: static
+  or config-driven host attributes on definitions, or host directives with bindings (e.g. `AnyLink`).
+- `level` is `number` only, since `ContentSchemaLibrary` has no union; string levels are rejected.
 - Final library name.

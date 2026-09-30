@@ -48,6 +48,11 @@ export interface ContentComponentDefinition<TComponent = unknown> {
   name: string;
   /** Component rendered for the node, or a lazy loader for it. */
   component: ComponentOrLoader<TComponent>;
+  /**
+   * Tag name of the host element created for the component, e.g. `a` for a component selected by `a[angTextLink]`.
+   * Defaults to the element Angular derives from the component's selector.
+   */
+  host?: string;
   /** Schema for the node's `config`. When absent, the node must not provide config. */
   config?: ContentComponentConfigSchema;
   /** Schemas for the node's `data`. When absent, the node must not provide data. */

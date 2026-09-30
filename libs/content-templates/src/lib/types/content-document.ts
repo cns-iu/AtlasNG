@@ -21,8 +21,8 @@ export interface ContentElementNode {
   /** Raw configuration, validated by the definition's config schema. */
   config?: Record<string, JsonValue>;
   /**
-   * Named data, loaded eagerly and validated by the definition's data schemas. A string is a source for the default
-   * loader, an array is inline data used as is, and an object is a {@link ContentDataSource}.
+   * Named data, loaded eagerly and validated by the definition's data schemas. A string is passed to the default
+   * loader as `{ type, url }`, an array is inline data used as is, and an object is a {@link ContentDataSource}.
    */
   data?: Record<string, string | unknown[] | ContentDataSource>;
   /**

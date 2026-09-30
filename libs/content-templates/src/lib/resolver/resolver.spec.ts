@@ -127,11 +127,11 @@ describe('ContentResolver', () => {
 
   it('loads inline, default-loader, and source data, passing configs as is', async () => {
     const loads: unknown[] = [];
-    const loader: ContentDataLoader<{ type: string; source?: string }> = {
+    const loader: ContentDataLoader<{ type: string; url?: string }> = {
       load: (config, context) => {
         loads.push(config);
         expect(context.node.component).toBe('table');
-        return of(`loaded:${String(config.source)}`);
+        return of(`loaded:${String(config.url)}`);
       },
     };
     const resolver = setup(
@@ -142,7 +142,7 @@ describe('ContentResolver', () => {
         }),
       }),
     );
-    const source = { type: 'http', source: 'b' };
+    const source = { type: 'http', url: 'b' };
     const [inline, byString, bySource] = resolver.resolve(
       doc([
         { component: 'table', data: { rows: [1, 2] } },
@@ -155,7 +155,7 @@ describe('ContentResolver', () => {
     await expect(inline.data).resolves.toEqual({ rows: [1, 2] });
     await expect(byString.data).resolves.toEqual({ rows: 'loaded:a' });
     await expect(bySource.data).resolves.toEqual({ rows: 'LOADED:B:upper', label: 'loaded:undefined' });
-    expect(loads).toContainEqual({ type: 'http', source: 'a' });
+    expect(loads).toContainEqual({ type: 'http', url: 'a' });
     expect(loads).toContain(source);
     expect(loads).toContainEqual({ type: 'http' });
   });

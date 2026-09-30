@@ -153,7 +153,7 @@ export class ContentResolver {
       if (type === undefined) {
         throw new Error(`No default data loader is configured for data '${key}' at '${path}'.`);
       }
-      return this.#loadSource({ loader: { type, source: value } }, context);
+      return this.#loadSource({ loader: { type, url: value } }, context);
     }
     if (!isContentDataSource(value)) {
       throw new ContentValidationError(path, [

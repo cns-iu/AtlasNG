@@ -27,7 +27,7 @@ describe('HttpContentDataLoader', () => {
   it('fetches json by default', async () => {
     const { loader, controller } = setup();
 
-    const result = firstValueFrom(loader.load({ type: 'http', source: '/data.json' }, context));
+    const result = firstValueFrom(loader.load({ type: 'http', url: '/data.json' }, context));
     const request = controller.expectOne('/data.json');
     request.flush({ value: 1 });
 
@@ -44,7 +44,7 @@ describe('HttpContentDataLoader', () => {
   ])('fetches with responseType %s', async (responseType, body) => {
     const { loader, controller } = setup();
 
-    const result = firstValueFrom(loader.load({ type: 'http', source: '/data', responseType }, context));
+    const result = firstValueFrom(loader.load({ type: 'http', url: '/data', responseType }, context));
     const request = controller.expectOne('/data');
     request.flush(body as never);
 
@@ -55,7 +55,7 @@ describe('HttpContentDataLoader', () => {
   it('cancels the request on unsubscribe', () => {
     const { loader, controller } = setup();
 
-    const subscription = (loader.load({ type: 'http', source: '/slow' }, context) as Observable<unknown>).subscribe();
+    const subscription = (loader.load({ type: 'http', url: '/slow' }, context) as Observable<unknown>).subscribe();
     const request = controller.expectOne('/slow');
     subscription.unsubscribe();
 
