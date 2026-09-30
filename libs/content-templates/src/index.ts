@@ -3,6 +3,8 @@ export * from './lib/registry/data-loader-registry';
 export * from './lib/registry/data-parser-registry';
 export * from './lib/registry/definition-registry';
 export * from './lib/registry/tokens';
+export * from './lib/renderer/config';
+export * from './lib/renderer/content-renderer';
 export * from './lib/resolver/errors';
 export * from './lib/resolver/guards';
 export * from './lib/resolver/resolved-content';

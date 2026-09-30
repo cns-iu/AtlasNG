@@ -10,7 +10,7 @@ Async work happens in several places: definition lookup, lazy component imports,
 | 1. JSON document and definition contracts              | Done (types in `src/lib/`)    |
 | 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`)    |
 | 3. Resolver (eager loading + validation)               | Done (`src/lib/resolver/`)    |
-| 4. Renderer, outlet host, boundaries, errors           | Next                          |
+| 4. Renderer, outlet host, boundaries, errors           | Done (`src/lib/renderer/`)    |
 | 5. Built-in loaders/parsers, design-system definitions | In progress (loaders/parsers) |
 
 ## Decisions
@@ -138,7 +138,7 @@ const tableDefinition: ContentComponentDefinition = {
 ### Bindings and slots
 
 - **Inputs:** `{ ...configOutput, ...dataOutputs }` is keyed by input _template name_ and matched against
-  `mirror.inputs[].templateName`. Each match becomes `inputBinding(propName, () => value)`. Unmatched keys and
+  `mirror.inputs[].templateName`. Each match becomes `inputBinding(templateName, () => value)`. Unmatched keys and
   config/data key collisions are dev-mode errors; unbound required inputs surface Angular's own error.
 - **Slots:** `mirror.ngContentSelectors` gives the projection indices. A slot key is looked up in `slots` and its
   selector matched against those indices. Unkeyed content goes to `defaultSlot`. Unknown slot keys, selectors missing
@@ -227,7 +227,13 @@ Renderer-level config (default error component, dev-mode strictness) uses `creat
    `libs/design-system/table/src/lib/definitions/template-definition-cache.ts`.
 4. **Errors:** a failure propagates to the nearest boundary, which shows its `error` component (or the renderer
    default). Schema failures are wrapped in a `ContentValidationError` carrying the node path and Standard Schema
-   issues.
+   issues. Every failure is also passed to Angular's `ErrorHandler`. Without any error component, the boundary renders
+   nothing. The default error component is set with `withRendererConfig({ errorComponent })`.
+
+Usage: `<ang-content-renderer [document]="document" />` (`ContentRenderer`). Changing `document` aborts pending loads
+and replaces the rendered content; destroying the renderer destroys every created component. Created components use
+the renderer's element and environment injectors and are attached to `ApplicationRef` for change detection. In prod
+mode, unmatched input keys are skipped and content for unknown slots is dropped instead of failing the boundary.
 
 ## Later
 
