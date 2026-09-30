@@ -65,10 +65,25 @@ async function readTokens(inputPath) {
   return tokens;
 }
 
+/**
+ * Flattens palette tokens into `[name, token]` entries keyed as `<Palette> <tone>`.
+ * Supports both flat exports (`Palettes["Primary 40"]`) and nested exports (`Palettes.Primary["40"]`).
+ *
+ * @param {Record<string, unknown>} palettes The `Palettes` object from the tokens file.
+ * @returns {Array<[string, any]>} Flattened palette token entries.
+ */
+function flattenPaletteEntries(palettes) {
+  return Object.entries(palettes).flatMap(([key, value]) =>
+    value && typeof value === 'object' && !('$value' in value)
+      ? Object.entries(value).map(([tone, token]) => [`${key} ${tone}`, token])
+      : [[key, value]],
+  );
+}
+
 function parseTokens(tokens) {
   const palettes = {};
 
-  for (const [key, value] of Object.entries(tokens.Palettes)) {
+  for (const [key, value] of flattenPaletteEntries(tokens.Palettes)) {
     const match = PALETTE_TOKEN_REGEX.exec(key);
     if (!match) {
       continue;
