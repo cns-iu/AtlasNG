@@ -36,7 +36,9 @@ describe('ContentDataLoaderRegistry', () => {
     const loader = registry.get('test');
 
     expect(registry.get('test')).toBe(loader);
-    expect(loader.load({}, { node: { component: 'x' }, signal: new AbortController().signal })).toBe('root');
+    expect(loader.load({ type: 'test' }, { node: { component: 'x' }, signal: new AbortController().signal })).toBe(
+      'root',
+    );
     expect(factory).toHaveBeenCalledTimes(1);
   });
 

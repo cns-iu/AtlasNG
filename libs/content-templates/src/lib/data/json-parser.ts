@@ -2,12 +2,11 @@ import { ContentDataContext, ContentDataParser } from '../types/content-data';
 
 /**
  * Configuration of {@link JsonContentDataParser}, i.e. the source's `parser` object.
- * A type alias rather than an interface so it is assignable to the registries' `Record<string, JsonValue>` config type.
  */
-export type JsonContentDataParserConfig = {
+export interface JsonContentDataParserConfig {
   /** Name the parser is registered under. */
   type: string;
-};
+}
 
 /**
  * Parses JSON text, e.g. a response loaded with `responseType: 'text'`. Non-string input is returned unchanged, so

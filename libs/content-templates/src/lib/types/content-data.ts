@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { JsonValue, Promisable } from 'type-fest';
+import { Promisable } from 'type-fest';
 import { ContentElementNode } from './content-document';
 
 /** A value available now or later. Observables use their first emission. */
@@ -17,7 +17,7 @@ export interface ContentDataContext {
  * Fetches raw data for a {@link ContentDataSource}. Loaders only fetch; transformation belongs in a parser.
  * Instances are created by a factory given at registration, which runs in an injection context; `load` does not.
  */
-export interface ContentDataLoader<TConfig = Record<string, JsonValue>, TResult = unknown> {
+export interface ContentDataLoader<TConfig extends { type: string } = { type: string }, TResult = unknown> {
   /**
    * Loads the data.
    * @param config The source's `loader` object as is, including `type`; `{ type }` for the string form.
@@ -31,7 +31,11 @@ export interface ContentDataLoader<TConfig = Record<string, JsonValue>, TResult 
  * Transforms a loader's result, e.g. parsing CSV text into rows.
  * Instances are created by a factory given at registration, which runs in an injection context; `parse` does not.
  */
-export interface ContentDataParser<TConfig = Record<string, JsonValue>, TInput = unknown, TOutput = unknown> {
+export interface ContentDataParser<
+  TConfig extends { type: string } = { type: string },
+  TInput = unknown,
+  TOutput = unknown,
+> {
   /**
    * Parses the loader's result.
    * @param input Value produced by the loader.

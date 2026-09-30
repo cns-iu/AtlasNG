@@ -5,13 +5,13 @@ Async work happens in several places: definition lookup, lazy component imports,
 
 ## Status
 
-| Phase                                                  | State                         |
-| ------------------------------------------------------ | ----------------------------- |
-| 1. JSON document and definition contracts              | Done (types in `src/lib/`)    |
-| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`)    |
-| 3. Resolver (eager loading + validation)               | Done (`src/lib/resolver/`)    |
-| 4. Renderer, outlet host, boundaries, errors           | Done (`src/lib/renderer/`)    |
-| 5. Built-in loaders/parsers, design-system definitions | In progress (loaders/parsers) |
+| Phase                                                  | State                                                    |
+| ------------------------------------------------------ | -------------------------------------------------------- |
+| 1. JSON document and definition contracts              | Done (types in `src/lib/`)                               |
+| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`)                               |
+| 3. Resolver (eager loading + validation)               | Done (`src/lib/resolver/`)                               |
+| 4. Renderer, outlet host, boundaries, errors           | Done (`src/lib/renderer/`)                               |
+| 5. Built-in loaders/parsers, design-system definitions | Loaders/parsers done (`src/lib/data/`); definitions next |
 
 ## Decisions
 
@@ -153,11 +153,11 @@ const tableDefinition: ContentComponentDefinition = {
 ```ts
 type AsyncValue<T> = T | Promise<T> | Observable<T>;
 
-interface ContentDataLoader<TConfig = Record<string, JsonValue>, TResult = unknown> {
+interface ContentDataLoader<TConfig extends { type: string } = { type: string }, TResult = unknown> {
   load(config: TConfig, context: ContentDataContext): AsyncValue<TResult>;
 }
 
-interface ContentDataParser<TConfig = Record<string, JsonValue>, TInput = unknown, TOutput = unknown> {
+interface ContentDataParser<TConfig extends { type: string } = { type: string }, TInput = unknown, TOutput = unknown> {
   parse(input: TInput, config: TConfig, context: ContentDataContext): Promisable<TOutput>;
 }
 
@@ -173,12 +173,21 @@ interface ContentDataContext {
 - `load` and `parse` do not run in an injection context; dependencies are injected when the instance is created (see
   [Registration](#4-registration-phase-2)). Observables use their first emission.
 
+Built-ins (`src/lib/data/`), registered like any other loader or parser:
+
+- `HttpContentDataLoader`: GET through `HttpClient` (create it in an injection context). Config
+  `{ type, source, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`.
+- `InlineContentDataLoader`: config `{ type, value }`, returns `value`.
+- `JsonContentDataParser`: `JSON.parse` for strings; other input is returned unchanged.
+- `CsvContentDataParser`: RFC 4180, no dependency. Config `{ type, delimiter?: ',', header?: true }`; returns
+  `Record<string, string>[]` with a header row, `string[][]` without.
+
 ## 4. Registration (phase 2)
 
 Feature functions, following `provideLinkHandler(withX(), ...)` in `libs/common`:
 
 ```ts
-provideContentTemplates(withDefinitions([contentHeaderDefinition, contentParagraphDefinition]), withLazyDefinitions({ table: () => import('./table.definition').then((m) => m.tableDefinition) }), withDataLoaders({ http: () => inject(HttpContentDataLoader), inline: () => new InlineContentDataLoader() }, { defaultLoader: 'http' }), withDataParsers({ csv: () => new CsvContentDataParser() }));
+provideContentTemplates(withDefinitions([contentHeaderDefinition, contentParagraphDefinition]), withLazyDefinitions({ table: () => import('./table.definition').then((m) => m.tableDefinition) }), withDataLoaders({ http: () => new HttpContentDataLoader(), inline: () => new InlineContentDataLoader() }, { defaultLoader: 'http' }), withDataParsers({ csv: () => new CsvContentDataParser() }));
 ```
 
 Loaders and parsers are registered as factories. A factory runs once, lazily on first use, in the environment
@@ -223,7 +232,7 @@ Renderer-level config (default error component, dev-mode strictness) uses `creat
 3. **Creation (bottom-up, synchronous once a boundary is ready):** text -> `document.createTextNode`; element ->
    `createComponent(type, { bindings, projectableNodes, elementInjector })`; nested boundary -> an
    `ang-content-outlet` host (`display: contents`) created immediately with its placeholder and projected into the
-   parent, which later renders the real node in its own `ViewContainerRef`. The `ComponentRef` lifecycle follows
+   parent, which later swaps the placeholder for the real node inside that host. The `ComponentRef` lifecycle follows
    `libs/design-system/table/src/lib/definitions/template-definition-cache.ts`.
 4. **Errors:** a failure propagates to the nearest boundary, which shows its `error` component (or the renderer
    default). Schema failures are wrapped in a `ContentValidationError` carrying the node path and Standard Schema

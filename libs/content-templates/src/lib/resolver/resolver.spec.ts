@@ -127,11 +127,11 @@ describe('ContentResolver', () => {
 
   it('loads inline, default-loader, and source data, passing configs as is', async () => {
     const loads: unknown[] = [];
-    const loader: ContentDataLoader = {
+    const loader: ContentDataLoader<{ type: string; source?: string }> = {
       load: (config, context) => {
         loads.push(config);
         expect(context.node.component).toBe('table');
-        return of(`loaded:${String(config['source'])}`);
+        return of(`loaded:${String(config.source)}`);
       },
     };
     const resolver = setup(
