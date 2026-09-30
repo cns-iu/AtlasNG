@@ -8,28 +8,24 @@
 
 <mat-selection-list
   class="ang-search-list--list"
-  [disableRipple]="disableRipple()"
   (selectionChange)="selectionUpdate(list.selectedOptions.selected)"
   #list
 >
-  @for (option of filteredOptions(); track option.id) {
+  @for (option of filteredOptions(); track $index) {
     <mat-list-option
       togglePosition="before"
       [value]="option"
       [selected]="selected().includes(option)"
-      [attr.aria-label]="`Toggle ${option.id}`"
+      [attr.aria-label]="`Toggle ${option.label}`"
     >
-      <span class="ang-search-list--label" matListItemTitle>
-        <div class="ang-search-list--labels">
-          <span>{{ option.label }}</span>
+      <div matListItemTitle>
+        <div class="ang-search-list--label-count">
+          <span class="ang-search-list--label">{{ option.label }}</span>
           <span class="ang-search-list--count">{{ option.count | number }}</span>
         </div>
-      </span>
-      @if (option.description) {
-        <span matListItemLine>{{ option.description }}</span>
-      }
-      @if (option.description2) {
-        <span matListItemLine>{{ option.description2 }}</span>
+      </div>
+      @for (line of descriptionLines(option.description); track $index) {
+        <span class="ang-search-list--description" matListItemLine>{{ line }}</span>
       }
     </mat-list-option>
   }

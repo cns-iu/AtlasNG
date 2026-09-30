@@ -4,23 +4,19 @@ import { SearchList, SearchListOption } from './search-list';
 
 const OPTIONS: SearchListOption[] = [
   {
-    id: 'alpha',
     label: 'Alpha',
-    description: 'First description',
-    description2: 'Additional alpha details',
+    description: ['First description', 'Additional alpha details'],
     count: 12,
   },
   {
-    id: 'beta',
     label: 'Beta',
     description: 'Second description',
     count: 4,
   },
-  { id: 'gamma', label: 'Gamma' },
+  { label: 'Gamma' },
 ];
 
 interface SearchListInputs {
-  disableRipple?: boolean;
   disableSearch?: boolean;
   search?: string;
   selected?: SearchListOption[];
@@ -36,13 +32,13 @@ describe('SearchList', () => {
   it('renders each option with its count and descriptions', async () => {
     await setup();
 
-    const alpha = screen.getByRole('option', { name: 'Toggle alpha' });
+    const alpha = screen.getByRole('option', { name: 'Toggle Alpha' });
     expect(within(alpha).getByText('Alpha')).toBeVisible();
     expect(within(alpha).getByText('12')).toBeVisible();
     expect(within(alpha).getByText('First description')).toBeVisible();
     expect(within(alpha).getByText('Additional alpha details')).toBeVisible();
 
-    const gamma = screen.getByRole('option', { name: 'Toggle gamma' });
+    const gamma = screen.getByRole('option', { name: 'Toggle Gamma' });
     expect(within(gamma).getByText('Gamma')).toBeVisible();
     expect(within(gamma).queryByText(/description/i)).not.toBeInTheDocument();
   });
@@ -53,9 +49,26 @@ describe('SearchList', () => {
 
     await user.type(screen.getByRole('textbox', { name: 'Search' }), 'BeTA');
 
-    expect(screen.getByRole('option', { name: 'Toggle beta' })).toBeVisible();
-    expect(screen.queryByRole('option', { name: 'Toggle alpha' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'Toggle gamma' })).not.toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Toggle Beta' })).toBeVisible();
+    expect(screen.queryByRole('option', { name: 'Toggle Alpha' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Toggle Gamma' })).not.toBeInTheDocument();
+  });
+
+  it('filters options by any description line without regard to case', async () => {
+    const user = userEvent.setup();
+    await setup();
+
+    await user.type(screen.getByRole('textbox', { name: 'Search' }), 'ALPHA DETAILS');
+
+    expect(screen.getByRole('option', { name: 'Toggle Alpha' })).toBeVisible();
+    expect(screen.queryByRole('option', { name: 'Toggle Beta' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Toggle Gamma' })).not.toBeInTheDocument();
+
+    await user.clear(screen.getByRole('textbox', { name: 'Search' }));
+    await user.type(screen.getByRole('textbox', { name: 'Search' }), 'second');
+
+    expect(screen.getByRole('option', { name: 'Toggle Beta' })).toBeVisible();
+    expect(screen.queryByRole('option', { name: 'Toggle Alpha' })).not.toBeInTheDocument();
   });
 
   it('hides the search field when search is disabled', async () => {
@@ -68,16 +81,16 @@ describe('SearchList', () => {
   it('marks options from the selected input as selected', async () => {
     await setup({ selected: [OPTIONS[1]] });
 
-    expect(screen.getByRole('option', { name: 'Toggle beta' })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('option', { name: 'Toggle alpha' })).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByRole('option', { name: 'Toggle Beta' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('option', { name: 'Toggle Alpha' })).toHaveAttribute('aria-selected', 'false');
   });
 
   it('updates the selected model when options are toggled', async () => {
     const user = userEvent.setup();
     const { fixture } = await setup();
 
-    await user.click(screen.getByRole('option', { name: 'Toggle alpha' }));
-    await user.click(screen.getByRole('option', { name: 'Toggle beta' }));
+    await user.click(screen.getByRole('option', { name: 'Toggle Alpha' }));
+    await user.click(screen.getByRole('option', { name: 'Toggle Beta' }));
 
     expect(fixture.componentInstance.selected()).toEqual([OPTIONS[0], OPTIONS[1]]);
   });

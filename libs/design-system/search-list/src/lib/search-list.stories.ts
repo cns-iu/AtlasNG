@@ -2,89 +2,74 @@ import { type Meta, type StoryObj } from '@storybook/angular';
 import { SearchList, SearchListOption } from './search-list';
 
 const FILTER_OPTIONS = [
-  { id: 'a', label: 'A', count: 9999 },
-  { id: 'ab', label: 'AB', count: 4299 },
-  { id: 'abc', label: 'ABC', count: 1799 },
-  { id: 'abcd', label: 'ABCD', count: 899 },
-  { id: 'abcde', label: 'ABCDE', count: 499 },
-  { id: 'abcdef', label: 'ABCDEF', count: 299 },
-  { id: 'abcdefg', label: 'ABCDEFG', count: 199 },
-  { id: 'abcdefgh', label: 'BACDEFGH', count: 99 },
+  { label: 'A', count: 9999 },
+  { label: 'AB', count: 4299 },
+  { label: 'ABC', count: 1799 },
+  { label: 'ABCD', count: 899 },
+  { label: 'ABCDE', count: 499 },
+  { label: 'ABCDEF', count: 299 },
+  { label: 'ABCDEFG', count: 199 },
+  { label: 'BACDEFGH', count: 99 },
 ] as SearchListOption[];
 
 const FILTER_OPTIONS_MULTI = [
-  { id: 'a', label: 'A', description: 'short description', count: 9999 },
-  { id: 'ab', label: 'AB', description: 'short description', count: 4299 },
-  { id: 'abc', label: 'ABC', description: 'short description', count: 1799 },
+  { label: 'A', description: 'short description 1', count: 9999 },
+  { label: 'AB', description: 'short description 2', count: 4299 },
+  { label: 'ABC', description: 'short description 3', count: 1799 },
   {
-    id: 'abcd',
     label: 'ABCD',
-    description: 'short description',
+    description: 'short description 4',
     count: 899,
   },
   {
-    id: 'abcde',
     label: 'ABCDE',
-    description: 'short description',
+    description: 'short description 5',
     count: 499,
   },
   {
-    id: 'abcdef',
     label: 'ABCDEF',
-    description: 'short description',
+    description: 'short description 6',
     count: 299,
   },
   {
-    id: 'abcdefg',
     label: 'ABCDEFG',
-    description: 'short description',
+    description: 'short description 7',
     count: 199,
   },
   {
-    id: 'abcdefgh',
     label: 'BACDEFGH',
-    description: 'short description',
+    description: 'short description 8',
     count: 99,
   },
 ] as SearchListOption[];
 
 const FILTER_OPTIONS_THREE_LINE = [
-  { id: 'a', label: 'A', description: 'short description', description2: 'second description', count: 9999 },
-  { id: 'ab', label: 'AB', description: 'short description', description2: 'second description', count: 4299 },
-  { id: 'abc', label: 'ABC', description: 'short description', description2: 'second description', count: 1799 },
+  { label: 'A', description: ['short description 1', 'second description 1'], count: 9999 },
+  { label: 'AB', description: ['short description 2', 'second description 2'], count: 4299 },
+  { label: 'ABC', description: ['short description 3', 'second description 3'], count: 1799 },
   {
-    id: 'abcd',
     label: 'ABCD',
-    description: 'short description',
-    description2: 'second description',
+    description: ['short description 4', 'second description 4'],
     count: 899,
   },
   {
-    id: 'abcde',
     label: 'ABCDE',
-    description: 'short description',
-    description2: 'second description',
+    description: ['short description 5', 'second description 5'],
     count: 499,
   },
   {
-    id: 'abcdef',
     label: 'ABCDEF',
-    description: 'short description',
-    description2: 'second description',
+    description: ['short description 6', 'second description 6'],
     count: 299,
   },
   {
-    id: 'abcdefg',
     label: 'ABCDEFG',
-    description: 'short description',
-    description2: 'second description',
+    description: ['short description 7', 'second description 7'],
     count: 199,
   },
   {
-    id: 'abcdefgh',
     label: 'BACDEFGH',
-    description: 'short description',
-    description2: 'second description',
+    description: ['short description 8', 'second description 8'],
     count: 99,
   },
 ] as SearchListOption[];
@@ -99,19 +84,11 @@ const meta: Meta<SearchList<SearchListOption>> = {
     },
   },
   args: {
-    selected: [
-      { id: 'a', label: 'A' },
-      { id: 'abc', label: 'ABC' },
-      { id: 'abcde', label: 'ABCDE' },
-    ],
+    selected: [{ label: 'A' }, { label: 'ABC' }, { label: 'ABCDE' }],
     disableSearch: false,
-    disableRipple: false,
   },
   argTypes: {
     disableSearch: {
-      control: 'boolean',
-    },
-    disableRipple: {
       control: 'boolean',
     },
   },
@@ -136,7 +113,7 @@ export const MultiLine: Story = {
   },
   render: (args) => ({
     props: args,
-    styles: ['ang-search-list { max-height: 22.25rem; }'],
+    styles: ['ang-search-list { max-height: 22.25rem; width: 22.5rem; }'],
   }),
 };
 
@@ -146,6 +123,6 @@ export const ThreeLine: Story = {
   },
   render: (args) => ({
     props: args,
-    styles: ['ang-search-list { max-height: 22.25rem; }'],
+    styles: ['ang-search-list { max-height: 22.25rem; width: 22.5rem; }'],
   }),
 };
