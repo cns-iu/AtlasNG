@@ -1,16 +1,16 @@
 <ng-template let-owner angRichTooltipContext #container>
-  <div class="container">
-    <div class="tagline">
+  <div class="ang-rich-tooltip--container">
+    <div class="ang-rich-tooltip--tagline">
       <ng-content select="ang-rich-tooltip-tagline">
         {{ owner.tagline() }}
       </ng-content>
     </div>
-    <div class="content">
+    <div class="ang-rich-tooltip--content">
       <ng-content select="ang-rich-tooltip-content">
         {{ owner.description() }}
       </ng-content>
     </div>
-    <div class="actions">
+    <div class="ang-rich-tooltip--actions">
       <ng-content select="ang-rich-tooltip-actions">
         @if (owner.actionText()) {
           <button mat-button color="accent" (click)="owner.actionClick.emit()">{{ owner.actionText() }}</button>

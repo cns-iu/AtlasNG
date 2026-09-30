@@ -5,14 +5,14 @@
   display: block;
 }
 
-.container {
+.ang-rich-tooltip--container {
   max-width: 19.5rem;
   width: fit-content;
   background-color: token-utils.slot(background, $config);
   border-radius: token-utils.slot(border-radius, $config);
   box-shadow: 0rem 0.125rem 0.25rem 0.125rem token-utils.slot(elevation, $config);
 
-  .tagline {
+  .ang-rich-tooltip--tagline {
     padding: 0.75rem 1rem 0.25rem 1rem;
     font-family: token-utils.slot(tagline-font, $config);
     font-size: token-utils.slot(tagline-size, $config);
@@ -22,8 +22,8 @@
     color: token-utils.slot(tagline-color, $config);
   }
 
-  .content {
-    padding: 0 1rem 0.25rem 1rem;
+  .ang-rich-tooltip--content {
+    padding: 0 1rem 0.5rem 1rem;
     font-family: token-utils.slot(content-font, $config);
     font-size: token-utils.slot(content-size, $config);
     font-weight: token-utils.slot(content-weight, $config);
@@ -32,7 +32,7 @@
     color: token-utils.slot(content-color, $config);
   }
 
-  .actions {
+  .ang-rich-tooltip--actions {
     padding: 0 0.5rem 0.25rem 0.5rem;
   }
 }
