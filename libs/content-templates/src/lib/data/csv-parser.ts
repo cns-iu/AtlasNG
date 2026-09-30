@@ -2,16 +2,15 @@ import { ContentDataContext, ContentDataParser } from '../types/content-data';
 
 /**
  * Configuration of {@link CsvContentDataParser}, i.e. the source's `parser` object.
- * A type alias rather than an interface so it is assignable to the registries' `Record<string, JsonValue>` config type.
  */
-export type CsvContentDataParserConfig = {
+export interface CsvContentDataParserConfig {
   /** Name the parser is registered under. */
   type: string;
   /** Single character separating fields. Defaults to `,`. */
   delimiter?: string;
   /** Whether the first record holds the column names. Defaults to `true`. */
   header?: boolean;
-};
+}
 
 /** Rows produced by {@link CsvContentDataParser}: objects keyed by column name with a header, arrays otherwise. */
 export type CsvContentData = Record<string, string>[] | string[][];

@@ -8,16 +8,15 @@ export type HttpContentDataResponseType = 'json' | 'text' | 'blob' | 'arraybuffe
 
 /**
  * Configuration of {@link HttpContentDataLoader}, i.e. the source's `loader` object.
- * A type alias rather than an interface so it is assignable to the registries' `Record<string, JsonValue>` config type.
  */
-export type HttpContentDataLoaderConfig = {
+export interface HttpContentDataLoaderConfig {
   /** Name the loader is registered under. */
   type: string;
   /** URL to fetch. Data given as a plain string becomes this value when this is the default loader. */
   source: string;
   /** How the response body is read. Defaults to `'json'`. */
   responseType?: HttpContentDataResponseType;
-};
+}
 
 /**
  * Fetches data with a GET request through Angular's `HttpClient`.

@@ -3,14 +3,13 @@ import { ContentDataContext, ContentDataLoader } from '../types/content-data';
 
 /**
  * Configuration of {@link InlineContentDataLoader}, i.e. the source's `loader` object.
- * A type alias rather than an interface so it is assignable to the registries' `Record<string, JsonValue>` config type.
  */
-export type InlineContentDataLoaderConfig = {
+export interface InlineContentDataLoaderConfig {
   /** Name the loader is registered under. */
   type: string;
   /** Data embedded in the document. */
   value: JsonValue;
-};
+}
 
 /**
  * Returns data embedded in the document, e.g. `{ "loader": { "type": "inline", "value": { ... } } }`.
