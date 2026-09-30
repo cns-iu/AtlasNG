@@ -1,0 +1,48 @@
+<!-- Assign to variable so exhaustive type checking works -->
+@let level = this.level();
+
+@switch (level) {
+  @case (1) {
+    <h1 [attr.id]="id() || null">
+      <ng-container *ngTemplateOutlet="content" />
+    </h1>
+  }
+
+  @case (2) {
+    <h2 [attr.id]="id() || null">
+      <ng-container *ngTemplateOutlet="content" />
+    </h2>
+  }
+
+  @case (3) {
+    <h3 [attr.id]="id() || null">
+      <ng-container *ngTemplateOutlet="content" />
+    </h3>
+  }
+
+  @case (4) {
+    <h4 [attr.id]="id() || null">
+      <ng-container *ngTemplateOutlet="content" />
+    </h4>
+  }
+
+  @case (5) {
+    <h5 [attr.id]="id() || null">
+      <ng-container *ngTemplateOutlet="content" />
+    </h5>
+  }
+
+  @case (6) {
+    <h6 [attr.id]="id() || null">
+      <ng-container *ngTemplateOutlet="content" />
+    </h6>
+  }
+
+  @default never;
+}
+
+<ng-template #content>
+  <ng-content>
+    {{ tagline() }}
+  </ng-content>
+</ng-template>

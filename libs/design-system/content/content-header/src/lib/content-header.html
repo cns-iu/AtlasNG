@@ -1,0 +1,17 @@
+<ang-heading
+  [class]="`ang-content-header--heading ang-content-header--heading-level-${level()}`"
+  [level]="level()"
+  [id]="id()"
+>
+  @if (id()) {
+    <a class="ang-content-header--link" angAnyLink="." [fragment]="id()">
+      {{ tagline() }}<mat-icon class="ang-content-header--icon" fontIcon="link" />
+    </a>
+  } @else {
+    {{ tagline() }}
+  }
+</ang-heading>
+
+@if (underlined()) {
+  <mat-divider class="ang-content-header--underline" />
+}

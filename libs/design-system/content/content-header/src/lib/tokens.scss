@@ -1,0 +1,57 @@
+@use 'internal/sass-utils';
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'content-header',
+  tokens: (
+    color: token-utils.sys-token(on-background),
+    underline-color: token-utils.sys-token(outline),
+    underline-width: 1px,
+    level-1-font: token-utils.sys-token(display-medium-font),
+    level-1-line-height: token-utils.sys-token(display-medium-line-height),
+    level-1-size: token-utils.sys-token(display-medium-size),
+    level-1-tracking: token-utils.sys-token(display-medium-tracking),
+    level-1-weight: token-utils.sys-token(display-medium-weight),
+    level-1-icon-offset: 16px,
+    level-1-underline-offset: 8px,
+    level-2-font: token-utils.sys-token(display-small-font),
+    level-2-line-height: token-utils.sys-token(display-small-line-height),
+    level-2-size: token-utils.sys-token(display-small-size),
+    level-2-tracking: token-utils.sys-token(display-small-tracking),
+    level-2-weight: token-utils.sys-token(display-small-weight),
+    level-2-icon-offset: 16px,
+    level-2-underline-offset: 6px,
+    level-3-font: token-utils.sys-token(headline-large-font),
+    level-3-line-height: token-utils.sys-token(headline-large-line-height),
+    level-3-size: token-utils.sys-token(headline-large-size),
+    level-3-tracking: token-utils.sys-token(headline-large-tracking),
+    level-3-weight: token-utils.sys-token(headline-large-weight),
+    level-3-icon-offset: 16px,
+    level-3-underline-offset: 4px,
+    level-4-font: token-utils.sys-token(headline-medium-font),
+    level-4-line-height: token-utils.sys-token(headline-medium-line-height),
+    level-4-size: token-utils.sys-token(headline-medium-size),
+    level-4-tracking: token-utils.sys-token(headline-medium-tracking),
+    level-4-weight: token-utils.sys-token(headline-medium-weight),
+    level-4-icon-offset: 12px,
+    level-4-underline-offset: 3px,
+    level-5-font: token-utils.sys-token(headline-small-font),
+    level-5-line-height: token-utils.sys-token(headline-small-line-height),
+    level-5-size: token-utils.sys-token(headline-small-size),
+    level-5-tracking: token-utils.sys-token(headline-small-tracking),
+    level-5-weight: token-utils.sys-token(headline-small-weight),
+    level-5-icon-offset: 8px,
+    level-5-underline-offset: 3px,
+    level-6-font: token-utils.sys-token(title-large-font),
+    level-6-line-height: token-utils.sys-token(title-large-line-height),
+    level-6-size: token-utils.sys-token(title-large-size),
+    level-6-tracking: token-utils.sys-token(title-large-tracking),
+    level-6-weight: token-utils.sys-token(title-large-weight),
+    level-6-icon-offset: 8px,
+    level-6-underline-offset: 3px,
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
