@@ -1,0 +1,71 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use './tokens' as *;
+
+:host {
+  display: block;
+  width: 100%;
+
+  .ang-content-header--heading {
+    text-wrap: balance;
+    color: token-utils.slot(color, $config);
+
+    @for $level from 1 through 6 {
+      &.ang-content-header--heading-level-#{$level} {
+        $font: token-utils.slot(level-#{$level}-font, $config);
+        $size: token-utils.slot(level-#{$level}-size, $config);
+        $weight: token-utils.slot(level-#{$level}-weight, $config);
+        $line-height: token-utils.slot(level-#{$level}-line-height, $config);
+        $tracking: token-utils.slot(level-#{$level}-tracking, $config);
+        $icon-offset: token-utils.slot(level-#{$level}-icon-offset, $config);
+        $underline-offset: token-utils.slot(level-#{$level}-underline-offset, $config);
+
+        font-family: $font;
+        font-size: $size;
+        font-weight: $weight;
+        line-height: $line-height;
+        letter-spacing: $tracking;
+
+        .ang-content-header--link .ang-content-header--icon {
+          margin-left: $icon-offset;
+          transform: translateY(calc(($line-height - 24px) / 2));
+        }
+
+        & + .ang-content-header--underline {
+          margin-top: $underline-offset;
+        }
+      }
+    }
+
+    .ang-content-header--link {
+      color: inherit;
+      text-decoration: none;
+
+      .ang-content-header--icon {
+        vertical-align: top;
+        visibility: hidden;
+      }
+
+      &:hover,
+      &:focus-visible {
+        .ang-content-header--icon {
+          visibility: visible;
+        }
+      }
+
+      &:focus-visible {
+        outline: solid 2px token-utils.slot(color, $config);
+        outline-offset: 1px;
+      }
+    }
+  }
+
+  .ang-content-header--underline {
+    @include mat.divider-overrides(
+      (
+        color: token-utils.slot(underline-color, $config),
+        width: token-utils.slot(underline-width, $config),
+      )
+    );
+  }
+}
