@@ -26,4 +26,5 @@
 @forward '../../links/text-link/src/lib/tokens' as text-link-* show text-link-overrides;
 @forward '../../snackbar/src/lib/tokens' as snackbar-* show snackbar-overrides;
 @forward '../../table/src/lib/tokens' as table-* show table-overrides;
+@forward '../../table-of-contents/src/lib/tokens' as table-of-contents-* show table-of-contents-overrides;
 @forward '../../youtube-player/src/lib/tokens' as youtube-player-* show youtube-player-overrides;
