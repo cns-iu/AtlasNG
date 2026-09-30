@@ -15,9 +15,13 @@ const FILTER_OPTIONS = [
 const FILTER_OPTIONS_MULTI = [
   { label: 'A', description: 'short description 1', count: 9999 },
   { label: 'AB', description: 'short description 2', count: 4299 },
-  { label: 'ABC', description: 'short description 3', count: 1799 },
   {
-    label: 'ABCD',
+    label: 'ABC',
+    description: 'A much longer description that does not wrap and is truncated once it overflows the list item',
+    count: 1799,
+  },
+  {
+    label: 'A very long option label that should wrap next to the count',
     description: 'short description 4',
     count: 899,
   },
@@ -27,7 +31,7 @@ const FILTER_OPTIONS_MULTI = [
     count: 499,
   },
   {
-    label: 'ABCDEF',
+    label: 'Another long option label to demonstrate label wrapping behavior',
     description: 'short description 6',
     count: 299,
   },
@@ -46,9 +50,13 @@ const FILTER_OPTIONS_MULTI = [
 const FILTER_OPTIONS_THREE_LINE = [
   { label: 'A', description: ['short description 1', 'second description 1'], count: 9999 },
   { label: 'AB', description: ['short description 2', 'second description 2'], count: 4299 },
-  { label: 'ABC', description: ['short description 3', 'second description 3'], count: 1799 },
   {
-    label: 'ABCD',
+    label: 'ABC',
+    description: ['A much longer first description that is truncated once it overflows', 'second description 3'],
+    count: 1799,
+  },
+  {
+    label: 'A very long option label that should wrap next to the count',
     description: ['short description 4', 'second description 4'],
     count: 899,
   },
@@ -58,8 +66,8 @@ const FILTER_OPTIONS_THREE_LINE = [
     count: 499,
   },
   {
-    label: 'ABCDEF',
-    description: ['short description 6', 'second description 6'],
+    label: 'Another long option label to demonstrate label wrapping behavior',
+    description: ['short description 6', 'A much longer second description that is also truncated once it overflows'],
     count: 299,
   },
   {

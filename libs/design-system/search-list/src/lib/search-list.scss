@@ -24,6 +24,11 @@
       justify-content: space-between;
     }
 
+    .ang-search-list--label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .ang-search-list--count {
       color: token-utils.slot(count-color, $config);
       font-family: token-utils.slot(count-font, $config);
