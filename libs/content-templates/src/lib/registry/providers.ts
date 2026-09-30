@@ -1,6 +1,7 @@
 import { EnvironmentProviders, makeEnvironmentProviders, Provider } from '@angular/core';
 import { Promisable } from 'type-fest';
 import { ContentComponentDefinition } from '../types/content-component-definition';
+import { CONTENT_RENDERER_CONFIG, ContentRendererConfig } from '../renderer/config';
 import { ContentResolver } from '../resolver/resolver';
 import { ContentDataLoaderRegistry } from './data-loader-registry';
 import { ContentDataParserRegistry } from './data-parser-registry';
@@ -33,6 +34,8 @@ export enum ContentTemplatesFeatureKind {
   DataLoaders,
   /** Feature registering data parsers. */
   DataParsers,
+  /** Feature configuring the renderer. */
+  RendererConfig,
 }
 
 /**
@@ -97,6 +100,19 @@ export function withDataParsers(factories: Record<string, ContentDataParserFacto
   return {
     kind: ContentTemplatesFeatureKind.DataParsers,
     providers: [{ provide: CONTENT_DATA_PARSERS, useValue: factories, multi: true }],
+  };
+}
+
+/**
+ * Configures the content renderer, e.g. its default error component.
+ *
+ * @param config Renderer configuration. When omitted from an injector, a parent injector's configuration applies.
+ * @returns Feature consumed by {@link provideContentTemplates}.
+ */
+export function withRendererConfig(config: ContentRendererConfig): ContentTemplatesFeature {
+  return {
+    kind: ContentTemplatesFeatureKind.RendererConfig,
+    providers: [CONTENT_RENDERER_CONFIG.provide(config)],
   };
 }
 
