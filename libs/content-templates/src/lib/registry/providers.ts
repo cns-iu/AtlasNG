@@ -1,6 +1,7 @@
 import { EnvironmentProviders, makeEnvironmentProviders, Provider } from '@angular/core';
 import { Promisable } from 'type-fest';
 import { ContentComponentDefinition } from '../types/content-component-definition';
+import { ContentResolver } from '../resolver/resolver';
 import { ContentDataLoaderRegistry } from './data-loader-registry';
 import { ContentDataParserRegistry } from './data-parser-registry';
 import { ContentDefinitionRegistry } from './definition-registry';
@@ -101,7 +102,7 @@ export function withDataParsers(factories: Record<string, ContentDataParserFacto
 
 /**
  * Creates environment providers for content templates, including a {@link ContentDefinitionRegistry},
- * {@link ContentDataLoaderRegistry}, and {@link ContentDataParserRegistry} for this injector.
+ * {@link ContentDataLoaderRegistry}, {@link ContentDataParserRegistry}, and {@link ContentResolver} for this injector.
  *
  * Names not registered here are resolved through the registries of a parent environment injector, so routes can add
  * registrations on top of the application's.
@@ -125,6 +126,7 @@ export function provideContentTemplates(...features: ContentTemplatesFeature[]):
     ContentDefinitionRegistry,
     ContentDataLoaderRegistry,
     ContentDataParserRegistry,
+    ContentResolver,
   ]);
 }
 

@@ -12,14 +12,14 @@ export interface DefaultExport<T> {
  * A component class, or a loader resolving to the class or to a module that default exports it.
  * Classes and loaders are told apart with `reflectComponentType`.
  */
-type ComponentOrLoader<T> = Type<T> | (() => Promisable<Type<T> | DefaultExport<Type<T>>>);
+export type ComponentOrLoader<T> = Type<T> | (() => Promisable<Type<T> | DefaultExport<Type<T>>>);
 
 /**
  * Validates a node's `config`. Either a single schema for the whole config object, or a schema per config key.
- * With a per-key record, keys without a schema are errors.
+ * With a per-key record, keys without a schema are errors, and a missing key is validated as `undefined`.
  */
 export type ContentComponentConfigSchema =
-  StandardSchemaV1<JsonObject, object> | Record<string, StandardSchemaV1<JsonValue, unknown>>;
+  StandardSchemaV1<JsonObject, object> | Record<string, StandardSchemaV1<JsonValue | undefined, unknown>>;
 
 /**
  * Validates a node's `data`, keyed by data name. Unknown data keys are errors.
