@@ -15,13 +15,16 @@
     "@nx/plugin:plugin-lint-checks"
   ],
   "conventionalCommits.scopes": [
+    "@atlasng/monorepo",
     "AtlasNG",
     "analytics",
     "cdk",
     "common",
     "core",
     "design-system",
+    "internal-storybook",
     "kg-explorer",
-    "labs"
+    "labs",
+    "release"
   ]
 }
