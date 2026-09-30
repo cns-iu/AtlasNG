@@ -83,6 +83,15 @@
 - Third-party framework classes such as Angular Material icon classes are exempt.
 - When renaming a class, update its templates, styles, TypeScript references, stories, and tests together.
 
+## Commit Messages
+
+- Use a Conventional Commits subject line, for example `feat(design-system): add content section component`.
+- The scope must be one allowed by [commitlint.config.mjs](commitlint.config.mjs) (Nx project names from `npx nx show projects`, plus `release`); any other scope fails CI. If no allowed scope fits, omit the scope, for example `chore: update agent instructions`.
+- When adding, renaming, or removing an Nx project, update `conventionalCommits.scopes` in [.vscode/settings.json](.vscode/settings.json) to match.
+- Default to a subject line only. Add a body only when it carries context that neither the subject nor the diff shows, such as the reason behind a non-obvious change, and keep it to a sentence or two.
+- Do not write long paragraphs or restate the diff file by file; reviewers read the diff anyway.
+- Pull request descriptions may be longer and more detailed than commit messages.
+
 ## Testing Expectations
 
 - Unit tests use `@nx/angular:unit-test` with coverage enabled by default.
