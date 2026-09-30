@@ -19,6 +19,7 @@
     "analytics",
     "cdk",
     "common",
+    "content-templates",
     "core",
     "design-system",
     "kg-explorer",

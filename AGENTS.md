@@ -28,7 +28,7 @@
 - Use `npx nx` for local commands in this repo (matches existing README examples and avoids global CLI drift).
 - Primary projects:
   - `AtlasNG` (application)
-  - `analytics`, `cdk`, `common`, `core`, `design-system`, `kg-explorer` (publishable libraries)
+  - `analytics`, `cdk`, `common`, `content-templates`, `core`, `design-system`, `kg-explorer` (publishable libraries)
 
 ## AI Customizations
 
@@ -100,6 +100,7 @@
   - [libs/analytics/README.md](libs/analytics/README.md)
   - [libs/cdk/README.md](libs/cdk/README.md)
   - [libs/common/README.md](libs/common/README.md)
+  - [libs/content-templates/README.md](libs/content-templates/README.md)
   - [libs/core/README.md](libs/core/README.md)
   - [libs/design-system/README.md](libs/design-system/README.md)
   - [libs/labs/README.md](libs/labs/README.md)
