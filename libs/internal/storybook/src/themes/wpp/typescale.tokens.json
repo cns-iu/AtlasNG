@@ -18,7 +18,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Semibold",
+        "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14758:29598",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -78,7 +78,7 @@
       },
       "Size": {
         "$type": "number",
-        "$value": 46,
+        "$value": 44,
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29600",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -86,7 +86,7 @@
       },
       "Line height": {
         "$type": "number",
-        "$value": 62,
+        "$value": 60,
         "$extensions": {
           "com.figma.variableId": "VariableID:14760:29601",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -119,7 +119,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Semibold",
+        "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33452",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -179,7 +179,7 @@
       },
       "Size": {
         "$type": "number",
-        "$value": 39,
+        "$value": 36,
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33456",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -187,7 +187,7 @@
       },
       "Line height": {
         "$type": "number",
-        "$value": 54,
+        "$value": 50,
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33457",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -195,7 +195,7 @@
       },
       "Tracking": {
         "$type": "number",
-        "$value": -0.75,
+        "$value": -1,
         "$extensions": {
           "com.figma.variableId": "VariableID:14764:33458",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -220,7 +220,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Semibold",
+        "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52731",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -280,7 +280,7 @@
       },
       "Size": {
         "$type": "number",
-        "$value": 36,
+        "$value": 32,
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52735",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -288,7 +288,7 @@
       },
       "Line height": {
         "$type": "number",
-        "$value": 44,
+        "$value": 40,
         "$extensions": {
           "com.figma.variableId": "VariableID:14767:52736",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -321,7 +321,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Semibold",
+        "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47502",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -381,7 +381,7 @@
       },
       "Size": {
         "$type": "number",
-        "$value": 32,
+        "$value": 30,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47506",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -389,7 +389,7 @@
       },
       "Line height": {
         "$type": "number",
-        "$value": 40,
+        "$value": 38,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47507",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -397,7 +397,7 @@
       },
       "Tracking": {
         "$type": "number",
-        "$value": -0.5,
+        "$value": -0.4000000059604645,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47508",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -422,7 +422,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Semibold",
+        "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47544",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -482,7 +482,7 @@
       },
       "Size": {
         "$type": "number",
-        "$value": 28,
+        "$value": 27,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47548",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -490,7 +490,7 @@
       },
       "Line height": {
         "$type": "number",
-        "$value": 36,
+        "$value": 35,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47549",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -498,7 +498,7 @@
       },
       "Tracking": {
         "$type": "number",
-        "$value": -0.4000000059604645,
+        "$value": -0.30000001192092896,
         "$extensions": {
           "com.figma.variableId": "VariableID:14769:47550",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -523,7 +523,7 @@
       },
       "Weight": {
         "$type": "string",
-        "$value": "Semibold",
+        "$value": "Medium",
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47552",
           "com.figma.scopes": ["ALL_SCOPES"],
@@ -599,7 +599,7 @@
       },
       "Tracking": {
         "$type": "number",
-        "$value": -0.20000000298023224,
+        "$value": -0.30000001192092896,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:47558",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -684,7 +684,7 @@
       },
       "Size": {
         "$type": "number",
-        "$value": 22,
+        "$value": 20,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51325",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -692,7 +692,7 @@
       },
       "Line height": {
         "$type": "number",
-        "$value": 28,
+        "$value": 26,
         "$extensions": {
           "com.figma.variableId": "VariableID:14770:51326",
           "com.figma.scopes": ["ALL_SCOPES"]
@@ -1220,6 +1220,121 @@
         "$value": 0.4000000059604645,
         "$extensions": {
           "com.figma.variableId": "VariableID:14771:56640",
+          "com.figma.scopes": ["ALL_SCOPES"]
+        }
+      }
+    },
+    "Body Paragraph": {
+      "Font": {
+        "$type": "string",
+        "$value": "Open Sans",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33868",
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.type": "string",
+          "com.figma.aliasData": {
+            "targetVariableId": "VariableID:caeeea35d3422654b1daa1d39c593cce5116c47e/-1:-1",
+            "targetVariableName": "Static/Font/Plain",
+            "targetVariableSetId": "VariableCollectionId:72d3f631b1dbfc819baf589230c4d3128582adc9/-1:-1",
+            "targetVariableSetName": "Font Theme"
+          }
+        }
+      },
+      "Weight": {
+        "$type": "string",
+        "$value": "Regular",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33869",
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.type": "string",
+          "com.figma.aliasData": {
+            "targetVariableId": "VariableID:6c08cd4633a1bfcf5a86f882e54ea887d36ff817/-1:-1",
+            "targetVariableName": "Static/Weight/Regular",
+            "targetVariableSetId": "VariableCollectionId:72d3f631b1dbfc819baf589230c4d3128582adc9/-1:-1",
+            "targetVariableSetName": "Font Theme"
+          }
+        }
+      },
+      "Weight italic": {
+        "$type": "string",
+        "$value": "Regular Italic",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33870",
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.type": "string",
+          "com.figma.aliasData": {
+            "targetVariableId": "VariableID:9667ef4dd12df637641d56f5591681fb89e296cf/-1:-1",
+            "targetVariableName": "Static/Weight Italic/Regular",
+            "targetVariableSetId": "VariableCollectionId:72d3f631b1dbfc819baf589230c4d3128582adc9/-1:-1",
+            "targetVariableSetName": "Font Theme"
+          }
+        }
+      },
+      "Weight-emphasized": {
+        "$type": "string",
+        "$value": "Semibold",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33871",
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.type": "string",
+          "com.figma.aliasData": {
+            "targetVariableId": "VariableID:19605ab3f2bdba95fec0808cfbb739eb3d665fa6/-1:-1",
+            "targetVariableName": "Static/Weight/Semibold",
+            "targetVariableSetId": "VariableCollectionId:72d3f631b1dbfc819baf589230c4d3128582adc9/-1:-1",
+            "targetVariableSetName": "Font Theme"
+          }
+        }
+      },
+      "Weight-emphasized italic": {
+        "$type": "string",
+        "$value": "Semibold Italic",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33872",
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.type": "string",
+          "com.figma.aliasData": {
+            "targetVariableId": "VariableID:edc384b94d8ce63becc2a6a38bf1fa2493f88aa0/-1:-1",
+            "targetVariableName": "Static/Weight Italic/Semibold",
+            "targetVariableSetId": "VariableCollectionId:72d3f631b1dbfc819baf589230c4d3128582adc9/-1:-1",
+            "targetVariableSetName": "Font Theme"
+          }
+        }
+      },
+      "Size": {
+        "$type": "number",
+        "$value": 17,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33873",
+          "com.figma.scopes": ["ALL_SCOPES"]
+        }
+      },
+      "Line height": {
+        "$type": "number",
+        "$value": 25.5,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33874",
+          "com.figma.scopes": ["ALL_SCOPES"]
+        }
+      },
+      "Tracking": {
+        "$type": "number",
+        "$value": 0,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33875",
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.aliasData": {
+            "targetVariableId": "VariableID:b2f6cbfabd32404bc951c5014fd4f944e3e71bc6/-1:-1",
+            "targetVariableName": "Tracking/None",
+            "targetVariableSetId": "VariableCollectionId:72d3f631b1dbfc819baf589230c4d3128582adc9/-1:-1",
+            "targetVariableSetName": "Font Theme"
+          }
+        }
+      },
+      "Paragraph Spacing": {
+        "$type": "number",
+        "$value": 17,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:17968:33876",
           "com.figma.scopes": ["ALL_SCOPES"]
         }
       }
@@ -1762,7 +1877,7 @@
       },
       "Line height": {
         "$type": "number",
-        "$value": 21,
+        "$value": 20,
         "$extensions": {
           "com.figma.variableId": "VariableID:15024:53012",
           "com.figma.scopes": ["ALL_SCOPES"]
