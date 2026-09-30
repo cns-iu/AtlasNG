@@ -5,13 +5,13 @@ Async work happens in several places: definition lookup, lazy component imports,
 
 ## Status
 
-| Phase                                                  | State                      |
-| ------------------------------------------------------ | -------------------------- |
-| 1. JSON document and definition contracts              | Done (types in `src/lib/`) |
-| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`) |
-| 3. Resolver (eager loading + validation)               | Next                       |
-| 4. Renderer, outlet host, boundaries, errors           | Planned                    |
-| 5. Built-in loaders/parsers, design-system definitions | Planned                    |
+| Phase                                                  | State                         |
+| ------------------------------------------------------ | ----------------------------- |
+| 1. JSON document and definition contracts              | Done (types in `src/lib/`)    |
+| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`)    |
+| 3. Resolver (eager loading + validation)               | Done (`src/lib/resolver/`)    |
+| 4. Renderer, outlet host, boundaries, errors           | Next                          |
+| 5. Built-in loaders/parsers, design-system definitions | In progress (loaders/parsers) |
 
 ## Decisions
 
@@ -57,8 +57,8 @@ Discrimination rules (`isContentElementNode`, `isContentDataSource`):
 
 - `content`: string -> text node; array -> node list; object **with** `component` -> single node (all three target
   the default slot); object **without** `component` -> slot record. A slot therefore cannot be named `component`.
-- `data`: string -> `{ source: <string> }` config for the configured default loader (no default configured ->
-  dev-mode error); array -> inline data used as is; object -> `ContentDataSource`. Inline objects use the built-in
+- `data`: string -> `{ type: <defaultLoader>, source: <string> }` config for the configured default loader (no
+  default configured -> error); array -> inline data used as is; object -> `ContentDataSource`. Inline objects use the built-in
   `inline` loader: `{ "loader": { "type": "inline", "value": { ... } } }`.
 - `loader` / `parser`: a string names a registered loader/parser; an object names it in `type` and is itself the
   config (passed as is, `type` included).
@@ -83,7 +83,7 @@ Example:
         "content": {
           "component": "table",
           "data": {
-            "rows": { "loader": { "type": "http", "url": "/api/sales.csv" }, "parser": "csv" },
+            "rows": { "loader": { "type": "http", "source": "/api/sales.csv", "responseType": "text" }, "parser": "csv" },
             "columns": [{ "id": "region" }, { "id": "total" }],
             "summary": "/api/summary.json"
           }
@@ -101,7 +101,7 @@ type ComponentOrLoader<T> = Type<T> | (() => Promisable<Type<T> | DefaultExport<
 
 type ContentComponentConfigSchema =
   | StandardSchemaV1<JsonObject, object> // whole config object
-  | Record<string, StandardSchemaV1<JsonValue, unknown>>; // one schema per config key
+  | Record<string, StandardSchemaV1<JsonValue | undefined, unknown>>; // one schema per config key
 
 type ContentComponentDataSchema = Record<string, 'any' | StandardSchemaV1<unknown> | { schema: 'any' | StandardSchemaV1<unknown>; defaultValue?: unknown }>;
 
@@ -209,8 +209,17 @@ Renderer-level config (default error component, dev-mode strictness) uses `creat
    validation; component load; and for each data entry, loader lookup -> load -> parser lookup -> parse -> schema
    validation. This produces a tree of per-node promises/signals. Nothing waits on its parent, so a parent's data
    cannot feed its children.
+
+   Implemented as `ContentResolver.resolve(document, signal): ResolvedContentNode[]` (provided by
+   `provideContentTemplates`). Text becomes `{ kind: 'text', path, text }`; an element becomes a
+   `ResolvedContentElement` with `definition`, `component`, `config`, `data`, and `ready` promises (all marked handled)
+   plus `defaultContent` / `slotContent` children. Config and data outputs omit `undefined` values so input defaults
+   apply. Observable loads use the first emission and are unsubscribed when `signal` aborts. Structural problems (bad
+   version, a node that is neither a string nor an element) throw `ContentValidationError` synchronously.
+
 2. **Boundaries:** the renderer root is always a boundary, and every node with a `placeholder` starts a new one. A
-   boundary is ready when all nodes in it (stopping at nested boundaries) are resolved.
+   boundary is ready when all nodes in it (stopping at nested boundaries) are resolved: `whenContentReady(nodes)` /
+   `whenElementReady(element)` in `resolver/boundary.ts`.
 3. **Creation (bottom-up, synchronous once a boundary is ready):** text -> `document.createTextNode`; element ->
    `createComponent(type, { bindings, projectableNodes, elementInjector })`; nested boundary -> an
    `ang-content-outlet` host (`display: contents`) created immediately with its placeholder and projected into the
