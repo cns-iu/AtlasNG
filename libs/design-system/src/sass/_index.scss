@@ -14,6 +14,7 @@
 @forward '../../cards/brand-profile-card/src/lib/tokens' as brand-profile-card-* show brand-profile-card-overrides;
 @forward '../../content/content-header/src/lib/tokens' as content-header-* show content-header-overrides;
 @forward '../../content/content-paragraph/src/lib/tokens' as content-paragraph-* show content-paragraph-overrides;
+@forward '../../content/content-section/src/lib/tokens' as content-section-* show content-section-overrides;
 @forward '../../cookie-banner/src/lib/tokens' as cookie-banner-* show cookie-banner-overrides;
 @forward '../../error-page/src/lib/tokens' as error-page-* show error-page-overrides;
 @forward '../../footer/src/lib/tokens' as footer-* show footer-overrides;
