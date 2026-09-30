@@ -1,3 +1,7 @@
+export * from './lib/data/csv-parser';
+export * from './lib/data/http-loader';
+export * from './lib/data/inline-loader';
+export * from './lib/data/json-parser';
 export * from './lib/registry/providers';
 export * from './lib/registry/data-loader-registry';
 export * from './lib/registry/data-parser-registry';
