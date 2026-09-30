@@ -8,8 +8,8 @@ Async work happens in several places: definition lookup, lazy component imports,
 | Phase                                                  | State                      |
 | ------------------------------------------------------ | -------------------------- |
 | 1. JSON document and definition contracts              | Done (types in `src/lib/`) |
-| 2. Registry providers (`provideContentTemplates`)      | Next                       |
-| 3. Resolver (eager loading + validation)               | Planned                    |
+| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`) |
+| 3. Resolver (eager loading + validation)               | Next                       |
 | 4. Renderer, outlet host, boundaries, errors           | Planned                    |
 | 5. Built-in loaders/parsers, design-system definitions | Planned                    |
 
@@ -178,15 +178,30 @@ interface ContentDataContext {
 Feature functions, following `provideLinkHandler(withX(), ...)` in `libs/common`:
 
 ```ts
-provideContentTemplates(withDefinitions([contentHeaderDefinition, contentParagraphDefinition]), withLazyDefinitions({ table: () => import('./table.definition').then((m) => m.tableDefinition) }), withDataLoaders({ http: () => inject(HttpContentDataLoader), inline: () => new InlineContentDataLoader() }, { default: 'http' }), withDataParsers({ csv: () => new CsvContentDataParser() }));
+provideContentTemplates(withDefinitions([contentHeaderDefinition, contentParagraphDefinition]), withLazyDefinitions({ table: () => import('./table.definition').then((m) => m.tableDefinition) }), withDataLoaders({ http: () => inject(HttpContentDataLoader), inline: () => new InlineContentDataLoader() }, { defaultLoader: 'http' }), withDataParsers({ csv: () => new CsvContentDataParser() }));
 ```
 
 Loaders and parsers are registered as factories. A factory runs once, lazily on first use, in the environment
 injection context and returns the instance, so it can `inject()` dependencies.
 
+Each feature contributes a record to a multi token (`CONTENT_COMPONENT_DEFINITIONS`, `CONTENT_DATA_LOADERS`,
+`CONTENT_DATA_PARSERS`). `withDataLoaders(factories, config?)` also provides a `ContentDataLoaderConfig`
+(`{ defaultLoader?: string }`, open for extension) through `CONTENT_DATA_LOADER_CONFIG`, a `createConfigurationToken`
+from `@atlasng/core`. A child injector without its own config inherits the parent's.
+
+`provideContentTemplates` provides three registries for its environment injector, each with a single `get(name)`:
+
+- `ContentDefinitionRegistry.get(name): Promise<ContentComponentDefinition>` loads lazy definitions once, and retries
+  a failed load on the next call. A lazy definition whose `name` differs from its key rejects.
+- `ContentDataLoaderRegistry.get(name)` / `ContentDataParserRegistry.get(name)` create instances once and cache them.
+- Unknown names are delegated to the same registry in a parent environment injector, so route providers add to the
+  application's registrations. Without one, lookups reject/throw `Unknown <kind> '<name>'.` in all modes; the resolver
+  surfaces this at the nearest boundary.
+- Dev mode only: duplicate names within one injector, a `defaultLoader` that is not among its loaders, and more than
+  one loader config in one `provideContentTemplates` all throw.
+
 Renderer-level config (default error component, dev-mode strictness) uses `createConfigurationToken` from
-`libs/core/src/lib/configuration-token.ts`. An unknown `component` throws in dev mode, like the social-media-button
-definition lookup (`libs/design-system/buttons/social-media-button/src/lib/social-media-button-definitions.ts`).
+`libs/core/src/lib/configuration-token.ts`.
 
 ## 5. Rendering pipeline (phases 3-4)
 
