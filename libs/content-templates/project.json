@@ -11,7 +11,11 @@
     },
     "build-compodoc": {},
     "compodoc": {},
-    "test": {},
+    "test": {
+      "options": {
+        "setupFiles": ["{projectRoot}/src/test-setup.ts"]
+      }
+    },
     "nx-release-publish": {}
   }
 }
