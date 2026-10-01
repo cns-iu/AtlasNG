@@ -12,8 +12,8 @@ const VARIANTS: [NoticeVariant, string, string][] = [
 ];
 
 describe('Notice', () => {
-  it('renders the heading and projected body content', async () => {
-    await render('<ang-notice heading="Notice">This page was recently updated.</ang-notice>', {
+  it('renders the tagline and projected body content', async () => {
+    await render('<ang-notice tagline="Notice">This page was recently updated.</ang-notice>', {
       imports: [Notice],
     });
 
@@ -21,20 +21,28 @@ describe('Notice', () => {
     expect(screen.getByText('This page was recently updated.')).toBeVisible();
   });
 
-  it('omits the heading when none is provided', async () => {
-    const heading = signal<string | undefined>('Notice');
-    const { fixture } = await render('<ang-notice [heading]="heading()">Body text</ang-notice>', {
+  it('omits the tagline when none is provided', async () => {
+    const tagline = signal<string | undefined>('Notice');
+    const { fixture } = await render('<ang-notice [tagline]="tagline()">Body text</ang-notice>', {
       imports: [Notice],
-      componentProperties: { heading },
+      componentProperties: { tagline },
     });
 
     expect(screen.getByText('Notice')).toBeInTheDocument();
 
-    heading.set(undefined);
+    tagline.set(undefined);
     fixture.detectChanges();
 
     expect(screen.queryByText('Notice')).not.toBeInTheDocument();
     expect(screen.getByText('Body text')).toBeVisible();
+  });
+
+  it('renders the tagline as a heading when a level is set', async () => {
+    await render('<ang-notice tagline="Before you begin" [level]="3">Body text</ang-notice>', {
+      imports: [Notice],
+    });
+
+    expect(screen.getByRole('heading', { level: 3, name: 'Before you begin' })).toBeVisible();
   });
 
   it('defaults to the info variant', async () => {
@@ -43,29 +51,15 @@ describe('Notice', () => {
     expect(fixture.nativeElement).toHaveClass('ang-notice', 'ang-notice--variant-info');
   });
 
-  it.each(VARIANTS)('applies the %s variant class, icon, and label', async (variant, icon, label) => {
+  it.each(VARIANTS)('applies the %s variant class and labeled icon', async (variant, icon, label) => {
     const { fixture } = await render(Notice, { inputs: { variant } });
 
     expect(fixture.nativeElement).toHaveClass('ang-notice', `ang-notice--variant-${variant}`);
-    expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('data-mat-icon-name', icon);
-    expect(screen.getByText(`${label}:`)).toBeInTheDocument();
-  });
-
-  it('uses a custom screen-reader label when provided', async () => {
-    await render(Notice, { inputs: { variant: 'warning', variantLabel: 'Heads up' } });
-
-    expect(screen.getByText('Heads up:')).toBeInTheDocument();
-    expect(screen.queryByText('Warning:')).not.toBeInTheDocument();
-  });
-
-  it('hides the decorative icon from assistive technology', async () => {
-    await render(Notice);
-
-    expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByRole('img', { name: label })).toHaveAttribute('data-mat-icon-name', icon);
   });
 
   it('does not announce itself or add to the document outline', async () => {
-    await render('<ang-notice variant="critical" heading="Notice">Body text</ang-notice>', {
+    await render('<ang-notice variant="critical" tagline="Notice">Body text</ang-notice>', {
       imports: [Notice],
     });
 
@@ -76,7 +70,7 @@ describe('Notice', () => {
 
   it('keeps projected links reachable by keyboard', async () => {
     const user = userEvent.setup();
-    await render('<ang-notice heading="Notice">See the <a href="/changelog">changelog</a>.</ang-notice>', {
+    await render('<ang-notice tagline="Notice">See the <a href="/changelog">changelog</a>.</ang-notice>', {
       imports: [Notice],
     });
 

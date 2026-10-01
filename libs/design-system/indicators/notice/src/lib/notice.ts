@@ -1,37 +1,37 @@
 import { Component, computed, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { Heading } from '@atlasng/design-system/content/heading';
 
 /** Visual and semantic tone of a notice. */
 export type NoticeVariant = 'info' | 'success' | 'warning' | 'critical' | 'unavailable';
 
-/** Material icon shown for each notice variant. */
-const VARIANT_ICONS: Record<NoticeVariant, string> = {
-  info: 'info',
-  success: 'check_circle',
-  warning: 'warning',
-  critical: 'dangerous',
-  unavailable: 'warning',
-};
+/** Icon shown for a notice variant and the label that names it for screen readers. */
+interface NoticeVariantConfig {
+  /** Material icon name. */
+  readonly icon: string;
+  /** Accessible name of the icon. */
+  readonly label: string;
+}
 
-/** Default screen-reader text that conveys each variant's tone. */
-const VARIANT_LABELS: Record<NoticeVariant, string> = {
-  info: 'Info',
-  success: 'Success',
-  warning: 'Warning',
-  critical: 'Critical',
-  unavailable: 'Unavailable',
+/** Icon and screen-reader label for each notice variant. */
+const VARIANT_CONFIGS: Record<NoticeVariant, NoticeVariantConfig> = {
+  info: { icon: 'info', label: 'Info' },
+  success: { icon: 'check_circle', label: 'Success' },
+  warning: { icon: 'warning', label: 'Warning' },
+  critical: { icon: 'dangerous', label: 'Critical' },
+  unavailable: { icon: 'warning', label: 'Unavailable' },
 };
 
 /**
  * Static message box that highlights information within page content.
  *
- * Each variant pairs a color treatment with an icon, and a visually hidden label
- * conveys the variant to screen readers. The notice does not announce itself, so it
- * suits content that is present when the page loads rather than feedback to an action.
+ * Each variant pairs a color treatment with an icon whose accessible name conveys the
+ * variant to screen readers. The notice does not announce itself, so it suits content
+ * that is present when the page loads rather than feedback to an action.
  */
 @Component({
   selector: 'ang-notice',
-  imports: [MatIconModule],
+  imports: [Heading, MatIconModule],
   templateUrl: './notice.html',
   styleUrl: './notice.scss',
   host: {
@@ -43,15 +43,15 @@ export class Notice {
   /** Tone of the notice, which sets its colors, icon, and screen-reader label. */
   readonly variant = input<NoticeVariant>('info');
 
-  /** Optional title shown above the body. Rendered as text rather than a document heading. */
-  readonly heading = input<string>();
+  /** Optional title shown above the body. Rendered as text unless `level` is set. */
+  readonly tagline = input<string>();
 
-  /** Screen-reader text read before the content. Defaults to a label for the variant. */
-  readonly variantLabel = input<string>();
+  /**
+   * Optional heading level for the tagline. When set, the tagline renders as a native heading
+   * so it appears in the document outline; use one level below the surrounding section.
+   */
+  readonly level = input<number | string>();
 
-  /** Material icon name for the current variant. */
-  protected readonly icon = computed(() => VARIANT_ICONS[this.variant()]);
-
-  /** Screen-reader label for the current variant. */
-  protected readonly resolvedVariantLabel = computed(() => this.variantLabel() ?? VARIANT_LABELS[this.variant()]);
+  /** Icon and screen-reader label for the current variant. */
+  protected readonly config = computed(() => VARIANT_CONFIGS[this.variant()]);
 }

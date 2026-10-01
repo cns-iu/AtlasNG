@@ -42,7 +42,8 @@ bootstrapApplication(AppComponent, {
 - Notice: import `Notice` and `NoticeVariant` from
   `@atlasng/design-system/indicators/notice`. Notices highlight static page content
   and support the `info` (default), `success`, `warning`, `critical`, and
-  `unavailable` variants.
+  `unavailable` variants. Set `level` to render the tagline as a heading one
+  level below its surrounding section.
 
 ### TODO: Design Tokens
 

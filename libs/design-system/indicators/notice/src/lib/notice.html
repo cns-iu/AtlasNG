@@ -1,8 +1,11 @@
-<mat-icon class="ang-notice--icon" [fontIcon]="icon()" />
+<mat-icon class="ang-notice--icon" aria-hidden="false" [attr.aria-label]="config().label" [fontIcon]="config().icon" />
 <div class="ang-notice--content">
-  <span class="ang-notice--variant-label">{{ resolvedVariantLabel() }}:</span>
-  @if (heading()) {
-    <div class="ang-notice--heading">{{ heading() }}</div>
+  @if (tagline(); as tagline) {
+    @if (level(); as level) {
+      <ang-heading class="ang-notice--tagline" [level]="level" [tagline]="tagline" />
+    } @else {
+      <div class="ang-notice--tagline">{{ tagline }}</div>
+    }
   }
   <div class="ang-notice--body"><ng-content /></div>
 </div>

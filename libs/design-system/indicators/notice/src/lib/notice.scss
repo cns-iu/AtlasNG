@@ -4,14 +4,11 @@
 $variants: (info, success, warning, critical, unavailable);
 
 :host {
-  position: relative;
   display: flex;
   align-items: flex-start;
-  gap: token-utils.slot(icon-gap, $config);
-  box-sizing: border-box;
-  width: 100%;
-  padding: token-utils.slot(padding, $config);
-  border: token-utils.slot(outline-width, $config) solid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid;
   border-radius: token-utils.slot(container-shape, $config);
 
   .ang-notice--icon {
@@ -22,24 +19,12 @@ $variants: (info, success, warning, critical, unavailable);
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: token-utils.slot(heading-gap, $config);
+    gap: 0.25rem;
     min-width: 0;
     overflow-wrap: anywhere;
   }
 
-  .ang-notice--variant-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  .ang-notice--heading {
+  .ang-notice--tagline {
     font-family: token-utils.sys-slot(title-medium-font);
     font-size: token-utils.sys-slot(title-medium-size);
     font-weight: token-utils.sys-slot(title-medium-weight);
@@ -54,23 +39,23 @@ $variants: (info, success, warning, critical, unavailable);
     line-height: token-utils.sys-slot(body-large-line-height);
     letter-spacing: token-utils.sys-slot(body-large-tracking);
   }
-}
 
-@each $variant in $variants {
-  :host(.ang-notice--variant-#{$variant}) {
-    border-color: token-utils.slot(#{$variant}-outline-color, $config);
-    background-color: token-utils.slot(#{$variant}-container-color, $config);
+  @each $variant in $variants {
+    &.ang-notice--variant-#{$variant} {
+      border-color: token-utils.slot(#{$variant}-color, $config);
+      background-color: token-utils.slot(#{$variant}-container-color, $config);
 
-    .ang-notice--icon {
-      color: token-utils.slot(#{$variant}-icon-color, $config);
-    }
+      .ang-notice--icon {
+        color: token-utils.slot(#{$variant}-color, $config);
+      }
 
-    .ang-notice--heading {
-      color: token-utils.slot(#{$variant}-heading-color, $config);
-    }
+      .ang-notice--tagline {
+        color: token-utils.slot(#{$variant}-tagline-color, $config);
+      }
 
-    .ang-notice--body {
-      color: token-utils.slot(#{$variant}-body-color, $config);
+      .ang-notice--body {
+        color: token-utils.slot(#{$variant}-body-color, $config);
+      }
     }
   }
 }
