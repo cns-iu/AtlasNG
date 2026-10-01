@@ -1,0 +1,8 @@
+<mat-icon class="ang-notice--icon" [fontIcon]="icon()" />
+<div class="ang-notice--content">
+  <span class="ang-notice--variant-label">{{ resolvedVariantLabel() }}:</span>
+  @if (heading()) {
+    <div class="ang-notice--heading">{{ heading() }}</div>
+  }
+  <div class="ang-notice--body"><ng-content /></div>
+</div>
