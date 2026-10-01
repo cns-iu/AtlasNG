@@ -37,26 +37,24 @@ describe('Notice', () => {
     expect(screen.getByText('Body text')).toBeVisible();
   });
 
-  it('renders the tagline as a heading when a level is set', async () => {
-    await render('<ang-notice tagline="Before you begin" [level]="3">Body text</ang-notice>', {
-      imports: [Notice],
-    });
-
-    expect(screen.getByRole('heading', { level: 3, name: 'Before you begin' })).toBeVisible();
-  });
-
   it('defaults to the info variant', async () => {
     const { fixture } = await render(Notice);
 
     expect(fixture.nativeElement).toHaveClass('ang-notice', 'ang-notice--variant-info');
   });
 
-  it.each(VARIANTS)('applies the %s variant class, icon, and content label', async (variant, icon, label) => {
+  it.each(VARIANTS)('applies the %s variant class, icon, and screen-reader label', async (variant, icon, label) => {
     const { fixture } = await render(Notice, { inputs: { variant } });
 
     expect(fixture.nativeElement).toHaveClass('ang-notice', `ang-notice--variant-${variant}`);
     expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('data-mat-icon-name', icon);
-    expect(screen.getByRole('group', { name: label })).toBeInTheDocument();
+    expect(screen.getByText(`${label}:`)).toHaveClass('cdk-visually-hidden');
+  });
+
+  it('exposes the notice with the note role', async () => {
+    await render(Notice);
+
+    expect(screen.getByRole('note')).toBeInTheDocument();
   });
 
   it('hides the decorative icon from assistive technology', async () => {
@@ -65,13 +63,14 @@ describe('Notice', () => {
     expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it('leaves the content unlabeled when a tagline names the notice', async () => {
+  it('prefixes the tagline with the variant label', async () => {
     await render('<ang-notice variant="warning" tagline="Deprecated version">Body text</ang-notice>', {
       imports: [Notice],
     });
 
-    expect(screen.queryByRole('group')).not.toBeInTheDocument();
+    expect(screen.getByText('Warning:')).toHaveClass('cdk-visually-hidden');
     expect(screen.getByText('Deprecated version')).toBeVisible();
+    expect(screen.getByRole('note')).toHaveTextContent(/^Warning:\s*Deprecated version/);
   });
 
   it('does not announce itself or add to the document outline', async () => {

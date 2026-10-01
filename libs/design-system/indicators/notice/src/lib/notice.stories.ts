@@ -35,13 +35,6 @@ const meta: Meta<NoticeArgs> = {
       control: 'text',
       description: 'Optional title shown above the body.',
     },
-    level: {
-      control: 'select',
-      options: [1, 2, 3, 4, 5, 6],
-      description:
-        'Optional heading level for the tagline. Use one level below the surrounding section so the tagline ' +
-        'appears in the document outline.',
-    },
     content: {
       control: 'text',
       description: 'The text projected into the notice body.',
@@ -146,16 +139,12 @@ export const Variants: Story = {
   }),
 };
 
-/**
- * A notice placed between paragraphs of a content section, as on a documentation page. Its tagline uses
- * heading level 3, one level below the section's level 2 heading.
- */
+/** A notice placed between paragraphs of a content section, as on a documentation page. */
 export const InContentSection: Story = {
   decorators: [moduleMetadata({ imports: [ContentSection, ContentParagraph] })],
   args: {
     variant: 'info',
     tagline: 'Before you begin',
-    level: 3,
     content:
       'Each component is published as its own entry point, such as @atlasng/design-system/indicators/notice. ' +
       'Import only the components a page uses to keep application bundles small.',
