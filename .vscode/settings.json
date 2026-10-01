@@ -20,6 +20,7 @@
     "analytics",
     "cdk",
     "common",
+    "content-templates",
     "core",
     "design-system",
     "internal-storybook",

@@ -1,0 +1,21 @@
+{
+  "name": "content-templates",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/content-templates/src",
+  "prefix": "ang",
+  "projectType": "library",
+  "tags": ["library", "layer:content-templates"],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:package"
+    },
+    "build-compodoc": {},
+    "compodoc": {},
+    "test": {
+      "options": {
+        "setupFiles": ["{projectRoot}/src/test-setup.ts"]
+      }
+    },
+    "nx-release-publish": {}
+  }
+}

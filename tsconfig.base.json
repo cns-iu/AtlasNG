@@ -27,6 +27,10 @@
       "@atlasng/apps/kg-explorer": ["./libs/applications/kg-explorer/src/index.ts"],
       "@atlasng/cdk": ["./libs/cdk/src/index.ts"],
       "@atlasng/common": ["./libs/common/src/index.ts"],
+      "@atlasng/content-templates": ["./libs/content-templates/src/index.ts"],
+      "@atlasng/content-templates/design-system-definitions": [
+        "./libs/content-templates/design-system-definitions/src/index.ts"
+      ],
       "@atlasng/core": ["./libs/core/src/index.ts"],
       "@atlasng/design-system": ["./libs/design-system/src/index.ts"],
       "@atlasng/design-system/buttons": ["./libs/design-system/buttons/src/index.ts"],
