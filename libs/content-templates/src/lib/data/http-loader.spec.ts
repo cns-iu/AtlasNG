@@ -2,14 +2,14 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable } from 'rxjs';
-import { ContentDataLoaderRegistry } from '../registry/data-loader-registry';
-import { provideContentTemplates, withDataLoaders } from '../registry/providers';
+import { ContentDataLoaderRegistry } from '../registries/data-loader-registry';
+import { provideContentTemplates, withDataLoaders } from '../registries/providers';
 import { ContentDataContext } from '../types/content-data';
 import { HttpContentDataLoader, HttpContentDataLoaderConfig } from './http-loader';
 
 const context: ContentDataContext = { node: { component: 'test' }, signal: new AbortController().signal };
 
-function setup(): { loader: HttpContentDataLoader; controller: HttpTestingController } {
+async function setup(): Promise<{ loader: HttpContentDataLoader; controller: HttpTestingController }> {
   TestBed.configureTestingModule({
     providers: [
       provideHttpClient(),
@@ -17,7 +17,7 @@ function setup(): { loader: HttpContentDataLoader; controller: HttpTestingContro
       provideContentTemplates(withDataLoaders({ http: () => new HttpContentDataLoader() })),
     ],
   });
-  const loader = TestBed.inject(ContentDataLoaderRegistry).get('http') as HttpContentDataLoader;
+  const loader = (await TestBed.inject(ContentDataLoaderRegistry).get('http')) as HttpContentDataLoader;
   return { loader, controller: TestBed.inject(HttpTestingController) };
 }
 
@@ -25,7 +25,7 @@ describe('HttpContentDataLoader', () => {
   afterEach(() => TestBed.inject(HttpTestingController).verify());
 
   it('fetches json by default', async () => {
-    const { loader, controller } = setup();
+    const { loader, controller } = await setup();
 
     const result = firstValueFrom(loader.load({ type: 'http', url: '/data.json' }, context));
     const request = controller.expectOne('/data.json');
@@ -42,7 +42,7 @@ describe('HttpContentDataLoader', () => {
     ['blob', new Blob(['blob'])],
     ['arraybuffer', new ArrayBuffer(4)],
   ])('fetches with responseType %s', async (responseType, body) => {
-    const { loader, controller } = setup();
+    const { loader, controller } = await setup();
 
     const result = firstValueFrom(loader.load({ type: 'http', url: '/data', responseType }, context));
     const request = controller.expectOne('/data');
@@ -52,8 +52,8 @@ describe('HttpContentDataLoader', () => {
     await expect(result).resolves.toEqual(body);
   });
 
-  it('cancels the request on unsubscribe', () => {
-    const { loader, controller } = setup();
+  it('cancels the request on unsubscribe', async () => {
+    const { loader, controller } = await setup();
 
     const subscription = (loader.load({ type: 'http', url: '/slow' }, context) as Observable<unknown>).subscribe();
     const request = controller.expectOne('/slow');

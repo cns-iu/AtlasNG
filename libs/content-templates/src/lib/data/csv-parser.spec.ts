@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { ContentDataParserRegistry } from '../registry/data-parser-registry';
-import { provideContentTemplates, withDataParsers } from '../registry/providers';
+import { ContentDataParserRegistry } from '../registries/data-parser-registry';
+import { provideContentTemplates, withDataParsers } from '../registries/providers';
 import { ContentDataContext } from '../types/content-data';
 import { CsvContentDataParser, CsvContentDataParserConfig } from './csv-parser';
 
@@ -11,12 +11,12 @@ function parse(input: unknown, config: Partial<CsvContentDataParserConfig> = {})
 }
 
 describe('CsvContentDataParser', () => {
-  it('can be registered', () => {
+  it('can be registered', async () => {
     TestBed.configureTestingModule({
       providers: [provideContentTemplates(withDataParsers({ csv: () => new CsvContentDataParser() }))],
     });
 
-    expect(TestBed.inject(ContentDataParserRegistry).get('csv')).toBeInstanceOf(CsvContentDataParser);
+    await expect(TestBed.inject(ContentDataParserRegistry).get('csv')).resolves.toBeInstanceOf(CsvContentDataParser);
   });
 
   it('parses rows keyed by the header by default', () => {

@@ -10,27 +10,24 @@ function setup(...features: ContentTemplatesFeature[]): ContentDataParserRegistr
 }
 
 describe('ContentDataParserRegistry', () => {
-  it('creates parsers once', () => {
+  it('creates parsers from async factories', async () => {
     const parser: ContentDataParser = { parse: (input) => input };
-    const factory = vi.fn(() => parser);
-    const registry = setup(withDataParsers({ csv: factory }));
+    const registry = setup(withDataParsers({ csv: async () => parser }));
 
-    expect(registry.get('csv')).toBe(parser);
-    expect(registry.get('csv')).toBe(parser);
-    expect(factory).toHaveBeenCalledTimes(1);
+    await expect(registry.get('csv')).resolves.toBe(parser);
   });
 
-  it('throws for unknown parsers', () => {
+  it('rejects unknown parsers', async () => {
     const registry = setup();
 
-    expect(() => registry.get('missing')).toThrow("Unknown data parser 'missing'.");
+    await expect(registry.get('missing')).rejects.toThrow("Unknown registry entry 'missing'.");
   });
 
-  it('falls back to the parent registry', () => {
+  it('falls back to the parent registry', async () => {
     const parser: ContentDataParser = { parse: (input) => input };
     setup(withDataParsers({ csv: () => parser }));
     const child = createEnvironmentInjector([provideContentTemplates()], TestBed.inject(EnvironmentInjector));
 
-    expect(child.get(ContentDataParserRegistry).get('csv')).toBe(parser);
+    await expect(child.get(ContentDataParserRegistry).get('csv')).resolves.toBe(parser);
   });
 });

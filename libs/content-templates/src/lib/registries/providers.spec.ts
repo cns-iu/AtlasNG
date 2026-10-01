@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ContentComponentDefinition } from '../types/content-component-definition';
 import { ContentDataLoader } from '../types/content-data';
-import { ContentDataLoaderRegistry } from './data-loader-registry';
+import { CONTENT_DATA_LOADER_CONFIG, ContentDataLoaderRegistry } from './data-loader-registry';
 import { ContentDataParserRegistry } from './data-parser-registry';
 import { ContentDefinitionRegistry } from './definition-registry';
 import {
@@ -10,9 +10,7 @@ import {
   withDataLoaders,
   withDataParsers,
   withDefinitions,
-  withLazyDefinitions,
 } from './providers';
-import { CONTENT_DATA_LOADER_CONFIG } from './tokens';
 
 class TestComponent {}
 
@@ -44,10 +42,10 @@ describe('provideContentTemplates', () => {
     expect(TestBed.runInInjectionContext(CONTENT_DATA_LOADER_CONFIG.inject)).toEqual({});
   });
 
-  it('registers definitions from withDefinitions and withLazyDefinitions', async () => {
+  it('registers definitions from arrays and factory records', async () => {
     setup(
       withDefinitions([definition]),
-      withLazyDefinitions({ lazy: () => ({ name: 'lazy', component: TestComponent }) }),
+      withDefinitions({ lazy: async () => ({ name: 'lazy', component: TestComponent }) }),
     );
     const registry = TestBed.inject(ContentDefinitionRegistry);
 
@@ -55,12 +53,12 @@ describe('provideContentTemplates', () => {
     await expect(registry.get('lazy')).resolves.toEqual({ name: 'lazy', component: TestComponent });
   });
 
-  it('registers loaders, parsers, and the loader config', () => {
+  it('registers loaders, parsers, and the loader config', async () => {
     const parser = { parse: (input: unknown) => input };
     setup(withDataLoaders({ http: () => loader }, { defaultLoader: 'http' }), withDataParsers({ csv: () => parser }));
 
-    expect(TestBed.inject(ContentDataLoaderRegistry).get('http')).toBe(loader);
-    expect(TestBed.inject(ContentDataParserRegistry).get('csv')).toBe(parser);
+    await expect(TestBed.inject(ContentDataLoaderRegistry).get('http')).resolves.toBe(loader);
+    await expect(TestBed.inject(ContentDataParserRegistry).get('csv')).resolves.toBe(parser);
     expect(TestBed.runInInjectionContext(CONTENT_DATA_LOADER_CONFIG.inject)).toEqual({ defaultLoader: 'http' });
   });
 
