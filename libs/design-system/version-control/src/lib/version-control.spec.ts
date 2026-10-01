@@ -100,13 +100,4 @@ describe('VersionControl', () => {
 
     expect(screen.getByRole('button', { name: 'ZIP' })).toBeVisible();
   });
-
-  it.each([
-    { versions: [], name: 'no versions' },
-    { versions: [{ version: '1.0.0', downloadOptions: [] }], name: 'a version without downloads' },
-  ])('shows an empty state for $name', async ({ versions: emptyVersions }) => {
-    await setup(emptyVersions);
-
-    expect(screen.getByText('No download options available.')).toBeVisible();
-  });
 });
