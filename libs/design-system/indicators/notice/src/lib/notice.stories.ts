@@ -15,7 +15,7 @@ const meta: Meta<NoticeArgs> = {
   parameters: {
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/design/gQEMLugLjweDvbsNNUVffD/AtlasNG-Design-System-Repository?node-id=18310-76729',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=9820-38',
     },
   },
   args: {
