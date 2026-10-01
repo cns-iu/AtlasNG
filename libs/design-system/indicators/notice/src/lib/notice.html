@@ -1,5 +1,5 @@
-<mat-icon class="ang-notice--icon" aria-hidden="false" [attr.aria-label]="config().label" [fontIcon]="config().icon" />
-<div class="ang-notice--content">
+<mat-icon class="ang-notice--icon" [fontIcon]="config().icon" />
+<div class="ang-notice--content" [attr.role]="contentLabel() ? 'group' : null" [attr.aria-label]="contentLabel()">
   @if (tagline(); as tagline) {
     @if (level(); as level) {
       <ang-heading class="ang-notice--tagline" [level]="level" [tagline]="tagline" />

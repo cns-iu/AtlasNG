@@ -9,7 +9,7 @@ export type NoticeVariant = 'info' | 'success' | 'warning' | 'critical' | 'unava
 interface NoticeVariantConfig {
   /** Material icon name. */
   readonly icon: string;
-  /** Accessible name of the icon. */
+  /** Accessible name of the notice content when it has no tagline. */
   readonly label: string;
 }
 
@@ -25,9 +25,10 @@ const VARIANT_CONFIGS: Record<NoticeVariant, NoticeVariantConfig> = {
 /**
  * Static message box that highlights information within page content.
  *
- * Each variant pairs a color treatment with an icon whose accessible name conveys the
- * variant to screen readers. The notice does not announce itself, so it suits content
- * that is present when the page loads rather than feedback to an action.
+ * Each variant pairs a color treatment with a decorative icon. When there is no tagline,
+ * the content is labeled with the variant name for screen readers. The notice does not
+ * announce itself, so it suits content that is present when the page loads rather than
+ * feedback to an action.
  */
 @Component({
   selector: 'ang-notice',
@@ -43,7 +44,10 @@ export class Notice {
   /** Tone of the notice, which sets its colors, icon, and screen-reader label. */
   readonly variant = input<NoticeVariant>('info');
 
-  /** Optional title shown above the body. Rendered as text unless `level` is set. */
+  /**
+   * Optional title shown above the body. Rendered as text unless `level` is set. When set,
+   * it replaces the variant label for screen readers, so make it descriptive.
+   */
   readonly tagline = input<string>();
 
   /**
@@ -54,4 +58,7 @@ export class Notice {
 
   /** Icon and screen-reader label for the current variant. */
   protected readonly config = computed(() => VARIANT_CONFIGS[this.variant()]);
+
+  /** Accessible name of the content, set only when there is no tagline to name it. */
+  protected readonly contentLabel = computed(() => (this.tagline() ? undefined : this.config().label));
 }

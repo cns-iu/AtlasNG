@@ -51,11 +51,27 @@ describe('Notice', () => {
     expect(fixture.nativeElement).toHaveClass('ang-notice', 'ang-notice--variant-info');
   });
 
-  it.each(VARIANTS)('applies the %s variant class and labeled icon', async (variant, icon, label) => {
+  it.each(VARIANTS)('applies the %s variant class, icon, and content label', async (variant, icon, label) => {
     const { fixture } = await render(Notice, { inputs: { variant } });
 
     expect(fixture.nativeElement).toHaveClass('ang-notice', `ang-notice--variant-${variant}`);
-    expect(screen.getByRole('img', { name: label })).toHaveAttribute('data-mat-icon-name', icon);
+    expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('data-mat-icon-name', icon);
+    expect(screen.getByRole('group', { name: label })).toBeInTheDocument();
+  });
+
+  it('hides the decorative icon from assistive technology', async () => {
+    await render(Notice);
+
+    expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('leaves the content unlabeled when a tagline names the notice', async () => {
+    await render('<ang-notice variant="warning" tagline="Deprecated version">Body text</ang-notice>', {
+      imports: [Notice],
+    });
+
+    expect(screen.queryByRole('group')).not.toBeInTheDocument();
+    expect(screen.getByText('Deprecated version')).toBeVisible();
   });
 
   it('does not announce itself or add to the document outline', async () => {
