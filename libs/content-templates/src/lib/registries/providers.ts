@@ -1,20 +1,20 @@
 import { EnvironmentProviders, makeEnvironmentProviders, Provider } from '@angular/core';
-import { Promisable } from 'type-fest';
 import { ContentComponentDefinition } from '../types/content-component-definition';
 import { CONTENT_RENDERER_CONFIG, ContentRendererConfig } from '../renderer/config';
 import { ContentResolver } from '../resolver/resolver';
-import { ContentDataLoaderRegistry } from './data-loader-registry';
-import { ContentDataParserRegistry } from './data-parser-registry';
-import { ContentDefinitionRegistry } from './definition-registry';
 import {
-  CONTENT_COMPONENT_DEFINITIONS,
   CONTENT_DATA_LOADER_CONFIG,
   CONTENT_DATA_LOADERS,
-  CONTENT_DATA_PARSERS,
   ContentDataLoaderConfig,
   ContentDataLoaderFactory,
-  ContentDataParserFactory,
-} from './tokens';
+  ContentDataLoaderRegistry,
+} from './data-loader-registry';
+import { CONTENT_DATA_PARSERS, ContentDataParserFactory, ContentDataParserRegistry } from './data-parser-registry';
+import {
+  CONTENT_COMPONENT_DEFINITIONS,
+  ContentComponentDefinitionFactory,
+  ContentDefinitionRegistry,
+} from './definition-registry';
 
 /** Provider bundle returned by content-templates feature helpers. */
 export interface ContentTemplatesFeature {
@@ -26,10 +26,8 @@ export interface ContentTemplatesFeature {
 
 /** Content-templates feature variants supported by {@link provideContentTemplates}. */
 export enum ContentTemplatesFeatureKind {
-  /** Feature registering eagerly available component definitions. */
+  /** Feature registering component definitions. */
   Definitions,
-  /** Feature registering lazily loaded component definitions. */
-  LazyDefinitions,
   /** Feature registering data loaders. */
   DataLoaders,
   /** Feature registering data parsers. */
@@ -39,31 +37,24 @@ export enum ContentTemplatesFeatureKind {
 }
 
 /**
- * Registers component definitions under their `name`.
+ * Registers component definitions.
  *
- * @param definitions Definitions to register.
+ * An array registers each definition under its `name`. A record registers factories under their keys; a factory runs
+ * once, on first use, in the environment injection context, and may load the definition lazily. A key acts as an alias
+ * and may differ from the definition's `name`.
+ *
+ * @param definitions Definitions, or definition factories keyed by registered name.
  * @returns Feature consumed by {@link provideContentTemplates}.
  */
-export function withDefinitions(definitions: ContentComponentDefinition[]): ContentTemplatesFeature {
-  const record = Object.fromEntries(definitions.map((definition) => [definition.name, definition]));
+export function withDefinitions(
+  definitions: ContentComponentDefinition[] | Record<string, ContentComponentDefinitionFactory>,
+): ContentTemplatesFeature {
+  const record = Array.isArray(definitions)
+    ? Object.fromEntries(definitions.map((definition) => [definition.name, () => definition]))
+    : definitions;
   return {
     kind: ContentTemplatesFeatureKind.Definitions,
     providers: [{ provide: CONTENT_COMPONENT_DEFINITIONS, useValue: record, multi: true }],
-  };
-}
-
-/**
- * Registers component definitions loaded on first use. Each loaded definition's `name` must equal its key.
- *
- * @param loaders Definition loaders keyed by definition name.
- * @returns Feature consumed by {@link provideContentTemplates}.
- */
-export function withLazyDefinitions(
-  loaders: Record<string, () => Promisable<ContentComponentDefinition>>,
-): ContentTemplatesFeature {
-  return {
-    kind: ContentTemplatesFeatureKind.LazyDefinitions,
-    providers: [{ provide: CONTENT_COMPONENT_DEFINITIONS, useValue: loaders, multi: true }],
   };
 }
 

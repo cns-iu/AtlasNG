@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { ContentDataParserRegistry } from '../registry/data-parser-registry';
-import { provideContentTemplates, withDataParsers } from '../registry/providers';
+import { ContentDataParserRegistry } from '../registries/data-parser-registry';
+import { provideContentTemplates, withDataParsers } from '../registries/providers';
 import { ContentDataContext } from '../types/content-data';
 import { JsonContentDataParser } from './json-parser';
 
@@ -8,12 +8,12 @@ const context: ContentDataContext = { node: { component: 'test' }, signal: new A
 const config = { type: 'json' };
 
 describe('JsonContentDataParser', () => {
-  it('can be registered', () => {
+  it('can be registered', async () => {
     TestBed.configureTestingModule({
       providers: [provideContentTemplates(withDataParsers({ json: () => new JsonContentDataParser() }))],
     });
 
-    expect(TestBed.inject(ContentDataParserRegistry).get('json')).toBeInstanceOf(JsonContentDataParser);
+    await expect(TestBed.inject(ContentDataParserRegistry).get('json')).resolves.toBeInstanceOf(JsonContentDataParser);
   });
 
   it('parses json strings', () => {

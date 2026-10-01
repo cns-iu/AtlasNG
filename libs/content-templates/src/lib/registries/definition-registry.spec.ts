@@ -2,7 +2,7 @@ import { createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ContentComponentDefinition } from '../types/content-component-definition';
 import { ContentDefinitionRegistry } from './definition-registry';
-import { ContentTemplatesFeature, provideContentTemplates, withDefinitions, withLazyDefinitions } from './providers';
+import { ContentTemplatesFeature, provideContentTemplates, withDefinitions } from './providers';
 
 class TestComponent {}
 
@@ -27,12 +27,12 @@ describe('ContentDefinitionRegistry', () => {
   it('rejects unknown definitions', async () => {
     const registry = setup();
 
-    await expect(registry.get('missing')).rejects.toThrow("Unknown component definition 'missing'.");
+    await expect(registry.get('missing')).rejects.toThrow("Unknown registry entry 'missing'.");
   });
 
   it('loads lazy definitions once', async () => {
     const load = vi.fn(async () => definition('lazy'));
-    const registry = setup(withLazyDefinitions({ lazy: load }));
+    const registry = setup(withDefinitions({ lazy: load }));
 
     const first = await registry.get('lazy');
     const second = await registry.get('lazy');
@@ -41,19 +41,11 @@ describe('ContentDefinitionRegistry', () => {
     expect(load).toHaveBeenCalledTimes(1);
   });
 
-  it('retries a lazy definition after a failed load', async () => {
-    const load = vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce(definition('lazy'));
-    const registry = setup(withLazyDefinitions({ lazy: load }));
+  it('treats a registered name differing from the definition name as an alias', async () => {
+    const other = definition('other');
+    const registry = setup(withDefinitions({ alias: () => other }));
 
-    await expect(registry.get('lazy')).rejects.toThrow('offline');
-    await expect(registry.get('lazy')).resolves.toEqual(definition('lazy'));
-    expect(load).toHaveBeenCalledTimes(2);
-  });
-
-  it('rejects a lazy definition whose name differs from its key', async () => {
-    const registry = setup(withLazyDefinitions({ lazy: () => definition('other') }));
-
-    await expect(registry.get('lazy')).rejects.toThrow("Component definition registered as 'lazy' is named 'other'.");
+    await expect(registry.get('alias')).resolves.toBe(other);
   });
 
   it('falls back to the parent registry', async () => {
@@ -63,11 +55,5 @@ describe('ContentDefinitionRegistry', () => {
 
     await expect(child.get('parent')).resolves.toBe(parentDefinition);
     await expect(child.get('child')).resolves.toEqual(definition('child'));
-  });
-
-  it('throws in dev mode for duplicate names', () => {
-    expect(() => setup(withDefinitions([definition('a')]), withDefinitions([definition('a')]))).toThrow(
-      "Duplicate component definition 'a'.",
-    );
   });
 });

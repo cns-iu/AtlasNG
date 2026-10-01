@@ -8,7 +8,7 @@ Async work happens in several places: definition lookup, lazy component imports,
 | Phase                                                  | State                                                |
 | ------------------------------------------------------ | ---------------------------------------------------- |
 | 1. JSON document and definition contracts              | Done (types in `src/lib/`)                           |
-| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registry/`)                           |
+| 2. Registry providers (`provideContentTemplates`)      | Done (`src/lib/registries/`)                         |
 | 3. Resolver (eager loading + validation)               | Done (`src/lib/resolver/`)                           |
 | 4. Renderer, outlet host, boundaries, errors           | Done (`src/lib/renderer/`)                           |
 | 5. Built-in loaders/parsers, design-system definitions | Done (`src/lib/data/`, `design-system-definitions/`) |
@@ -209,27 +209,29 @@ include path from `ng-package.json` (`styleIncludePaths`).
 Feature functions, following `provideLinkHandler(withX(), ...)` in `libs/common`:
 
 ```ts
-provideContentTemplates(withDefinitions([contentHeaderDefinition, contentParagraphDefinition]), withLazyDefinitions({ table: () => import('./table.definition').then((m) => m.tableDefinition) }), withDataLoaders({ http: () => new HttpContentDataLoader(), inline: () => new InlineContentDataLoader() }, { defaultLoader: 'http' }), withDataParsers({ csv: () => new CsvContentDataParser() }));
+provideContentTemplates(withDefinitions([contentHeaderDefinition, contentParagraphDefinition]), withDefinitions({ table: () => import('./table.definition').then((m) => m.tableDefinition) }), withDataLoaders({ http: () => new HttpContentDataLoader(), inline: () => new InlineContentDataLoader() }, { defaultLoader: 'http' }), withDataParsers({ csv: () => new CsvContentDataParser() }));
 ```
 
-Loaders and parsers are registered as factories. A factory runs once, lazily on first use, in the environment
-injection context and returns the instance, so it can `inject()` dependencies.
+Loaders, parsers, and definition records are registered as factories returning a value or a promise. A factory runs
+once, lazily on first use, in the environment injection context, so it can `inject()` dependencies before its first
+`await`. `withDefinitions` also accepts an array of definitions, registered under their `name`.
 
 Each feature contributes a record to a multi token (`CONTENT_COMPONENT_DEFINITIONS`, `CONTENT_DATA_LOADERS`,
 `CONTENT_DATA_PARSERS`). `withDataLoaders(factories, config?)` also provides a `ContentDataLoaderConfig`
 (`{ defaultLoader?: string }`, open for extension) through `CONTENT_DATA_LOADER_CONFIG`, a `createConfigurationToken`
 from `@atlasng/core`. A child injector without its own config inherits the parent's.
 
-`provideContentTemplates` provides three registries for its environment injector, each with a single `get(name)`:
+`provideContentTemplates` provides three registries for its environment injector. All extend `ContentRegistry<T>`, whose
+single `get(name): Promise<T>` runs the factory once and caches the result, including rejections (no retry):
 
-- `ContentDefinitionRegistry.get(name): Promise<ContentComponentDefinition>` loads lazy definitions once, and retries
-  a failed load on the next call. A lazy definition whose `name` differs from its key rejects.
-- `ContentDataLoaderRegistry.get(name)` / `ContentDataParserRegistry.get(name)` create instances once and cache them.
+- `ContentDefinitionRegistry`: the registered key acts as an alias and may differ from the definition's `name`.
+- `ContentDataLoaderRegistry` / `ContentDataParserRegistry`.
 - Unknown names are delegated to the same registry in a parent environment injector, so route providers add to the
-  application's registrations. Without one, lookups reject/throw `Unknown <kind> '<name>'.` in all modes; the resolver
-  surfaces this at the nearest boundary.
-- Dev mode only: duplicate names within one injector, a `defaultLoader` that is not among its loaders, and more than
-  one loader config in one `provideContentTemplates` all throw.
+  application's registrations; the parent's result is cached on the child too. Without one, lookups reject with
+  `Unknown registry entry '<name>'.`; the resolver surfaces this at the nearest boundary.
+- Within one injector, a later registration of a name replaces an earlier one.
+- Dev mode only: a `defaultLoader` that is not among its loaders, and more than one loader config in one
+  `provideContentTemplates`, throw.
 
 Renderer-level config (default error component, dev-mode strictness) uses `createConfigurationToken` from
 `libs/core/src/lib/configuration-token.ts`.

@@ -1,9 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Arrayable, JsonValue } from 'type-fest';
-import { ContentDataLoaderRegistry } from '../registry/data-loader-registry';
-import { ContentDataParserRegistry } from '../registry/data-parser-registry';
-import { ContentDefinitionRegistry } from '../registry/definition-registry';
-import { CONTENT_DATA_LOADER_CONFIG } from '../registry/tokens';
+import { CONTENT_DATA_LOADER_CONFIG, ContentDataLoaderRegistry } from '../registries/data-loader-registry';
+import { ContentDataParserRegistry } from '../registries/data-parser-registry';
+import { ContentDefinitionRegistry } from '../registries/definition-registry';
 import { ContentDataContext } from '../types/content-data';
 import {
   CONTENT_DOCUMENT_VERSION,
@@ -173,14 +172,15 @@ export class ContentResolver {
    */
   async #loadSource(source: ContentDataSource, context: ContentDataContext): Promise<unknown> {
     const loaderConfig = toTypedConfig(source.loader);
-    const loader = this.#loaders.get(loaderConfig.type);
+    const loader = await this.#loaders.get(loaderConfig.type);
     const value = await fromAsyncValue(loader.load(loaderConfig, context), context.signal);
     if (source.parser === undefined) {
       return value;
     }
 
     const parserConfig = toTypedConfig(source.parser);
-    return this.#parsers.get(parserConfig.type).parse(value, parserConfig, context);
+    const parser = await this.#parsers.get(parserConfig.type);
+    return parser.parse(value, parserConfig, context);
   }
 }
 

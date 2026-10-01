@@ -8,7 +8,7 @@ import {
   withDataLoaders,
   withDefinitions,
   withRendererConfig,
-} from '../registry/providers';
+} from '../registries/providers';
 import { ContentComponentDefinition } from '../types/content-component-definition';
 import { ContentDocument, ContentElementNode } from '../types/content-document';
 import { ContentRenderer } from './content-renderer';
@@ -156,9 +156,9 @@ describe('ContentRenderer', () => {
       ]),
     );
 
-    expect(await screen.findByRole('alert')).toHaveTextContent("list: Unknown data loader 'missing'.");
+    expect(await screen.findByRole('alert')).toHaveTextContent("list: Unknown registry entry 'missing'.");
     expect(screen.getByRole('heading', { name: 'Still here' })).toBeInTheDocument();
-    expect(errorHandler.handleError).toHaveBeenCalledWith(new Error("Unknown data loader 'missing'."));
+    expect(errorHandler.handleError).toHaveBeenCalledWith(new Error("Unknown registry entry 'missing'."));
   });
 
   it('shows the configured error component when the root fails', async () => {

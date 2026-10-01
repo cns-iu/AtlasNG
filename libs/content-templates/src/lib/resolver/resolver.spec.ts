@@ -8,8 +8,7 @@ import {
   withDataLoaders,
   withDataParsers,
   withDefinitions,
-  withLazyDefinitions,
-} from '../registry/providers';
+} from '../registries/providers';
 import { ContentDataLoader } from '../types/content-data';
 import { ContentDocument } from '../types/content-document';
 import { ContentValidationError } from './errors';
@@ -112,13 +111,13 @@ describe('ContentResolver', () => {
       signal,
     ) as ResolvedContentElement[];
 
-    await expect(unknown.ready).rejects.toThrow("Unknown component definition 'missing'.");
+    await expect(unknown.ready).rejects.toThrow("Unknown registry entry 'missing'.");
     await expect(invalid.ready).rejects.toThrow(ContentValidationError);
   });
 
   it('starts loading children before their parents are ready', () => {
     const load = vi.fn(() => new Promise<never>(() => undefined));
-    const resolver = setup(withLazyDefinitions({ lazy: load }));
+    const resolver = setup(withDefinitions({ lazy: load }));
 
     resolver.resolve(doc({ component: 'lazy', content: { component: 'text', data: { rows: [] } } }), signal);
 
@@ -180,7 +179,7 @@ describe('ContentResolver', () => {
     ) as ResolvedContentElement[];
 
     await expect(invalid.data).rejects.toThrow("Invalid content at 'content.0': data.rows: Expected a string");
-    await expect(unknown.data).rejects.toThrow("Unknown data loader 'missing'.");
+    await expect(unknown.data).rejects.toThrow("Unknown registry entry 'missing'.");
   });
 
   it('aborts pending observable loads', async () => {
