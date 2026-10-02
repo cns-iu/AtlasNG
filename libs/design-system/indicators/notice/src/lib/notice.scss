@@ -1,6 +1,6 @@
 @use '@angular/cdk' as cdk;
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/notice' as *;
 
 $variants: (info, success, warning, critical, unavailable);
 

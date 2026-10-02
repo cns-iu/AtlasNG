@@ -14,8 +14,19 @@
   @return sass-utils.create-var(sys-token($token), $fallback);
 }
 
+// Returns an AtlasNG extended token as a CSS variable name, e.g. ext-token(info) => --ang-ext-info
+@function ext-token($token) {
+  @return --ang-ext-#{$token};
+}
+
+// Returns an AtlasNG extended token as a CSS variable,
+// e.g. ext-slot(info) => var(--ang-ext-info)
+@function ext-slot($token, $fallback: null) {
+  @return sass-utils.create-var(ext-token($token), $fallback);
+}
+
 // Returns a CSS variable name for a given token and namespace,
-// e.g. token(primary, button) => --atlasng-button-primary
+// e.g. token(primary, button) => --ang-button-primary
 @function token($token, $namespace-or-config) {
   $namespace: $namespace-or-config;
   @if meta.type-of($namespace-or-config) == 'map' {
@@ -26,7 +37,7 @@
 }
 
 // Returns a CSS variable for a given token and namespace,
-// e.g. slot(primary, button) => var(--atlasng-button-primary, var(--mat-sys-primary))
+// e.g. slot(primary, button) => var(--ang-button-primary, var(--mat-sys-primary))
 @function slot($token, $tokens-config, $fallback: null) {
   $tokens: map.get($tokens-config, tokens);
   @if not map.has-key($tokens, $token) {

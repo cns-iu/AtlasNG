@@ -1,5 +1,5 @@
 @use 'internal/token-utils';
-@use './tokens';
+@use 'tokens/youtube-player' as tokens;
 
 :host {
   display: block;

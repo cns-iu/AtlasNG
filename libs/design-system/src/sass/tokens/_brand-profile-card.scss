@@ -1,6 +1,6 @@
 @use 'sass:list';
-@use 'internal/sass-utils';
-@use 'internal/token-utils';
+@use '../internal/sass-utils';
+@use '../internal/token-utils';
 
 $config: (
   namespace: 'brand-profile-card',

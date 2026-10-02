@@ -44,6 +44,33 @@ bootstrapApplication(AppComponent, {
   and support the `info` (default), `success`, `warning`, `critical`, and
   `unavailable` variants.
 
+### Extended Level Colors
+
+`ext-level-colors($name, $palette, $theme-type)` emits status color roles that
+Angular Material does not provide, as `--ang-ext-*` CSS variables:
+`--ang-ext-<name>`, `--ang-ext-on-<name>`, `--ang-ext-<name>-container`,
+`--ang-ext-on-<name>-container`, and `--ang-ext-on-<name>-container-variant`.
+Include it next to `mat.theme`, once per level:
+
+```scss
+@use '@angular/material' as mat;
+@use '@atlasng/design-system' as ds;
+
+.light-theme {
+  @include mat.theme($theme);
+  @include ds.ext-level-colors(info, $info-palette, light);
+}
+```
+
+Palettes need tones `10`, `20`, `30`, `40`, `80`, `90`, and `100`. The variant
+role reads tones `30` and `80` from an optional nested `variant` sub-palette and
+otherwise from the palette itself. `$theme-type` accepts `light`, `dark`, or
+`color-scheme` (which emits `light-dark()` values).
+
+Levels that map onto Material roles, such as `critical`, are not emitted by
+default. Components that use them specify a Material fallback instead, for
+example `color: token-utils.ext-slot(critical, token-utils.sys-slot(error))`.
+
 ### TODO: Design Tokens
 
 ### TODO: Theming

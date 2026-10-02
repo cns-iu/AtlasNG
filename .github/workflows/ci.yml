@@ -64,9 +64,9 @@ jobs:
       - name: Check for un-formatted files
         run: npx nx record -- nx format:check
 
-      - name: Run lint, test, and build for affected projects
+      - name: Run lint, test, build, and Sass checks for affected projects
         timeout-minutes: 30
-        run: npx nx affected -t lint test build build-compodoc build-storybook
+        run: npx nx affected -t lint test build check-sass build-compodoc build-storybook
 
       - name: Fix CI issues
         if: failure()

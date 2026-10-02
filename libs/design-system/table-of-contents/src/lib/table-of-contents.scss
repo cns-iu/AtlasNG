@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 @use 'breakpoints';
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/table-of-contents' as *;
 
 :host {
   display: block;
