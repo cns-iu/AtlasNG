@@ -6,7 +6,6 @@
   flex-direction: column;
   width: 100%;
   min-width: token-utils.slot(min-width, $config);
-  max-width: token-utils.slot(max-width, $config);
   background-color: token-utils.slot(container-color, $config);
   border-radius: token-utils.slot(container-shape, $config);
   border: 1px solid token-utils.slot(outline-color, $config);
@@ -39,8 +38,14 @@
   padding: 0;
   margin-bottom: 1.5rem;
 
+  .ang-version-control--download-option {
+    height: auto;
+    padding-bottom: 10.5px;
+  }
+
   &.ang-version-control--scrollable {
     max-height: 30rem;
     overflow-y: auto;
+    margin-bottom: 0;
   }
 }

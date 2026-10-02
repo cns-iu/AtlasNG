@@ -27,6 +27,7 @@
         <a
           mat-list-item
           download
+          lines="3"
           class="ang-version-control--download-option"
           [attr.href]="option.downloadUrl"
           (click)="$event.preventDefault(); download(option.downloadUrl)"
@@ -34,7 +35,7 @@
           <mat-icon matListItemIcon fontIcon="download" />
           <span matListItemTitle>{{ option.fileFormat }}</span>
           @if (descriptionFor(option.fileFormat); as description) {
-            <span matListItemLine>{{ description }}</span>
+            <span class="ang-version-control--download-description">{{ description }}</span>
           }
         </a>
       }
