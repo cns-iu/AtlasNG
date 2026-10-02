@@ -1,25 +1,27 @@
 # AtlasNG
 
-An Angular monorepo providing a suite of libraries for building consistent, accessible, and analytics-aware applications.
+An Angular monorepo of libraries for building consistent, accessible, and analytics-aware applications.
+
+Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasNG/).
 
 ## Packages
 
-| Package                                                                | Description                                               |
-| ---------------------------------------------------------------------- | --------------------------------------------------------- |
-| [`@atlasng/analytics`](libs/analytics/README.md)                       | User interaction logging and privacy consent management   |
-| [`@atlasng/apps/kg-explorer`](libs/applications/kg-explorer/README.md) | Knowledge graph explorer application library              |
-| [`@atlasng/cdk`](libs/cdk/README.md)                                   | Low-level primitives: overlays, portals, focus management |
-| [`@atlasng/common`](libs/common/README.md)                             | Shared pipes, directives, guards, and utilities           |
-| [`@atlasng/core`](libs/core/README.md)                                 | Platform bootstrap, environment config, and DI tokens     |
-| [`@atlasng/design-system`](libs/design-system/README.md)               | UI component catalog, design tokens, and theming          |
-| [`@atlasng/labs`](libs/labs/README.md)                                 | Experimental UI components without a stable public API    |
+| Package                                                           | Description                                                                   |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [`@atlasng/core`](libs/core/README.md)                            | Foundation layer: application-wide configuration, DI tokens, and providers    |
+| [`@atlasng/common`](libs/common/README.md)                        | Reusable directives, services, and utilities shared across libraries and apps |
+| [`@atlasng/cdk`](libs/cdk/README.md)                              | Low-level infrastructure for component authors                                |
+| [`@atlasng/analytics`](libs/analytics/README.md)                  | Consent-aware event tracking and permission management                        |
+| [`@atlasng/design-system`](libs/design-system/README.md)          | Angular Material–based components and Sass theming utilities                  |
+| [`@atlasng/labs`](libs/labs/README.md)                            | Experimental components without a stable API                                  |
+| [`@atlasng/kg-explorer`](libs/applications/kg-explorer/README.md) | Knowledge graph explorer application library                                  |
 
 ## Development
 
 ### Prerequisites
 
-- Node.js 24+
-- npm 10+
+- Node.js 24 or later (see [.nvmrc](.nvmrc))
+- npm 10 or later
 
 ### Install dependencies
 
@@ -27,37 +29,49 @@ An Angular monorepo providing a suite of libraries for building consistent, acce
 npm install
 ```
 
-### Serve the demo application
+### Common tasks
 
 ```sh
+# Serve the demo application
 npx nx serve AtlasNG
-```
 
-### Build
-
-```sh
-# Build all projects
+# Build, test, or lint everything
 npx nx run-many -t build
-
-# Build a specific library
-npx nx build analytics
-```
-
-### Test
-
-```sh
-# Run tests for all projects
 npx nx run-many -t test
+npx nx run-many -t lint
 
-# Run tests for a specific library
+# Or target one project
+npx nx build analytics
 npx nx test analytics
+
+# Only projects affected by your changes
+npx nx affected -t lint,test,build
 ```
 
-### Lint
+Unit tests run with Vitest and enforce 85% coverage thresholds.
+
+### Storybook
 
 ```sh
-npx nx run-many -t lint
+# All Storybooks combined (design-system, labs, kg-explorer)
+npx nx storybook internal-storybook
+
+# A single library
+npx nx storybook design-system
 ```
+
+See [libs/internal/storybook](libs/internal/storybook/README.md) for local ports.
+
+### API docs
+
+```sh
+npx nx compodoc <project>        # live
+npx nx build-compodoc <project>  # static
+```
+
+## Contributing
+
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) with a project name as the scope (for example `feat(design-system): add notice component`). The allowed scopes are listed in [commitlint.config.mjs](commitlint.config.mjs). See [AGENTS.md](AGENTS.md) for the full workspace conventions.
 
 ## License
 
