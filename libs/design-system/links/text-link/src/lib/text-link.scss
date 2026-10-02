@@ -1,5 +1,5 @@
 @use 'internal/token-utils';
-@use './tokens';
+@use 'tokens/text-link' as tokens;
 
 .ang-text-link {
   display: inline-flex;

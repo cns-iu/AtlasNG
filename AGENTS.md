@@ -28,7 +28,8 @@
 - Use `npx nx` for local commands in this repo (matches existing README examples and avoids global CLI drift).
 - Primary projects:
   - `AtlasNG` (application)
-  - `analytics`, `cdk`, `common`, `core`, `design-system`, `kg-explorer` (publishable libraries)
+  - `analytics`, `cdk`, `common`, `core`, `design-system`, `labs`, `kg-explorer` (publishable libraries)
+  - `internal-storybook` (internal Storybook configuration and composition)
 
 ## AI Customizations
 
@@ -90,7 +91,19 @@
 - When adding, renaming, or removing an Nx project, update `conventionalCommits.scopes` in [.vscode/settings.json](.vscode/settings.json) to match.
 - Default to a subject line only. Add a body only when it carries context that neither the subject nor the diff shows, such as the reason behind a non-obvious change, and keep it to a sentence or two.
 - Do not write long paragraphs or restate the diff file by file; reviewers read the diff anyway.
-- Pull request descriptions may be longer and more detailed than commit messages.
+
+## Pull Request Descriptions
+
+- Write the description as a bulleted list of the major changes, each a short imperative sentence, for example:
+
+  ```
+  - Add content section component
+  - Fix table column sorting edge case
+  - Improve types for data loader configs
+  ```
+
+- Leave out minor changes such as formatting, test updates for the listed changes, and small refactors.
+- Add a short note after the list only when reviewers need context the list and diff do not show, such as a breaking change or a required follow-up.
 
 ## Testing Expectations
 
@@ -112,6 +125,8 @@
   - [libs/core/README.md](libs/core/README.md)
   - [libs/design-system/README.md](libs/design-system/README.md)
   - [libs/labs/README.md](libs/labs/README.md)
+  - [libs/applications/kg-explorer/README.md](libs/applications/kg-explorer/README.md)
+  - [libs/internal/storybook/README.md](libs/internal/storybook/README.md)
 
 ## Documentation Expectations
 

@@ -1,0 +1,21 @@
+@use '../internal/sass-utils';
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'content-paragraph',
+  tokens: (
+    color: token-utils.sys-token(on-surface-variant),
+    font: token-utils.sys-token(body-large-font),
+    line-height: token-utils.sys-token(body-large-line-height),
+    size: token-utils.sys-token(body-large-size),
+    tracking: token-utils.sys-token(body-large-tracking),
+    weight: token-utils.sys-token(body-large-weight),
+    size-multiplier: 1.0625,
+    // Defaults to size-multiplier if not set
+    line-height-multiplier: null,
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
