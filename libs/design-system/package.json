@@ -29,7 +29,9 @@
     "@atlasng/common": "^0.0.6",
     "@atlasng/core": "^0.0.6",
     "@swimlane/ngx-datatable": "^25.1.0",
-    "rxjs": "^7.8.2"
+    "file-saver": "^2.0.5",
+    "rxjs": "^7.8.2",
+    "yaml": "^2.9.1"
   },
   "dependencies": {
     "type-fest": "^5.9.0"

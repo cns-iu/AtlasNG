@@ -28,4 +28,5 @@
 @forward './tokens/snackbar' as snackbar-* show snackbar-overrides;
 @forward './tokens/table' as table-* show table-overrides;
 @forward './tokens/table-of-contents' as table-of-contents-* show table-of-contents-overrides;
+@forward './tokens/version-control' as version-control-* show version-control-overrides;
 @forward './tokens/youtube-player' as youtube-player-* show youtube-player-overrides;
