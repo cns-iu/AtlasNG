@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 @use 'internal/sass-utils';
 @use 'internal/token-utils';
-@use '../tokens' as *;
+@use 'tokens/cookie-modal' as *;
 
 :host {
   display: block;
