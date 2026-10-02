@@ -134,3 +134,45 @@ $_rest: (
 
 $primary-palette: map.merge(map.get($_palettes, primary), $_rest);
 $tertiary-palette: map.merge(map.get($_palettes, tertiary), $_rest);
+
+$ext-palettes: (
+  info: (
+    10: #001a42,
+    20: #002e6a,
+    30: #004395,
+    40: #185bbb,
+    80: #aec6ff,
+    90: #edf0ff,
+    100: #ffffff,
+    variant: (
+      30: #434751,
+      80: #c3c6d3,
+    ),
+  ),
+  success: (
+    10: #002110,
+    20: #00391f,
+    30: #00522f,
+    40: #006d40,
+    80: #79da9f,
+    90: #dff7e3,
+    100: #ffffff,
+    variant: (
+      30: #3e4941,
+      80: #becabe,
+    ),
+  ),
+  warning: (
+    10: #291800,
+    20: #452b00,
+    30: #633f00,
+    40: #825500,
+    80: #ffb953,
+    90: #ffeedc,
+    100: #ffffff,
+    variant: (
+      30: #514536,
+      80: #d6c4b0,
+    ),
+  ),
+);

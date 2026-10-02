@@ -4,6 +4,7 @@
 
 // Utilities
 @forward './breakpoints' show $breakpoints, $print-breakpoint, breakpoint;
+@forward './ext-colors' show ext-level-colors;
 
 // Overrides
 @forward '../../buttons/breadcrumbs/src/lib/tokens' as breadcrumbs-* show breadcrumbs-overrides;
