@@ -61,6 +61,7 @@
       "@atlasng/design-system/indicators/no-results-indicator": [
         "./libs/design-system/indicators/no-results-indicator/src/index.ts"
       ],
+      "@atlasng/design-system/indicators/notice": ["./libs/design-system/indicators/notice/src/index.ts"],
       "@atlasng/design-system/indicators/results-indicator": [
         "./libs/design-system/indicators/results-indicator/src/index.ts"
       ],

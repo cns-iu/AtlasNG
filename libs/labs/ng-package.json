@@ -6,12 +6,10 @@
       "input": "src/sass",
       "glob": "**/*.scss",
       "output": "sass"
-    },
-    "**/tokens.scss",
-    "**/_tokens.scss"
+    }
   ],
   "lib": {
     "entryFile": "src/index.ts",
-    "styleIncludePaths": ["./src/sass"]
+    "styleIncludePaths": ["./src/sass", "../design-system/src/sass"]
   }
 }

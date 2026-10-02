@@ -1,4 +1,4 @@
-@use 'internal/token-utils';
+@use '../internal/token-utils';
 
 $config: (
   namespace: 'table',
@@ -33,7 +33,6 @@ $config: (
   ),
 );
 
-/** Applies consumer-provided table token overrides. */
 @mixin overrides($overrides) {
   @include token-utils.apply-overrides($overrides, $config);
 }

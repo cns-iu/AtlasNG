@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 @use 'internal/breakpoints';
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/header-shell' as *;
 
 :host {
   position: sticky;

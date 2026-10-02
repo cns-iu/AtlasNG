@@ -1,5 +1,5 @@
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/error-page' as *;
 @use 'breakpoints';
 
 .ang-error-page {
