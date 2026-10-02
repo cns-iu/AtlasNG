@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, model } from '@angular/core';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -6,8 +5,11 @@ import { MatIcon } from '@angular/material/icon';
 import { MatActionList, MatListModule } from '@angular/material/list';
 import { MatSelect } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTooltip } from '@angular/material/tooltip';
 import { createSnackBarConfig, Snackbar } from '@atlasng/design-system/snackbar';
+import { saveAs } from 'file-saver';
+
+/** Number of download options at which the list becomes scrollable. */
+const SCROLLABLE_DOWNLOAD_OPTIONS_THRESHOLD = 12;
 
 /** A downloadable representation of a version. */
 export interface VersionControlDownloadOption {
@@ -36,15 +38,15 @@ export interface FileFormatDescription {
 /** Selects a version and downloads one of the files available for it. */
 @Component({
   selector: 'ang-version-control',
-  imports: [MatActionList, MatFormField, MatIcon, MatLabel, MatListModule, MatOption, MatSelect, MatTooltip],
+  imports: [MatActionList, MatFormField, MatIcon, MatLabel, MatListModule, MatOption, MatSelect],
   templateUrl: './version-control.html',
   styleUrl: './version-control.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    class: 'ang-version-control',
-  },
 })
 export class VersionControl {
+  /** Snackbar service used for download confirmation. */
+  readonly #snackbar = inject(MatSnackBar);
+
   /** Versions and their available downloads. */
   readonly versions = input.required<readonly VersionControlVersion[]>();
 
@@ -54,22 +56,16 @@ export class VersionControl {
   /** Selected version identifier, defaulting to the first supplied version. */
   readonly selectedVersion = model<string>();
 
-  /** Lookup of supporting copy by file format. */
-  readonly #descriptions = computed(
-    () => new Map(this.fileFormats().map(({ fileFormat, supportingText }) => [fileFormat, supportingText])),
-  );
-
   /** Currently selected version and its download options. */
   protected readonly currentVersion = computed<VersionControlVersion | undefined>(() => {
     const versions = this.versions();
     return versions.find(({ version }) => version === this.selectedVersion()) ?? versions[0];
   });
 
-  /** Browser document used to initiate native downloads. */
-  readonly #document = inject(DOCUMENT);
-
-  /** Snackbar service used for download confirmation. */
-  readonly #snackbar = inject(MatSnackBar);
+  /** Whether the current version has enough download options to scroll the list. */
+  protected readonly scrollable = computed(
+    () => (this.currentVersion()?.downloadOptions.length ?? 0) >= SCROLLABLE_DOWNLOAD_OPTIONS_THRESHOLD,
+  );
 
   /**
    * Gets the supporting copy for a file format.
@@ -78,28 +74,19 @@ export class VersionControl {
    * @returns Supporting text when the format is known.
    */
   protected descriptionFor(fileFormat: string): string | undefined {
-    return this.#descriptions().get(fileFormat);
+    return this.fileFormats().find((format) => format.fileFormat === fileFormat)?.supportingText;
   }
 
   /**
-   * Starts a browser download and announces it with a snackbar.
-   *
-   * @param option Download option selected by the user.
+   * Downloads a file from the url and shows a confirmation snackbar.
+   * @param url File url
    */
-  protected downloadFile(option: VersionControlDownloadOption): void {
-    const link = this.#document.createElement('a');
-    link.href = option.downloadUrl;
-    link.download = '';
-    link.hidden = true;
-    this.#document.body.append(link);
-    link.click();
-    link.remove();
-
+  download(url: string): void {
+    saveAs(url, url.split('/').pop());
     this.#snackbar.openFromComponent(
       Snackbar,
       createSnackBarConfig('File downloaded', {
-        duration: 2000,
-        politeness: 'polite',
+        duration: 5000,
         verticalPosition: 'top',
       }),
     );

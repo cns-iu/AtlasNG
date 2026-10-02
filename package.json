@@ -23,6 +23,7 @@
     "@angular/youtube-player": "^22.1.5",
     "@swimlane/ngx-datatable": "^25.1.0",
     "analytics": "^0.8.19",
+    "file-saver": "^2.0.5",
     "qs": "^6.16.0",
     "rxjs": "^7.8.2",
     "type-fest": "^5.9.0"
@@ -69,6 +70,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.7",
     "@types/qs": "^6.15.1",
+    "@types/file-saver": "^2.0.7",
     "@types/youtube": "^0.3.0",
     "@typescript-eslint/utils": "^8.69.0",
     "@vitest/coverage-v8": "^4.1.11",

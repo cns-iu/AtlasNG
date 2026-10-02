@@ -18,21 +18,25 @@
 @if (currentVersion(); as version) {
   @if (version.downloadOptions.length > 0) {
     <span class="ang-version-control--heading">Download options</span>
-    <mat-action-list class="ang-version-control--download-options" aria-label="Download options">
+    <mat-action-list
+      class="ang-version-control--download-options"
+      aria-label="Download options"
+      [class.ang-version-control--scrollable]="scrollable()"
+    >
       @for (option of version.downloadOptions; track option.fileFormat + option.downloadUrl) {
-        <button
+        <a
           mat-list-item
-          type="button"
+          download
           class="ang-version-control--download-option"
-          matTooltip="Download file"
-          (click)="downloadFile(option)"
+          [attr.href]="option.downloadUrl"
+          (click)="$event.preventDefault(); download(option.downloadUrl)"
         >
           <mat-icon matListItemIcon fontIcon="download" />
           <span matListItemTitle>{{ option.fileFormat }}</span>
           @if (descriptionFor(option.fileFormat); as description) {
             <span matListItemLine>{{ description }}</span>
           }
-        </button>
+        </a>
       }
     </mat-action-list>
   }

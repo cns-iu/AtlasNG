@@ -1,0 +1,22 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'version-control',
+  tokens: (
+    min-width: 12.5rem,
+    max-width: 30rem,
+    container-color: token-utils.sys-token(surface-container-low),
+    container-shape: token-utils.sys-token(corner-small),
+    outline-color: token-utils.sys-token(outline),
+    heading-color: token-utils.sys-token(on-surface),
+    heading-font: token-utils.sys-token(title-medium-font),
+    heading-size: token-utils.sys-token(title-medium-size),
+    heading-weight: token-utils.sys-token(title-medium-weight),
+    heading-line-height: token-utils.sys-token(title-medium-line-height),
+    heading-tracking: token-utils.sys-token(title-medium-tracking),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
