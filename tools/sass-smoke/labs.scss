@@ -1,0 +1,10 @@
+// Compiles the published entry point the way a consuming app would, with no AtlasNG load paths.
+@use 'labs/sass' as labs;
+
+.smoke {
+  @include labs.skip-to-content-button-overrides(
+    (
+      color: red,
+    )
+  );
+}

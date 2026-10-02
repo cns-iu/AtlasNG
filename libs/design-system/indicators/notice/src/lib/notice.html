@@ -1,0 +1,9 @@
+<mat-icon class="ang-notice--icon" [fontIcon]="config().icon" />
+<div class="ang-notice--content">
+  <span class="cdk-visually-hidden">{{ config().label }}:</span>
+  @if (tagline(); as tagline) {
+    <div class="ang-notice--tagline">{{ tagline }}</div>
+  }
+
+  <div class="ang-notice--body"><ng-content /></div>
+</div>

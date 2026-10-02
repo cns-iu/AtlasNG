@@ -1,6 +1,6 @@
 {
-  "name": "@atlasng/apps/kg-explorer",
-  "version": "0.0.1",
+  "name": "@atlasng/kg-explorer",
+  "version": "0.0.6",
   "description": "Knowledge graph explorer application library for AtlasNG",
   "license": "MIT",
   "repository": {

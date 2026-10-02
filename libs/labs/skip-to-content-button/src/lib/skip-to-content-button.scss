@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/skip-to-content-button' as *;
 
 :host {
   display: block;

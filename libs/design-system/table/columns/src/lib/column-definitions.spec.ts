@@ -205,10 +205,12 @@ describe('column template definitions', () => {
   });
 
   describe('CodeCellDefinition', () => {
-    it('renders an intentionally empty scaffold', async () => {
-      await setupCell('code', cellContext({ value: 'secret' }));
+    it('renders the supplied cell value as inline code', async () => {
+      await setupCell('code', cellContext({ value: 'npm install' }));
 
-      expect(screen.queryByText('secret')).not.toBeInTheDocument();
+      const code = screen.getByText('npm install');
+      expect(code.tagName).toBe('CODE');
+      expect(code).toHaveClass('ang-table--code-cell');
     });
   });
 

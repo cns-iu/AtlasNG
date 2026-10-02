@@ -1,0 +1,115 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:string';
+@use './internal/sass-utils';
+@use './internal/token-utils';
+
+/// Palette tones used by each level color role, keyed by the role's name
+/// pattern (`#` is replaced with the level name). A `variant <tone>` value reads
+/// from the palette's nested `variant` sub-palette when it has one.
+///
+/// @type Map
+$_tones: (
+  '#': (
+    light: 40,
+    dark: 80,
+  ),
+  'on-#': (
+    light: 100,
+    dark: 20,
+  ),
+  '#-container': (
+    light: 90,
+    dark: 30,
+  ),
+  'on-#-container': (
+    light: 10,
+    dark: 90,
+  ),
+  'on-#-container-variant': (
+    light: variant 30,
+    dark: variant 80,
+  ),
+);
+
+/// Theme types accepted by {@link ext-level-colors}, matching Angular Material.
+///
+/// @type List
+$_theme-types: (light, dark, color-scheme);
+
+/// Emits the extended color roles for a single level (e.g. `info`, `success`,
+/// `warning`, `critical`, or `unavailable`) as `--ang-ext-*` CSS variables on the
+/// current selector, or on `html` when used at the root.
+///
+/// The emitted variables are `--ang-ext-<name>`, `--ang-ext-on-<name>`,
+/// `--ang-ext-<name>-container`, `--ang-ext-on-<name>-container`, and
+/// `--ang-ext-on-<name>-container-variant`. The variant role reads tones `30`
+/// and `80` from the palette's `variant` sub-palette when present, otherwise
+/// from the palette itself.
+///
+/// @param {String} $name - The level name used in the variable names.
+/// @param {Map} $palette - A tonal palette with tones `10`, `20`, `30`, `40`,
+///   `80`, `90`, and `100`, and an optional `variant` sub-palette.
+/// @param {String} $theme-type [light] - `light`, `dark`, or `color-scheme`.
+///   `color-scheme` emits `light-dark()` values.
+/// @throws When the theme type is unknown or the palette is missing a tone.
+/// @example scss
+///   .light-theme {
+///     @include ds.ext-level-colors(info, $info-palette, light);
+///   }
+@mixin ext-level-colors($name, $palette, $theme-type: light) {
+  @if not list.index($_theme-types, $theme-type) {
+    @error "Unknown theme-type '#{$theme-type}'. Valid theme types are: #{$_theme-types}";
+  }
+
+  @include sass-utils.current-selector-or-root() {
+    @each $pattern, $tones in $_tones {
+      $token: _token-name($pattern, $name);
+      $value: null;
+      @if $theme-type == color-scheme {
+        $value: light-dark(
+          _tone($palette, map.get($tones, light), $token),
+          _tone($palette, map.get($tones, dark), $token)
+        );
+      } @else {
+        $value: _tone($palette, map.get($tones, $theme-type), $token);
+      }
+
+      #{token-utils.ext-token($token)}: #{$value};
+    }
+  }
+}
+
+/// Replaces the `#` placeholder in a role name pattern with the level name.
+///
+/// @param {String} $pattern - A role name pattern such as `on-#-container`.
+/// @param {String} $name - The level name.
+/// @returns {String} The role name, e.g. `on-info-container`.
+@function _token-name($pattern, $name) {
+  $index: string.index($pattern, '#');
+  @return string.unquote(string.slice($pattern, 1, $index - 1) + '#{$name}' + string.slice($pattern, $index + 1));
+}
+
+/// Reads a role's tone from a palette. A `variant <tone>` value reads from the
+/// palette's `variant` sub-palette when present, otherwise from the palette.
+///
+/// @param {Map} $palette - The level's tonal palette.
+/// @param {Number|List} $tone - A tone, or a `variant <tone>` pair.
+/// @param {String} $token - The role name, for error messages.
+/// @returns {Color} The tone's color.
+/// @throws When the palette does not define the tone.
+@function _tone($palette, $tone, $token) {
+  $value: null;
+  @if list.length($tone) > 1 {
+    $tone: list.nth($tone, 2);
+    $value: map.get($palette, variant, $tone) or map.get($palette, $tone);
+  } @else {
+    $value: map.get($palette, $tone);
+  }
+
+  @if $value == null {
+    @error "Palette for '#{token-utils.ext-token($token)}' is missing tone #{$tone}.";
+  }
+
+  @return $value;
+}

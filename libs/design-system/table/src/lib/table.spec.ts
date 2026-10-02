@@ -212,7 +212,7 @@ describe('Table', () => {
     );
   });
 
-  it('resolves an empty code-cell scaffold without exposing its value', async () => {
+  it('renders code cells with the reusable code definition', async () => {
     await setup([
       {
         name: 'Code',
@@ -222,7 +222,7 @@ describe('Table', () => {
       },
     ]);
 
-    expect(screen.queryByText('ada')).not.toBeInTheDocument();
+    expect(screen.getByText('ada')).toHaveClass('ang-table--code-cell');
   });
 
   it('renders text cells with the standard reusable definition', async () => {
