@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
-@use './tokens';
+@use 'tokens/link-snippet' as tokens;
 
 .ang-link-snippet {
   display: flex;
