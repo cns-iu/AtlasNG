@@ -52,6 +52,9 @@
       "@atlasng/design-system/content/content-section": ["./libs/design-system/content/content-section/src/index.ts"],
       "@atlasng/design-system/cookie-banner": ["./libs/design-system/cookie-banner/src/index.ts"],
       "@atlasng/design-system/error-page": ["./libs/design-system/error-page/src/index.ts"],
+      "@atlasng/design-system/filter": ["./libs/design-system/filter/src/index.ts"],
+      "@atlasng/design-system/filter/filter-form": ["./libs/design-system/filter/filter-form/src/index.ts"],
+      "@atlasng/design-system/filter/search-list": ["./libs/design-system/filter/search-list/src/index.ts"],
       "@atlasng/design-system/footer": ["./libs/design-system/footer/src/index.ts"],
       "@atlasng/design-system/indicators": ["./libs/design-system/indicators/src/index.ts"],
       "@atlasng/design-system/indicators/end-of-results-indicator": [
@@ -67,6 +70,7 @@
       "@atlasng/design-system/links": ["./libs/design-system/links/src/index.ts"],
       "@atlasng/design-system/links/link-snippet": ["./libs/design-system/links/link-snippet/src/index.ts"],
       "@atlasng/design-system/links/text-link": ["./libs/design-system/links/text-link/src/index.ts"],
+      "@atlasng/design-system/rich-tooltip": ["./libs/design-system/rich-tooltip/src/index.ts"],
       "@atlasng/design-system/snackbar": ["./libs/design-system/snackbar/src/index.ts"],
       "@atlasng/design-system/table": ["./libs/design-system/table/src/index.ts"],
       "@atlasng/design-system/table/columns": ["./libs/design-system/table/columns/src/index.ts"],
