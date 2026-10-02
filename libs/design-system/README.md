@@ -39,6 +39,10 @@ bootstrapApplication(AppComponent, {
   number, link, and code cell definitions are available from
   `@atlasng/design-system/table/columns`. Tables default to the `stripes`
   appearance and also support `grid`, `vertical-rules`, and `none`.
+- Notice: import `Notice` and `NoticeVariant` from
+  `@atlasng/design-system/indicators/notice`. Notices highlight static page content
+  and support the `info` (default), `success`, `warning`, `critical`, and
+  `unavailable` variants.
 
 ### Extended Level Colors
 
