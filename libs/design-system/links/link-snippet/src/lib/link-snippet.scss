@@ -40,10 +40,15 @@
   }
 
   .ang-link-snippet--copy {
+    @include mat.button-overrides(
+      (
+        outlined-icon-offset: 0,
+      )
+    );
+
     mat-icon {
       height: 1.5rem;
       width: 1.5rem;
-      padding-left: 4px;
       font-size: 1.5rem;
     }
   }
