@@ -25,6 +25,12 @@
   @return sass-utils.create-var(ext-token($token), $fallback);
 }
 
+// Returns an AtlasNG extended token as a CSS variable that falls back to an angular material system token,
+// e.g. ext-sys-slot(info, outline) => var(--ang-ext-info, var(--mat-sys-outline))
+@function ext-sys-slot($ext-token, $sys-token, $fallback: null) {
+  @return ext-slot($ext-token, sys-slot($sys-token, $fallback));
+}
+
 // Returns a CSS variable name for a given token and namespace,
 // e.g. token(primary, button) => --ang-button-primary
 @function token($token, $namespace-or-config) {
