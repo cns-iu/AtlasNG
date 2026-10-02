@@ -1,5 +1,5 @@
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/version-control' as *;
 
 :host {
   display: flex;

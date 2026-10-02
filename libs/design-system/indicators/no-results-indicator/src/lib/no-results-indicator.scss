@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/no-results-indicator' as *;
 
 :host {
   display: flex;

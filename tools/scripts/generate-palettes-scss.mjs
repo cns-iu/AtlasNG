@@ -7,14 +7,6 @@ import path from 'node:path';
 const PALETTES = ['primary', 'secondary', 'tertiary', 'neutral', 'neutral-variant', 'error'];
 const TONES = [0, 10, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100];
 const EXTRA_TONES = [4, 6, 12, 17, 22, 24, 87, 92, 94, 96];
-const PALETTE_BY_TOKEN = {
-  Primary: 'primary',
-  Secondary: 'secondary',
-  Tertiary: 'tertiary',
-  Neutral: 'neutral',
-  'Neutral Variant': 'neutral-variant',
-  Error: 'error',
-};
 const TONES_BY_PALETTE = {
   primary: TONES,
   secondary: TONES,
@@ -23,8 +15,13 @@ const TONES_BY_PALETTE = {
   'neutral-variant': TONES,
   error: TONES,
 };
+/** Tones every extension palette must provide (read by the `ext-level-colors` mixin). */
+const EXT_TONES = [10, 20, 30, 40, 80, 90, 100];
+/** Tones an extension palette's optional `variant` sub-palette must provide. */
+const EXT_VARIANT_TONES = [30, 80];
 
-const PALETTE_TOKEN_REGEX = /^(Primary|Secondary|Tertiary|Neutral|Neutral Variant|Error)\s+(\d+)$/;
+const PALETTE_TONE_KEY_REGEX = /^(.+?)[\s-]+(\d+)$/i;
+const TONE_REGEX = /^\d+$/;
 const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
 
 const INDENT = '  ';
@@ -41,6 +38,49 @@ $primary-palette: map.merge(map.get($_palettes, primary), $_rest);
 $tertiary-palette: map.merge(map.get($_palettes, tertiary), $_rest);
 `;
 
+/**
+ * Normalizes a token key for comparison by lowercasing it and collapsing runs of
+ * whitespace, underscores, and hyphens into a single hyphen,
+ * e.g. `"Neutral Variant"` => `"neutral-variant"`.
+ *
+ * @param {string} key The key to normalize.
+ * @returns {string} The normalized key.
+ */
+function normalizeKey(key) {
+  return key
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, '-');
+}
+
+/**
+ * Finds the value of a key in an object, ignoring case and separator differences.
+ * Keys starting with `$` (token metadata) are ignored.
+ *
+ * @param {unknown} object The object to search.
+ * @param {string} name The key to look for.
+ * @returns {any} The matching value, or `undefined` if there is no match.
+ */
+function findKey(object, name) {
+  if (!object || typeof object !== 'object') {
+    return undefined;
+  }
+
+  const target = normalizeKey(name);
+  const key = Object.keys(object).find((k) => !k.startsWith('$') && normalizeKey(k) === target);
+  return key === undefined ? undefined : object[key];
+}
+
+/**
+ * Reads a token's hex color, lowercased.
+ *
+ * @param {any} token A color token.
+ * @returns {string | undefined} The hex color, or `undefined` if the token has none.
+ */
+function getHex(token) {
+  return token?.$value?.hex?.toLowerCase();
+}
+
 function resolveOutputPath(inputPath, options) {
   if (options.output) {
     return path.resolve(options.output);
@@ -53,23 +93,32 @@ function resolveOutputPath(inputPath, options) {
   });
 }
 
-async function readTokens(inputPath) {
+/**
+ * Reads a tokens file and returns its palettes group.
+ *
+ * @param {string} inputPath Path to the tokens JSON file.
+ * @returns {Promise<Record<string, unknown>>} The palettes object (matched case-insensitively).
+ */
+async function readPalettes(inputPath) {
   const raw = await fs.readFile(inputPath, 'utf8');
   const tokens = JSON.parse(raw);
   if (!tokens || typeof tokens !== 'object') {
     throw new Error('Input file must contain a JSON object.');
-  } else if (!tokens.Palettes || typeof tokens.Palettes !== 'object') {
-    throw new Error('Input file must contain a "Palettes" object.');
   }
 
-  return tokens;
+  const palettes = findKey(tokens, 'palettes');
+  if (!palettes || typeof palettes !== 'object') {
+    throw new Error('Input file must contain a "palettes" object (case-insensitive).');
+  }
+
+  return palettes;
 }
 
 /**
  * Flattens palette tokens into `[name, token]` entries keyed as `<Palette> <tone>`.
  * Supports both flat exports (`Palettes["Primary 40"]`) and nested exports (`Palettes.Primary["40"]`).
  *
- * @param {Record<string, unknown>} palettes The `Palettes` object from the tokens file.
+ * @param {Record<string, unknown>} palettes The palettes object from the tokens file.
  * @returns {Array<[string, any]>} Flattened palette token entries.
  */
 function flattenPaletteEntries(palettes) {
@@ -80,44 +129,123 @@ function flattenPaletteEntries(palettes) {
   );
 }
 
-function parseTokens(tokens) {
-  const palettes = {};
+/**
+ * Parses the Material core palettes, matching palette names case-insensitively.
+ *
+ * @param {Record<string, unknown>} palettes The palettes object from the tokens file.
+ * @returns {Record<string, Record<number, string>>} Hex colors keyed by palette and tone.
+ */
+function parseCorePalettes(palettes) {
+  const result = {};
 
-  for (const [key, value] of flattenPaletteEntries(tokens.Palettes)) {
-    const match = PALETTE_TOKEN_REGEX.exec(key);
+  for (const [key, value] of flattenPaletteEntries(palettes)) {
+    const match = PALETTE_TONE_KEY_REGEX.exec(key);
     if (!match) {
       continue;
     }
 
-    const token = match[1];
-    if (!(token in PALETTE_BY_TOKEN)) {
+    const paletteKey = normalizeKey(match[1]);
+    if (!PALETTES.includes(paletteKey)) {
       continue;
     }
 
-    const paletteKey = PALETTE_BY_TOKEN[token];
     const tone = parseInt(match[2], 10);
-    const hex = value?.$value?.hex.toLowerCase();
-
-    palettes[paletteKey] ??= {};
-    palettes[paletteKey][tone] = hex;
+    result[paletteKey] ??= {};
+    result[paletteKey][tone] = getHex(value);
   }
 
-  return palettes;
+  return result;
 }
 
-function validatePalettes(palettes) {
+/**
+ * Collects every numeric tone in a palette group, sorted by tone.
+ *
+ * @param {Record<string, unknown>} group A palette group keyed by tone.
+ * @returns {Record<number, string | undefined>} Hex colors keyed by tone.
+ */
+function collectTones(group) {
+  const tones = Object.keys(group)
+    .filter((key) => TONE_REGEX.test(key.trim()))
+    .map((key) => [parseInt(key, 10), getHex(group[key])])
+    .sort(([a], [b]) => a - b);
+
+  return Object.fromEntries(tones);
+}
+
+/**
+ * Parses the extension palettes under `palettes.ext`. Every group under `ext` is
+ * treated as a palette, named by its normalized key.
+ *
+ * @param {Record<string, unknown>} palettes The palettes object from the tokens file.
+ * @returns {Record<string, { tones: Record<number, string | undefined>, variant: Record<number, string | undefined> | null }> | null}
+ *   Extension palettes keyed by name, or `null` when the file has no `ext` group or it is empty.
+ */
+function parseExtPalettes(palettes) {
+  const ext = findKey(palettes, 'ext');
+  if (!ext || typeof ext !== 'object') {
+    return null;
+  }
+
+  const entries = Object.entries(ext)
+    .filter(([key, value]) => !key.startsWith('$') && value && typeof value === 'object')
+    .map(([key, group]) => {
+      const variant = findKey(group, 'variant');
+      return [
+        normalizeKey(key),
+        {
+          tones: collectTones(group),
+          variant: variant && typeof variant === 'object' ? collectTones(variant) : null,
+        },
+      ];
+    })
+    .sort(([a], [b]) => a.localeCompare(b));
+
+  return entries.length > 0 ? Object.fromEntries(entries) : null;
+}
+
+/**
+ * Builds the list of palettes to validate, with the tones each one must provide.
+ *
+ * @param {Record<string, Record<number, string>>} core The parsed core palettes.
+ * @param {ReturnType<typeof parseExtPalettes>} ext The parsed extension palettes.
+ * @returns {Array<{ label: string, palette: Record<number, string | undefined>, tones: number[] }>} Validation specs.
+ */
+function buildValidationSpecs(core, ext) {
+  const specs = PALETTES.map((key) => ({ label: key, palette: core[key] ?? {}, tones: TONES_BY_PALETTE[key] }));
+
+  for (const [name, { tones, variant }] of Object.entries(ext ?? {})) {
+    specs.push({ label: `ext ${name}`, palette: tones, tones: EXT_TONES });
+    if (variant) {
+      specs.push({ label: `ext ${name} variant`, palette: variant, tones: EXT_VARIANT_TONES });
+    }
+  }
+
+  return specs;
+}
+
+/**
+ * Validates that every palette provides its required tones and that every
+ * collected tone is a valid hex color.
+ *
+ * @param {ReturnType<typeof buildValidationSpecs>} specs The palettes to validate.
+ * @throws {Error} When tones are missing or invalid.
+ */
+function validatePalettes(specs) {
   const missing = [];
   const invalid = [];
 
-  for (const key of PALETTES) {
-    const tones = TONES_BY_PALETTE[key];
-    const palette = palettes[key] ?? {};
-
+  for (const { label, palette, tones } of specs) {
     for (const tone of tones) {
       if (!(tone in palette)) {
-        missing.push(`${key} ${tone}`);
-      } else if (!HEX_COLOR_REGEX.test(palette[tone])) {
-        invalid.push(`${key} ${tone}`);
+        missing.push(`${label} ${tone}`);
+      }
+    }
+
+    // Core palettes only emit their required tones; extension palettes emit every collected tone.
+    const checked = label.startsWith('ext ') ? Object.keys(palette).map(Number) : tones;
+    for (const tone of checked) {
+      if (tone in palette && !HEX_COLOR_REGEX.test(palette[tone] ?? '')) {
+        invalid.push(`${label} ${tone}`);
       }
     }
   }
@@ -156,7 +284,49 @@ function palettesToScssMap(palettes) {
   return lines.join('\n');
 }
 
-function buildScss(input, palettes) {
+/**
+ * Converts the extension palettes into a Sass map, nesting each palette's
+ * optional `variant` sub-palette.
+ *
+ * @param {NonNullable<ReturnType<typeof parseExtPalettes>>} ext The parsed extension palettes.
+ * @returns {string} The Sass map source.
+ */
+function extPalettesToScssMap(ext) {
+  const lines = [];
+  lines.push('(');
+
+  for (const [name, { tones, variant }] of Object.entries(ext)) {
+    lines.push(`${INDENT}${name}: (`);
+
+    for (const [tone, hex] of Object.entries(tones)) {
+      lines.push(`${INDENT}${INDENT}${tone}: ${hex},`);
+    }
+
+    if (variant) {
+      lines.push(`${INDENT}${INDENT}variant: (`);
+      for (const [tone, hex] of Object.entries(variant)) {
+        lines.push(`${INDENT}${INDENT}${INDENT}${tone}: ${hex},`);
+      }
+      lines.push(`${INDENT}${INDENT}),`);
+    }
+
+    lines.push(`${INDENT}),`);
+  }
+
+  lines.push(')');
+
+  return lines.join('\n');
+}
+
+/**
+ * Builds the generated palettes SCSS file.
+ *
+ * @param {string} input The input path, for the source comment.
+ * @param {Record<string, Record<number, string>>} palettes The parsed core palettes.
+ * @param {ReturnType<typeof parseExtPalettes>} ext The parsed extension palettes, or `null`.
+ * @returns {string} The SCSS source.
+ */
+function buildScss(input, palettes, ext) {
   const palettesScssMap = palettesToScssMap(palettes);
   const lines = [
     SCSS_BANNER,
@@ -169,18 +339,23 @@ function buildScss(input, palettes) {
     SCSS_EXPORTS,
   ];
 
+  if (ext) {
+    lines.push(`$ext-palettes: ${extPalettesToScssMap(ext)};`, '');
+  }
+
   return lines.join('\n');
 }
 
 async function run2(input, options) {
   const inputPath = path.resolve(input);
   const outputPath = resolveOutputPath(inputPath, options);
-  const tokens = await readTokens(inputPath);
-  const palettes = parseTokens(tokens);
+  const tokenPalettes = await readPalettes(inputPath);
+  const palettes = parseCorePalettes(tokenPalettes);
+  const ext = parseExtPalettes(tokenPalettes);
 
-  validatePalettes(palettes);
+  validatePalettes(buildValidationSpecs(palettes, ext));
 
-  const scss = buildScss(input, palettes);
+  const scss = buildScss(input, palettes, ext);
 
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, scss, 'utf8');

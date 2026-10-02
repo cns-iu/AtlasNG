@@ -1,5 +1,5 @@
-@use 'internal/sass-utils';
-@use 'internal/token-utils';
+@use '../internal/sass-utils';
+@use '../internal/token-utils';
 
 $config: (
   namespace: 'content-header',
