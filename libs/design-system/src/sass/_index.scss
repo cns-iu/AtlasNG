@@ -21,6 +21,7 @@
 @forward './tokens/footer' as footer-* show footer-overrides;
 @forward './tokens/end-of-results-indicator' as end-of-results-indicator-* show end-of-results-indicator-overrides;
 @forward './tokens/no-results-indicator' as no-results-indicator-* show no-results-indicator-overrides;
+@forward './tokens/notice' as notice-* show notice-overrides;
 @forward './tokens/results-indicator' as results-indicator-* show results-indicator-overrides;
 @forward './tokens/link-snippet' as link-snippet-* show link-snippet-overrides;
 @forward './tokens/text-link' as text-link-* show text-link-overrides;

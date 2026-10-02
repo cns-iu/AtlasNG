@@ -1,15 +1,6 @@
 # @atlasng/core
 
-The foundational Angular library for the AtlasNG platform. This library establishes the root application infrastructure — configuration providers, dependency injection tokens, environment handling, and base services that every application and library in the monorepo depends on.
-
-## Overview
-
-The core library provides:
-
-- **Application Bootstrap**: `provideAtlasNg()` and related provider functions for configuring the platform at startup
-- **Environment Handling**: Typed environment configuration with support for development, staging, and production contexts
-- **Base Services**: Root-level services for logging, error handling, and application lifecycle management
-- **Interceptors & Guards**: HTTP interceptors and global route guards applied across all applications
+The foundation layer of AtlasNG. It provides SSR-safe injection tokens for browser globals and a small helper for building typed, defaults-aware configuration tokens. Every other AtlasNG library builds on it, and it has no dependencies on other `@atlasng/*` packages.
 
 ## Installation
 
@@ -19,20 +10,57 @@ npm install @atlasng/core
 
 ## Usage
 
-### Configuration
+### Browser tokens
 
-Use `provideAtlasNg()` to configure the platform at application bootstrap:
+Inject browser globals through tokens instead of referencing them directly. The tokens resolve through Angular's `DOCUMENT`, so they can be replaced in tests and during server-side rendering.
+
+| Token                     | Value                                                    |
+| ------------------------- | -------------------------------------------------------- |
+| `DOCUMENT`                | Re-export of Angular's `DOCUMENT` token                  |
+| `WINDOW`                  | The global `window` object                               |
+| `LOCATION`                | `document.location`                                      |
+| `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked   |
+| `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked |
+| `RESIZE_OBSERVER`         | The `ResizeObserver` constructor, or `undefined`         |
+| `CUSTOM_ELEMENT_REGISTRY` | `window.customElements`, or `undefined`                  |
 
 ```ts
-import { provideAtlasNg } from '@atlasng/core';
+import { inject } from '@angular/core';
+import { LOCAL_STORAGE } from '@atlasng/core';
 
-bootstrapApplication(AppComponent, {
-  providers: [provideAtlasNg()],
-});
+export class PreferencesStore {
+  readonly #storage = inject(LOCAL_STORAGE);
+
+  save(value: string): void {
+    this.#storage?.setItem('preferences', value);
+  }
+}
 ```
 
-### TODO: Environment Configuration
+### Configuration tokens
 
-### TODO: Dependency Injection Tokens
+`createConfigurationToken` creates an injection token together with typed `inject` and `provide` helpers. Values supplied by the caller are merged over the defaults; `undefined` values are ignored. Properties that have defaults are typed as required in the injected result.
 
-### TODO: Error Handling
+```ts
+import { createConfigurationToken, type } from '@atlasng/core';
+
+export interface GreeterConfig {
+  greeting?: string;
+  name?: string;
+}
+
+const GREETER_CONFIG = createConfigurationToken({
+  name: 'GREETER_CONFIG',
+  config: type<GreeterConfig>(),
+  defaults: () => ({ greeting: 'Hello' }),
+});
+
+export const provideGreeterConfig = GREETER_CONFIG.provide;
+
+export class Greeter {
+  // Typed as { readonly greeting: string; readonly name?: string }
+  readonly config = GREETER_CONFIG.inject();
+}
+```
+
+The `defaults` factory runs in an injection context, so it may call `inject()`. `GREETER_CONFIG.inject()` must also be called in an injection context, for example in a field initializer or constructor.

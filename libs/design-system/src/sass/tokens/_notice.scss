@@ -1,0 +1,32 @@
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'notice',
+  tokens: (
+    container-shape: token-utils.sys-token(corner-extra-small),
+    info-container-color: token-utils.ext-sys-slot(info-container, surface-container-highest),
+    info-color: token-utils.ext-sys-slot(info, outline),
+    info-tagline-color: token-utils.ext-sys-slot(on-info-container, on-surface),
+    info-body-color: token-utils.ext-sys-slot(on-info-container-variant, on-surface-variant),
+    success-container-color: token-utils.ext-sys-slot(success-container, surface-container-highest),
+    success-color: token-utils.ext-sys-slot(success, outline),
+    success-tagline-color: token-utils.ext-sys-slot(on-success-container, on-surface),
+    success-body-color: token-utils.ext-sys-slot(on-success-container-variant, on-surface-variant),
+    warning-container-color: token-utils.ext-sys-slot(warning-container, surface-container-highest),
+    warning-color: token-utils.ext-sys-slot(warning, outline),
+    warning-tagline-color: token-utils.ext-sys-slot(on-warning-container, on-surface),
+    warning-body-color: token-utils.ext-sys-slot(on-warning-container-variant, on-surface-variant),
+    critical-container-color: token-utils.ext-sys-slot(critical-container, error-container),
+    critical-color: token-utils.ext-sys-slot(critical, error),
+    critical-tagline-color: token-utils.ext-sys-slot(on-critical-container, on-error-container),
+    critical-body-color: token-utils.ext-sys-slot(on-critical-container-variant, on-error-container),
+    unavailable-container-color: token-utils.ext-sys-slot(unavailable-container, surface-container-highest),
+    unavailable-color: token-utils.ext-sys-slot(unavailable, outline),
+    unavailable-tagline-color: token-utils.ext-sys-slot(on-unavailable-container, on-surface),
+    unavailable-body-color: token-utils.ext-sys-slot(on-unavailable-container-variant, on-surface-variant),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
