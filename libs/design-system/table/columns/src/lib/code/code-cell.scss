@@ -1,5 +1,5 @@
 @use 'internal/token-utils';
-@use '../../../../src/lib/tokens' as *;
+@use 'tokens/table' as *;
 
 .ang-table--code-cell {
   display: inline-block;
