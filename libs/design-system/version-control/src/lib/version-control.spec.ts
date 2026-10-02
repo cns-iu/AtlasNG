@@ -3,6 +3,7 @@ import { createSnackBarConfig, Snackbar } from '@atlasng/design-system/snackbar'
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { saveAs } from 'file-saver';
+import { stringify } from 'yaml';
 import { FileFormatDescription, VersionControl, VersionControlVersion } from './version-control';
 
 vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
@@ -28,15 +29,23 @@ describe('VersionControl', () => {
     { fileFormat: 'PDF', supportingText: 'Fixed-layout documents that preserve text, graphics, and formatting.' },
   ];
 
+  const fetchMock = vi.fn<typeof fetch>();
+
+  beforeEach(() => {
+    fetchMock.mockResolvedValue(new Response(stringify(fileFormats)));
+    vi.stubGlobal('fetch', fetchMock);
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllGlobals();
   });
 
   async function setup(customVersions = versions, selectedVersion?: string) {
     const user = userEvent.setup();
     const openFromComponent = vi.fn();
     const result = await render(VersionControl, {
-      inputs: { versions: customVersions, fileFormats, selectedVersion },
+      inputs: { versions: customVersions, selectedVersion },
       providers: [{ provide: MatSnackBar, useValue: { openFromComponent } }],
     });
 
@@ -47,9 +56,8 @@ describe('VersionControl', () => {
     await setup();
 
     const options = screen.getByRole('group', { name: 'Download options' });
-    expect(within(options).getByRole('link', { name: /CSV/ })).toHaveTextContent(
-      'Spreadsheet-friendly data organized in rows and columns.',
-    );
+    expect(await within(options).findByText('Spreadsheet-friendly data organized in rows and columns.')).toBeVisible();
+    expect(fetchMock).toHaveBeenCalledExactlyOnceWith('assets/file-formats.yaml');
     expect(within(options).getByRole('link', { name: /JSON/ })).toBeVisible();
     expect(within(options).queryByRole('link', { name: /PDF/ })).not.toBeInTheDocument();
   });
@@ -60,9 +68,9 @@ describe('VersionControl', () => {
     await user.click(screen.getByRole('combobox', { name: 'Version' }));
     await user.click(await screen.findByRole('option', { name: '1.0.0' }));
 
-    expect(screen.getByRole('link', { name: /PDF/ })).toHaveTextContent(
-      'Fixed-layout documents that preserve text, graphics, and formatting.',
-    );
+    expect(
+      await screen.findByText('Fixed-layout documents that preserve text, graphics, and formatting.'),
+    ).toBeVisible();
     expect(screen.queryByRole('link', { name: /CSV/ })).not.toBeInTheDocument();
   });
 
@@ -112,6 +120,22 @@ describe('VersionControl', () => {
     await setup([{ version: '3.0.0', downloadOptions: [{ fileFormat: 'ZIP', downloadUrl: '/file.zip' }] }]);
 
     expect(screen.getByRole('link', { name: 'ZIP' })).toBeVisible();
+  });
+
+  it('renders formats without supporting text when the asset cannot be loaded', async () => {
+    fetchMock.mockResolvedValue(new Response('Not Found', { status: 404 }));
+    const { fixture } = await setup();
+    await fixture.whenStable();
+
+    expect(screen.getByRole('link', { name: 'CSV' })).toBeVisible();
+  });
+
+  it('renders formats without supporting text when the asset is empty', async () => {
+    fetchMock.mockResolvedValue(new Response(''));
+    const { fixture } = await setup();
+    await fixture.whenStable();
+
+    expect(screen.getByRole('link', { name: 'CSV' })).toBeVisible();
   });
 
   function createDownloadOptions(count: number) {

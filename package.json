@@ -26,7 +26,8 @@
     "file-saver": "^2.0.5",
     "qs": "^6.16.0",
     "rxjs": "^7.8.2",
-    "type-fest": "^5.9.0"
+    "type-fest": "^5.9.0",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^22.1.7",
@@ -91,8 +92,7 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.69.0",
     "verdaccio": "^6.10.2",
-    "vitest": "^4.1.11",
-    "yaml": "^2.9.1"
+    "vitest": "^4.1.11"
   },
   "allowScripts": {
     "@parcel/watcher": true,

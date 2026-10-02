@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, model, resource } from '@angular/core';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -7,9 +7,13 @@ import { MatSelect } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { createSnackBarConfig, Snackbar } from '@atlasng/design-system/snackbar';
 import { saveAs } from 'file-saver';
+import { parse } from 'yaml';
 
 /** Number of download options at which the list becomes scrollable. */
 const SCROLLABLE_DOWNLOAD_OPTIONS_THRESHOLD = 12;
+
+/** URL of the asset that describes each known file format. */
+const FILE_FORMATS_URL = 'assets/file-formats.yaml';
 
 /** A downloadable representation of a version. */
 export interface VersionControlDownloadOption {
@@ -35,6 +39,22 @@ export interface FileFormatDescription {
   supportingText: string;
 }
 
+/**
+ * Loads the file-format descriptions from the shared asset.
+ *
+ * @returns File formats and their supporting copy.
+ * @throws When the asset cannot be fetched.
+ */
+async function loadFileFormats(): Promise<readonly FileFormatDescription[]> {
+  const response = await fetch(FILE_FORMATS_URL);
+  if (!response.ok) {
+    throw new Error(`Unable to load file-format descriptions: ${response.status}`);
+  }
+
+  const formats: unknown = parse(await response.text());
+  return Array.isArray(formats) ? (formats as FileFormatDescription[]) : [];
+}
+
 /** Selects a version and downloads one of the files available for it. */
 @Component({
   selector: 'ang-version-control',
@@ -50,8 +70,8 @@ export class VersionControl {
   /** Versions and their available downloads. */
   readonly versions = input.required<readonly VersionControlVersion[]>();
 
-  /** Supporting copy for each known file format. */
-  readonly fileFormats = input.required<readonly FileFormatDescription[]>();
+  /** Supporting copy for each known file format, loaded from the file-format asset. */
+  protected readonly fileFormats = resource({ loader: loadFileFormats });
 
   /** Selected version identifier, defaulting to the first supplied version. */
   readonly selectedVersion = model<string>();
@@ -74,7 +94,8 @@ export class VersionControl {
    * @returns Supporting text when the format is known.
    */
   protected descriptionFor(fileFormat: string): string | undefined {
-    return this.fileFormats().find((format) => format.fileFormat === fileFormat)?.supportingText;
+    const formats = this.fileFormats.hasValue() ? this.fileFormats.value() : [];
+    return formats.find((format) => format.fileFormat === fileFormat)?.supportingText;
   }
 
   /**

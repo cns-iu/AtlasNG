@@ -1,12 +1,5 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { parse } from 'yaml';
-import { FileFormatDescription, VersionControl, VersionControlVersion } from './version-control';
-
-/** Shape of the Storybook file-format fixture. */
-interface FileFormatsAsset {
-  /** File formats and their supporting copy. */
-  fileFormats: FileFormatDescription[];
-}
+import { VersionControl, VersionControlVersion } from './version-control';
 
 const SAMPLE_FILE_URL =
   'https://cdn.humanatlas.io/digital-objects/2d-ftu/kidney-cortical-collecting-duct/v1.5/assets/crosswalk.csv';
@@ -117,16 +110,6 @@ const VERSIONS: readonly VersionControlVersion[] = [
   },
 ];
 
-/** Loads file-format descriptions from the public Storybook asset. */
-async function loadFileFormats(): Promise<FileFormatsAsset> {
-  const response = await fetch('/assets/file-formats.yaml');
-  if (!response.ok) {
-    throw new Error(`Unable to load file-format descriptions: ${response.status}`);
-  }
-
-  return parse(await response.text()) as FileFormatsAsset;
-}
-
 const meta: Meta<VersionControl> = {
   component: VersionControl,
   title: 'Design System/Version Control',
@@ -136,19 +119,14 @@ const meta: Meta<VersionControl> = {
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=9337-37',
     },
   },
-  loaders: [async () => ({ fileFormats: (await loadFileFormats()).fileFormats })],
   args: {
     versions: VERSIONS,
   },
-  render: (args, { loaded }) => ({
-    props: {
-      ...args,
-      fileFormats: loaded['fileFormats'] as FileFormatDescription[],
-    },
+  render: (args) => ({
+    props: args,
     template: `
       <ang-version-control
         [versions]="versions"
-        [fileFormats]="fileFormats"
         [(selectedVersion)]="selectedVersion"
       />
     `,
