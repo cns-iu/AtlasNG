@@ -83,9 +83,13 @@ Until 1.0.0, every release is a patch release:
 ```sh
 npx nx release patch --skip-publish --dry-run  # preview versions, changelogs, and tags
 npx nx release patch --skip-publish
+
+# Release a single group or project
+npx nx release patch --skip-publish --groups=libraries
+npx nx release patch --skip-publish --projects=kg-explorer
 ```
 
-This bumps versions, prepends to each project's `CHANGELOG.md`, commits, tags, pushes, and creates GitHub Releases for application libraries (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Pushing the tags triggers the [publish workflow](.github/workflows/publish.yml), which publishes to npm with trusted publishing and creates one combined GitHub Release for the `libraries` group. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on the `v<version>` tag instead.
+This bumps versions, prepends to each project's `CHANGELOG.md`, commits, tags, pushes, and creates GitHub Releases for application libraries (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
 
 ### New packages
 

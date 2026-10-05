@@ -42,18 +42,26 @@ jobs:
       - name: Print Environment Info
         run: npx nx report
 
-      # Publishes every release project; versions already on npm are skipped,
-      # so each run catches up on anything not yet published.
+      # Tags are either v<version> (libraries group) or <project>@<version> (application library);
+      # only the tagged group or project is published. A manual run on a branch publishes every
+      # release project. Versions already on npm are skipped, so reruns are safe.
       - name: Publish packages
         run: |
-          # Tags are either v<version> or <project>@<version>; prereleases go to the "next" dist-tag
-          version="${GITHUB_REF_NAME##*@}"
-          version="${version#v}"
-          if [[ "$GITHUB_REF_TYPE" == "tag" && "$version" == *-* ]]; then
-            npx nx release publish --access=public --tag=next
-          else
-            npx nx release publish --access=public
+          args=(--access=public)
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            if [[ "$GITHUB_REF_NAME" == *@* ]]; then
+              args+=(--projects="${GITHUB_REF_NAME%@*}")
+            else
+              args+=(--groups=libraries)
+            fi
+
+            version="${GITHUB_REF_NAME##*@}"
+            version="${version#v}"
+            if [[ "$version" == *-* ]]; then
+              args+=(--tag=next)
+            fi
           fi
+          npx nx release publish "${args[@]}"
         env:
           NPM_CONFIG_PROVENANCE: true
 
