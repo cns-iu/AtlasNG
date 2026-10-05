@@ -29,6 +29,7 @@
     letter-spacing: token-utils.slot('header-text-tracking', $config);
 
     .datatable-header-cell {
+      box-sizing: border-box;
       height: 100%;
       padding: 0 16px;
 
@@ -47,8 +48,16 @@
     line-height: token-utils.slot('cell-text-line-height', $config);
     letter-spacing: token-utils.slot('cell-text-tracking', $config);
 
-    .datatable-body-cell-label {
+    .datatable-body-cell {
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      height: 100%;
       padding: 0 16px;
+
+      .datatable-body-cell-label {
+        flex-grow: 1;
+      }
     }
   }
 

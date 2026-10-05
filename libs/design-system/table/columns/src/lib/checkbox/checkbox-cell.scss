@@ -8,6 +8,5 @@
 }
 
 .datatable-body-cell:has(.ang-table--checkbox-cell):not(#raiseStylePriority) {
-  box-sizing: border-box;
-  padding: 0 8px;
+  padding: 0;
 }
