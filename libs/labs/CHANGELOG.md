@@ -1,3 +1,20 @@
+## 0.0.7 (2026-10-05)
+
+### 🚀 Features
+
+- **kg-explorer:** setup publishable library ([#116](https://github.com/cns-iu/AtlasNG/pull/116))
+- **design-system:** add table component ([#113](https://github.com/cns-iu/AtlasNG/pull/113))
+- **design-system:** improve youtube player & move to design-system ([#99](https://github.com/cns-iu/AtlasNG/pull/99))
+
+### 🩹 Fixes
+
+- make packaged sass entry points self-contained ([#152](https://github.com/cns-iu/AtlasNG/pull/152))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
 ## 0.0.6 (2026-07-22)
 
 ### 🚀 Features
