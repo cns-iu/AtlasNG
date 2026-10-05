@@ -1,8 +1,8 @@
 import { Location } from '@angular/common';
-import { ErrorHandler, Injector, signal, type WritableSignal } from '@angular/core';
+import { computed, ErrorHandler, Injector, signal, type WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
-  type ActivatedRoute,
+  ActivatedRoute,
   DefaultUrlSerializer,
   type IsActiveMatchOptions,
   type NavigationBehaviorOptions,
@@ -153,23 +153,34 @@ describe('RouterLinkHandler', () => {
       expect(router.createUrlTree).not.toHaveBeenCalled();
     });
 
-    it('creates UrlTrees for command arrays using router state from the injector when needed', () => {
+    it('creates UrlTrees for command arrays relative to the activated route from the injector', () => {
       const { handler, router } = setup();
-      const rootRoute = {} as ActivatedRoute;
+      const activatedRoute = {} as ActivatedRoute;
       const injector = {
-        get: vi.fn().mockReturnValue({ routerState: { root: rootRoute } }),
+        get: vi.fn().mockReturnValue(activatedRoute),
       } as unknown as Injector;
 
       handler.prepareLink({ command: ['team', '42'] }, undefined, undefined, injector);
 
-      expect(injector.get).toHaveBeenCalledWith(Router);
+      expect(injector.get).toHaveBeenCalledWith(ActivatedRoute, null);
       expect(router.createUrlTree).toHaveBeenCalledWith(
         ['team', '42'],
-        expect.objectContaining({ relativeTo: rootRoute }),
+        expect.objectContaining({ relativeTo: activatedRoute }),
       );
     });
 
-    it('prefers command relativeTo over injector router state', () => {
+    it('leaves relativeTo undefined when no injector is provided', () => {
+      const { handler, router } = setup();
+
+      handler.prepareLink({ command: ['team', '42'] });
+
+      expect(router.createUrlTree).toHaveBeenCalledWith(
+        ['team', '42'],
+        expect.objectContaining({ relativeTo: undefined }),
+      );
+    });
+
+    it('prefers command relativeTo over the injected activated route', () => {
       const { handler, router } = setup();
       const commandRelativeTo = {} as ActivatedRoute;
       const injector = {
@@ -183,6 +194,37 @@ describe('RouterLinkHandler', () => {
         ['team', '42'],
         expect.objectContaining({ relativeTo: commandRelativeTo }),
       );
+    });
+
+    it('keeps an explicit null relativeTo instead of falling back to the injected activated route', () => {
+      const { handler, router } = setup();
+      const injector = {
+        get: vi.fn(),
+      } as unknown as Injector;
+
+      handler.prepareLink({ command: ['team', '42'], relativeTo: null }, undefined, undefined, injector);
+
+      expect(injector.get).not.toHaveBeenCalled();
+      expect(router.createUrlTree).toHaveBeenCalledWith(['team', '42'], expect.objectContaining({ relativeTo: null }));
+    });
+
+    it('rebuilds command UrlTrees inside a computed after each successful navigation', () => {
+      const { activeUrl, handler, router, urlSerializer } = setup();
+      const link = computed(() => handler.prepareLink({ command: ['team', '42'] }));
+
+      link();
+      activeUrl.set(urlSerializer.parse('/other'));
+      link();
+
+      expect(router.createUrlTree).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not track navigation for UrlTree commands', () => {
+      const { handler, router, urlSerializer } = setup();
+
+      handler.prepareLink({ command: urlSerializer.parse('/direct') });
+
+      expect(router.lastSuccessfulNavigation).not.toHaveBeenCalled();
     });
 
     it('sets anchor-like metadata from the host element', () => {
