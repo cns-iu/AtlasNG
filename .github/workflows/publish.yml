@@ -42,6 +42,11 @@ jobs:
       - name: Print Environment Info
         run: npx nx report
 
+      # nx release publish reads the dist manifests (version.manifestRootsToUpdate) before
+      # running any tasks, so the packages must be built up front.
+      - name: Build packages
+        run: npx nx run-many -t build --projects=tag:library
+
       # Tags are either v<version> (libraries group) or <project>@<version> (application library);
       # only the tagged group or project is published. A manual run on a branch publishes every
       # release project. Versions already on npm are skipped, so reruns are safe.
