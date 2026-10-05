@@ -5,11 +5,13 @@ import {
   CodeCellDefinition,
   LinkCellDefinition,
   NumberCellDefinition,
+  NumberSummaryCellDefinition,
   TextCellDefinition,
   TextHeaderCellDefinition,
+  type NumberSummaryCellConfig,
 } from '@atlasng/design-system/table/columns';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Row, Table, TableColumn } from '../index';
+import { Row, Table, TableColumn, TableSummaryPosition } from '../index';
 
 /** Row displayed in table stories. */
 interface Person extends Row {
@@ -240,6 +242,7 @@ export const WithSummaryRow: Story = {
         cellTemplate: NumberCellDefinition,
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'end' },
+        summaryTemplate: NumberSummaryCellDefinition,
       },
     ],
   },
@@ -248,6 +251,78 @@ export const WithSummaryRow: Story = {
       control: 'inline-radio',
       options: ['top', 'bottom'],
     },
+  },
+};
+
+/** Row with a deliberately mixed value used to demonstrate number summary configuration. */
+interface Measurement extends Row {
+  kind: string;
+  value: unknown;
+}
+
+/** One row for each kind of value the number summary distinguishes. */
+const MEASUREMENTS: Measurement[] = [
+  { kind: 'Number', value: 1200 },
+  { kind: 'Number', value: 34.5 },
+  { kind: 'Numeric string', value: '100' },
+  { kind: 'Text', value: 'n/a' },
+  { kind: 'Infinity', value: Infinity },
+  { kind: 'NaN', value: NaN },
+  { kind: 'Null', value: null },
+  { kind: 'Empty string', value: '' },
+];
+
+/** Controls exposed by the number summary configuration story. */
+type SummaryConfigArgs = Required<NumberSummaryCellConfig> & { summaryPosition: TableSummaryPosition };
+
+/** Number summary over mixed values, with controls for coercion and non-finite handling. */
+export const WithSummaryConfig: StoryObj<SummaryConfigArgs> = {
+  args: {
+    coerce: false,
+    nonFinite: 'skip',
+    summaryPosition: 'bottom',
+  },
+  argTypes: {
+    coerce: { control: 'boolean' },
+    nonFinite: { control: 'inline-radio', options: ['skip', 'include'] },
+    summaryPosition: { control: 'inline-radio', options: ['top', 'bottom'] },
+  },
+  render: ({ coerce, nonFinite, summaryPosition }) => {
+    const columns: TableColumn<Measurement>[] = [
+      {
+        name: 'Kind',
+        prop: 'kind',
+        sortable: false,
+        cellTemplate: TextCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+        summaryFunc: () => 'Total',
+      },
+      {
+        name: 'Value',
+        prop: 'value',
+        sortable: false,
+        cellTemplate: TextCellDefinition,
+        cellConfig: { align: 'end' },
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'end' },
+        summaryTemplate: NumberSummaryCellDefinition,
+        summaryConfig: { coerce, nonFinite } satisfies NumberSummaryCellConfig,
+      },
+    ];
+
+    return {
+      props: { columns, rows: MEASUREMENTS, summaryPosition },
+      template: `
+        <ang-table
+          style="max-height: 480px;"
+          summaryRow
+          [columns]="columns"
+          [rows]="rows"
+          [summaryPosition]="summaryPosition"
+        />
+      `,
+    };
   },
 };
 

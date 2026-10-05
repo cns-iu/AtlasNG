@@ -13,6 +13,7 @@ import {
   CodeCellDefinition,
   LinkCellDefinition,
   NumberCellDefinition,
+  NumberSummaryCellDefinition,
   TextCellDefinition,
   TextHeaderCellDefinition,
 } from '@atlasng/design-system/table/columns';
@@ -391,6 +392,22 @@ describe('Table', () => {
       const row = summaryRowElement(container)?.querySelector('.datatable-body-row');
 
       expect(row).toHaveStyle({ height: '32px' });
+    });
+
+    it('renders reusable number summaries in the summary row', async () => {
+      await setup(
+        [
+          {
+            name: 'Score',
+            prop: 'score',
+            cellTemplate: NumberCellDefinition,
+            summaryTemplate: NumberSummaryCellDefinition,
+          },
+        ],
+        { summaryRow: true },
+      );
+
+      expect(screen.getAllByText('1,234.5')).toHaveLength(2);
     });
   });
 });
