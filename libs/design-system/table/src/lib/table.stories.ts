@@ -154,13 +154,15 @@ export const WithSorting: Story = {
   },
 };
 
-/** Sortable and static headers using reusable logical alignment configuration. */
+/** Sortable and static headers with matching cells, using reusable logical alignment configuration. */
 export const WithHeaderAlignment: Story = {
   args: {
     columns: [
       {
         name: 'Start (sortable)',
         prop: 'name',
+        cellTemplate: TextCellDefinition,
+        cellConfig: { align: 'start' },
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'start' },
       },
@@ -168,6 +170,8 @@ export const WithHeaderAlignment: Story = {
         name: 'Center (static)',
         prop: 'role',
         sortable: false,
+        cellTemplate: TextCellDefinition,
+        cellConfig: { align: 'center' },
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'center' },
       },

@@ -4,7 +4,7 @@ export { CodeCellDefinition } from './lib/code/code-cell';
 export { LinkCellDefinition, type LinkCellConfig } from './lib/link/link-cell';
 export { NumberCellDefinition } from './lib/number/number-cell';
 export { NumberSummaryCellDefinition, type NumberSummaryCellConfig } from './lib/number/number-summary-cell';
-export { TextCellDefinition } from './lib/text/text-cell';
+export { TextCellDefinition, type TextCellConfig } from './lib/text/text-cell';
 export {
   TextHeaderCellDefinition,
   type TextHeaderAlignment,

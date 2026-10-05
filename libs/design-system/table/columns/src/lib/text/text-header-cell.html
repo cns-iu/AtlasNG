@@ -1,4 +1,4 @@
-@let alignClass = `ang-table--text-header-align-${config.align ?? 'start'}`;
+@let alignClass = `ang-table--text-header-align-${config?.align ?? 'start'}`;
 
 <ng-template let-column="column" let-sortFn="sortFn" angHeaderCellTemplateContext>
   @if (column.sortable) {

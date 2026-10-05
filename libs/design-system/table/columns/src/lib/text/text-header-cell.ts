@@ -20,4 +20,4 @@ export interface TextHeaderCellConfig {
   styleUrl: './text-header-cell.scss',
   encapsulation: ViewEncapsulation.None,
 })
-export class TextHeaderCellDefinition extends HeaderCellDefinition<TextHeaderCellConfig> {}
+export class TextHeaderCellDefinition extends HeaderCellDefinition<TextHeaderCellConfig | undefined> {}
