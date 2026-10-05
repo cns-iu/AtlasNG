@@ -4,9 +4,16 @@ on:
   push:
     tags:
       - v*.*.*
+      - '*@*.*.*'
+  # Fallback for when GitHub skips tag events (more than three tags pushed at once)
+  workflow_dispatch:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -35,10 +42,60 @@ jobs:
       - name: Print Environment Info
         run: npx nx report
 
-      - name: Build packages
-        run: npx nx run-many --target=build --projects=tag:library
-
+      # Tags are either v<version> (libraries group) or <project>@<version> (application library);
+      # only the tagged group or project is published. A manual run on a branch publishes every
+      # release project. Versions already on npm are skipped, so reruns are safe.
       - name: Publish packages
-        run: npx nx release publish --access=public
+        run: |
+          args=(--access=public)
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            if [[ "$GITHUB_REF_NAME" == *@* ]]; then
+              args+=(--projects="${GITHUB_REF_NAME%@*}")
+            else
+              args+=(--groups=libraries)
+            fi
+
+            version="${GITHUB_REF_NAME##*@}"
+            version="${version#v}"
+            if [[ "$version" == *-* ]]; then
+              args+=(--tag=next)
+            fi
+          fi
+          npx nx release publish "${args[@]}"
         env:
           NPM_CONFIG_PROVENANCE: true
+
+  # Nx creates GitHub Releases for independently versioned application libraries. The libraries
+  # group shares one tag, so its release combines the new section of every library changelog.
+  library-release:
+    name: Create library GitHub Release
+    needs: publish
+    if: github.ref_type == 'tag' && !contains(github.ref_name, '@')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node tools/scripts/library-release-notes.mjs "$GITHUB_REF_NAME" > release-notes.md
+          prerelease=()
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            prerelease=(--prerelease)
+          fi
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --notes-file release-notes.md "${prerelease[@]}"
+          else
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file release-notes.md --verify-tag "${prerelease[@]}"
+          fi
