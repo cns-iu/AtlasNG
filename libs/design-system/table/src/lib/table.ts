@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   Component,
   computed,
   effect,
@@ -74,7 +75,7 @@ export const TABLE_ROW_HEIGHT = 48;
 })
 export class Table<TRow extends Row = Row> {
   /** Rows displayed by the table. */
-  readonly rows = input.required<TRow[]>();
+  readonly rows = input.required<TRow[] | null | undefined>();
 
   /** Column definitions displayed by the table. */
   readonly columns = input.required<TableColumn<TRow>[]>();
@@ -83,10 +84,10 @@ export class Table<TRow extends Row = Row> {
   readonly appearance = input<TableAppearance>('striped');
 
   /** Height of each virtualized row in pixels. */
-  readonly rowHeight = input(TABLE_ROW_HEIGHT);
+  readonly rowHeight = input<number>(TABLE_ROW_HEIGHT);
 
   /** Enables horizontal scrolling when columns exceed the available width. */
-  readonly scrollbarH = input(true);
+  readonly scrollbarH = input(true, { transform: booleanAttribute });
 
   /** Selection behavior; omit to disable selection. */
   readonly selectionType = input<SelectionType>();
