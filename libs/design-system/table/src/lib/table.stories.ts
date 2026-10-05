@@ -212,6 +212,45 @@ export const WithLinkLabels: Story = {
   },
 };
 
+/** Summary row computed with default, custom, and disabled summary functions. */
+export const WithSummaryRow: Story = {
+  args: {
+    summaryRow: true,
+    summaryPosition: 'bottom',
+    columns: [
+      {
+        name: 'Name',
+        prop: 'name',
+        cellTemplate: TextCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+        summaryFunc: (cells: string[]) => `${cells.length} people`,
+      },
+      {
+        name: 'Role',
+        prop: 'role',
+        cellTemplate: TextCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+        summaryFunc: null,
+      },
+      {
+        name: 'Score',
+        prop: 'score',
+        cellTemplate: NumberCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'end' },
+      },
+    ],
+  },
+  argTypes: {
+    summaryPosition: {
+      control: 'inline-radio',
+      options: ['top', 'bottom'],
+    },
+  },
+};
+
 /** All supported appearance variants displayed together. */
 export const Appearances: Story = {
   render: (args) => ({

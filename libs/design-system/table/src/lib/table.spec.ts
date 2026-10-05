@@ -1,10 +1,10 @@
-import { signal, type WritableSignal } from '@angular/core';
+import { Component, signal, ViewEncapsulation, type WritableSignal } from '@angular/core';
 import {
   LinkHandler,
   provideLinkHandler,
+  withCustomHandler,
   type LinkCommand,
   type PreparedLink,
-  withCustomHandler,
 } from '@atlasng/common';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import {
@@ -16,10 +16,12 @@ import {
   TextCellDefinition,
   TextHeaderCellDefinition,
 } from '@atlasng/design-system/table/columns';
+import type { Row, SelectionType, SortPropDir } from '@swimlane/ngx-datatable';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import type { Row, SelectionType, SortPropDir } from '@swimlane/ngx-datatable';
-import { Table, type TableAppearance, type TableColumn } from './table';
+import { SummaryCellTemplateContext } from './definitions/template-context';
+import { SummaryCellDefinition } from './definitions/template-definition';
+import { Table, type TableAppearance, type TableColumn, type TableSummaryPosition } from './table';
 
 interface TestRow extends Row {
   name: string;
@@ -38,6 +40,16 @@ class MockLinkHandler implements LinkHandler {
 
 const ROWS: TestRow[] = [{ name: 'Ada', score: 1234.5, url: '/ada', code: 'ada' }];
 
+@Component({
+  selector: 'ang-test-summary-cell-definition',
+  imports: [SummaryCellTemplateContext],
+  template: `<ng-template angSummaryCellTemplateContext
+    >{{ config.label }}: {{ table.rows()?.length ?? 0 }}</ng-template
+  >`,
+  encapsulation: ViewEncapsulation.None,
+})
+class TestSummaryCellDefinition extends SummaryCellDefinition<{ label: string }> {}
+
 function textHeader(
   align: 'start' | 'center' | 'end' = 'start',
 ): Pick<TableColumn<TestRow>, 'headerTemplate' | 'headerConfig'> {
@@ -54,6 +66,9 @@ describe('Table', () => {
       appearance?: WritableSignal<TableAppearance>;
       selectionType?: SelectionType;
       sorts?: SortPropDir[];
+      summaryRow?: boolean;
+      summaryHeight?: number;
+      summaryPosition?: TableSummaryPosition;
     } = {},
   ) {
     const appearance = options.appearance ?? signal<TableAppearance>('striped');
@@ -70,6 +85,9 @@ describe('Table', () => {
           [columns]="columns()"
           [selectionType]="selectionType"
           [sorts]="sorts()"
+          [summaryRow]="summaryRow"
+          [summaryHeight]="summaryHeight"
+          [summaryPosition]="summaryPosition"
           (sortsChange)="sortsChange($event)"
         />
       </div>`,
@@ -82,6 +100,9 @@ describe('Table', () => {
           selectionType: options.selectionType,
           sorts,
           sortsChange,
+          summaryRow: options.summaryRow ?? false,
+          summaryHeight: options.summaryHeight,
+          summaryPosition: options.summaryPosition ?? 'top',
         },
         providers: [
           { provide: CUSTOM_ELEMENT_REGISTRY, useValue: { get: vi.fn().mockReturnValue(undefined) } },
@@ -290,5 +311,86 @@ describe('Table', () => {
     fixture.detectChanges();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.getByText('1,234.5')).toBeInTheDocument();
+  });
+
+  describe('summary row', () => {
+    function summaryRowElement(container: Element): HTMLElement | null {
+      return container.querySelector('datatable-summary-row');
+    }
+
+    it('is hidden by default', async () => {
+      const { container } = await setup([{ name: 'Score', prop: 'score' }]);
+
+      expect(summaryRowElement(container)).not.toBeInTheDocument();
+    });
+
+    it('renders values from the default and custom summary functions', async () => {
+      const { container } = await setup(
+        [
+          { name: 'Name', prop: 'name', summaryFunc: (cells: string[]) => `${cells.length} people` },
+          { name: 'Score', prop: 'score' },
+          { name: 'Code', prop: 'code', summaryFunc: null },
+        ],
+        { summaryRow: true },
+      );
+      const summary = summaryRowElement(container) as HTMLElement;
+
+      expect(summary).toHaveTextContent('1 people');
+      expect(summary).toHaveTextContent('1234.5');
+      expect(summary).not.toHaveTextContent('ada');
+    });
+
+    it('renders native and reusable summary templates', async () => {
+      @Component({
+        imports: [Table],
+        template: `
+          <ng-template let-column="column" #total>Total {{ column.name }}</ng-template>
+          <ang-table [summaryRow]="true" [rows]="rows" [columns]="columns(total)" />
+        `,
+      })
+      class Host {
+        readonly rows = ROWS;
+
+        columns(total: TableColumn<TestRow>['summaryTemplate']): TableColumn<TestRow>[] {
+          return [
+            { name: 'Score', prop: 'score', summaryTemplate: total },
+            {
+              name: 'Name',
+              prop: 'name',
+              summaryTemplate: TestSummaryCellDefinition,
+              summaryConfig: { label: 'Rows' },
+            },
+          ];
+        }
+      }
+
+      await render(Host);
+
+      expect(screen.getByText('Total Score')).toBeInTheDocument();
+      expect(screen.getByText('Rows: 1')).toBeInTheDocument();
+    });
+
+    it('applies the requested position and falls back to the row height', async () => {
+      const { container, fixture } = await setup([{ name: 'Score', prop: 'score' }], {
+        summaryRow: true,
+        summaryPosition: 'bottom',
+      });
+      const table = fixture.nativeElement.querySelector('ang-table') as HTMLElement;
+      const row = summaryRowElement(container)?.querySelector('.datatable-body-row');
+
+      expect(table).toHaveClass('ang-table--summary-bottom');
+      expect(table).not.toHaveClass('ang-table--summary-top');
+      expect(row).toHaveStyle({ height: '48px' });
+    });
+
+    it('uses an explicit summary height', async () => {
+      const { container } = await setup([{ name: 'Score', prop: 'score' }], {
+        summaryRow: true,
+        summaryHeight: 32,
+      });
+      const row = summaryRowElement(container)?.querySelector('.datatable-body-row');
+
+      expect(row).toHaveStyle({ height: '32px' });
+    });
   });
 });

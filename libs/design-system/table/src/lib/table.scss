@@ -61,6 +61,10 @@
     }
   }
 
+  .datatable-summary-row .datatable-body-row {
+    font-weight: token-utils.slot('header-text-weight', $config);
+  }
+
   &.ang-table--appearance-vertical-rules {
     .datatable-header-cell,
     .datatable-body-cell {
@@ -85,6 +89,17 @@
       &:not(:last-child) {
         border-right: 1px solid token-utils.slot('border-color', $config);
       }
+    }
+  }
+
+  &.ang-table--appearance-grid,
+  &.ang-table--appearance-striped {
+    &.ang-table--summary-top .datatable-summary-row .datatable-body-cell {
+      border-bottom: 1px solid token-utils.slot('border-color', $config);
+    }
+
+    &.ang-table--summary-bottom .datatable-summary-row .datatable-body-cell {
+      border-top: 1px solid token-utils.slot('border-color', $config);
     }
   }
 
