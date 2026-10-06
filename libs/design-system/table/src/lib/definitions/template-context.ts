@@ -51,3 +51,28 @@ export class HeaderCellTemplateContext {
     return true;
   }
 }
+
+/**
+ * Narrows an annotated template to the summary-cell context provided by ngx-datatable.
+ *
+ * Summary cells render through the body-row pipeline, so the context is a
+ * {@link CellContext} whose `row` holds the computed summary values keyed by column prop.
+ */
+@Directive({
+  selector: 'ng-template[angSummaryCellTemplateContext]',
+})
+export class SummaryCellTemplateContext {
+  /** Template whose embedded views receive the summary {@link CellContext}. */
+  readonly template = inject<TemplateRef<CellContext>>(TemplateRef);
+
+  /**
+   * Narrows the template context for Angular's template type checker.
+   *
+   * @param _definition Directive instance associated with the template.
+   * @param _context Context supplied when the template is instantiated.
+   * @returns True because this guard exists only to communicate the context type.
+   */
+  static ngTemplateContextGuard(_definition: SummaryCellTemplateContext, _context: unknown): _context is CellContext {
+    return true;
+  }
+}

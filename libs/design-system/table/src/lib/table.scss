@@ -29,6 +29,7 @@
     letter-spacing: token-utils.slot('header-text-tracking', $config);
 
     .datatable-header-cell {
+      box-sizing: border-box;
       height: 100%;
       padding: 0 16px;
 
@@ -47,9 +48,21 @@
     line-height: token-utils.slot('cell-text-line-height', $config);
     letter-spacing: token-utils.slot('cell-text-tracking', $config);
 
-    .datatable-body-cell-label {
+    .datatable-body-cell {
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      height: 100%;
       padding: 0 16px;
+
+      .datatable-body-cell-label {
+        flex-grow: 1;
+      }
     }
+  }
+
+  .datatable-summary-row .datatable-body-row {
+    font-weight: token-utils.slot('header-text-weight', $config);
   }
 
   &.ang-table--appearance-vertical-rules {
@@ -76,6 +89,14 @@
       &:not(:last-child) {
         border-right: 1px solid token-utils.slot('border-color', $config);
       }
+    }
+
+    &.ang-table--summary-top .datatable-summary-row .datatable-body-cell {
+      border-bottom: 1px solid token-utils.slot('border-color', $config);
+    }
+
+    &.ang-table--summary-bottom .datatable-summary-row .datatable-body-cell {
+      border-top: 1px solid token-utils.slot('border-color', $config);
     }
   }
 

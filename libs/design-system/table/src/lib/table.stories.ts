@@ -5,11 +5,13 @@ import {
   CodeCellDefinition,
   LinkCellDefinition,
   NumberCellDefinition,
+  NumberSummaryCellDefinition,
   TextCellDefinition,
   TextHeaderCellDefinition,
+  type NumberSummaryCellConfig,
 } from '@atlasng/design-system/table/columns';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Row, Table, TableColumn } from '../index';
+import { Row, Table, TableColumn, TableSummaryPosition } from '../index';
 
 /** Row displayed in table stories. */
 interface Person extends Row {
@@ -46,6 +48,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Name',
     prop: 'name',
+    minWidth: 200,
     cellTemplate: TextCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'start' },
@@ -53,6 +56,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Role',
     prop: 'role',
+    minWidth: 200,
     cellTemplate: TextCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'start' },
@@ -60,6 +64,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Score',
     prop: 'score',
+    minWidth: 120,
     cellTemplate: NumberCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'end' },
@@ -67,6 +72,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Profile',
     prop: 'profile',
+    minWidth: 250,
     cellTemplate: LinkCellDefinition,
     cellConfig: { labelFn: (row: Person) => `${row.name} profile` },
     headerTemplate: TextHeaderCellDefinition,
@@ -75,6 +81,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Code',
     prop: 'source',
+    minWidth: 200,
     cellTemplate: CodeCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'start' },
@@ -152,13 +159,16 @@ export const WithSorting: Story = {
   },
 };
 
-/** Sortable and static headers using reusable logical alignment configuration. */
+/** Sortable and static headers with matching cells, using reusable logical alignment configuration. */
 export const WithHeaderAlignment: Story = {
   args: {
     columns: [
       {
         name: 'Start (sortable)',
         prop: 'name',
+        minWidth: 200,
+        cellTemplate: TextCellDefinition,
+        cellConfig: { align: 'start' },
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'start' },
       },
@@ -166,12 +176,16 @@ export const WithHeaderAlignment: Story = {
         name: 'Center (static)',
         prop: 'role',
         sortable: false,
+        minWidth: 200,
+        cellTemplate: TextCellDefinition,
+        cellConfig: { align: 'center' },
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'center' },
       },
       {
         name: 'End (sortable)',
         prop: 'score',
+        minWidth: 120,
         cellTemplate: NumberCellDefinition,
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'end' },
@@ -187,6 +201,7 @@ export const WithLinkLabels: Story = {
       {
         name: 'Static',
         prop: 'profile',
+        minWidth: 200,
         cellTemplate: LinkCellDefinition,
         cellConfig: { label: 'View profile' },
         headerTemplate: TextHeaderCellDefinition,
@@ -195,6 +210,7 @@ export const WithLinkLabels: Story = {
       {
         name: 'Property',
         prop: 'profile',
+        minWidth: 200,
         cellTemplate: LinkCellDefinition,
         cellConfig: { labelProp: 'name' },
         headerTemplate: TextHeaderCellDefinition,
@@ -203,12 +219,130 @@ export const WithLinkLabels: Story = {
       {
         name: 'Function',
         prop: 'profile',
+        minWidth: 200,
         cellTemplate: LinkCellDefinition,
         cellConfig: { labelFn: (row: Person) => `Open ${row.name}` },
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'start' },
       },
     ],
+  },
+};
+
+/** Summary row computed with default, custom, and disabled summary functions. */
+export const WithSummaryRow: Story = {
+  args: {
+    summaryRow: true,
+    summaryPosition: 'bottom',
+    columns: [
+      {
+        name: 'Name',
+        prop: 'name',
+        minWidth: 200,
+        cellTemplate: TextCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+        summaryFunc: (cells: string[]) => `${cells.length} people`,
+      },
+      {
+        name: 'Role',
+        prop: 'role',
+        minWidth: 200,
+        cellTemplate: TextCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+        summaryFunc: null,
+      },
+      {
+        name: 'Score',
+        prop: 'score',
+        minWidth: 120,
+        cellTemplate: NumberCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'end' },
+        summaryTemplate: NumberSummaryCellDefinition,
+      },
+    ],
+  },
+  argTypes: {
+    summaryPosition: {
+      control: 'inline-radio',
+      options: ['top', 'bottom'],
+    },
+  },
+};
+
+/** Row with a deliberately mixed value used to demonstrate number summary configuration. */
+interface Measurement extends Row {
+  kind: string;
+  value: unknown;
+}
+
+/** One row for each kind of value the number summary distinguishes. */
+const MEASUREMENTS: Measurement[] = [
+  { kind: 'Number', value: 1200 },
+  { kind: 'Number', value: 34.5 },
+  { kind: 'Numeric string', value: '100' },
+  { kind: 'Text', value: 'n/a' },
+  { kind: 'Infinity', value: Infinity },
+  { kind: 'NaN', value: NaN },
+  { kind: 'Null', value: null },
+  { kind: 'Empty string', value: '' },
+];
+
+/** Controls exposed by the number summary configuration story. */
+type SummaryConfigArgs = Required<NumberSummaryCellConfig> & { summaryPosition: TableSummaryPosition };
+
+/** Number summary over mixed values, with controls for coercion and non-finite handling. */
+export const WithSummaryConfig: StoryObj<SummaryConfigArgs> = {
+  args: {
+    coerce: false,
+    nonFinite: 'skip',
+    summaryPosition: 'bottom',
+  },
+  argTypes: {
+    coerce: { control: 'boolean' },
+    nonFinite: { control: 'inline-radio', options: ['skip', 'include'] },
+    summaryPosition: { control: 'inline-radio', options: ['top', 'bottom'] },
+  },
+  render: ({ coerce, nonFinite, summaryPosition }) => {
+    const columns: TableColumn<Measurement>[] = [
+      {
+        name: 'Kind',
+        prop: 'kind',
+        minWidth: 200,
+        sortable: false,
+        cellTemplate: TextCellDefinition,
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'start' },
+        summaryFunc: () => 'Total',
+      },
+      {
+        name: 'Value',
+        prop: 'value',
+        minWidth: 120,
+        sortable: false,
+        cellTemplate: TextCellDefinition,
+        cellConfig: { align: 'end' },
+        headerTemplate: TextHeaderCellDefinition,
+        headerConfig: { align: 'end' },
+        summaryTemplate: NumberSummaryCellDefinition,
+        summaryConfig: { coerce, nonFinite } satisfies NumberSummaryCellConfig,
+      },
+    ];
+
+    return {
+      props: { columns, rows: MEASUREMENTS, summaryPosition },
+      template: `
+        <ang-table
+          style="max-height: 480px;"
+          summaryRow
+          [columns]="columns"
+          [rows]="rows"
+          [summaryPosition]="summaryPosition"
+        />
+      `,
+    };
   },
 };
 
