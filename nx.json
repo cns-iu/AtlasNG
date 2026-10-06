@@ -22,6 +22,7 @@
       "default",
       "!{projectRoot}/AGENTS.md",
       "!{projectRoot}/README.md",
+      "!{projectRoot}/CHANGELOG.md",
       "!{projectRoot}/**/*.mdx",
       "!{projectRoot}/eslint.config.mjs",
       "!{projectRoot}/tsconfig.spec.json",
@@ -176,6 +177,7 @@
       }
     },
     "nx-release-publish": {
+      "dependsOn": ["build"],
       "executor": "@nx/js:release-publish",
       "options": {
         "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
@@ -281,7 +283,25 @@
     }
   },
   "release": {
-    "projects": ["libs/*", "libs/applications/*"],
+    "groups": {
+      "libraries": {
+        "projects": ["analytics", "cdk", "common", "core", "design-system", "labs"],
+        "projectsRelationship": "fixed",
+        "releaseTag": {
+          "pattern": "v{version}"
+        },
+        "changelog": {
+          "createRelease": false
+        }
+      },
+      "applications": {
+        "projects": ["libs/applications/*"],
+        "projectsRelationship": "independent",
+        "releaseTag": {
+          "pattern": "{projectName}@{version}"
+        }
+      }
+    },
     "version": {
       "preVersionCommand": "npx nx run-many -t build --projects=tag:library",
       "manifestRootsToUpdate": [
@@ -294,6 +314,12 @@
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk",
       "preserveMatchingDependencyRanges": ["dependencies", "devDependencies", "optionalDependencies"]
+    },
+    "changelog": {
+      "automaticFromRef": true,
+      "projectChangelogs": {
+        "createRelease": "github"
+      }
     }
   },
   "nxCloudId": "69cd387c25091c3aa561c48c"
