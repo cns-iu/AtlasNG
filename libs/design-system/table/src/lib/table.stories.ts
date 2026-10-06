@@ -133,6 +133,23 @@ export const WithManyRows: Story = {
   },
 };
 
+/** Frozen left and right columns that stay in place while the center columns scroll horizontally. */
+export const WithFrozenColumns: Story = {
+  args: {
+    rows: MANY_ROWS,
+    columns: COLUMNS.map((column, index, columns) => ({
+      ...column,
+      frozenLeft: index === 0,
+      frozenRight: index === columns.length - 1,
+      minWidth: 320,
+    })),
+  },
+  render: (args) => ({
+    props: args,
+    template: `<ang-table style="max-height: 320px; max-width: 800px;" ${argsToTemplate(args)} />`,
+  }),
+};
+
 /** Table with an explicit Material checkbox selection column. */
 export const WithSelection: Story = {
   args: {
