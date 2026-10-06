@@ -1,3 +1,14 @@
+## 0.0.8 (2026-10-06)
+
+### 🚀 Features
+
+- **design-system:** add table summary rows ([#158](https://github.com/cns-iu/AtlasNG/pull/158))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
 ## 0.0.7 (2026-10-05)
 
 ### 🚀 Features
