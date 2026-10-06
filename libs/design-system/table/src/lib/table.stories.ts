@@ -48,6 +48,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Name',
     prop: 'name',
+    minWidth: 200,
     cellTemplate: TextCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'start' },
@@ -55,6 +56,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Role',
     prop: 'role',
+    minWidth: 200,
     cellTemplate: TextCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'start' },
@@ -62,6 +64,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Score',
     prop: 'score',
+    minWidth: 120,
     cellTemplate: NumberCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'end' },
@@ -69,6 +72,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Profile',
     prop: 'profile',
+    minWidth: 250,
     cellTemplate: LinkCellDefinition,
     cellConfig: { labelFn: (row: Person) => `${row.name} profile` },
     headerTemplate: TextHeaderCellDefinition,
@@ -77,6 +81,7 @@ const COLUMNS: TableColumn<Person>[] = [
   {
     name: 'Code',
     prop: 'source',
+    minWidth: 200,
     cellTemplate: CodeCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'start' },
@@ -161,6 +166,7 @@ export const WithHeaderAlignment: Story = {
       {
         name: 'Start (sortable)',
         prop: 'name',
+        minWidth: 200,
         cellTemplate: TextCellDefinition,
         cellConfig: { align: 'start' },
         headerTemplate: TextHeaderCellDefinition,
@@ -170,6 +176,7 @@ export const WithHeaderAlignment: Story = {
         name: 'Center (static)',
         prop: 'role',
         sortable: false,
+        minWidth: 200,
         cellTemplate: TextCellDefinition,
         cellConfig: { align: 'center' },
         headerTemplate: TextHeaderCellDefinition,
@@ -178,6 +185,7 @@ export const WithHeaderAlignment: Story = {
       {
         name: 'End (sortable)',
         prop: 'score',
+        minWidth: 120,
         cellTemplate: NumberCellDefinition,
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'end' },
@@ -193,6 +201,7 @@ export const WithLinkLabels: Story = {
       {
         name: 'Static',
         prop: 'profile',
+        minWidth: 200,
         cellTemplate: LinkCellDefinition,
         cellConfig: { label: 'View profile' },
         headerTemplate: TextHeaderCellDefinition,
@@ -201,6 +210,7 @@ export const WithLinkLabels: Story = {
       {
         name: 'Property',
         prop: 'profile',
+        minWidth: 200,
         cellTemplate: LinkCellDefinition,
         cellConfig: { labelProp: 'name' },
         headerTemplate: TextHeaderCellDefinition,
@@ -209,6 +219,7 @@ export const WithLinkLabels: Story = {
       {
         name: 'Function',
         prop: 'profile',
+        minWidth: 200,
         cellTemplate: LinkCellDefinition,
         cellConfig: { labelFn: (row: Person) => `Open ${row.name}` },
         headerTemplate: TextHeaderCellDefinition,
@@ -227,6 +238,7 @@ export const WithSummaryRow: Story = {
       {
         name: 'Name',
         prop: 'name',
+        minWidth: 200,
         cellTemplate: TextCellDefinition,
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'start' },
@@ -235,6 +247,7 @@ export const WithSummaryRow: Story = {
       {
         name: 'Role',
         prop: 'role',
+        minWidth: 200,
         cellTemplate: TextCellDefinition,
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'start' },
@@ -243,6 +256,7 @@ export const WithSummaryRow: Story = {
       {
         name: 'Score',
         prop: 'score',
+        minWidth: 120,
         cellTemplate: NumberCellDefinition,
         headerTemplate: TextHeaderCellDefinition,
         headerConfig: { align: 'end' },
@@ -296,6 +310,7 @@ export const WithSummaryConfig: StoryObj<SummaryConfigArgs> = {
       {
         name: 'Kind',
         prop: 'kind',
+        minWidth: 200,
         sortable: false,
         cellTemplate: TextCellDefinition,
         headerTemplate: TextHeaderCellDefinition,
@@ -305,6 +320,7 @@ export const WithSummaryConfig: StoryObj<SummaryConfigArgs> = {
       {
         name: 'Value',
         prop: 'value',
+        minWidth: 120,
         sortable: false,
         cellTemplate: TextCellDefinition,
         cellConfig: { align: 'end' },
