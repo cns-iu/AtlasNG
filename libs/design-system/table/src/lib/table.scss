@@ -90,10 +90,7 @@
         border-right: 1px solid token-utils.slot('border-color', $config);
       }
     }
-  }
 
-  &.ang-table--appearance-grid,
-  &.ang-table--appearance-striped {
     &.ang-table--summary-top .datatable-summary-row .datatable-body-cell {
       border-bottom: 1px solid token-utils.slot('border-color', $config);
     }
