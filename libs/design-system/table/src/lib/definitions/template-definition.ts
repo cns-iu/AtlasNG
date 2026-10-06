@@ -1,7 +1,7 @@
 import { computed, Directive, inject, InjectionToken, TemplateRef, viewChild } from '@angular/core';
 import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
 import type { Table } from '../table';
-import { CellTemplateContext, HeaderCellTemplateContext } from './template-context';
+import { CellTemplateContext, HeaderCellTemplateContext, SummaryCellTemplateContext } from './template-context';
 
 /** Injection token for the table that owns a template definition. */
 export const TABLE = new InjectionToken<Table>('ANG_TABLE');
@@ -51,4 +51,20 @@ export abstract class HeaderCellDefinition<TConfig = void> extends TableTemplate
 
   /** Header-cell context directive declared in the component template. */
   private readonly contextDir = viewChild.required(HeaderCellTemplateContext);
+}
+
+/**
+ * Base class for injectable components that provide summary-cell templates.
+ *
+ * Note that ngx-datatable does not run a column's `summaryFunc` when the column
+ * also has a summary template, so the template's `value` is undefined. Compute
+ * aggregates from {@link TableTemplateDefinition.table} rows instead.
+ */
+@Directive()
+export abstract class SummaryCellDefinition<TConfig = void> extends TableTemplateDefinition<CellContext, TConfig> {
+  /** Template rendered by ngx-datatable. */
+  override readonly template = computed(() => this.contextDir().template);
+
+  /** Summary-cell context directive declared in the component template. */
+  private readonly contextDir = viewChild.required(SummaryCellTemplateContext);
 }

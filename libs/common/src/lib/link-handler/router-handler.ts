@@ -1,6 +1,13 @@
 import { Location } from '@angular/common';
 import { ErrorHandler, inject, Injector, Service, Signal } from '@angular/core';
-import { isActive, IsActiveMatchOptions, NavigationBehaviorOptions, Router, UrlTree } from '@angular/router';
+import {
+  ActivatedRoute,
+  isActive,
+  IsActiveMatchOptions,
+  NavigationBehaviorOptions,
+  Router,
+  UrlTree,
+} from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { LinkAttributes, LinkCommand, LinkHandler } from './handler';
 import { RouterlessLinkHandler, RouterlessPreparedLink } from './routerless-handler';
@@ -137,18 +144,33 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
   /**
    * Selects or creates the router URL tree represented by a command.
    *
+   * Relative commands resolve against `command.relativeTo` when it is set (including an explicit `null`,
+   * which means the root route), otherwise against the `ActivatedRoute` visible from `injector`,
+   * matching Angular's `RouterLink`.
+   *
+   * Command-based trees read the router's last successful navigation, so calling this from a reactive context
+   * re-evaluates after each navigation. `UrlTree` commands are returned as-is and do not track navigation.
+   *
    * @param command Navigation command and URL creation options.
-   * @param injector Optional injector used to resolve the root route for relative commands.
+   * @param injector Optional injector used to resolve the activated route for relative commands.
    * @returns URL tree used for Angular Router navigation.
    */
   #selectUrlTree(command: LinkCommand, injector?: Injector): UrlTree {
-    const commandValue = command.command;
+    let { command: commandValue, relativeTo } = command;
     if (isUrlTree(commandValue)) {
       return commandValue;
+    } else if (!Array.isArray(commandValue)) {
+      commandValue = [commandValue];
     }
 
-    const commandArray = Array.isArray(commandValue) ? commandValue : [commandValue];
-    const relativeTo = command.relativeTo ?? injector?.get(Router).routerState.root;
-    return this.#router.createUrlTree(commandArray, { ...command, relativeTo });
+    // Track navigation so callers in a reactive context (e.g. `AnyLink.preparedLink`) rebuild the tree when the
+    // activated route, query params, or fragment change without the link's inputs changing.
+    this.#router.lastSuccessfulNavigation();
+
+    if (relativeTo === undefined) {
+      relativeTo = injector?.get(ActivatedRoute, null);
+    }
+
+    return this.#router.createUrlTree(commandValue, { ...command, relativeTo });
   }
 }

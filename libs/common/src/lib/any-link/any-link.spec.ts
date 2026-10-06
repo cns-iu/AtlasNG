@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { UrlTree } from '@angular/router';
+import { provideRouter, UrlTree } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from '../link-handler/handler';
-import { provideLinkHandler, withCustomHandler } from '../link-handler/providers';
+import { provideLinkHandler, withCustomHandler, withRouterHandler } from '../link-handler/providers';
 import { AnyLink } from './any-link';
 
 class MockLinkHandler implements LinkHandler {
@@ -30,6 +31,16 @@ class AnyLinkProductionHost {
   readonly command = new UrlTree();
   readonly queryParams = { source: 'test' };
 }
+
+@Component({
+  selector: 'ang-any-link-routed-host',
+  imports: [AnyLink],
+  template: `
+    <a [angAnyLink]="['posts']">relative link</a>
+    <a angAnyLink="/search" queryParamsHandling="merge" [queryParams]="{ page: 2 }">merge link</a>
+  `,
+})
+class AnyLinkRoutedHost {}
 
 describe('AnyLink', () => {
   async function setup(
@@ -264,5 +275,38 @@ describe('AnyLink', () => {
       },
     );
     expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('with the router handler', () => {
+    async function setupRouter() {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([{ path: 'user/:id', component: AnyLinkRoutedHost }]),
+          provideLinkHandler(withRouterHandler()),
+        ],
+      });
+
+      return RouterTestingHarness.create();
+    }
+
+    it('updates relative hrefs when a reused route navigates to new params', async () => {
+      const harness = await setupRouter();
+
+      await harness.navigateByUrl('/user/1');
+      expect(screen.getByRole('link', { name: 'relative link' })).toHaveAttribute('href', '/user/1/posts');
+
+      await harness.navigateByUrl('/user/2');
+      expect(screen.getByRole('link', { name: 'relative link' })).toHaveAttribute('href', '/user/2/posts');
+    });
+
+    it('updates merged query params when the current query changes', async () => {
+      const harness = await setupRouter();
+
+      await harness.navigateByUrl('/user/1?sort=name');
+      expect(screen.getByRole('link', { name: 'merge link' })).toHaveAttribute('href', '/search?sort=name&page=2');
+
+      await harness.navigateByUrl('/user/1?sort=date');
+      expect(screen.getByRole('link', { name: 'merge link' })).toHaveAttribute('href', '/search?sort=date&page=2');
+    });
   });
 });
