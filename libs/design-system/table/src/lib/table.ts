@@ -1,10 +1,12 @@
 import {
+  booleanAttribute,
   Component,
   computed,
   effect,
   forwardRef,
   input,
   model,
+  numberAttribute,
   TemplateRef,
   Type,
   ViewEncapsulation,
@@ -23,6 +25,7 @@ import { Simplify } from 'type-fest';
 import {
   CellDefinition,
   HeaderCellDefinition,
+  SummaryCellDefinition,
   TABLE,
   TableTemplateDefinition,
 } from './definitions/template-definition';
@@ -31,11 +34,14 @@ import { TemplateDefinitionCache } from './definitions/template-definition-cache
 /** Visual treatments supported by the AtlasNG table. */
 export type TableAppearance = 'striped' | 'grid' | 'vertical-rules' | 'none';
 
+/** Placement of the summary row relative to the body rows. */
+export type TableSummaryPosition = 'top' | 'bottom';
+
 /**
  * Public table column with support for native and reusable definition templates.
  */
 export type TableColumn<TRow extends Row = Row> = Simplify<
-  Omit<NgxTableColumn<TRow>, 'cellTemplate' | 'headerTemplate'> & {
+  Omit<NgxTableColumn<TRow>, 'cellTemplate' | 'headerTemplate' | 'summaryTemplate'> & {
     /** Native template or reusable definition used to render body cells. */
     cellTemplate?: TemplateRef<CellContext<TRow>> | Type<CellDefinition<TRow, unknown>>;
     /**
@@ -50,8 +56,29 @@ export type TableColumn<TRow extends Row = Row> = Simplify<
      * Replace the column object to apply a different configuration.
      */
     headerConfig?: unknown;
+    /**
+     * Native template or reusable definition used to render the summary cell.
+     * When set, ngx-datatable skips `summaryFunc` for this column.
+     */
+    summaryTemplate?: TemplateRef<CellContext> | Type<SummaryCellDefinition<unknown>>;
+    /**
+     * Configuration injected when the summary-cell definition is created.
+     * Replace the column object to apply a different configuration.
+     */
+    summaryConfig?: unknown;
   }
 >;
+
+/**
+ * Coerces a number attribute while keeping unset values undefined, unlike
+ * `numberAttribute`, which turns them into `NaN`.
+ *
+ * @param value Bound or static attribute value.
+ * @returns Parsed number, or undefined when no value is set.
+ */
+function optionalNumberAttribute(value: unknown): number | undefined {
+  return value == null ? undefined : numberAttribute(value);
+}
 
 /** Default row height used by the virtualized table. */
 export const TABLE_ROW_HEIGHT = 48;
@@ -70,11 +97,13 @@ export const TABLE_ROW_HEIGHT = 48;
   host: {
     class: 'ang-table',
     '[class]': '"ang-table--appearance-" + appearance()',
+    '[class.ang-table--summary-top]': 'summaryRow() && summaryPosition() === "top"',
+    '[class.ang-table--summary-bottom]': 'summaryRow() && summaryPosition() === "bottom"',
   },
 })
 export class Table<TRow extends Row = Row> {
   /** Rows displayed by the table. */
-  readonly rows = input.required<TRow[]>();
+  readonly rows = input.required<TRow[] | null | undefined>();
 
   /** Column definitions displayed by the table. */
   readonly columns = input.required<TableColumn<TRow>[]>();
@@ -83,10 +112,10 @@ export class Table<TRow extends Row = Row> {
   readonly appearance = input<TableAppearance>('striped');
 
   /** Height of each virtualized row in pixels. */
-  readonly rowHeight = input(TABLE_ROW_HEIGHT);
+  readonly rowHeight = input<number>(TABLE_ROW_HEIGHT);
 
   /** Enables horizontal scrolling when columns exceed the available width. */
-  readonly scrollbarH = input(true);
+  readonly scrollbarH = input(true, { transform: booleanAttribute });
 
   /** Selection behavior; omit to disable selection. */
   readonly selectionType = input<SelectionType>();
@@ -100,6 +129,18 @@ export class Table<TRow extends Row = Row> {
   /** Currently applied column sorts. */
   readonly sorts = model<SortPropDir[]>([]);
 
+  /** Displays a row of per-column summaries computed with each column's `summaryFunc`. */
+  readonly summaryRow = input(false, { transform: booleanAttribute });
+
+  /** Height of the summary row in pixels; defaults to {@link rowHeight}. */
+  readonly summaryHeight = input(undefined, { transform: optionalNumberAttribute });
+
+  /** Placement of the summary row relative to the body rows. */
+  readonly summaryPosition = input<TableSummaryPosition>('top');
+
+  /** Summary row height with the body row height applied as a fallback. */
+  protected readonly resolvedSummaryHeight = computed(() => this.summaryHeight() ?? this.rowHeight());
+
   /** Columns converted to the native ngx-datatable representation. */
   protected readonly resolvedColumns = computed(() => this.columns().map((column) => this.#resolveColumn(column)));
 
@@ -109,12 +150,16 @@ export class Table<TRow extends Row = Row> {
   /** Reusable header-cell definition instances keyed by column identity. */
   readonly #headerTemplateCache = new TemplateDefinitionCache<HeaderCellContext, unknown>();
 
+  /** Reusable summary-cell definition instances keyed by column identity. */
+  readonly #summaryTemplateCache = new TemplateDefinitionCache<CellContext, unknown>();
+
   /** Initializes automatic cache sweeping after each column-resolution cycle. */
   constructor() {
     effect(() => {
       this.resolvedColumns();
       this.#cellTemplateCache.sweep();
       this.#headerTemplateCache.sweep();
+      this.#summaryTemplateCache.sweep();
     });
   }
 
@@ -132,6 +177,7 @@ export class Table<TRow extends Row = Row> {
       draggable: column.draggable ?? false,
       cellTemplate: this.#resolveColumnTemplate(column, 'cell', this.#cellTemplateCache),
       headerTemplate: this.#resolveColumnTemplate(column, 'header', this.#headerTemplateCache),
+      summaryTemplate: this.#resolveColumnTemplate(column, 'summary', this.#summaryTemplateCache),
     };
   }
 
@@ -139,13 +185,13 @@ export class Table<TRow extends Row = Row> {
    * Passes native templates through or resolves definition components via a cache.
    *
    * @param column Column containing the requested template and configuration.
-   * @param prop Template prefix identifying body-cell or header-cell fields.
+   * @param prop Template prefix identifying body-cell, header-cell, or summary-cell fields.
    * @param cache Cache responsible for the requested template kind.
    * @returns Resolved native template reference, or undefined when none is configured.
    */
   #resolveColumnTemplate<TContext, TConfig>(
     column: TableColumn<TRow>,
-    prop: 'cell' | 'header',
+    prop: 'cell' | 'header' | 'summary',
     cache: TemplateDefinitionCache<TContext, TConfig>,
   ): TemplateRef<TContext> | undefined {
     const templateOrType = column[`${prop}Template` as const];

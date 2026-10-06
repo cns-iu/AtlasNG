@@ -30,6 +30,7 @@
   - `AtlasNG` (application)
   - `analytics`, `cdk`, `common`, `core`, `design-system`, `labs`, `kg-explorer` (publishable libraries)
   - `internal-storybook` (internal Storybook configuration and composition)
+- Release groups (see "Releasing" in [README.md](README.md)): libraries are listed by name in the fixed `libraries` group in `nx.json`; application libraries live in `libs/applications/` and are versioned independently. Add new publishable libraries to the `libraries` group explicitly.
 
 ## AI Customizations
 
