@@ -14,6 +14,13 @@
         "staticStorybookTargetName": "serve-static-storybook",
         "testStorybookTargetName": "test-storybook"
       }
+    },
+    {
+      "plugin": "@atlasng/nx-plugin",
+      "options": {
+        "buildCompodocTargetName": "build-compodoc",
+        "compodocTargetName": "compodoc"
+      }
     }
   ],
   "namedInputs": {
@@ -98,23 +105,6 @@
         "development": {}
       }
     },
-    "build-compodoc": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": [
-        "default",
-        {
-          "externalDependencies": ["@compodoc/compodoc"]
-        }
-      ],
-      "outputs": ["{workspaceRoot}/dist/compodoc/{projectName}"],
-      "options": {
-        "commands": [
-          "npx compodoc -p tsconfig.lib.json -d ${PWD%/{projectRoot}}/dist/compodoc/{projectName} -n {projectName}"
-        ],
-        "cwd": "{projectRoot}"
-      }
-    },
     "build-storybook": {
       "dependsOn": ["build-storybook-compodoc"],
       "inputs": [
@@ -152,16 +142,6 @@
       "options": {
         "commands": [
           "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal"
-        ],
-        "cwd": "{projectRoot}"
-      }
-    },
-    "compodoc": {
-      "executor": "nx:run-commands",
-      "continuous": true,
-      "options": {
-        "commands": [
-          "npx compodoc -p tsconfig.lib.json -d ${PWD%/{projectRoot}}/dist/compodoc/{projectName} -n {projectName} --serve --watch"
         ],
         "cwd": "{projectRoot}"
       }

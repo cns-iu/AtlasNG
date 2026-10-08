@@ -27,6 +27,7 @@
     "internal-storybook",
     "kg-explorer",
     "labs",
+    "nx-plugin",
     "prettier-config",
     "release",
     "tsconfig"
