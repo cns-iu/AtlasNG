@@ -51,7 +51,7 @@ on:
         description: Netlify monorepo filter for the preview deploy
         type: string
         required: false
-        default: AtlasNg
+        default: AtlasNG
     secrets:
       NX_CLOUD_ACCESS_TOKEN:
         description: Nx Cloud access token

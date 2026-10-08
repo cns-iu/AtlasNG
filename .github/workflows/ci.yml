@@ -24,7 +24,7 @@ jobs:
       targets: lint test build check-sass build-compodoc build-storybook
       stop-agents-after: lint,test,build,build-compodoc,build-storybook
       deploy-preview: true
-      netlify-filter: AtlasNg
+      netlify-filter: AtlasNG
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

@@ -16,7 +16,7 @@ inputs:
   netlify-filter:
     description: The Netlify monorepo filter (site package name) to deploy
     required: false
-    default: AtlasNg
+    default: AtlasNG
 
 runs:
   using: 'composite'
