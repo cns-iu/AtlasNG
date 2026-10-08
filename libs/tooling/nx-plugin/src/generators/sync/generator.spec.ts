@@ -6,6 +6,7 @@ import {
   updateNxJson,
   writeJson,
   type NxJsonConfiguration,
+  type TargetConfiguration,
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { flushChanges, FsTree } from 'nx/src/generators/tree';
@@ -177,8 +178,9 @@ describe('sync generator', () => {
       expect(result.namedInputs?.['production']?.slice(0, 2)).toEqual(['default', '!{projectRoot}/local/**']);
       expect(result.namedInputs?.['production']).toEqual(expect.arrayContaining(preset.namedInputs.production));
       expect(result.targetDefaults?.['custom']).toEqual({ cache: true });
-      expect(result.targetDefaults?.['test']?.cache).toBe(true);
-      expect(result.targetDefaults?.['test']?.inputs).toEqual(['default', 'local', '^production']);
+      const testDefaults = result.targetDefaults?.['test'] as Partial<TargetConfiguration> | undefined;
+      expect(testDefaults?.cache).toBe(true);
+      expect(testDefaults?.inputs).toEqual(['default', 'local', '^production']);
       expect(result.targetDefaults?.['@nx/angular:package']).toEqual(preset.targetDefaults['@nx/angular:package']);
       expect(result.generators?.['@nx/angular:library']).toEqual({
         ...preset.generators['@nx/angular:library'],
