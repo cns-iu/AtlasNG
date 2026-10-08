@@ -8,6 +8,28 @@
 npx nx add @atlasng/nx-plugin
 ```
 
+`nx add` installs the plugin and runs its [`init` generator](#init-generator).
+
+## Init generator
+
+`npx nx g @atlasng/nx-plugin:init` sets up a new or existing workspace:
+
+- adds `@atlasng/eslint-plugin`, `@atlasng/prettier-config`, `@atlasng/commitlint-config` and `@atlasng/tsconfig` as devDependencies, using the latest published versions
+- writes a thin root `eslint.config.mjs` built on the `@atlasng/eslint-plugin` configs, with the Angular selector prefix and an `@nx/enforce-module-boundaries` block to adjust
+- sets the `prettier` key in `package.json` to `@atlasng/prettier-config` (a default Nx `.prettierrc` that only sets `singleQuote` is removed)
+- writes `commitlint.config.mjs` extending `@atlasng`
+- makes `tsconfig.base.json` extend `@atlasng/tsconfig/angular.json` (or `node.json` with `--tsconfigPreset=node`)
+- registers the plugin in `nx.json`
+
+It never overwrites existing custom configuration: an existing ESLint, Prettier or commitlint config, or a different `extends` in `tsconfig.base.json`, is kept and a warning explains what to change by hand. Running it again changes nothing.
+
+| Option            | Default                                  | Description                                      |
+| ----------------- | ---------------------------------------- | ------------------------------------------------ |
+| `prefix`          | the `nx.json` generator prefix, or `app` | Angular selector prefix for the ESLint rules     |
+| `tsconfigPreset`  | `angular`                                | The `@atlasng/tsconfig` preset to extend         |
+| `skipPackageJson` | `false`                                  | Do not add the config packages to `package.json` |
+| `skipFormat`      | `false`                                  | Do not format the changed files                  |
+
 ## Inferred Compodoc targets
 
 When the plugin is registered in `nx.json`, every project with an `ng-package.json`, a `tsconfig.lib.json` and a `project.json` or `package.json` gets two targets:

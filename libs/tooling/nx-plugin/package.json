@@ -24,10 +24,12 @@
       "default": "./src/index.js"
     },
     "./package.json": "./package.json",
+    "./generators.json": "./generators.json",
     "./executors.json": "./executors.json",
     "./migrations.json": "./migrations.json",
     "./presets/*": "./presets/*"
   },
+  "generators": "./generators.json",
   "executors": "./executors.json",
   "nx-migrations": {
     "migrations": "./migrations.json"
