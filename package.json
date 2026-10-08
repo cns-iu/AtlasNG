@@ -2,6 +2,9 @@
   "name": "@atlasng/monorepo",
   "version": "0.0.2",
   "license": "MIT",
+  "workspaces": [
+    "libs/tooling/*"
+  ],
   "scripts": {
     "prepare": "husky"
   },
