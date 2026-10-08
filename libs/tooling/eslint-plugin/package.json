@@ -1,0 +1,61 @@
+{
+  "name": "@atlasng/eslint-plugin",
+  "version": "0.0.0",
+  "description": "Shared ESLint flat configurations for AtlasNG and related Nx Angular workspaces",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cns-iu/AtlasNG",
+    "directory": "libs/tooling/eslint-plugin"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG/tree/main/libs/tooling/eslint-plugin",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "nx",
+    "angular"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./angular": {
+      "types": "./angular.d.ts",
+      "default": "./angular.js"
+    },
+    "./typescript": {
+      "types": "./typescript.d.ts",
+      "default": "./typescript.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "@nx/eslint-plugin": "^23.0.0",
+    "angular-eslint": "^22.0.0",
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-jsonc": "^3.0.0",
+    "eslint-plugin-storybook": "^10.0.0",
+    "typescript-eslint": "^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "angular-eslint": {
+      "optional": true
+    },
+    "eslint-config-prettier": {
+      "optional": true
+    },
+    "eslint-plugin-storybook": {
+      "optional": true
+    }
+  }
+}
