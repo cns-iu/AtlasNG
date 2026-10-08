@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Shared Renovate preset for AtlasNG-based Nx + Angular workspaces. Extend with \"github>cns-iu/AtlasNG//renovate/default\".",
-  "extends": ["config:recommended", "schedule:weekly"],
+  "extends": ["config:recommended", "schedule:weekly", ":semanticCommitScopeDisabled"],
   "timezone": "America/Indiana/Indianapolis",
   "labels": ["dependencies"],
   "minimumReleaseAge": "3 days",
