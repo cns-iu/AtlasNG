@@ -94,7 +94,7 @@ const baseConfig = [
 ];
 
 /**
- * ESLint configuration for Angular projects.
+ * Angular configuration shared by libraries and applications.
  * Adds the workspace's `ang` selector prefix to the shared Angular configuration.
  *
  * @type {import('eslint').Linter.Config[]}
@@ -126,21 +126,39 @@ const angularConfig = [
 ];
 
 /**
- * ESLint configuration for Storybook files.
+ * ESLint configuration for the non-Angular tooling packages in `libs/tooling`.
  *
  * @type {import('eslint').Linter.Config[]}
  */
-const storybookConfig = [
+const toolingConfig = [...baseConfig];
+
+/**
+ * ESLint configuration for Angular libraries, including their Storybook files.
+ *
+ * @type {import('eslint').Linter.Config[]}
+ */
+const libraryConfig = [
+  ...baseConfig,
+  ...angularConfig,
   ...atlasng.configs['flat/storybook'],
 
   // TODO: Might need to set packageJsonLocation for storybook/no-uninstalled-addons
   // import.meta.resolve('./package.json') + fileURLToPath
 ];
 
+/**
+ * ESLint configuration for Angular applications.
+ *
+ * @type {import('eslint').Linter.Config[]}
+ */
+const applicationConfig = [...baseConfig, ...angularConfig];
+
+/** ESLint configurations for each kind of project in the workspace. */
 export const configs = {
   base: baseConfig,
-  angular: angularConfig,
-  storybook: storybookConfig,
+  tooling: toolingConfig,
+  library: libraryConfig,
+  application: applicationConfig,
 };
 
-export default [...baseConfig, ...angularConfig, ...storybookConfig];
+export default libraryConfig;

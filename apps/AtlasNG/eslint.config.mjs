@@ -1,3 +1,3 @@
-import baseConfig from '../../eslint.config.mjs';
+import { configs } from '../../eslint.config.mjs';
 
-export default [...baseConfig];
+export default [...configs.application];
