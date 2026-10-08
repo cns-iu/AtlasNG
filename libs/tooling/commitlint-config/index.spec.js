@@ -38,13 +38,12 @@ describe('@atlasng/commitlint-config', () => {
   });
 
   describe('scope-enum', () => {
-    it('lists the Nx project names without adding release', async () => {
+    it('lists the Nx project names', async () => {
       const [severity, applicable, scopes] = await config.rules['scope-enum']({ cwd: workspace });
 
       expect(severity).toBe(2);
       expect(applicable).toBe('always');
       expect([...scopes].sort()).toEqual(['app', 'lib', 'scoped']);
-      expect(scopes).not.toContain('release');
     });
 
     it('returns no scopes outside an Nx workspace', async () => {
