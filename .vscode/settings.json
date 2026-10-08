@@ -25,6 +25,7 @@
     "internal-storybook",
     "kg-explorer",
     "labs",
-    "release"
+    "release",
+    "tsconfig"
   ]
 }
