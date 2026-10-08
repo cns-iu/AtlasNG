@@ -5,14 +5,13 @@ Shared ESLint flat configurations for AtlasNG and other Nx Angular workspaces. T
 ## Installation
 
 ```bash
-npm install --save-dev @atlasng/eslint-plugin @nx/eslint-plugin eslint typescript-eslint eslint-plugin-jsonc
+npm install --save-dev @atlasng/eslint-plugin @nx/eslint-plugin eslint eslint-config-prettier typescript-eslint eslint-plugin-jsonc
 ```
 
-Install the optional peers for the configurations you use:
+`eslint-config-prettier` is required: `@nx/eslint-plugin` detects it from the workspace and uses it to turn off rules that conflict with Prettier. Install the optional peers for the configurations you use:
 
 - `angular-eslint` for `flat/angular` and `flat/angular-template`
 - `eslint-plugin-storybook` for `flat/storybook`
-- `prettier` and `eslint-config-prettier` to turn off rules that conflict with Prettier (detected by `@nx/eslint-plugin`)
 
 ## Configurations
 

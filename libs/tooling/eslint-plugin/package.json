@@ -51,9 +51,6 @@
     "angular-eslint": {
       "optional": true
     },
-    "eslint-config-prettier": {
-      "optional": true
-    },
     "eslint-plugin-storybook": {
       "optional": true
     }
