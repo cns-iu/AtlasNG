@@ -24,9 +24,11 @@
       "default": "./src/index.js"
     },
     "./package.json": "./package.json",
+    "./executors.json": "./executors.json",
     "./migrations.json": "./migrations.json",
     "./presets/*": "./presets/*"
   },
+  "executors": "./executors.json",
   "nx-migrations": {
     "migrations": "./migrations.json"
   },
