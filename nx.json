@@ -272,6 +272,9 @@
       "tooling": {
         "projects": ["libs/tooling/*"],
         "projectsRelationship": "independent",
+        "version": {
+          "updateDependents": "always"
+        },
         "releaseTag": {
           "pattern": "{projectName}@{version}"
         }
