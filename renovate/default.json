@@ -1,0 +1,86 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate preset for AtlasNG-based Nx + Angular workspaces. Extend with \"github>cns-iu/AtlasNG//renovate/default\".",
+  "extends": ["config:recommended", "schedule:weekly"],
+  "timezone": "America/Indiana/Indianapolis",
+  "labels": ["dependencies"],
+  "minimumReleaseAge": "3 days",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "Automerge patch and minor devDependency updates once CI passes (requires required status checks in branch protection). 0.x packages are excluded because their minors may break.",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "matchCurrentVersion": "!/^[~^]?0\\./",
+      "automerge": true
+    },
+    {
+      "description": "Angular framework, CLI, and tooling move together.",
+      "matchPackageNames": ["@angular/*", "@angular-devkit/*", "@schematics/angular", "ng-packagr", "angular-eslint"],
+      "groupName": "Angular"
+    },
+    {
+      "description": "Storybook core, addons, and framework integrations.",
+      "matchPackageNames": ["storybook", "@storybook/*", "eslint-plugin-storybook"],
+      "groupName": "Storybook"
+    },
+    {
+      "description": "Vitest and its plugins.",
+      "matchPackageNames": ["vitest", "@vitest/*"],
+      "groupName": "Vitest"
+    },
+    {
+      "description": "ESLint core and typescript-eslint.",
+      "matchPackageNames": ["eslint", "@eslint/*", "typescript-eslint", "@typescript-eslint/*"],
+      "groupName": "ESLint"
+    },
+    {
+      "description": "Nx updates need migrations, so they are labelled and never automerged.",
+      "matchPackageNames": ["nx", "@nx/*"],
+      "groupName": "Nx",
+      "addLabels": ["nx-migrate"],
+      "automerge": false,
+      "prBodyNotes": [
+        "> [!IMPORTANT]\n> This is an Nx update. Before merging, check out this branch, run `npx nx migrate <version>`, `npm install`, and `npx nx migrate --run-migrations`, then commit the result."
+      ]
+    },
+    {
+      "description": "AtlasNG shared tooling packages.",
+      "matchPackageNames": [
+        "@atlasng/eslint-plugin",
+        "@atlasng/prettier-config",
+        "@atlasng/commitlint-config",
+        "@atlasng/tsconfig",
+        "@atlasng/nx-plugin"
+      ],
+      "groupName": "AtlasNG tooling"
+    },
+    {
+      "description": "AtlasNG Angular libraries are released as one fixed version group.",
+      "matchPackageNames": [
+        "@atlasng/analytics",
+        "@atlasng/cdk",
+        "@atlasng/common",
+        "@atlasng/core",
+        "@atlasng/design-system",
+        "@atlasng/labs"
+      ],
+      "groupName": "AtlasNG libraries"
+    },
+    {
+      "description": "Reusable workflows and composite actions referenced from cns-iu/AtlasNG.",
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["cns-iu/AtlasNG"],
+      "groupName": "AtlasNG workflows"
+    },
+    {
+      "description": "Node.js version in .nvmrc and package.json engines.",
+      "matchManagers": ["nvm", "npm"],
+      "matchDepNames": ["node"],
+      "groupName": "Node.js"
+    }
+  ]
+}

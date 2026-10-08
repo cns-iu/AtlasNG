@@ -103,6 +103,19 @@ node tools/scripts/bootstrap-npm-packages.mjs
 
 The script only touches packages that are not on npm yet, so it is safe to rerun.
 
+## Dependency updates
+
+Dependency updates are handled by [Renovate](https://docs.renovatebot.com/) using the shared preset in [renovate/default.json](renovate/default.json). It groups Angular, Nx, Storybook, Vitest, ESLint, and `@atlasng/*` updates, labels Nx updates `nx-migrate` (run `npx nx migrate` on those branches before merging), and automerges patch and minor devDependency updates and lockfile maintenance once CI passes. Other repositories can reuse it with a `renovate.json` like this:
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>cns-iu/AtlasNG//renovate/default"]
+}
+```
+
+The [Renovate GitHub App](https://github.com/apps/renovate) must be installed on the `cns-iu` organization (or on each repository) for any of this to run, and automerge only waits for CI when the default branch requires status checks.
+
 ## Contributing
 
 Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) with a project name as the scope (for example `feat(design-system): add notice component`). The allowed scopes are listed in [commitlint.config.mjs](commitlint.config.mjs). See [AGENTS.md](AGENTS.md) for the full workspace conventions.
