@@ -13,10 +13,12 @@ on:
         required: false
         default: lint test build
       stop-agents-after:
-        description: Comma-separated targets after which Nx Cloud agents stop
+        description: >-
+          Comma-separated targets after which Nx Cloud agents stop. Defaults to the targets input,
+          which fits when `nx affected` is the last distributed command.
         type: string
         required: false
-        default: lint,test,build
+        default: ''
       distribute-on:
         description: Nx Cloud distribution config (file path or agent spec); empty disables task distribution
         type: string
@@ -87,7 +89,12 @@ jobs:
         env:
           DISTRIBUTE_ON: ${{ inputs.distribute-on }}
           STOP_AGENTS_AFTER: ${{ inputs.stop-agents-after }}
+          TARGETS: ${{ inputs.targets }}
         run: |
+          if [[ -z "$STOP_AGENTS_AFTER" ]]; then
+            read -ra targets <<< "$TARGETS"
+            STOP_AGENTS_AFTER=$(IFS=,; echo "${targets[*]}")
+          fi
           npx nx start-ci-run \
             --distribute-on="$DISTRIBUTE_ON" \
             --with-env-vars="VITEST_MAX_WORKERS" \
