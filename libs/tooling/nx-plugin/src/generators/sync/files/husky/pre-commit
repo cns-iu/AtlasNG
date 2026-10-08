@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+# Detect whitespace errors and unresolved conflict markers.
+git diff --cached --check
+
+# Check formatting only for staged files.
+staged_files=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if [ -n "$staged_files" ]; then
+  printf '%s\n' "$staged_files" | npx nx format:check --stdin
+fi
