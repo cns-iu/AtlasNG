@@ -19,6 +19,7 @@
     "AtlasNG",
     "analytics",
     "cdk",
+    "commitlint-config",
     "common",
     "core",
     "design-system",
