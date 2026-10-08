@@ -82,6 +82,41 @@ describe('compodoc plugin', () => {
     expect(Object.keys(result?.projects?.['libs/a']?.targets ?? {})).toEqual(['docs', 'docs-serve']);
   });
 
+  it('infers the Storybook Compodoc target for projects with a .storybook directory', async () => {
+    write('libs/ds/ng-package.json');
+    write('libs/ds/project.json');
+    write('libs/ds/tsconfig.lib.json');
+    write('libs/ds/.storybook/main.ts', '');
+
+    const [[, result] = []] = await run(['libs/ds/ng-package.json']);
+    const targets = result?.projects?.['libs/ds']?.targets ?? {};
+
+    expect(Object.keys(targets)).toEqual(['build-compodoc', 'compodoc', 'build-storybook-compodoc']);
+    expect(targets['build-storybook-compodoc']).toEqual({
+      executor: 'nx:run-commands',
+      cache: true,
+      inputs: ['default', { externalDependencies: ['@compodoc/compodoc'] }],
+      outputs: ['{projectRoot}/.storybook/compodoc/documentation.json'],
+      options: {
+        commands: [
+          'npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal',
+        ],
+        cwd: '{projectRoot}',
+      },
+    });
+  });
+
+  it('uses the configured Storybook Compodoc target name', async () => {
+    write('libs/ds/ng-package.json');
+    write('libs/ds/project.json');
+    write('libs/ds/tsconfig.lib.json');
+    write('libs/ds/.storybook/main.ts', '');
+
+    const [[, result] = []] = await run(['libs/ds/ng-package.json'], { buildStorybookCompodocTargetName: 'sb-docs' });
+
+    expect(Object.keys(result?.projects?.['libs/ds']?.targets ?? {})).toContain('sb-docs');
+  });
+
   it('skips secondary entry points and projects without tsconfig.lib.json', async () => {
     write('libs/a/project.json');
     write('libs/a/tsconfig.lib.json');

@@ -39,6 +39,12 @@ When the plugin is registered in `nx.json`, every project with an `ng-package.js
 | `build-compodoc` | Builds the static API docs to `dist/compodoc/<project>` (cached) |
 | `compodoc`       | Serves the API docs and rebuilds them on change (continuous)     |
 
+Projects that also have a `.storybook` directory get a third target:
+
+| Target                     | Description                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `build-storybook-compodoc` | Builds the Compodoc JSON that Storybook reads to `.storybook/compodoc` (cached) |
+
 ng-packagr secondary entry points are skipped. The targets run `npx compodoc`, so the workspace needs `@compodoc/compodoc` installed. The target names are options:
 
 ```json
@@ -48,7 +54,8 @@ ng-packagr secondary entry points are skipped. The targets run `npx compodoc`, s
       "plugin": "@atlasng/nx-plugin",
       "options": {
         "buildCompodocTargetName": "build-compodoc",
-        "compodocTargetName": "compodoc"
+        "compodocTargetName": "compodoc",
+        "buildStorybookCompodocTargetName": "build-storybook-compodoc"
       }
     }
   ]

@@ -82,7 +82,14 @@ describe('init generator', () => {
     await initGenerator(tree, { skipFormat: true });
 
     expect(readNxJson(tree)?.plugins).toEqual([
-      { plugin: PLUGIN_NAME, options: { buildCompodocTargetName: 'build-compodoc', compodocTargetName: 'compodoc' } },
+      {
+        plugin: PLUGIN_NAME,
+        options: {
+          buildCompodocTargetName: 'build-compodoc',
+          compodocTargetName: 'compodoc',
+          buildStorybookCompodocTargetName: 'build-storybook-compodoc',
+        },
+      },
     ]);
   });
 

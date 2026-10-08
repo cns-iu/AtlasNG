@@ -316,7 +316,14 @@ function registerPlugin(tree: Tree): void {
 
   nxJson.plugins = [
     ...plugins,
-    { plugin: PLUGIN_NAME, options: { buildCompodocTargetName: 'build-compodoc', compodocTargetName: 'compodoc' } },
+    {
+      plugin: PLUGIN_NAME,
+      options: {
+        buildCompodocTargetName: 'build-compodoc',
+        compodocTargetName: 'compodoc',
+        buildStorybookCompodocTargetName: 'build-storybook-compodoc',
+      },
+    },
   ];
   updateNxJson(tree, nxJson);
 }
