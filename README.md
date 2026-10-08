@@ -69,6 +69,31 @@ npx nx compodoc <project>        # live
 npx nx build-compodoc <project>  # static
 ```
 
+## Continuous integration
+
+CI, publishing, and the Storybook deploy run through reusable workflows (prefixed `nx-`) that other Nx repos can call. AtlasNG's own [ci.yml](.github/workflows/ci.yml), [publish.yml](.github/workflows/publish.yml), and [storybook-gh-pages.yml](.github/workflows/storybook-gh-pages.yml) are thin callers, so every AtlasNG PR exercises them.
+
+| Workflow or action                                                                     | Purpose                                                                                               |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [nx-ci.yml](.github/workflows/nx-ci.yml)                                               | commitlint, `nx format:check`, `nx affected` with Nx Cloud distribution, `nx fix-ci`, Netlify preview |
+| [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)                     | Publishes the tagged release group or project to npm and creates the fixed group's GitHub Release     |
+| [nx-storybook-gh-pages.yml](.github/workflows/nx-storybook-gh-pages.yml)               | Builds a Storybook project and deploys it to GitHub Pages                                             |
+| [setup-nx-workspace](.github/actions/setup-nx-workspace/action.yml) (composite action) | Node.js from `.nvmrc`, `npm ci --no-audit`, optional `nx-set-shas`                                    |
+
+Each file documents its inputs and secrets. A caller owns the triggers, `concurrency`, and `permissions`, for example:
+
+```yaml
+jobs:
+  ci:
+    uses: cns-iu/AtlasNG/.github/workflows/nx-ci.yml@<ref>
+    with:
+      targets: lint test build
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+```
+
+Where the workflows are hosted long term and how other repos pin versions is still to be decided. Until then the workflows reference their actions with local `./.github/actions/...` paths, which resolve against the calling repository, so they only work outside AtlasNG once those references are fully qualified.
+
 ## Releasing
 
 Packages are released with [Nx Release](https://nx.dev/docs/guides/nx-release) in two release groups configured in [nx.json](nx.json):
@@ -89,7 +114,7 @@ npx nx release patch --skip-publish --groups=libraries
 npx nx release patch --skip-publish --projects=kg-explorer
 ```
 
-This bumps versions, prepends to each project's `CHANGELOG.md`, commits, and tags. Push the release commit and tags yourself (`git push origin main <tags>`); releases that include an application library push automatically, because Nx needs the tag on GitHub to create GitHub Releases for application libraries (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
+This bumps versions, prepends to each project's `CHANGELOG.md`, commits, and tags. Push the release commit and tags yourself (`git push origin main <tags>`); releases that include an application library push automatically, because Nx needs the tag on GitHub to create GitHub Releases for application libraries (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml) (a caller of [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
 
 ### New packages
 
