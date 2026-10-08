@@ -105,7 +105,7 @@
 
 - Use a Conventional Commits subject line, for example `feat(design-system): add content section component`.
 - The scope must be one allowed by [commitlint.config.mjs](commitlint.config.mjs) (Nx project names from `npx nx show projects`, plus `release`); any other scope fails CI. If no allowed scope fits, omit the scope, for example `chore: update agent instructions`.
-- When adding, renaming, or removing an Nx project, update `conventionalCommits.scopes` in [.vscode/settings.json](.vscode/settings.json) to match.
+- When adding, renaming, or removing an Nx project, run `npx nx sync` so `conventionalCommits.scopes` in [.vscode/settings.json](.vscode/settings.json) matches.
 - Default to a subject line only. Add a body only when it carries context that neither the subject nor the diff shows, such as the reason behind a non-obvious change, and keep it to a sentence or two.
 - Do not write long paragraphs or restate the diff file by file; reviewers read the diff anyway.
 
@@ -129,7 +129,7 @@
 - Use watch mode when iterating: `npx nx test <project> --configuration=watch`.
 - When writing tests, prefer Testing Library APIs (`@testing-library/angular`, `@testing-library/dom`) over direct DOM access.
 - Prefer `user-event` for interaction and `@testing-library/jest-dom` matchers for assertions on rendered DOM state.
-- Import `@testing-library/jest-dom/vitest` in project `test-setup.ts` files (for example `libs/common/src/test-setup.ts`), not inside individual `*.spec.ts` files.
+- Import `@testing-library/jest-dom/vitest` in project `test-setup.ts` files, not inside individual `*.spec.ts` files.
 - Avoid low-level patterns like `querySelector`, `querySelectorAll`, manual `dispatchEvent`, and raw `element.click()` unless there is no Testing Library equivalent.
 
 ## Documentation Expectations

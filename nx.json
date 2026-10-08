@@ -297,5 +297,14 @@
       }
     }
   },
+  "sync": {
+    "globalGenerators": ["@atlasng/nx-plugin:sync"],
+    "generatorOptions": {
+      "@atlasng/nx-plugin:sync": {
+        "prefix": "ang",
+        "extraScopes": ["release"]
+      }
+    }
+  },
   "nxCloudId": "69cd387c25091c3aa561c48c"
 }

@@ -1,6 +1,6 @@
 ---
 name: Angular Testing Standards
-description: Testing conventions for AtlasNG Vitest spec and test setup files.
+description: Testing conventions for Vitest spec and test setup files.
 applyTo: '**/*.spec.ts,**/test-setup.ts'
 ---
 
