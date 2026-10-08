@@ -20,7 +20,7 @@ npm install --save-dev @atlasng/eslint-plugin @nx/eslint-plugin eslint eslint-co
 | `flat/base`             | Nx `flat/base`, JSON parsing, `dist`/`out-tsc` ignores, and `@nx/dependency-checks` for `package.json` files |
 | `flat/javascript`       | Nx `flat/javascript` and the core rules (`curly`, `eqeqeq`, `max-depth`, …)                                  |
 | `flat/typescript`       | Nx `flat/typescript`, the core rules, and their TypeScript counterparts                                      |
-| `flat/angular`          | Nx `flat/angular`, additional angular-eslint rules, and selector type and style checks without a prefix      |
+| `flat/angular`          | Nx `flat/angular` and additional angular-eslint rules                                                        |
 | `flat/angular-template` | Nx `flat/angular-template` and additional template rules                                                     |
 | `flat/storybook`        | `eslint-plugin-storybook` `flat/recommended`, with the `.storybook` directory unignored                      |
 
@@ -62,7 +62,7 @@ export default [
 ];
 ```
 
-The selector rules in `flat/angular` set an empty prefix, which disables the prefix check. Redeclare them with your own prefix as shown above.
+`flat/angular` does not configure the selector rules, because their prefix is workspace-specific. Declare them with your own prefix as shown above.
 
 ### Subpath exports
 

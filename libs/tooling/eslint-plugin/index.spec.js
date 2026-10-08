@@ -133,14 +133,6 @@ describe('@atlasng/eslint-plugin', () => {
       expect(ruleIds(COMPONENT, angularConfig, 'foo-bar.ts')).toContain('@angular-eslint/prefer-signals');
     });
 
-    it('checks selector style but not a prefix', () => {
-      const valid = COMPONENT.replace('@Input() value', 'readonly value');
-      const camelCase = valid.replace("'foo-bar'", "'fooBar'");
-
-      expect(ruleIds(valid, angularConfig, 'foo-bar.ts')).not.toContain('@angular-eslint/component-selector');
-      expect(ruleIds(camelCase, angularConfig, 'foo-bar.ts')).toContain('@angular-eslint/component-selector');
-    });
-
     it('reports template rules in HTML templates', () => {
       expect(ruleIds('<ang-icon></ang-icon>\n', angularConfig, 'template.html')).toContain(
         '@angular-eslint/template/prefer-self-closing-tags',

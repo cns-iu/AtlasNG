@@ -2,39 +2,16 @@
 import nx from '@nx/eslint-plugin';
 
 /**
- * Configuration for TypeScript files in Angular projects: the Nx Angular configuration, selector
- * type and style checks, and additional angular-eslint rules.
+ * Configuration for TypeScript files in Angular projects: the Nx Angular configuration and additional
+ * angular-eslint rules.
  *
- * The selector rules set an empty `prefix`, which disables the prefix check. Each workspace adds
- * its own prefix by redeclaring `@angular-eslint/component-selector` and
- * `@angular-eslint/directive-selector` after this configuration.
+ * Selector rules are left to each workspace, because their prefix is workspace-specific and the rule
+ * options are replaced rather than merged when redeclared.
  *
  * @type {import('eslint').Linter.Config[]}
  */
 const config = [
   .../** @type {import('eslint').Linter.Config[]} */ (nx.configs['flat/angular']),
-  {
-    name: '@atlasng/angular-selectors',
-    files: ['**/*.ts'],
-    rules: {
-      '@angular-eslint/component-selector': [
-        'error',
-        {
-          type: 'element',
-          style: 'kebab-case',
-          prefix: '',
-        },
-      ],
-      '@angular-eslint/directive-selector': [
-        'error',
-        {
-          type: 'attribute',
-          style: 'camelCase',
-          prefix: '',
-        },
-      ],
-    },
-  },
   {
     name: '@atlasng/angular-rules',
     files: ['**/*.ts'],
