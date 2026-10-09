@@ -1,5 +1,5 @@
 import { argsToTemplate, type Meta, type StoryObj } from '@storybook/angular';
-import { Scrollbar, type ScrollbarOrientation, type ScrollbarPosition, type ScrollbarVisibility } from './scrollbar';
+import { ScrollArea, type ScrollbarOrientation, type ScrollbarPosition, type ScrollbarVisibility } from './scroll-area';
 
 /** Paragraphs of filler text long enough to overflow the demo containers. */
 const PARAGRAPHS = Array.from(
@@ -29,12 +29,12 @@ const TEXT_STYLE = 'font: var(--mat-sys-body-large); color: var(--mat-sys-on-sur
 
 /** Shared style for the surfaces the scrollbar is placed in. */
 const SURFACE_STYLE =
-  'display: block; background: var(--mat-sys-surface-container-low); ' +
+  'display: block; --ang-scroll-area-container-color: var(--mat-sys-surface-container-low); ' +
   'border: 1px solid var(--mat-sys-outline-variant); border-radius: var(--mat-sys-corner-medium);';
 
-const meta: Meta<Scrollbar> = {
-  component: Scrollbar,
-  title: 'Design System/Scrollbar',
+const meta: Meta<ScrollArea> = {
+  component: ScrollArea,
+  title: 'Design System/Scroll Area',
   parameters: {
     design: {
       type: 'figma',
@@ -45,6 +45,7 @@ const meta: Meta<Scrollbar> = {
     orientation: 'auto',
     visibility: 'hover',
     position: 'native',
+    fade: true,
   },
   argTypes: {
     orientation: {
@@ -62,25 +63,32 @@ const meta: Meta<Scrollbar> = {
       options: ['native', 'invertY', 'invertX', 'invertAll'] satisfies ScrollbarPosition[],
       description: 'Side of the container each scrollbar is placed on.',
     },
+    fade: {
+      control: 'boolean',
+      description: 'Whether to fade the top and bottom edges while there is more content in that direction.',
+    },
   },
   render: (args) => ({
     props: { ...args, paragraphs: PARAGRAPHS },
     template: `
-      <ang-scrollbar ${argsToTemplate(args)} style="${SURFACE_STYLE} height: 320px; max-width: 480px;">
+      <ang-scroll-area ${argsToTemplate(args)} style="${SURFACE_STYLE} height: 320px; max-width: 480px;">
         <div style="${TEXT_STYLE} padding: 16px;">
           @for (paragraph of paragraphs; track $index) {
             <p>{{ paragraph }}</p>
           }
         </div>
-      </ang-scrollbar>
+      </ang-scroll-area>
     `,
   }),
 };
 
 export default meta;
-type Story = StoryObj<Scrollbar>;
+type Story = StoryObj<ScrollArea>;
 
-/** Vertically scrolling text. The scrollbar stays hidden until the container is hovered or scrolled. */
+/**
+ * Vertically scrolling text. The scrollbar stays hidden until the container is hovered or scrolled, and the
+ * top and bottom edges fade while there is more content to scroll to in that direction.
+ */
 export const Default: Story = {};
 
 /** A row of cards that only scrolls horizontally. */
@@ -89,7 +97,7 @@ export const Horizontal: Story = {
   render: (args) => ({
     props: { ...args, cards: Array.from({ length: 12 }, (_, index) => index + 1) },
     template: `
-      <ang-scrollbar ${argsToTemplate(args)} style="${SURFACE_STYLE} max-width: 640px;">
+      <ang-scroll-area ${argsToTemplate(args)} style="${SURFACE_STYLE} max-width: 640px;">
         <div style="${TEXT_STYLE} display: flex; gap: 16px; padding: 16px; width: max-content;">
           @for (card of cards; track card) {
             <div style="width: 160px; height: 120px; padding: 16px; box-sizing: border-box;
@@ -98,17 +106,21 @@ export const Horizontal: Story = {
             </div>
           }
         </div>
-      </ang-scrollbar>
+      </ang-scroll-area>
     `,
   }),
 };
 
-/** A wide table that overflows in both directions, with a sticky header row. */
+/**
+ * A wide table that overflows in both directions, with a sticky header row. The edge fades are turned off
+ * because the top fade would cover the sticky header.
+ */
 export const Table: Story = {
+  args: { fade: false },
   render: (args) => ({
     props: { ...args, rows: ROWS },
     template: `
-      <ang-scrollbar ${argsToTemplate(args)} style="${SURFACE_STYLE} height: 360px; max-width: 720px;">
+      <ang-scroll-area ${argsToTemplate(args)} style="${SURFACE_STYLE} height: 360px; max-width: 720px;">
         <table style="${TEXT_STYLE} border-collapse: collapse; white-space: nowrap;">
           <thead>
             <tr style="position: sticky; top: 0; background: var(--mat-sys-surface-container-high);">
@@ -131,7 +143,7 @@ export const Table: Story = {
             }
           </tbody>
         </table>
-      </ang-scrollbar>
+      </ang-scroll-area>
     `,
   }),
 };
@@ -142,20 +154,21 @@ export const InModal: Story = {
   render: (args) => ({
     props: { ...args, paragraphs: PARAGRAPHS },
     template: `
-      <div role="dialog" aria-labelledby="scrollbar-modal-title"
+      <div role="dialog" aria-labelledby="scroll-area-modal-title"
         style="${TEXT_STYLE} display: flex; flex-direction: column; width: 480px; max-height: 420px;
           background: var(--mat-sys-surface-container-high); border-radius: var(--mat-sys-corner-extra-large);
           box-shadow: var(--mat-sys-level3);">
-        <h2 id="scrollbar-modal-title" style="margin: 0; padding: 24px 24px 16px; font: var(--mat-sys-headline-small);">
+        <h2 id="scroll-area-modal-title" style="margin: 0; padding: 24px 24px 16px; font: var(--mat-sys-headline-small);">
           Terms of use
         </h2>
-        <ang-scrollbar ${argsToTemplate(args)} style="flex: 1 1 auto; min-height: 0;">
+        <ang-scroll-area ${argsToTemplate(args)}
+          style="flex: 1 1 auto; min-height: 0; --ang-scroll-area-container-color: var(--mat-sys-surface-container-high);">
           <div style="padding: 0 24px;">
             @for (paragraph of paragraphs; track $index) {
               <p>{{ paragraph }}</p>
             }
           </div>
-        </ang-scrollbar>
+        </ang-scroll-area>
         <div style="display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px 24px;">
           <button type="button">Decline</button>
           <button type="button">Accept</button>
@@ -171,15 +184,15 @@ export const InMenu: Story = {
   render: (args) => ({
     props: { ...args, items: MENU_ITEMS },
     template: `
-      <ang-scrollbar ${argsToTemplate(args)}
-        style="${TEXT_STYLE} width: 240px; max-height: 240px; background: var(--mat-sys-surface-container);
+      <ang-scroll-area ${argsToTemplate(args)}
+        style="${TEXT_STYLE} width: 240px; max-height: 240px; --ang-scroll-area-container-color: var(--mat-sys-surface-container);
           border-radius: var(--mat-sys-corner-extra-small); box-shadow: var(--mat-sys-level2);">
         <ul role="menu" style="list-style: none; margin: 0; padding: 8px 0;">
           @for (item of items; track item) {
             <li role="menuitem" tabindex="-1" style="padding: 12px 16px; cursor: pointer;">{{ item }}</li>
           }
         </ul>
-      </ang-scrollbar>
+      </ang-scroll-area>
     `,
   }),
 };

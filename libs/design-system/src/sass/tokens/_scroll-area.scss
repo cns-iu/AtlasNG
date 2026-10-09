@@ -2,12 +2,14 @@
 @use '../internal/token-utils';
 
 $config: (
-  namespace: 'scrollbar',
+  namespace: 'scroll-area',
   tokens: (
+    container-color: token-utils.sys-token(background),
     thumb-color: sass-utils.color-with-opacity(token-utils.sys-token(inverse-surface), 72%),
     thumb-shape: token-utils.sys-token(corner-full),
-    thickness: 8px,
-    offset: 4px,
+    thickness: 0.5rem,
+    offset: 0.25rem,
+    fade-size: 2rem,
   ),
 );
 

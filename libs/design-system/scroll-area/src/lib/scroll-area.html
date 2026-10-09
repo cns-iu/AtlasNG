@@ -1,0 +1,13 @@
+<ng-scrollbar
+  class="ang-scroll-area--viewport"
+  appearance="compact"
+  [orientation]="orientation()"
+  [visibility]="visibility()"
+  [position]="position()"
+  (afterInit)="updateFades()"
+  (afterUpdate)="updateFades()"
+>
+  <ng-content />
+</ng-scrollbar>
+<div class="ang-scroll-area--fade ang-scroll-area--fade-top-overlay" aria-hidden="true"></div>
+<div class="ang-scroll-area--fade ang-scroll-area--fade-bottom-overlay" aria-hidden="true"></div>

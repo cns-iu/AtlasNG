@@ -1,0 +1,72 @@
+@use 'internal/token-utils';
+@use 'tokens/scroll-area' as *;
+
+/// Builds the edge fade from the container color, matching the Figma overlay fade:
+/// two stacked gradients that are opaque at the edge and transparent toward the content.
+///
+/// @param {String} $direction - Direction from the edge toward the content, e.g. `to top`.
+@function fade-gradient($direction) {
+  $color: token-utils.slot(container-color, $config);
+
+  @return linear-gradient($direction, $color 0%, transparent 100%),
+    linear-gradient($direction, $color 0%, transparent 100%);
+}
+
+.ang-scroll-area {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  background-color: token-utils.slot(container-color, $config);
+  overflow: hidden;
+
+  // ngx-scrollbar reads these public variables, which inherit into its internal elements.
+  --scrollbar-thumb-color: #{token-utils.slot(thumb-color, $config)};
+  --scrollbar-thumb-shape: #{token-utils.slot(thumb-shape, $config)};
+  --scrollbar-track-color: transparent;
+  --scrollbar-track-shape: #{token-utils.slot(thumb-shape, $config)};
+  --scrollbar-track-thickness: #{token-utils.slot(thickness, $config)};
+  --scrollbar-container-offset: #{token-utils.slot(offset, $config)};
+
+  > .ang-scroll-area--viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    // ngx-scrollbar renders the scrollbars inside its content element, which sets z-index: 1 and so
+    // becomes a stacking context. Resetting it lets the scrollbars (z-index: 100) stack above the fades.
+    > ng-scroll-content {
+      z-index: auto;
+    }
+  }
+
+  // Sits above the scrolling content but below the scrollbars.
+  > .ang-scroll-area--fade {
+    position: absolute;
+    inset-inline: 0;
+    z-index: 2;
+    height: token-utils.slot(fade-size, $config);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 150ms linear;
+  }
+
+  > .ang-scroll-area--fade-top-overlay {
+    top: 0;
+    background-image: fade-gradient(to bottom);
+  }
+
+  > .ang-scroll-area--fade-bottom-overlay {
+    bottom: 0;
+    background-image: fade-gradient(to top);
+  }
+
+  &.ang-scroll-area--fade-top > .ang-scroll-area--fade-top-overlay,
+  &.ang-scroll-area--fade-bottom > .ang-scroll-area--fade-bottom-overlay {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    > .ang-scroll-area--fade {
+      transition: none;
+    }
+  }
+}

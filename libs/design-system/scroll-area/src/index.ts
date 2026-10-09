@@ -1,6 +1,6 @@
 export {
-  Scrollbar,
+  ScrollArea,
   type ScrollbarOrientation,
   type ScrollbarPosition,
   type ScrollbarVisibility,
-} from './lib/scrollbar';
+} from './lib/scroll-area';
