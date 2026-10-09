@@ -25,6 +25,7 @@
 @forward './tokens/results-indicator' as results-indicator-* show results-indicator-overrides;
 @forward './tokens/link-snippet' as link-snippet-* show link-snippet-overrides;
 @forward './tokens/text-link' as text-link-* show text-link-overrides;
+@forward './tokens/scroll-area' as scroll-area-* show scroll-area-overrides;
 @forward './tokens/snackbar' as snackbar-* show snackbar-overrides;
 @forward './tokens/table' as table-* show table-overrides;
 @forward './tokens/table-of-contents' as table-of-contents-* show table-of-contents-overrides;
