@@ -99,7 +99,7 @@ describe('Footer', () => {
     expect(orgLink).toHaveAttribute('href', 'https://www.cns.edu/');
 
     const year = new Date().getFullYear();
-    expect(screen.getAllByText(new RegExp(`© ${year}`))).toHaveLength(2);
+    expect(screen.getByText(new RegExp(`© ${year}`))).toBeVisible();
   });
 
   it('renders projected logo and action content when provided', async () => {
