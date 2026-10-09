@@ -45,7 +45,7 @@ jobs:
       # nx release publish reads the dist manifests (version.manifestRootsToUpdate) before
       # running any tasks, so the packages must be built up front.
       - name: Build packages
-        run: npx nx run-many -t build --projects=tag:library
+        run: npx nx run-many -t build --projects=tag:library,tag:tooling
 
       # Tags are either v<version> (libraries group) or <project>@<version> (application library);
       # only the tagged group or project is published. A manual run on a branch publishes every
