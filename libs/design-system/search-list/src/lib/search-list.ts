@@ -27,9 +27,6 @@ export interface SearchListOption {
   },
 })
 export class SearchList<T extends SearchListOption> {
-  /** Whether to hide the autocomplete search bar */
-  readonly disableSearch = input(false, { transform: booleanAttribute });
-
   /** All filter options */
   readonly options = input.required<T[]>();
 
@@ -39,27 +36,17 @@ export class SearchList<T extends SearchListOption> {
   /** Current search bar value */
   readonly search = model<string>('');
 
+  /** Whether to hide the autocomplete search bar */
+  readonly searchDisabled = input(false, { transform: booleanAttribute });
+
   /** Filtered options (after typing in search bar) */
   protected readonly filteredOptions = computed(() => this.#getFilteredOptions());
-
-  /** Filters options according to the search bar value */
-  #getFilteredOptions(): T[] {
-    const searchTerm = this.search().toLowerCase().trim();
-    if (searchTerm === '') {
-      return this.options();
-    }
-    return this.options().filter(
-      (option) =>
-        option.label.toLowerCase().includes(searchTerm) ||
-        this.descriptionLines(option.description).some((line) => line.toLowerCase().includes(searchTerm)),
-    );
-  }
 
   /**
    * Updates selected options on update
    * @param event Selected options in list
    */
-  selectionUpdate(event: MatListOption[]): void {
+  protected updateSelection(event: MatListOption[]): void {
     this.selected.set(event.map((option) => option.value));
   }
 
@@ -68,10 +55,32 @@ export class SearchList<T extends SearchListOption> {
    * @param description Single description or list of descriptions
    * @returns Description lines, empty when there is no description
    */
-  protected descriptionLines(description: SearchListOption['description']): string[] {
+  protected normalizeDescription(description: SearchListOption['description']): string[] {
     if (Array.isArray(description)) {
       return description;
     }
     return description ? [description] : [];
+  }
+
+  /** Filters options according to the search bar value */
+  #getFilteredOptions(): T[] {
+    const searchTerm = this.search().toLowerCase().trim();
+    if (searchTerm === '') {
+      return this.options();
+    }
+    return this.options().filter((option) => this.#matchesSearch(option, searchTerm));
+  }
+
+  /**
+   * Checks whether an option's label or description contains the search term
+   * @param option Option to check
+   * @param searchTerm Lowercased, trimmed search term
+   * @returns True when the label or any description line matches
+   */
+  #matchesSearch(option: T, searchTerm: string): boolean {
+    return (
+      option.label.toLowerCase().includes(searchTerm) ||
+      this.normalizeDescription(option.description).some((line) => line.toLowerCase().includes(searchTerm))
+    );
   }
 }

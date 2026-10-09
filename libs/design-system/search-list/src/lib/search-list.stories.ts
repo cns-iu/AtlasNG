@@ -93,10 +93,10 @@ const meta: Meta<SearchList<SearchListOption>> = {
   },
   args: {
     selected: [{ label: 'A' }, { label: 'ABC' }, { label: 'ABCDE' }],
-    disableSearch: false,
+    searchDisabled: false,
   },
   argTypes: {
-    disableSearch: {
+    searchDisabled: {
       control: 'boolean',
     },
   },

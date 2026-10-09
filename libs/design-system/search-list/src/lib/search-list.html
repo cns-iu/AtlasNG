@@ -1,15 +1,14 @@
-@if (!disableSearch()) {
+@if (!searchDisabled()) {
   <mat-form-field class="ang-search-list--search" subscriptSizing="dynamic">
     <mat-label>Search</mat-label>
-    <mat-icon matPrefix>search</mat-icon>
+    <mat-icon matPrefix fontIcon="search" />
     <input matInput type="text" [(ngModel)]="search" />
   </mat-form-field>
 }
 
 <mat-selection-list
   class="ang-search-list--list"
-  (selectionChange)="selectionUpdate(list.selectedOptions.selected)"
-  #list
+  (selectionChange)="updateSelection($event.source.selectedOptions.selected)"
 >
   @for (option of filteredOptions(); track $index) {
     <mat-list-option
@@ -24,7 +23,7 @@
           <span class="ang-search-list--count">{{ option.count | number }}</span>
         </div>
       </div>
-      @for (line of descriptionLines(option.description); track $index) {
+      @for (line of normalizeDescription(option.description); track $index) {
         <span class="ang-search-list--description" matListItemLine>{{ line }}</span>
       }
     </mat-list-option>

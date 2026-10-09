@@ -17,7 +17,7 @@ const OPTIONS: SearchListOption[] = [
 ];
 
 interface SearchListInputs {
-  disableSearch?: boolean;
+  searchDisabled?: boolean;
   search?: string;
   selected?: SearchListOption[];
 }
@@ -72,7 +72,7 @@ describe('SearchList', () => {
   });
 
   it('hides the search field when search is disabled', async () => {
-    await setup({ disableSearch: true });
+    await setup({ searchDisabled: true });
 
     expect(screen.queryByRole('textbox', { name: 'Search' })).not.toBeInTheDocument();
     expect(screen.getAllByRole('option')).toHaveLength(OPTIONS.length);
