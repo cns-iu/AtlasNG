@@ -24,8 +24,9 @@ runs:
     - name: Check if build output exists
       id: check-build
       shell: bash
+      # Library builds under dist/libs are not deployed, so they do not count as previewable output.
       run: |
-        if [ -d "dist" ] && [ -n "$(ls -A "dist" 2>/dev/null)" ]; then
+        if [ -d "dist" ] && [ -n "$(find dist -mindepth 1 -maxdepth 1 ! -name libs -print -quit)" ]; then
           echo "exists=true" >> "$GITHUB_OUTPUT"
         else
           echo "exists=false" >> "$GITHUB_OUTPUT"

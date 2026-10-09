@@ -1,4 +1,4 @@
-import { type ExecutorContext, logger } from '@nx/devkit';
+import { type ExecutorContext, logger, type ProjectGraph, type ProjectGraphProjectNode } from '@nx/devkit';
 import { execFileSync, type ExecFileSyncOptions } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -19,13 +19,15 @@ export interface ReleasePackage {
   project: string;
   /** The npm package name from the project's `package.json`. */
   packageName: string;
+  /** The built package directory that is published, relative to the workspace root. */
+  packageRoot: string;
 }
 
 /** Name of the target that `nx release publish` runs for each project. */
 const PUBLISH_TARGET = 'nx-release-publish';
 
 /**
- * Publishes release projects that do not exist on npm yet and configures npm trusted publishing for them,
+ * Builds and publishes release projects that do not exist on npm yet and configures npm trusted publishing for them,
  * so that later releases can be published from CI.
  *
  * @param options The executor options.
@@ -39,15 +41,20 @@ export default async function bootstrapNpmPackagesExecutor(
   try {
     const repository = options.repository ?? getGitHubRepository(context.root);
     const workflow = options.workflow ?? 'publish.yml';
+    const dryRun = options.dryRun ?? false;
     const missing = (await getReleasePackages(context)).filter(({ packageName }) => !isPublished(packageName));
     if (missing.length === 0) {
       logger.info('All release packages already exist on npm.');
       return { success: true };
     }
 
+    exec('npx', ['nx', 'run-many', '-t', 'build', `--projects=${missing.map(({ project }) => project).join(',')}`], {
+      dryRun,
+      cwd: context.root,
+    });
     for (const pkg of missing) {
       logger.info(`Bootstrapping ${pkg.packageName} (${pkg.project})`);
-      bootstrap(pkg, { repository, workflow, dryRun: options.dryRun ?? false, cwd: context.root });
+      bootstrap(pkg, { repository, workflow, dryRun, cwd: context.root });
     }
 
     return { success: true };
@@ -61,7 +68,8 @@ export default async function bootstrapNpmPackagesExecutor(
  * Lists the npm packages released by `nx release`, skipping the workspace root project.
  *
  * @param context The Nx executor context.
- * @returns The release projects and their package names, sorted by project name.
+ * @returns The release projects, their package names and publish directories, with every package listed after the
+ * workspace packages it depends on and ties sorted by project name.
  */
 export async function getReleasePackages(context: ExecutorContext): Promise<ReleasePackage[]> {
   const packages: ReleasePackage[] = [];
@@ -69,14 +77,51 @@ export async function getReleasePackages(context: ExecutorContext): Promise<Rele
     .filter(({ data }) => data.root !== '.' && data.targets?.[PUBLISH_TARGET])
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  for (const { name, data } of projects) {
+  for (const { name, data } of sortByDependencies(projects, context.projectGraph)) {
     const manifest = JSON.parse(await readFile(join(context.root, data.root, 'package.json'), 'utf8')) as {
       name: string;
     };
-    packages.push({ project: name, packageName: manifest.name });
+    const packageRoot = (data.targets?.[PUBLISH_TARGET]?.options as { packageRoot?: string } | undefined)?.packageRoot;
+    packages.push({
+      project: name,
+      packageName: manifest.name,
+      packageRoot: packageRoot
+        ? packageRoot.replace('{workspaceRoot}/', '').replace('{projectRoot}', data.root)
+        : data.root,
+    });
   }
 
   return packages;
+}
+
+/**
+ * Orders projects so that each one comes after the projects it depends on, which npm needs to resolve the
+ * dependencies of a newly published package.
+ *
+ * @param projects The projects to order; their order breaks ties.
+ * @param graph The Nx project graph.
+ * @returns The projects in dependency order.
+ */
+function sortByDependencies(projects: ProjectGraphProjectNode[], graph: ProjectGraph): ProjectGraphProjectNode[] {
+  const included = new Map(projects.map((project) => [project.name, project]));
+  const sorted: ProjectGraphProjectNode[] = [];
+  const visited = new Set<string>();
+  const visit = (project: ProjectGraphProjectNode): void => {
+    if (visited.has(project.name)) {
+      return;
+    }
+    visited.add(project.name);
+    for (const { target } of graph.dependencies[project.name] ?? []) {
+      const dependency = included.get(target);
+      if (dependency) {
+        visit(dependency);
+      }
+    }
+    sorted.push(project);
+  };
+  projects.forEach(visit);
+
+  return sorted;
 }
 
 /**
@@ -112,9 +157,12 @@ function isPublished(packageName: string): boolean {
 }
 
 /**
- * Publishes a package for the first time and configures npm trusted publishing for the publish workflow.
+ * Publishes a built package for the first time and configures npm trusted publishing for the publish workflow.
  *
- * @param pkg The release project and its package name.
+ * The package is published with `npm publish` instead of the `nx-release-publish` target: that target also publishes
+ * every dependency and runs npm without a terminal, so npm cannot wait for browser-based two-factor authentication.
+ *
+ * @param pkg The release project, its package name and its built package directory.
  * @param settings The resolved repository, workflow, dry-run flag and working directory.
  * @param settings.repository The GitHub repository in `owner/name` form.
  * @param settings.workflow The workflow file name.
@@ -122,28 +170,42 @@ function isPublished(packageName: string): boolean {
  * @param settings.cwd The workspace root.
  */
 function bootstrap(
-  { project, packageName }: ReleasePackage,
+  { packageName, packageRoot }: ReleasePackage,
   settings: { repository: string; workflow: string; dryRun: boolean; cwd: string },
 ): void {
-  const publishArgs = ['nx', 'run', `${project}:${PUBLISH_TARGET}`, '--access=public', '--firstRelease'];
-  const trustArgs = [
-    'trust',
-    'github',
-    packageName,
-    `--file=${settings.workflow}`,
-    `--repo=${settings.repository}`,
-    '--allow-publish',
-    '--yes',
-  ];
+  exec('npm', ['publish', packageRoot, '--access=public'], settings);
+  exec(
+    'npm',
+    [
+      'trust',
+      'github',
+      packageName,
+      `--file=${settings.workflow}`,
+      `--repo=${settings.repository}`,
+      '--allow-publish',
+      '--yes',
+    ],
+    settings,
+  );
+}
 
-  if (settings.dryRun) {
-    logger.info(`[dry-run] npx ${publishArgs.join(' ')}`);
-    logger.info(`[dry-run] npm ${trustArgs.join(' ')}`);
+/**
+ * Runs a command attached to the terminal, so that npm can prompt for authentication, or only prints it in dry-run
+ * mode.
+ *
+ * @param command The executable to run.
+ * @param args The command arguments.
+ * @param settings The dry-run flag and working directory.
+ * @param settings.dryRun Whether to only print the command.
+ * @param settings.cwd The working directory.
+ */
+function exec(command: string, args: string[], { dryRun, cwd }: { dryRun: boolean; cwd: string }): void {
+  if (dryRun) {
+    logger.info(`[dry-run] ${command} ${args.join(' ')}`);
     return;
   }
 
-  execFileSync('npx', publishArgs, { stdio: 'inherit', cwd: settings.cwd });
-  execFileSync('npm', trustArgs, { stdio: 'inherit', cwd: settings.cwd });
+  execFileSync(command, args, { stdio: 'inherit', cwd });
 }
 
 /**
