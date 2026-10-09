@@ -1,0 +1,14 @@
+{
+  "executors": {
+    "release-notes": {
+      "implementation": "./src/executors/release-notes/executor",
+      "schema": "./src/executors/release-notes/schema.json",
+      "description": "Combines the changelog sections of a fixed release group into one set of GitHub release notes."
+    },
+    "bootstrap-npm-packages": {
+      "implementation": "./src/executors/bootstrap-npm-packages/executor",
+      "schema": "./src/executors/bootstrap-npm-packages/schema.json",
+      "description": "Publishes release projects that do not exist on npm yet and configures npm trusted publishing for them."
+    }
+  }
+}

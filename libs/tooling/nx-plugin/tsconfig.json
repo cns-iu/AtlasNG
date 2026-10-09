@@ -1,0 +1,9 @@
+{
+  "extends": "@atlasng/tsconfig/node.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rewriteRelativeImportExtensions": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}

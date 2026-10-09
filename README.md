@@ -114,7 +114,7 @@ npx nx release patch --skip-publish --groups=libraries
 npx nx release patch --skip-publish --projects=kg-explorer
 ```
 
-This bumps versions, prepends to each project's `CHANGELOG.md`, commits, and tags. Push the release commit and tags yourself (`git push origin main <tags>`); releases that include an application library push automatically, because Nx needs the tag on GitHub to create GitHub Releases for application libraries (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml) (a caller of [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
+This bumps versions, prepends to each project's `CHANGELOG.md`, commits, and tags. Push the release commit and tags yourself (`git push origin main <tags>`); releases that include an application library push automatically, because Nx needs the tag on GitHub to create GitHub Releases for application libraries (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml) (a caller of [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group, with notes from `npx nx run @atlasng/monorepo:release-notes --tag=v<version> --output=<file>`. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
 
 ### New packages
 
@@ -122,11 +122,11 @@ npm trusted publishing can only be configured for packages that already exist on
 
 ```sh
 npm login
-node tools/scripts/bootstrap-npm-packages.mjs --dry-run  # list what would be bootstrapped
-node tools/scripts/bootstrap-npm-packages.mjs
+npx nx run @atlasng/monorepo:bootstrap-npm-packages --dryRun  # list what would be bootstrapped
+npx nx run @atlasng/monorepo:bootstrap-npm-packages
 ```
 
-The script only touches packages that are not on npm yet, so it is safe to rerun.
+The [`bootstrap-npm-packages` executor](libs/tooling/nx-plugin/README.md#bootstrap-npm-packages) only touches packages that are not on npm yet, so it is safe to rerun.
 
 ## Contributing
 
