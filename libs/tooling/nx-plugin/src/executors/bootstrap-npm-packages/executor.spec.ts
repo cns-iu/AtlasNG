@@ -15,10 +15,13 @@ describe('bootstrap-npm-packages executor', () => {
   let context: ExecutorContext;
   let published: Set<string>;
 
-  const node = (name: string, projectRoot: string, publish = true): ProjectGraphProjectNode => ({
+  const node = (name: string, projectRoot: string, publish = true, packageRoot?: string): ProjectGraphProjectNode => ({
     name,
     type: 'lib',
-    data: { root: projectRoot, targets: publish ? { 'nx-release-publish': {} } : {} },
+    data: {
+      root: projectRoot,
+      targets: publish ? { 'nx-release-publish': packageRoot ? { options: { packageRoot } } : {} } : {},
+    },
   });
 
   const writePackage = (projectRoot: string, name: string) => {
@@ -38,7 +41,7 @@ describe('bootstrap-npm-packages executor', () => {
         nodes: {
           root: node('root', '.'),
           b: node('b', 'libs/b'),
-          a: node('a', 'libs/a'),
+          a: node('a', 'libs/a', true, '{workspaceRoot}/dist/{projectRoot}'),
           app: node('app', 'apps/app', false),
         },
         dependencies: {},
@@ -70,26 +73,41 @@ describe('bootstrap-npm-packages executor', () => {
 
   it('lists release packages sorted by project, skipping the root project', async () => {
     expect(await getReleasePackages(context)).toEqual([
-      { project: 'a', packageName: '@scope/a' },
-      { project: 'b', packageName: '@scope/b' },
+      { project: 'a', packageName: '@scope/a', packageRoot: 'dist/libs/a' },
+      { project: 'b', packageName: '@scope/b', packageRoot: 'libs/b' },
     ]);
+  });
+
+  it('lists dependencies before their dependents', async () => {
+    context.projectGraph.dependencies = {
+      a: [
+        { source: 'a', target: 'b', type: 'static' },
+        { source: 'a', target: 'app', type: 'static' },
+      ],
+      b: [{ source: 'b', target: 'a', type: 'static' }],
+    };
+
+    expect((await getReleasePackages(context)).map(({ project }) => project)).toEqual(['b', 'a']);
   });
 
   it('publishes and trusts packages missing from npm', async () => {
     const result = await bootstrapNpmPackagesExecutor({}, context);
 
     expect(result).toEqual({ success: true });
-    expect(exec).toHaveBeenCalledWith(
-      'npx',
-      ['nx', 'run', 'a:nx-release-publish', '--access=public', '--firstRelease'],
-      { stdio: 'inherit', cwd: root },
-    );
+    expect(exec).toHaveBeenCalledWith('npx', ['nx', 'run-many', '-t', 'build', '--projects=a'], {
+      stdio: 'inherit',
+      cwd: root,
+    });
+    expect(exec).toHaveBeenCalledWith('npm', ['publish', 'dist/libs/a', '--access=public'], {
+      stdio: 'inherit',
+      cwd: root,
+    });
     expect(exec).toHaveBeenCalledWith(
       'npm',
       ['trust', 'github', '@scope/a', '--file=publish.yml', '--repo=owner/repo', '--allow-publish', '--yes'],
       { stdio: 'inherit', cwd: root },
     );
-    expect(exec).not.toHaveBeenCalledWith('npx', expect.arrayContaining(['b:nx-release-publish']), expect.anything());
+    expect(exec).not.toHaveBeenCalledWith('npm', expect.arrayContaining(['libs/b']), expect.anything());
   });
 
   it('only prints the commands in dry-run mode', async () => {
@@ -100,9 +118,8 @@ describe('bootstrap-npm-packages executor', () => {
 
     expect(result).toEqual({ success: true });
     expect(logger.info).toHaveBeenCalledWith('Bootstrapping @scope/a (a)');
-    expect(logger.info).toHaveBeenCalledWith(
-      '[dry-run] npx nx run a:nx-release-publish --access=public --firstRelease',
-    );
+    expect(logger.info).toHaveBeenCalledWith('[dry-run] npx nx run-many -t build --projects=a');
+    expect(logger.info).toHaveBeenCalledWith('[dry-run] npm publish dist/libs/a --access=public');
     expect(logger.info).toHaveBeenCalledWith(
       '[dry-run] npm trust github @scope/a --file=release.yml --repo=org/name --allow-publish --yes',
     );
