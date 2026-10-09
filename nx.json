@@ -170,9 +170,9 @@
       "cache": true,
       "inputs": [
         "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore",
-        "{workspaceRoot}/eslint.config.mjs"
+        "{workspaceRoot}/eslint.config.mjs",
+        "{workspaceRoot}/libs/tooling/eslint-plugin/index.js",
+        "{workspaceRoot}/libs/tooling/eslint-plugin/configs/*.js"
       ],
       "configurations": {
         "fix": {

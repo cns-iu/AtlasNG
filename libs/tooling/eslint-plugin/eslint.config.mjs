@@ -12,8 +12,8 @@ export default [
             '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
             '{projectRoot}/vitest.config.{js,ts,mjs,mts}',
           ],
-          // Commitlint resolves the extended config by name, and the CLI is supplied by the consumer.
-          ignoredDependencies: ['@commitlint/config-conventional', '@commitlint/cli'],
+          // Loaded indirectly by the wrapped @nx/eslint-plugin configurations, or by ESLint itself.
+          ignoredDependencies: ['angular-eslint', 'eslint', 'eslint-config-prettier', 'typescript-eslint'],
         },
       ],
     },
