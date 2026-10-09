@@ -1,12 +1,12 @@
 import { logger, readJson, readNxJson, type Tree, updateNxJson, writeJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SYNC_GENERATOR } from '../sync/generator.ts';
 import { CONFIG_PACKAGES, eslintConfig, initGenerator, PLUGIN_NAME, resolveVersionRange } from './generator.ts';
 
-vi.mock('node:child_process', () => ({ execFileSync: vi.fn() }));
-
-const exec = vi.mocked(execFileSync);
+const pluginPackageJson = JSON.parse(readFileSync(join(import.meta.dirname, '../../../package.json'), 'utf8'));
 
 describe('init generator', () => {
   let tree: Tree;
@@ -16,21 +16,20 @@ describe('init generator', () => {
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
-    exec.mockReturnValue('1.2.3\n');
     vi.spyOn(logger, 'warn').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    exec.mockReset();
   });
 
-  it('adds the config packages as devDependencies', async () => {
+  it('adds the config packages as devDependencies with the plugin peer ranges', async () => {
     await initGenerator(tree, { skipFormat: true });
 
     const { devDependencies } = readJson(tree, 'package.json');
     for (const name of CONFIG_PACKAGES) {
-      expect(devDependencies[name]).toBe('^1.2.3');
+      expect(devDependencies[name]).toBe(pluginPackageJson.peerDependencies[name]);
+      expect(pluginPackageJson.peerDependenciesMeta[name]).toEqual({ optional: true });
     }
   });
 
@@ -40,7 +39,6 @@ describe('init generator', () => {
     await initGenerator(tree, { skipFormat: true });
 
     expect(readJson(tree, 'package.json').devDependencies['@atlasng/tsconfig']).toBe('~0.1.0');
-    expect(exec).not.toHaveBeenCalledWith('npm', ['view', '@atlasng/tsconfig', 'version'], expect.anything());
   });
 
   it('skips package.json dependencies when asked', async () => {
@@ -82,7 +80,14 @@ describe('init generator', () => {
     await initGenerator(tree, { skipFormat: true });
 
     expect(readNxJson(tree)?.plugins).toEqual([
-      { plugin: PLUGIN_NAME, options: { buildCompodocTargetName: 'build-compodoc', compodocTargetName: 'compodoc' } },
+      {
+        plugin: PLUGIN_NAME,
+        options: {
+          buildCompodocTargetName: 'build-compodoc',
+          compodocTargetName: 'compodoc',
+          buildStorybookCompodocTargetName: 'build-storybook-compodoc',
+        },
+      },
     ]);
   });
 
@@ -175,19 +180,53 @@ describe('init generator', () => {
     });
   });
 
-  describe('resolveVersionRange', () => {
-    it('falls back to latest when the registry is unavailable', () => {
-      exec.mockImplementation(() => {
-        throw new Error('offline');
-      });
+  it('registers and runs the sync generator', async () => {
+    await initGenerator(tree, { skipFormat: true, prefix: 'my' });
 
-      expect(resolveVersionRange('@atlasng/tsconfig')).toBe('latest');
+    expect(readNxJson(tree)?.sync).toEqual({
+      globalGenerators: [SYNC_GENERATOR],
+      generatorOptions: { [SYNC_GENERATOR]: { prefix: 'my' } },
+    });
+    expect(tree.exists('.editorconfig')).toBe(true);
+    expect(tree.read('.github/instructions/angular.instructions.md', 'utf8')).toContain('`my` selectors');
+  });
+
+  it('keeps existing sync generators and options', async () => {
+    const nxJson = readNxJson(tree) ?? {};
+    updateNxJson(tree, {
+      ...nxJson,
+      sync: {
+        applyChanges: true,
+        globalGenerators: ['@nx/js:typescript-sync', SYNC_GENERATOR],
+        generatorOptions: { [SYNC_GENERATOR]: { prefix: 'kept', exclude: ['nvmrc'] } },
+      },
     });
 
-    it('falls back to latest for an empty response', () => {
-      exec.mockReturnValue('\n');
+    await initGenerator(tree, { skipFormat: true, prefix: 'my' });
 
-      expect(resolveVersionRange('@atlasng/tsconfig')).toBe('latest');
+    expect(readNxJson(tree)?.sync).toEqual({
+      applyChanges: true,
+      globalGenerators: ['@nx/js:typescript-sync', SYNC_GENERATOR],
+      generatorOptions: { [SYNC_GENERATOR]: { prefix: 'kept', exclude: ['nvmrc'] } },
+    });
+    expect(tree.exists('.nvmrc')).toBe(false);
+  });
+
+  it('does not store a prefix that was not passed', async () => {
+    await initGenerator(tree, { skipFormat: true });
+
+    expect(readNxJson(tree)?.sync).toEqual({ globalGenerators: [SYNC_GENERATOR] });
+  });
+
+  describe('resolveVersionRange', () => {
+    it('reads the range from the plugin peer dependencies', () => {
+      expect(resolveVersionRange('@atlasng/prettier-config')).toBe(
+        pluginPackageJson.peerDependencies['@atlasng/prettier-config'],
+      );
+    });
+
+    it('falls back to latest for an undeclared package', () => {
+      expect(resolveVersionRange('@atlasng/unknown')).toBe('latest');
     });
   });
 });

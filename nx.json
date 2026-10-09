@@ -19,7 +19,8 @@
       "plugin": "@atlasng/nx-plugin",
       "options": {
         "buildCompodocTargetName": "build-compodoc",
-        "compodocTargetName": "compodoc"
+        "compodocTargetName": "compodoc",
+        "buildStorybookCompodocTargetName": "build-storybook-compodoc"
       }
     }
   ],
@@ -127,23 +128,6 @@
         "ci": {
           "quiet": true
         }
-      }
-    },
-    "build-storybook-compodoc": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": [
-        "default",
-        {
-          "externalDependencies": ["@compodoc/compodoc"]
-        }
-      ],
-      "outputs": ["{projectRoot}/.storybook/compodoc/documentation.json"],
-      "options": {
-        "commands": [
-          "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal"
-        ],
-        "cwd": "{projectRoot}"
       }
     },
     "lint": {
@@ -310,6 +294,15 @@
       "automaticFromRef": true,
       "projectChangelogs": {
         "createRelease": "github"
+      }
+    }
+  },
+  "sync": {
+    "globalGenerators": ["@atlasng/nx-plugin:sync"],
+    "generatorOptions": {
+      "@atlasng/nx-plugin:sync": {
+        "prefix": "ang",
+        "extraScopes": ["release"]
       }
     }
   },

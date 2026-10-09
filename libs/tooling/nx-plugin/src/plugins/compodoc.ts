@@ -14,6 +14,11 @@ export interface CompodocPluginOptions {
   buildCompodocTargetName?: string;
   /** Name of the inferred target that serves Compodoc in watch mode. Defaults to `compodoc`. */
   compodocTargetName?: string;
+  /**
+   * Name of the inferred target that builds the Compodoc JSON that Storybook reads. Only inferred for projects with a
+   * `.storybook` directory. Defaults to `build-storybook-compodoc`.
+   */
+  buildStorybookCompodocTargetName?: string;
 }
 
 /** Glob that identifies Angular libraries built with ng-packagr. */
@@ -21,6 +26,9 @@ const NG_PACKAGE_GLOB = '**/ng-package.json';
 
 /** TypeScript configuration that Compodoc reads, relative to the project root. */
 const TSCONFIG_FILE = 'tsconfig.lib.json';
+
+/** Storybook configuration directory, relative to the project root. */
+const STORYBOOK_DIR = '.storybook';
 
 /** Files that mark a directory as an Nx project rather than an ng-packagr secondary entry point. */
 const PROJECT_FILES = ['project.json', 'package.json'];
@@ -34,8 +42,17 @@ const COMPODOC_COMMAND =
   'npx compodoc -p tsconfig.lib.json -d ${PWD%/{projectRoot}}/dist/compodoc/{projectName} -n {projectName}';
 
 /**
+ * Compodoc command that writes the JSON documentation Storybook reads to `{projectRoot}/.storybook/compodoc`.
+ * Private, protected and internal members are left out.
+ */
+const STORYBOOK_COMPODOC_COMMAND =
+  'npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json ' +
+  '--disablePrivate --disableProtected --disableInternal';
+
+/**
  * Infers Compodoc targets for every Angular library that has an `ng-package.json`, a `tsconfig.lib.json` and a
- * `project.json` or `package.json` next to it.
+ * `project.json` or `package.json` next to it. Libraries that also have a `.storybook` directory get a target that
+ * builds the Compodoc JSON for Storybook.
  */
 export const createNodesV2: CreateNodes<CompodocPluginOptions> = [
   NG_PACKAGE_GLOB,
@@ -66,17 +83,16 @@ function createNodesInternal(
     return {};
   }
 
-  const { buildCompodocTargetName, compodocTargetName } = normalizeOptions(options);
-  return {
-    projects: {
-      [projectRoot]: {
-        targets: {
-          [buildCompodocTargetName]: buildCompodocTarget(),
-          [compodocTargetName]: compodocTarget(),
-        },
-      },
-    },
+  const { buildCompodocTargetName, compodocTargetName, buildStorybookCompodocTargetName } = normalizeOptions(options);
+  const targets: Record<string, TargetConfiguration> = {
+    [buildCompodocTargetName]: buildCompodocTarget(),
+    [compodocTargetName]: compodocTarget(),
   };
+  if (existsSync(join(absoluteRoot, STORYBOOK_DIR))) {
+    targets[buildStorybookCompodocTargetName] = buildStorybookCompodocTarget();
+  }
+
+  return { projects: { [projectRoot]: { targets } } };
 }
 
 /**
@@ -89,6 +105,7 @@ function normalizeOptions(options: CompodocPluginOptions | undefined): Required<
   return {
     buildCompodocTargetName: options?.buildCompodocTargetName ?? 'build-compodoc',
     compodocTargetName: options?.compodocTargetName ?? 'compodoc',
+    buildStorybookCompodocTargetName: options?.buildStorybookCompodocTargetName ?? 'build-storybook-compodoc',
   };
 }
 
@@ -121,6 +138,24 @@ function compodocTarget(): TargetConfiguration {
     continuous: true,
     options: {
       commands: [`${COMPODOC_COMMAND} --serve --watch`],
+      cwd: '{projectRoot}',
+    },
+  };
+}
+
+/**
+ * Creates the cached target that builds the Compodoc JSON used by Storybook's docs pages.
+ *
+ * @returns The target configuration.
+ */
+function buildStorybookCompodocTarget(): TargetConfiguration {
+  return {
+    executor: 'nx:run-commands',
+    cache: true,
+    inputs: ['default', { externalDependencies: ['@compodoc/compodoc'] }],
+    outputs: ['{projectRoot}/.storybook/compodoc/documentation.json'],
+    options: {
+      commands: [STORYBOOK_COMPODOC_COMMAND],
       cwd: '{projectRoot}',
     },
   };

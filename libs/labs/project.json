@@ -23,7 +23,6 @@
         }
       }
     },
-    "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {
       "options": {
