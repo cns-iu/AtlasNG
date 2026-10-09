@@ -121,7 +121,9 @@ jobs:
       - name: Check for un-formatted files
         run: npx nx record -- nx format:check
 
-      # TODO(sync): add `npx nx sync:check` once the @atlasng/nx-plugin sync generator lands.
+      # Fails when files managed by sync generators (such as @atlasng/nx-plugin:sync) drifted.
+      - name: Check workspace sync
+        run: npx nx record -- nx sync:check
 
       - name: Run affected targets
         timeout-minutes: ${{ inputs.affected-timeout-minutes }}

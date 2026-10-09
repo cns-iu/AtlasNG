@@ -23,6 +23,10 @@ jobs:
     with:
       build-projects: tag:library,tag:tooling
       fixed-group: libraries
-      release-notes-command: node tools/scripts/library-release-notes.mjs "$RELEASE_TAG"
+      # Nx task output goes to stderr; only the notes file reaches stdout.
+      release-notes-command: >-
+        npx nx run @atlasng/monorepo:release-notes --tag="$RELEASE_TAG" --output=tmp/release-notes.md >&2
+        && cat tmp/release-notes.md
+      release-notes-install: true
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
