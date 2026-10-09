@@ -1,0 +1,44 @@
+<div class="ang-version-control--top">
+  <span class="ang-version-control--version-heading">Digital object version</span>
+
+  <mat-form-field class="ang-version-control--version" subscriptSizing="dynamic">
+    <mat-label>Version</mat-label>
+    <mat-select
+      [disabled]="versions().length === 0"
+      [value]="currentVersion()?.version"
+      (selectionChange)="selectedVersion.set($event.value)"
+    >
+      @for (item of versions(); track item.version) {
+        <mat-option [value]="item.version">{{ item.version }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (currentVersion(); as version) {
+  @if (version.downloadOptions.length > 0) {
+    <span class="ang-version-control--heading">Download options</span>
+    <mat-action-list
+      class="ang-version-control--download-options"
+      aria-label="Download options"
+      [class.ang-version-control--scrollable]="scrollable()"
+    >
+      @for (option of version.downloadOptions; track option.fileFormat + option.downloadUrl) {
+        <a
+          mat-list-item
+          download
+          lines="3"
+          class="ang-version-control--download-option"
+          [attr.href]="option.downloadUrl"
+          (click)="$event.preventDefault(); download(option.downloadUrl)"
+        >
+          <mat-icon matListItemIcon fontIcon="download" />
+          <span matListItemTitle>{{ option.fileFormat }}</span>
+          @if (descriptionFor(option.fileFormat); as description) {
+            <span class="ang-version-control--download-description">{{ description }}</span>
+          }
+        </a>
+      }
+    </mat-action-list>
+  }
+}

@@ -1,1 +1,1 @@
-export { Snackbar } from './lib/snackbar';
+export { createSnackBarConfig, Snackbar } from './lib/snackbar';

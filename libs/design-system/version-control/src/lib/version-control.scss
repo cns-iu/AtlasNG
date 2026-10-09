@@ -1,0 +1,51 @@
+@use 'internal/token-utils';
+@use 'tokens/version-control' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: token-utils.slot(min-width, $config);
+  background-color: token-utils.slot(container-color, $config);
+  border-radius: token-utils.slot(container-shape, $config);
+  border: 1px solid token-utils.slot(outline-color, $config);
+}
+
+.ang-version-control--top {
+  margin: 1.5rem;
+}
+
+.ang-version-control--version {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.ang-version-control--heading {
+  margin: 0.75rem 1.5rem;
+}
+
+.ang-version-control--version-heading,
+.ang-version-control--heading {
+  color: token-utils.slot(heading-color, $config);
+  font-family: token-utils.slot(heading-font, $config);
+  font-size: token-utils.slot(heading-size, $config);
+  font-weight: token-utils.slot(heading-weight, $config);
+  line-height: token-utils.slot(heading-line-height, $config);
+  letter-spacing: token-utils.slot(heading-tracking, $config);
+}
+
+.ang-version-control--download-options {
+  padding: 0;
+  margin-bottom: 1.5rem;
+
+  .ang-version-control--download-option {
+    height: auto;
+    padding-bottom: 10.5px;
+  }
+
+  &.ang-version-control--scrollable {
+    max-height: 30rem;
+    overflow-y: auto;
+    margin-bottom: 0;
+  }
+}
