@@ -23,6 +23,7 @@
     "common",
     "core",
     "design-system",
+    "eslint-plugin",
     "internal-storybook",
     "kg-explorer",
     "labs",

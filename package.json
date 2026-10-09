@@ -74,7 +74,6 @@
     "@testing-library/user-event": "^14.6.7",
     "@types/qs": "^6.15.1",
     "@types/youtube": "^0.3.0",
-    "@typescript-eslint/utils": "^8.69.0",
     "@vitest/coverage-v8": "^4.1.11",
     "angular-eslint": "^22.2.0",
     "commander": "^15.0.0",
