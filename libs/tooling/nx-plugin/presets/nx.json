@@ -1,0 +1,150 @@
+{
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": [
+      "default",
+      "!{projectRoot}/AGENTS.md",
+      "!{projectRoot}/README.md",
+      "!{projectRoot}/CHANGELOG.md",
+      "!{projectRoot}/**/*.mdx",
+      "!{projectRoot}/eslint.config.mjs",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/**/test-setup.[jt]s",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.storybook.json",
+      "!{projectRoot}/.storybook/**/*",
+      "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
+    ],
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+  },
+  "targetDefaults": {
+    "@nx/angular:application": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "{workspaceRoot}/dist/{projectRoot}",
+        "browser": "{projectRoot}/src/main.ts",
+        "tsConfig": "{projectRoot}/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "styles": ["{projectRoot}/src/styles.scss"],
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "{projectRoot}/public"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "@nx/angular:package": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "project": "{projectRoot}/ng-package.json",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "{projectRoot}/tsconfig.lib.prod.json"
+        },
+        "development": {}
+      }
+    },
+    "lint": {
+      "cache": true,
+      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
+      "configurations": {
+        "fix": {
+          "fix": true
+        }
+      }
+    },
+    "nx-release-publish": {
+      "dependsOn": ["build"],
+      "executor": "@nx/js:release-publish",
+      "options": {
+        "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
+      }
+    },
+    "test": {
+      "executor": "@nx/angular:unit-test",
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "options": {
+        "include": ["**/*.spec.ts", "../!(src|.storybook)/**/*.spec.ts"],
+        "coverage": true,
+        "coverageInclude": ["{projectRoot}/**/*.ts"],
+        "coverageExclude": [
+          "{projectRoot}/**/index.ts",
+          "{projectRoot}/**/main.ts",
+          "{projectRoot}/**/test-setup.ts",
+          "{projectRoot}/.storybook/**/*.ts",
+          "{projectRoot}/**/*.stories.ts"
+        ],
+        "coverageReporters": ["html", "lcovonly", "json-summary", "text-summary"],
+        "coverageThresholds": {
+          "branches": 85,
+          "functions": 85,
+          "lines": 85,
+          "statements": 85
+        },
+        "watch": false
+      },
+      "configurations": {
+        "watch": {
+          "watch": true
+        }
+      }
+    }
+  },
+  "generators": {
+    "@nx/angular:application": {
+      "e2eTestRunner": "none",
+      "style": "scss",
+      "unitTestRunner": "vitest-angular"
+    },
+    "@nx/angular:component": {
+      "style": "scss",
+      "changeDetection": "OnPush",
+      "displayBlock": true
+    },
+    "@nx/angular:library": {
+      "linter": "eslint",
+      "unitTestRunner": "vitest-angular",
+      "changeDetection": "OnPush",
+      "displayBlock": true,
+      "publishable": true,
+      "style": "scss"
+    },
+    "@nx/angular:library-secondary-entry-point": {
+      "skipModule": true
+    }
+  }
+}

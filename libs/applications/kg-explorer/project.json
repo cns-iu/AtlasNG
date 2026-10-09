@@ -9,10 +9,7 @@
     "build": {
       "executor": "@nx/angular:package"
     },
-    "build-compodoc": {},
     "build-storybook": {},
-    "compodoc": {},
-    "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {
       "options": {

@@ -1,0 +1,138 @@
+# Reusable workflow (workflow_call): publishes Nx release projects to npm from a release tag.
+# Reusable workflows are prefixed with `nx-`; AtlasNG's publish.yml is a thin caller. Callers own
+# triggers and concurrency and must grant contents: write and id-token: write.
+# Tags are v<version> (the fixed release group) or <project>@<version> (independently versioned
+# projects). Local `./.github/actions/*` refs resolve against the caller's checkout.
+name: Nx release publish
+
+on:
+  workflow_call:
+    inputs:
+      build-projects:
+        description: Projects to build before publishing, passed to `nx run-many -t build --projects` (for example tag:library)
+        type: string
+        required: true
+      fixed-group:
+        description: Release group published for v<version> tags
+        type: string
+        required: false
+        default: libraries
+      release-notes-command:
+        description: >-
+          Bash command that prints the GitHub Release notes for the fixed group to stdout; the tag is
+          available as $RELEASE_TAG. Leave empty to skip creating the GitHub Release.
+        type: string
+        required: false
+        default: ''
+      release-notes-install:
+        description: Whether the release notes command needs npm dependencies installed
+        type: boolean
+        required: false
+        default: false
+      node-version-file:
+        description: File that pins the Node.js version
+        type: string
+        required: false
+        default: .nvmrc
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        description: Nx Cloud access token
+        required: false
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # needed for provenance data generation
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          filter: tree:0
+
+      # The npm cache stays off: restoring a cache that other workflows can write into a job that
+      # publishes with provenance would let a poisoned cache reach the published packages.
+      - name: Set up Nx workspace
+        uses: ./.github/actions/setup-nx-workspace
+        with:
+          node-version-file: ${{ inputs.node-version-file }}
+          npm-cache: 'false'
+
+      - name: Print Environment Info
+        run: npx nx report
+
+      # nx release publish reads the dist manifests (version.manifestRootsToUpdate) before
+      # running any tasks, so the packages must be built up front.
+      - name: Build packages
+        env:
+          BUILD_PROJECTS: ${{ inputs.build-projects }}
+        run: npx nx run-many -t build --projects="$BUILD_PROJECTS"
+
+      # Tags are either v<version> (fixed group) or <project>@<version> (independent project);
+      # only the tagged group or project is published. A manual run on a branch publishes every
+      # release project. Versions already on npm are skipped, so reruns are safe.
+      - name: Publish packages
+        run: |
+          args=(--access=public)
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            if [[ "$GITHUB_REF_NAME" == *@* ]]; then
+              args+=(--projects="${GITHUB_REF_NAME%@*}")
+            else
+              args+=(--groups="$FIXED_GROUP")
+            fi
+
+            version="${GITHUB_REF_NAME##*@}"
+            version="${version#v}"
+            if [[ "$version" == *-* ]]; then
+              args+=(--tag=next)
+            fi
+          fi
+          npx nx release publish "${args[@]}"
+        env:
+          FIXED_GROUP: ${{ inputs.fixed-group }}
+          NPM_CONFIG_PROVENANCE: true
+
+  # Nx creates GitHub Releases for independently versioned projects. The fixed group shares one
+  # tag, so its release notes come from the caller's release-notes command.
+  fixed-group-release:
+    name: Create fixed group GitHub Release
+    needs: publish
+    if: inputs.release-notes-command != '' && github.ref_type == 'tag' && !contains(github.ref_name, '@')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Nx workspace
+        uses: ./.github/actions/setup-nx-workspace
+        with:
+          node-version-file: ${{ inputs.node-version-file }}
+          npm-cache: 'false'
+          install-dependencies: ${{ inputs.release-notes-install }}
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_NOTES_COMMAND: ${{ inputs.release-notes-command }}
+        run: |
+          bash -c "$RELEASE_NOTES_COMMAND" > release-notes.md
+          prerelease=()
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            prerelease=(--prerelease)
+          fi
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --notes-file release-notes.md "${prerelease[@]}"
+          else
+            gh release create "$RELEASE_TAG" --title "$RELEASE_TAG" --notes-file release-notes.md --verify-tag "${prerelease[@]}"
+          fi

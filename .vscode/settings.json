@@ -19,12 +19,17 @@
     "AtlasNG",
     "analytics",
     "cdk",
+    "commitlint-config",
     "common",
     "core",
     "design-system",
+    "eslint-plugin",
     "internal-storybook",
     "kg-explorer",
     "labs",
-    "release"
+    "nx-plugin",
+    "prettier-config",
+    "release",
+    "tsconfig"
   ]
 }
