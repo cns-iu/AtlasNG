@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "AtlasNgSync",
+  "title": "Sync the shared AtlasNG workspace files",
+  "description": "Keeps the shared editor, git hook, AI and nx.json configuration in sync. Nx runs it through nx sync and reads the options from nx.json sync.generatorOptions['@atlasng/nx-plugin:sync']; options passed here take precedence.",
+  "type": "object",
+  "properties": {
+    "prefix": {
+      "type": "string",
+      "description": "Angular selector prefix used in the managed files. Defaults to the nx.json generator prefix, or app."
+    },
+    "exclude": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Managed-file ids or paths to leave alone, for example nvmrc or .github/instructions."
+    },
+    "extraScopes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Commit scopes added to the Nx project names in .vscode/settings.json, for example release."
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Do not format the changed files."
+    }
+  },
+  "required": []
+}

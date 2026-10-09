@@ -1,0 +1,78 @@
+# Reusable workflow (workflow_call): builds a Storybook project and deploys it to GitHub Pages.
+# Reusable workflows are prefixed with `nx-`; AtlasNG's storybook-gh-pages.yml is a thin caller.
+# Callers own triggers and concurrency and must grant contents: write. Local
+# `./.github/actions/*` refs resolve against the caller's checkout.
+name: Nx Storybook GH Pages
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: Nx project whose build-storybook target is deployed
+        type: string
+        required: true
+      configuration:
+        description: Configuration passed to build-storybook
+        type: string
+        required: false
+        default: ci
+      output-dir:
+        description: Directory with the built Storybook (for example ./dist/storybook/<project>)
+        type: string
+        required: true
+      publish-branch:
+        description: Branch that GitHub Pages serves
+        type: string
+        required: false
+        default: gh-pages
+      node-version-file:
+        description: File that pins the Node.js version
+        type: string
+        required: false
+        default: .nvmrc
+      timeout-minutes:
+        description: Timeout for the deploy job
+        type: number
+        required: false
+        default: 60
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        description: Nx Cloud access token
+        required: false
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  HUSKY: 0
+
+jobs:
+  deploy:
+    name: Build and deploy Storybook
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          filter: tree:0
+
+      - name: Set up Nx workspace
+        uses: ./.github/actions/setup-nx-workspace
+        with:
+          node-version-file: ${{ inputs.node-version-file }}
+
+      - name: Build Storybook
+        env:
+          PROJECT: ${{ inputs.project }}
+          CONFIGURATION: ${{ inputs.configuration }}
+        run: npx nx build-storybook "$PROJECT" --configuration="$CONFIGURATION"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ github.token }}
+          publish_branch: ${{ inputs.publish-branch }}
+          publish_dir: ${{ inputs.output-dir }}
+          force_orphan: true

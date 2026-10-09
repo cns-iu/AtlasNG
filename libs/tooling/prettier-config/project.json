@@ -1,0 +1,23 @@
+{
+  "name": "prettier-config",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/tooling/prettier-config",
+  "projectType": "library",
+  "tags": ["tooling", "layer:tooling"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "cache": true,
+      "inputs": ["production", "^production"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "main": "{projectRoot}/index.js",
+        "rootDir": "{projectRoot}",
+        "outputPath": "{workspaceRoot}/dist/{projectRoot}",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "assets": ["{projectRoot}/README.md", "{projectRoot}/LICENSE"]
+      }
+    },
+    "nx-release-publish": {}
+  }
+}
