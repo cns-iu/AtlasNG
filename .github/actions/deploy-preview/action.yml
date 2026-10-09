@@ -13,6 +13,10 @@ inputs:
   netlify-site-id:
     description: The site ID for the Netlify site to deploy to
     required: true
+  netlify-filter:
+    description: The Netlify monorepo filter (site package name) to deploy
+    required: false
+    default: AtlasNG
 
 runs:
   using: 'composite'
@@ -44,6 +48,7 @@ runs:
         ISSUE_NUMBER: ${{ inputs.issue-number }}
         NETLIFY_AUTH_TOKEN: ${{ inputs.netlify-auth-token }}
         NETLIFY_SITE_ID: ${{ inputs.netlify-site-id }}
+        NETLIFY_FILTER: ${{ inputs.netlify-filter }}
 
     - name: Get commit info
       id: commit-info
