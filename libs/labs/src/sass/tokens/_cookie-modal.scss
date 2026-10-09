@@ -2,7 +2,7 @@
 @use '../internal/token-utils';
 
 $config: (
-  namespace: 'ang-cookie-modal',
+  namespace: 'cookie-modal',
   tokens: (
     container-color: token-utils.sys-token(surface-bright),
     container-elevation-shadow: 0px 12px 32px 24px sass-utils.color-with-opacity(token-utils.sys-token(tertiary), 24%),
@@ -24,3 +24,7 @@ $config: (
     description-weight: token-utils.sys-token(body-medium-weight),
   ),
 );
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
