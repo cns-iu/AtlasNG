@@ -3,7 +3,7 @@
 @use '../internal/token-utils';
 
 $config: (
-  namespace: 'ang-basic-profile-card',
+  namespace: 'basic-profile-card',
   tokens: (
     image-aspect-ratio: list.slash(4, 5),
     card-color: token-utils.sys-token(on-surface-variant),

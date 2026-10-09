@@ -1,6 +1,6 @@
 ---
 name: Angular Standards
-description: Angular component, directive, and service conventions for AtlasNG source files.
+description: Angular component, directive, and service conventions for workspace source files.
 applyTo: 'apps/**/*.ts,libs/**/*.ts'
 ---
 

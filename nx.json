@@ -14,6 +14,14 @@
         "staticStorybookTargetName": "serve-static-storybook",
         "testStorybookTargetName": "test-storybook"
       }
+    },
+    {
+      "plugin": "@atlasng/nx-plugin",
+      "options": {
+        "buildCompodocTargetName": "build-compodoc",
+        "compodocTargetName": "compodoc",
+        "buildStorybookCompodocTargetName": "build-storybook-compodoc"
+      }
     }
   ],
   "namedInputs": {
@@ -32,7 +40,11 @@
       "!{projectRoot}/.storybook/**/*",
       "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
     ],
-    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/ci.yml",
+      "{workspaceRoot}/.github/workflows/nx-ci.yml",
+      "{workspaceRoot}/.github/actions/setup-nx-workspace/action.yml"
+    ]
   },
   "targetDefaults": {
     "@nx/angular:application": {
@@ -94,23 +106,6 @@
         "development": {}
       }
     },
-    "build-compodoc": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": [
-        "default",
-        {
-          "externalDependencies": ["@compodoc/compodoc"]
-        }
-      ],
-      "outputs": ["{workspaceRoot}/dist/compodoc/{projectName}"],
-      "options": {
-        "commands": [
-          "npx compodoc -p tsconfig.lib.json -d ${PWD%/{projectRoot}}/dist/compodoc/{projectName} -n {projectName}"
-        ],
-        "cwd": "{projectRoot}"
-      }
-    },
     "build-storybook": {
       "dependsOn": ["build-storybook-compodoc"],
       "inputs": [
@@ -135,40 +130,13 @@
         }
       }
     },
-    "build-storybook-compodoc": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": [
-        "default",
-        {
-          "externalDependencies": ["@compodoc/compodoc"]
-        }
-      ],
-      "outputs": ["{projectRoot}/.storybook/compodoc/documentation.json"],
-      "options": {
-        "commands": [
-          "npx compodoc -p tsconfig.lib.json -d .storybook/compodoc -n {projectName} -e json --disablePrivate --disableProtected --disableInternal"
-        ],
-        "cwd": "{projectRoot}"
-      }
-    },
-    "compodoc": {
-      "executor": "nx:run-commands",
-      "continuous": true,
-      "options": {
-        "commands": [
-          "npx compodoc -p tsconfig.lib.json -d ${PWD%/{projectRoot}}/dist/compodoc/{projectName} -n {projectName} --serve --watch"
-        ],
-        "cwd": "{projectRoot}"
-      }
-    },
     "lint": {
       "cache": true,
       "inputs": [
         "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore",
-        "{workspaceRoot}/eslint.config.mjs"
+        "{workspaceRoot}/eslint.config.mjs",
+        "{workspaceRoot}/libs/tooling/eslint-plugin/index.js",
+        "{workspaceRoot}/libs/tooling/eslint-plugin/configs/*.js"
       ],
       "configurations": {
         "fix": {
@@ -300,10 +268,17 @@
         "releaseTag": {
           "pattern": "{projectName}@{version}"
         }
+      },
+      "tooling": {
+        "projects": ["libs/tooling/*"],
+        "projectsRelationship": "independent",
+        "releaseTag": {
+          "pattern": "{projectName}@{version}"
+        }
       }
     },
     "version": {
-      "preVersionCommand": "npx nx run-many -t build --projects=tag:library",
+      "preVersionCommand": "npx nx run-many -t build --projects=tag:library,tag:tooling",
       "manifestRootsToUpdate": [
         "{projectRoot}",
         {
@@ -319,6 +294,15 @@
       "automaticFromRef": true,
       "projectChangelogs": {
         "createRelease": "github"
+      }
+    }
+  },
+  "sync": {
+    "globalGenerators": ["@atlasng/nx-plugin:sync"],
+    "generatorOptions": {
+      "@atlasng/nx-plugin:sync": {
+        "prefix": "ang",
+        "extraScopes": ["release"]
       }
     }
   },
