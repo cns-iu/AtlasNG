@@ -16,9 +16,7 @@
         "command": "sass --no-source-map --load-path=dist/libs --load-path=node_modules tools/sass-smoke/design-system.scss > /dev/null"
       }
     },
-    "build-compodoc": {},
     "build-storybook": {},
-    "compodoc": {},
     "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {

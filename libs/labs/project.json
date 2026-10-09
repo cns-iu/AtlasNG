@@ -16,7 +16,6 @@
         "command": "sass --no-source-map --load-path=dist/libs --load-path=node_modules tools/sass-smoke/labs.scss > /dev/null"
       }
     },
-    "build-compodoc": {},
     "build-storybook": {
       "options": {
         "stylePreprocessorOptions": {
@@ -24,7 +23,6 @@
         }
       }
     },
-    "compodoc": {},
     "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {
