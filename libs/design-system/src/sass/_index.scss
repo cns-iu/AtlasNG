@@ -18,6 +18,7 @@
 @forward './tokens/content-section' as content-section-* show content-section-overrides;
 @forward './tokens/cookie-banner' as cookie-banner-* show cookie-banner-overrides;
 @forward './tokens/error-page' as error-page-* show error-page-overrides;
+@forward './tokens/filter-form' as filter-form-* show filter-form-overrides;
 @forward './tokens/footer' as footer-* show footer-overrides;
 @forward './tokens/end-of-results-indicator' as end-of-results-indicator-* show end-of-results-indicator-overrides;
 @forward './tokens/no-results-indicator' as no-results-indicator-* show no-results-indicator-overrides;
