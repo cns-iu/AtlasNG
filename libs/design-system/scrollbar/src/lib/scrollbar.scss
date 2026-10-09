@@ -1,0 +1,20 @@
+@use 'internal/token-utils';
+@use 'tokens/scrollbar' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+
+  // ngx-scrollbar reads these public variables, which inherit into its internal elements.
+  --scrollbar-thumb-color: #{token-utils.slot(thumb-color, $config)};
+  --scrollbar-thumb-shape: #{token-utils.slot(thumb-shape, $config)};
+  --scrollbar-track-color: transparent;
+  --scrollbar-track-shape: #{token-utils.slot(thumb-shape, $config)};
+  --scrollbar-track-thickness: #{token-utils.slot(thickness, $config)};
+  --scrollbar-container-offset: #{token-utils.slot(offset, $config)};
+
+  .ang-scrollbar--viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
