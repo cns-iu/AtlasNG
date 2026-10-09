@@ -1,38 +1,15 @@
-import nxScopes from '@commitlint/config-nx-scopes';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-
-const ADDITIONAL_SCOPES = ['release'];
-const NO_SCOPES_RESULT = [2, 'always', []];
-const NX_SELF_HEALING_RERUN_PATTERN = /\[Self-Healing CI Rerun\]/iu;
+import atlasng from '@atlasng/commitlint-config';
 
 /**
- * Checks whether a commit was produced by Nx Cloud's self-healing CI.
+ * Commitlint configuration for AtlasNG. Extends the shared configuration and adds the `release`
+ * scope used by `nx release` commits.
  *
- * @param {string} message The complete commit message.
- * @returns {boolean} Whether commitlint should ignore the message.
+ * @type {import('@commitlint/types').UserConfig}
  */
-function isNxSelfHealingCommit(message) {
-  return NX_SELF_HEALING_RERUN_PATTERN.test(message);
-}
-
-/** @type {import('@commitlint/types').UserConfig} */
 const config = {
-  extends: ['@commitlint/config-conventional'],
-  ignores: [isNxSelfHealingCommit],
+  extends: ['@atlasng'],
   rules: {
-    'scope-enum': async (ctx) => {
-      const cwd = ctx?.cwd || process.cwd();
-      try {
-        // Ensure that we are in a Nx workspace before attempting to retrieve scopes
-        await fs.access(path.join(cwd, 'nx.json'), fs.constants.F_OK);
-      } catch {
-        return NO_SCOPES_RESULT;
-      }
-
-      const scopes = await nxScopes.utils.getProjects(ctx);
-      return scopes.length > 0 ? [2, 'always', [...scopes, ...ADDITIONAL_SCOPES]] : NO_SCOPES_RESULT;
-    },
+    'scope-enum': async (ctx) => [2, 'always', [...atlasng.utils.getProjects(ctx), 'release']],
   },
 };
 

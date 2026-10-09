@@ -1,0 +1,33 @@
+{
+  "name": "@atlasng/commitlint-config",
+  "version": "0.0.0",
+  "description": "Shared commitlint configuration with Nx project scopes for AtlasNG and related Nx workspaces",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cns-iu/AtlasNG",
+    "directory": "libs/tooling/commitlint-config"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG/tree/main/libs/tooling/commitlint-config",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@commitlint/config-conventional": "^21.2.2",
+    "@commitlint/config-nx-scopes": "^21.2.0"
+  },
+  "peerDependencies": {
+    "@commitlint/cli": "^21.0.0"
+  }
+}
