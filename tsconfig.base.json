@@ -1,25 +1,8 @@
 {
+  "extends": "@atlasng/tsconfig/angular.json",
   "compileOnSave": false,
   "compilerOptions": {
     "rootDir": ".",
-    "target": "es2023",
-    "module": "preserve",
-    "moduleResolution": "bundler",
-    "lib": ["ES2023", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
-    "declaration": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "skipDefaultLibCheck": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "useDefineForClassFields": true,
-    "useUnknownInCatchVariables": true,
     "paths": {
       "@atlasng/analytics": ["./libs/analytics/src/index.ts"],
       "@atlasng/analytics/events": ["./libs/analytics/events/src/index.ts"],
@@ -82,12 +65,5 @@
     },
     "types": ["*"]
   },
-  "exclude": ["node_modules", "tmp"],
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictStandalone": true,
-    "strictTemplates": true
-  }
+  "exclude": ["node_modules", "tmp"]
 }

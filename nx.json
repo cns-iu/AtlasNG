@@ -300,10 +300,17 @@
         "releaseTag": {
           "pattern": "{projectName}@{version}"
         }
+      },
+      "tooling": {
+        "projects": ["libs/tooling/*"],
+        "projectsRelationship": "independent",
+        "releaseTag": {
+          "pattern": "{projectName}@{version}"
+        }
       }
     },
     "version": {
-      "preVersionCommand": "npx nx run-many -t build --projects=tag:library",
+      "preVersionCommand": "npx nx run-many -t build --projects=tag:library,tag:tooling",
       "manifestRootsToUpdate": [
         "{projectRoot}",
         {

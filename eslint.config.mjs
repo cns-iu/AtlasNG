@@ -76,6 +76,21 @@ const baseConfig = [
               sourceTag: 'layer:application',
               onlyDependOnLibsWithTags: ['layer:*'],
             },
+            {
+              sourceTag: 'layer:internal',
+              onlyDependOnLibsWithTags: [
+                'layer:labs',
+                'layer:design-system',
+                'layer:analytics',
+                'layer:cdk',
+                'layer:common',
+                'layer:core',
+              ],
+            },
+            {
+              sourceTag: 'layer:tooling',
+              onlyDependOnLibsWithTags: ['layer:tooling'],
+            },
           ],
         },
       ],
