@@ -9,7 +9,10 @@ import {
   updateJson,
   updateNxJson,
 } from '@nx/devkit';
-import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { readPrefix } from '../../utils/prefix.ts';
+import { SYNC_GENERATOR, syncGenerator } from '../sync/generator.ts';
 
 /** Options for the `init` generator. */
 export interface InitGeneratorSchema {
@@ -87,9 +90,8 @@ export async function initGenerator(tree: Tree, options: InitGeneratorSchema = {
   writeCommitlintConfig(tree);
   extendTsconfig(tree, options.tsconfigPreset ?? 'angular');
   registerPlugin(tree);
-
-  // TODO(nx-plugin-sync): register `@atlasng/nx-plugin:sync` under `nx.json` `sync.globalGenerators`
-  // and run it here once the global sync generator exists.
+  registerSyncGenerator(tree, options.prefix);
+  await syncGenerator(tree, { skipFormat: true });
 
   if (!options.skipFormat) {
     await formatFiles(tree);
@@ -117,39 +119,21 @@ function addConfigPackages(tree: Tree): GeneratorCallback {
   return addDependenciesToPackageJson(tree, {}, devDependencies, 'package.json', true);
 }
 
-/**
- * Resolves a caret range for the latest published version of a package, falling back to `latest` when the
- * registry cannot be reached.
- *
- * @param packageName The npm package name.
- * @returns The version range to write to `package.json`.
- */
-export function resolveVersionRange(packageName: string): string {
-  try {
-    const version = execFileSync('npm', ['view', packageName, 'version'], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim();
-    return version ? `^${version}` : 'latest';
-  } catch {
-    return 'latest';
-  }
-}
+/** The plugin's own `package.json`, which declares the config packages as peer dependencies. */
+const PLUGIN_PACKAGE_JSON = fileURLToPath(new URL('../../../package.json', import.meta.url));
 
 /**
- * Reads the Angular selector prefix from the `nx.json` generator defaults.
+ * Reads the version range of a config package from the plugin's `peerDependencies`. `nx release` keeps these ranges
+ * in step with the released config packages, so a plugin version always installs the configs it was tested with.
  *
- * @param tree The virtual file system.
- * @returns The configured prefix, or `app`.
+ * @param packageName The npm package name.
+ * @returns The version range to write to `package.json`, or `latest` when the plugin does not declare the package.
  */
-function readPrefix(tree: Tree): string {
-  const generators = (readNxJson(tree)?.generators ?? {}) as Record<string, { prefix?: string } | undefined>;
-  return (
-    generators['@nx/angular:component']?.prefix ??
-    generators['@nx/angular:application']?.prefix ??
-    generators['@nx/angular:library']?.prefix ??
-    'app'
-  );
+export function resolveVersionRange(packageName: string): string {
+  const { peerDependencies = {} } = JSON.parse(readFileSync(PLUGIN_PACKAGE_JSON, 'utf8')) as {
+    peerDependencies?: Record<string, string>;
+  };
+  return peerDependencies[packageName] ?? 'latest';
 }
 
 /**
@@ -302,6 +286,33 @@ function extendTsconfig(tree: Tree, preset: 'angular' | 'node'): void {
 }
 
 /**
+ * Registers the sync generator under `nx.json` `sync.globalGenerators` so `nx sync` and `nx sync:check` run it.
+ * A prefix passed to `init` is stored in the generator options unless one is already configured.
+ *
+ * @param tree The virtual file system.
+ * @param prefix The selector prefix passed to `init`, if any.
+ */
+function registerSyncGenerator(tree: Tree, prefix: string | undefined): void {
+  const nxJson = readNxJson(tree) ?? {};
+  const sync = nxJson.sync ?? {};
+  const globalGenerators = sync.globalGenerators ?? [];
+  const generatorOptions = sync.generatorOptions ?? {};
+  const options = generatorOptions[SYNC_GENERATOR] ?? {};
+
+  nxJson.sync = {
+    ...sync,
+    globalGenerators: globalGenerators.includes(SYNC_GENERATOR)
+      ? globalGenerators
+      : [...globalGenerators, SYNC_GENERATOR],
+  };
+  if (prefix && options['prefix'] === undefined) {
+    nxJson.sync.generatorOptions = { ...generatorOptions, [SYNC_GENERATOR]: { ...options, prefix } };
+  }
+
+  updateNxJson(tree, nxJson);
+}
+
+/**
  * Registers the plugin in `nx.json` so it infers its targets.
  *
  * @param tree The virtual file system.
@@ -316,7 +327,14 @@ function registerPlugin(tree: Tree): void {
 
   nxJson.plugins = [
     ...plugins,
-    { plugin: PLUGIN_NAME, options: { buildCompodocTargetName: 'build-compodoc', compodocTargetName: 'compodoc' } },
+    {
+      plugin: PLUGIN_NAME,
+      options: {
+        buildCompodocTargetName: 'build-compodoc',
+        compodocTargetName: 'compodoc',
+        buildStorybookCompodocTargetName: 'build-storybook-compodoc',
+      },
+    },
   ];
   updateNxJson(tree, nxJson);
 }

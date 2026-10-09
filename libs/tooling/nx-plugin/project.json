@@ -30,6 +30,11 @@
             "input": "{projectRoot}/src",
             "glob": "**/schema.json",
             "output": "src"
+          },
+          {
+            "input": "{projectRoot}/src",
+            "glob": "**/files/**/*",
+            "output": "src"
           }
         ]
       }

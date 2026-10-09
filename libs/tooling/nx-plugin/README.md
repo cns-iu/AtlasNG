@@ -14,12 +14,13 @@ npx nx add @atlasng/nx-plugin
 
 `npx nx g @atlasng/nx-plugin:init` sets up a new or existing workspace:
 
-- adds `@atlasng/eslint-plugin`, `@atlasng/prettier-config`, `@atlasng/commitlint-config` and `@atlasng/tsconfig` as devDependencies, using the latest published versions
+- adds `@atlasng/eslint-plugin`, `@atlasng/prettier-config`, `@atlasng/commitlint-config` and `@atlasng/tsconfig` as devDependencies, using the version ranges in the plugin's own optional `peerDependencies` (`nx release` keeps them in step with the released config packages)
 - writes a thin root `eslint.config.mjs` built on the `@atlasng/eslint-plugin` configs, with the Angular selector prefix and an `@nx/enforce-module-boundaries` block to adjust
 - sets the `prettier` key in `package.json` to `@atlasng/prettier-config` (a default Nx `.prettierrc` that only sets `singleQuote` is removed)
 - writes `commitlint.config.mjs` extending `@atlasng`
 - makes `tsconfig.base.json` extend `@atlasng/tsconfig/angular.json` (or `node.json` with `--tsconfigPreset=node`)
 - registers the plugin in `nx.json`
+- registers the [sync generator](#sync-generator) under `sync.globalGenerators` (storing `--prefix` in its options) and runs it
 
 It never overwrites existing custom configuration: an existing ESLint, Prettier or commitlint config, or a different `extends` in `tsconfig.base.json`, is kept and a warning explains what to change by hand. Running it again changes nothing.
 
@@ -30,6 +31,54 @@ It never overwrites existing custom configuration: an existing ESLint, Prettier 
 | `skipPackageJson` | `false`                                  | Do not add the config packages to `package.json` |
 | `skipFormat`      | `false`                                  | Do not format the changed files                  |
 
+## Sync generator
+
+`@atlasng/nx-plugin:sync` is a global [sync generator](https://nx.dev/concepts/sync-generators) that keeps the files every workspace shares up to date. `init` registers it; to add it by hand:
+
+```json
+{
+  "sync": {
+    "globalGenerators": ["@atlasng/nx-plugin:sync"],
+    "generatorOptions": {
+      "@atlasng/nx-plugin:sync": {
+        "prefix": "ang",
+        "extraScopes": ["release"],
+        "exclude": []
+      }
+    }
+  }
+}
+```
+
+`npx nx sync` applies the changes and `npx nx sync:check` fails when a managed file has drifted, which makes it a good CI step.
+
+| Option        | Default                                  | Description                                                                          |
+| ------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
+| `prefix`      | the `nx.json` generator prefix, or `app` | Angular selector prefix used in the managed files and the Angular generator defaults |
+| `extraScopes` | `[]`                                     | Commit scopes added to the project names in `conventionalCommits.scopes`             |
+| `exclude`     | `[]`                                     | Managed-file ids or paths to leave alone; a directory skips everything below it      |
+
+| Id                     | File                                           | Strategy                                                                                                                                    |
+| ---------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `editorconfig`         | `.editorconfig`                                | Whole file                                                                                                                                  |
+| `gitattributes`        | `.gitattributes`                               | Whole file                                                                                                                                  |
+| `nvmrc`                | `.nvmrc`                                       | Whole file                                                                                                                                  |
+| `husky-commit-msg`     | `.husky/commit-msg`                            | Whole file, executable                                                                                                                      |
+| `husky-pre-commit`     | `.husky/pre-commit`                            | Whole file, executable                                                                                                                      |
+| `testing-instructions` | `.github/instructions/testing.instructions.md` | Whole file                                                                                                                                  |
+| `angular-instructions` | `.github/instructions/angular.instructions.md` | Whole file with the prefix filled in                                                                                                        |
+| `skills`               | `.agents/skills/atlasng-*`                     | Whole files; `atlasng-*` skills and files the plugin no longer ships are removed. Other skills, such as the Nx ones, are never touched      |
+| `vscode-extensions`    | `.vscode/extensions.json`                      | JSON merge: union of `recommendations`                                                                                                      |
+| `vscode-settings`      | `.vscode/settings.json`                        | JSON merge: Nx Console generator allow and block lists; `conventionalCommits.scopes` is set to the sorted project names plus `extraScopes`  |
+| `mcp`                  | `.mcp.json`                                    | JSON merge: the `angular-cli` MCP server                                                                                                    |
+| `claude-settings`      | `.claude/settings.json`                        | JSON merge: the Nx Claude Code marketplace and plugin                                                                                       |
+| `nx-json`              | `nx.json`                                      | JSON merge: `namedInputs`, `targetDefaults` and `generators` from [`presets/nx.json`](#nx-preset), plus `prefix` for the Angular generators |
+| `agents-md`            | `AGENTS.md`                                    | Marker block between `<!-- atlasng configuration start -->` and `<!-- atlasng configuration end -->`, appended when missing                 |
+
+A JSON merge keeps every local key. Objects are merged key by key, arrays get the missing shared entries appended and other shared values replace local ones. A file is only rewritten when its parsed value changes, so comments survive a run with nothing to do. Removing a shared entry from every workspace therefore needs a migration.
+
+Nx caches sync results in the daemon and does not see a file mode change on its own. If only the executable bit of a hook was lost, run `NX_DAEMON=false npx nx sync`.
+
 ## Inferred Compodoc targets
 
 When the plugin is registered in `nx.json`, every project with an `ng-package.json`, a `tsconfig.lib.json` and a `project.json` or `package.json` gets two targets:
@@ -38,6 +87,12 @@ When the plugin is registered in `nx.json`, every project with an `ng-package.js
 | ---------------- | ---------------------------------------------------------------- |
 | `build-compodoc` | Builds the static API docs to `dist/compodoc/<project>` (cached) |
 | `compodoc`       | Serves the API docs and rebuilds them on change (continuous)     |
+
+Projects that also have a `.storybook` directory get a third target:
+
+| Target                     | Description                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `build-storybook-compodoc` | Builds the Compodoc JSON that Storybook reads to `.storybook/compodoc` (cached) |
 
 ng-packagr secondary entry points are skipped. The targets run `npx compodoc`, so the workspace needs `@compodoc/compodoc` installed. The target names are options:
 
@@ -48,7 +103,8 @@ ng-packagr secondary entry points are skipped. The targets run `npx compodoc`, s
       "plugin": "@atlasng/nx-plugin",
       "options": {
         "buildCompodocTargetName": "build-compodoc",
-        "compodocTargetName": "compodoc"
+        "compodocTargetName": "compodoc",
+        "buildStorybookCompodocTargetName": "build-storybook-compodoc"
       }
     }
   ]
@@ -111,7 +167,7 @@ Nx merges an extended `nx.json` with a shallow, top-level spread (`{ ...preset, 
 - a key only in the preset is used as is
 - `updateNxJson` in generators writes back every top-level key that differs from the preset, so the first generator that adds a target default copies the whole preset key into the local file
 
-Every real workspace needs local `targetDefaults`, `namedInputs` and `generators`, so `extends` would drop the preset's values. The planned `@atlasng/nx-plugin:sync` generator will write these keys into `nx.json` instead.
+Every real workspace needs local `targetDefaults`, `namedInputs` and `generators`, so `extends` would drop the preset's values. The [sync generator](#sync-generator) merges these keys into `nx.json` instead.
 
 ## Migrations
 

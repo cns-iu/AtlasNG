@@ -13,6 +13,13 @@ export default [
             '{projectRoot}/vitest.config.{js,ts,mjs,mts}',
             '{projectRoot}/**/*.spec.ts',
           ],
+          // Optional peers that `init` installs; their ranges are read from package.json, not imported.
+          ignoredDependencies: [
+            '@atlasng/commitlint-config',
+            '@atlasng/eslint-plugin',
+            '@atlasng/prettier-config',
+            '@atlasng/tsconfig',
+          ],
         },
       ],
     },

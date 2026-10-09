@@ -4,6 +4,11 @@
       "factory": "./src/generators/init/generator",
       "schema": "./src/generators/init/schema.json",
       "description": "Set up the shared AtlasNG ESLint, Prettier, commitlint and TypeScript configs and register the plugin."
+    },
+    "sync": {
+      "factory": "./src/generators/sync/generator",
+      "schema": "./src/generators/sync/schema.json",
+      "description": "Keep the shared editor, git hook, AI and nx.json configuration in sync. Registered as a global sync generator."
     }
   }
 }
