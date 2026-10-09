@@ -32,7 +32,11 @@
       "!{projectRoot}/.storybook/**/*",
       "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
     ],
-    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/ci.yml",
+      "{workspaceRoot}/.github/workflows/nx-ci.yml",
+      "{workspaceRoot}/.github/actions/setup-nx-workspace/action.yml"
+    ]
   },
   "targetDefaults": {
     "@nx/angular:application": {
