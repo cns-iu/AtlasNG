@@ -192,6 +192,34 @@ describe('sync generator', () => {
       expect(result.release).toEqual({ projects: ['*'] });
     });
 
+    it('keeps a customised budget without adding the preset copy and stays in sync', async () => {
+      const nxJson = readNxJson(tree) as NxJsonConfiguration;
+      updateNxJson(tree, {
+        ...nxJson,
+        targetDefaults: {
+          '@nx/angular:application': {
+            configurations: {
+              production: { budgets: [{ type: 'initial', maximumWarning: '600kb', maximumError: '2mb' }] },
+            },
+          },
+        },
+      });
+
+      await syncGenerator(tree);
+
+      const budgets = (readNxJson(tree)?.targetDefaults?.['@nx/angular:application']?.configurations?.['production']?.[
+        'budgets'
+      ] ?? []) as { type: string; maximumWarning: string }[];
+      expect(budgets.filter(({ type }) => type === 'initial')).toEqual([
+        { type: 'initial', maximumWarning: '600kb', maximumError: '2mb' },
+      ]);
+      expect(budgets.map(({ type }) => type)).toEqual(['initial', 'anyComponentStyle']);
+
+      const nxJsonAfterSync = tree.read('nx.json', 'utf8');
+      await syncGenerator(tree);
+      expect(tree.read('nx.json', 'utf8')).toBe(nxJsonAfterSync);
+    });
+
     it('reads the prefix from the nx.json generator defaults', async () => {
       const nxJson = readNxJson(tree) as NxJsonConfiguration;
       updateNxJson(tree, { ...nxJson, generators: { '@nx/angular:component': { prefix: 'cmp' } } });
@@ -385,5 +413,61 @@ describe('mergeShared', () => {
   it('replaces values of a different type', () => {
     expect(mergeShared('local', { a: 1 })).toEqual({ a: 1 });
     expect(mergeShared({ a: 1 }, [1])).toEqual([1]);
+  });
+
+  it('keeps a customised array entry that matches a shared one by its identity keys', () => {
+    const local = {
+      budgets: [
+        { type: 'initial', maximumWarning: '600kb', maximumError: '1mb' },
+        { type: 'bundle', name: 'polyfills', maximumWarning: '50kb' },
+      ],
+    };
+    const shared = {
+      budgets: [
+        { type: 'initial', maximumWarning: '500kb', maximumError: '1mb', baseline: '400kb' },
+        { type: 'bundle', name: 'main', maximumWarning: '100kb' },
+        { type: 'anyComponentStyle', maximumWarning: '4kb' },
+      ],
+    };
+
+    const result = mergeShared(local, shared);
+
+    expect(result).toEqual({
+      budgets: [
+        { type: 'initial', maximumWarning: '600kb', maximumError: '1mb', baseline: '400kb' },
+        { type: 'bundle', name: 'polyfills', maximumWarning: '50kb' },
+        { type: 'bundle', name: 'main', maximumWarning: '100kb' },
+        { type: 'anyComponentStyle', maximumWarning: '4kb' },
+      ],
+    });
+    expect(mergeShared(result, shared)).toEqual(result);
+  });
+
+  it('merges array entries identified by a key such as plugin or externalDependencies', () => {
+    const local = [
+      'default',
+      { plugin: '@nx/eslint/plugin', options: { targetName: 'eslint' } },
+      { externalDependencies: ['eslint', 'local-plugin'] },
+      { x: 1 },
+    ];
+    const shared = [
+      'default',
+      '^default',
+      { plugin: '@nx/eslint/plugin', options: { targetName: 'lint', extra: true } },
+      { externalDependencies: ['eslint', 'typescript-eslint'] },
+      { x: 2 },
+    ];
+
+    const result = mergeShared(local, shared);
+
+    expect(result).toEqual([
+      'default',
+      { plugin: '@nx/eslint/plugin', options: { targetName: 'eslint', extra: true } },
+      { externalDependencies: ['eslint', 'local-plugin', 'typescript-eslint'] },
+      { x: 1 },
+      '^default',
+      { x: 2 },
+    ]);
+    expect(mergeShared(result, shared)).toEqual(result);
   });
 });

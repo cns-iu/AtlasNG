@@ -75,7 +75,13 @@ It never overwrites existing custom configuration: an existing ESLint, Prettier 
 | `nx-json`              | `nx.json`                                      | JSON merge: `namedInputs`, `targetDefaults` and `generators` from [`presets/nx.json`](#nx-preset), plus `prefix` for the Angular generators |
 | `agents-md`            | `AGENTS.md`                                    | Marker block between `<!-- atlasng configuration start -->` and `<!-- atlasng configuration end -->`, appended when missing                 |
 
-A JSON merge keeps every local key. Objects are merged key by key, arrays get the missing shared entries appended and other shared values replace local ones. A file is only rewritten when its parsed value changes, so comments survive a run with nothing to do. Removing a shared entry from every workspace therefore needs a migration.
+A JSON merge keeps every local key:
+
+- Objects are merged key by key.
+- Arrays keep every local entry and get the missing shared entries appended. An object entry counts as present when a local entry has the same identity keys: `plugin`, `type`, `name`, `id`, `glob`, `input`, `target`, `projects`, `dependencies`, `fileset`, `runtime`, `env` and `dependentTasksOutputFiles` are compared by value, and `externalDependencies` by presence. The matched local entry keeps its values and only gets the keys and array items it lacks. A customised entry, such as an Angular budget `{ "type": "initial", "maximumWarning": "600kb" }`, is therefore kept and the preset's `initial` budget is not added next to it.
+- Other values, such as strings, numbers and booleans outside array entries, are always set to the shared value, so preset updates reach every workspace. A local change to one of them, for example `targetDefaults.test.options.coverageThresholds`, is reverted by `nx sync` and reported by `nx sync:check`. Override such values in the project's `project.json`, which takes precedence over `targetDefaults`, or exclude `nx-json`.
+
+A file is only rewritten when its parsed value changes, so comments survive a run with nothing to do. Removing a shared entry from every workspace, or changing a value inside an existing array entry, therefore needs a migration.
 
 Nx caches sync results in the daemon and does not see a file mode change on its own. If only the executable bit of a hook was lost, run `NX_DAEMON=false npx nx sync`.
 
