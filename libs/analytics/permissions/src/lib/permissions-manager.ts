@@ -82,7 +82,7 @@ export class AnalyticsPermissionsManager {
   /** Resolved manager configuration with defaults applied. */
   readonly config = ANALYTICS_PERMISSIONS_CONFIG.inject();
 
-  /** Window abstraction used for browser event wiring. */
+  /** Window abstraction used for browser event wiring, or `undefined` when no window is available. */
   readonly #window = inject(WINDOW);
 
   /** Writable permission state signal. */
@@ -179,9 +179,13 @@ export class AnalyticsPermissionsManager {
     return true;
   }
 
-  /** Registers and tears down browser listeners for permission synchronization. */
+  /** Registers and tears down browser listeners for permission synchronization. Does nothing without a window. */
   #initializePermissionsChangeListeners(): void {
     const window = this.#window;
+    if (!window) {
+      return;
+    }
+
     const { changeEventName, storage, storageEvents } = this.config;
     const handler = this.#onPermissionsChange.bind(this);
     const destroyRef = inject(DestroyRef);
@@ -197,10 +201,10 @@ export class AnalyticsPermissionsManager {
     }
   }
 
-  /** Broadcasts the current permissions through the configured custom event. */
+  /** Broadcasts the current permissions through the configured custom event. Does nothing without a window. */
   #broadcastPermissionsChange(): void {
     const { changeEventName } = this.config;
-    if (!changeEventName) {
+    if (!changeEventName || !this.#window) {
       return;
     }
 
