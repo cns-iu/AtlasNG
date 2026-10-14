@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
 import { AnalyticsPlugin } from 'analytics';
 import { ANONYMOUS_ID_KEY } from './consent-storage';
-import { serializeTelemetryData } from './telemetry-serializer';
+import { serializeTelemetryData, stripQueryAndFragment } from './telemetry-serializer';
 import { AnyPluginMethodArgs } from './types';
 
 /**
@@ -18,8 +18,19 @@ export interface TelemetryPluginConfig {
    * Sends events through Angular {@link HttpClient} when enabled.
    *
    * When disabled, telemetry uses the global {@link fetch} API.
+   * Note that requests sent through `HttpClient` pass through the application's
+   * interceptors, which may, for example, attach authentication headers.
    */
   useHttpClient?: boolean;
+
+  /**
+   * Keep query strings and fragments in page view `url` and `referrer` values,
+   * the page view `search` and `hash` values, and link `href` values.
+   *
+   * Defaults to `false`: query strings and fragments often carry tokens or
+   * personal data, so they are removed before sending.
+   */
+  keepQueryParams?: boolean;
 }
 
 /**
@@ -37,8 +48,8 @@ export function telemetryPlugin(config: TelemetryPluginConfig): AnalyticsPlugin 
    */
   const handleEvent = (args: AnyPluginMethodArgs<TelemetryPluginConfig>): void => {
     const data = prepareTelemetryData(args);
-    const query = serializeTelemetryData(data);
-    const url = `${config.endpoint}?${query}`;
+    const query = serializeTelemetryData(data, { keepQueryParams: args.config.keepQueryParams });
+    const url = buildTelemetryUrl(args.config.endpoint, query);
     sendTelemetry(url, http);
   };
 
@@ -68,7 +79,7 @@ function prepareTelemetryData(args: AnyPluginMethodArgs<TelemetryPluginConfig>):
   switch (args.payload.type) {
     case 'page':
       event = CoreEvents.PageView;
-      props = args.payload.properties;
+      props = args.config.keepQueryParams ? args.payload.properties : stripPageQueryParams(args.payload.properties);
       break;
     case 'identify':
       event = CoreEvents.Identify;
@@ -94,6 +105,39 @@ function prepareTelemetryData(args: AnyPluginMethodArgs<TelemetryPluginConfig>):
     triggerData,
     e: props,
   };
+}
+
+/**
+ * Removes query strings and fragments from page view properties.
+ *
+ * @param properties Page view properties from the `analytics` package.
+ * @returns Copy of the properties without `search`/`hash` and with sanitized `url`/`referrer`.
+ */
+function stripPageQueryParams(properties: Record<string, unknown>): Record<string, unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { search, hash, ...rest } = properties;
+  for (const key of ['url', 'referrer']) {
+    const value = rest[key];
+    if (typeof value === 'string') {
+      rest[key] = stripQueryAndFragment(value);
+    }
+  }
+  return rest;
+}
+
+/**
+ * Appends serialized telemetry to the endpoint, keeping any query parameters the endpoint already has.
+ *
+ * @param endpoint Absolute endpoint URL, or a URL relative to the current page.
+ * @param query Serialized telemetry query string.
+ * @returns Full telemetry URL.
+ */
+function buildTelemetryUrl(endpoint: string, query: string): string {
+  const url = new URL(endpoint, globalThis.location?.href);
+  for (const [key, value] of new URLSearchParams(query)) {
+    url.searchParams.append(key, value);
+  }
+  return url.href;
 }
 
 /**

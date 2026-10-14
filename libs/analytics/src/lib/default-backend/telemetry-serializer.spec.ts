@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { parse } from 'qs';
-import { serializeTelemetryData, serializeTelemetryValue } from './telemetry-serializer';
+import { serializeTelemetryData, serializeTelemetryValue, stripQueryAndFragment } from './telemetry-serializer';
 
 describe('telemetry serializer', () => {
   it('should serialize telemetry data to a query string with dot notation and indexed arrays', () => {
@@ -56,12 +56,7 @@ describe('telemetry serializer', () => {
     });
   });
 
-  it('should serialize KeyboardEvent values and drop false modifier flags', () => {
-    if (typeof KeyboardEvent === 'undefined') {
-      expect(true).toBe(true);
-      return;
-    }
-
+  it('should serialize KeyboardEvent values without the key or code and drop false modifier flags', () => {
     const event = new KeyboardEvent('keydown', {
       key: 'K',
       code: 'KeyK',
@@ -73,10 +68,20 @@ describe('telemetry serializer', () => {
 
     expect(serializeTelemetryValue(event)).toEqual({
       type: 'keydown',
-      key: 'K',
-      code: 'KeyK',
       ctrlKey: true,
     });
+  });
+
+  it.each([
+    ['Enter', 'enter'],
+    ['Escape', 'escape'],
+    ['Tab', 'tab'],
+    ['ArrowDown', 'navigation'],
+    ['PageUp', 'navigation'],
+  ])('should report a coarse key group for %s', (key, keyGroup) => {
+    const event = new KeyboardEvent('keydown', { key, code: key, shiftKey: true });
+
+    expect(serializeTelemetryValue(event)).toEqual({ type: 'keydown', shiftKey: true, keyGroup });
   });
 
   it('should serialize MouseEvent values and include link target attributes', () => {
@@ -86,7 +91,7 @@ describe('telemetry serializer', () => {
     }
 
     const anchor = document.createElement('a');
-    anchor.setAttribute('href', 'https://atlasng.dev/docs');
+    anchor.setAttribute('href', 'https://atlasng.dev/docs?token=secret#section');
     anchor.setAttribute('target', '_blank');
 
     const event = new MouseEvent('click', {
@@ -111,6 +116,9 @@ describe('telemetry serializer', () => {
       href: 'https://atlasng.dev/docs',
       target: '_blank',
     });
+    expect(serializeTelemetryValue(event, { keepQueryParams: true })).toEqual(
+      expect.objectContaining({ href: 'https://atlasng.dev/docs?token=secret#section' }),
+    );
   });
 
   it('should serialize MouseEvent values without link attributes for non-link targets', () => {
@@ -151,7 +159,7 @@ describe('telemetry serializer', () => {
     const originalError = new Error('Boom');
     const event = new ErrorEvent('error', {
       message: 'Unhandled error',
-      filename: 'https://atlasng.dev/app.js',
+      filename: 'https://atlasng.dev/app.js?v=1',
       lineno: 12,
       colno: 20,
       error: originalError,
@@ -241,28 +249,36 @@ describe('telemetry serializer', () => {
     expect(serializeTelemetryValue(invalidZodLike)).toBe(invalidZodLike);
   });
 
-  it('should serialize HttpErrorResponse values recursively', () => {
+  it('should serialize HttpErrorResponse values without the body and with a sanitized url', () => {
     const httpError = new HttpErrorResponse({
       status: 500,
-      url: 'https://api.atlasng.dev/telemetry',
-      error: new Error('Backend exploded'),
+      statusText: 'Internal Server Error',
+      url: 'https://api.atlasng.dev/users?email=someone%40example.org#details',
+      error: { email: 'someone@example.org' },
     });
 
-    const serialized = serializeTelemetryValue(httpError) as {
-      status: number;
-      url: string;
-      message: string;
-      error: {
-        name: string;
-        message: string;
-        stack?: string;
-      };
-    };
+    expect(serializeTelemetryValue(httpError)).toEqual({
+      name: 'HttpErrorResponse',
+      status: 500,
+      statusText: 'Internal Server Error',
+      url: 'https://api.atlasng.dev/users',
+    });
+  });
 
-    expect(serialized.status).toBe(500);
-    expect(serialized.url).toBe('https://api.atlasng.dev/telemetry');
-    expect(serialized.message).toContain('Http failure response');
-    expect(serialized.error.name).toBe('Error');
-    expect(serialized.error.message).toBe('Backend exploded');
+  it('should leave the url out of HttpErrorResponse values without one', () => {
+    const httpError = new HttpErrorResponse({ status: 0 });
+
+    expect(serializeTelemetryValue(httpError)).toEqual({
+      name: 'HttpErrorResponse',
+      status: 0,
+      statusText: 'Unknown Error',
+      url: undefined,
+    });
+  });
+
+  it('should strip query strings and fragments from urls', () => {
+    expect(stripQueryAndFragment('https://atlasng.dev/a?b=c#d')).toBe('https://atlasng.dev/a');
+    expect(stripQueryAndFragment('/a#d?e')).toBe('/a');
+    expect(stripQueryAndFragment('/a')).toBe('/a');
   });
 });

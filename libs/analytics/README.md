@@ -46,9 +46,18 @@ bootstrapApplication(App, {
 The default backend accepts these options:
 
 - `endpoint` (required): URL that receives the serialized events.
-- `useHttpClient`: send requests through Angular's `HttpClient` instead of `fetch`. Requires `provideHttpClient()`.
-- `enableServerSideTracking`: allow events during server-side rendering. Defaults to `false`.
+- `useHttpClient`: send requests through Angular's `HttpClient` instead of `fetch`. Requires `provideHttpClient()`. Requests then pass through your `HttpClient` interceptors, which may attach headers such as authentication tokens to the telemetry endpoint.
+- `enableServerSideTracking`: allow events during server-side rendering. Defaults to `false`. On the server, `endpoint` must be an absolute URL.
+- `keepQueryParams`: keep query strings and fragments in page view and link URLs. Defaults to `false`; see [What the default backend sends](#what-the-default-backend-sends).
 - `plugins`: extra [`analytics` plugins](https://getanalytics.io/plugins/), as an array or a factory, appended after the built-in ones.
+
+#### What the default backend sends
+
+Each event is sent as a GET request to `endpoint`; any query parameters already in `endpoint` are kept. Besides the event payload, every request contains the app name and version and the anonymous session ID. Some values are reduced before sending:
+
+- **URLs:** query strings and fragments often hold tokens, search terms, or email addresses, so they are removed from page view `url` and `referrer` values and from the `href` of clicked links, and the page view `search` and `hash` values are left out. Set `keepQueryParams: true` to keep them.
+- **Keyboard events:** the pressed `key` and `code` are never sent, so tracking `keydown` on an input can't record what the user types. Only the modifier flags (`altKey`, `ctrlKey`, `shiftKey`, `metaKey`) and a coarse `keyGroup` (`enter`, `escape`, `tab`, or `navigation`; omitted for all other keys) are sent. Each tracked key press is still a separate event, so avoid keyboard tracking on password fields.
+- **Errors:** errors are sent with their name, message, and a stack trace truncated to 2000 characters. For `HttpErrorResponse` values only the name, `status`, `statusText`, and the request URL without query string or fragment are sent; the response body and message are left out. `ErrorEvent` file names also lose their query strings and fragments.
 
 #### Anonymous session ID
 
@@ -64,6 +73,8 @@ The underlying `analytics` package always parses the `an_uid`, `an_aid`, `an_tra
 ### Managing consent
 
 Events are grouped into four `AnalyticsEventCategory` values: `necessary`, `statistics`, `preferences`, and `marketing`. Only `necessary` is enabled by default, and it cannot be disabled.
+
+Error events (`CoreEvents.Error`, which `withGlobalErrorHandler()` and `TrackError` send) are `necessary`, so they're sent before and regardless of consent. They exist to detect and fix failures that stop the application from working, which is part of providing the service the user asked for. To keep them limited to that purpose, the default backend sends only the error details listed in [What the default backend sends](#what-the-default-backend-sends). A custom backend receives the raw error values and must sanitize them itself.
 
 The `Analytics` service checks the current permissions before it passes an event to the backend, so events in a category the user hasn't granted never reach any backend, including one registered with `withCustomBackend()`. The default backend repeats the check in a plugin as a second line of defense.
 

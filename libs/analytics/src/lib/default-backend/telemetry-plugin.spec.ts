@@ -238,4 +238,71 @@ describe('telemetryPlugin', () => {
     expect(call).toThrow('Unsupported telemetry payload type: trackStart');
     expect(fetchSpy).not.toHaveBeenCalled();
   });
+
+  describe('page view urls', () => {
+    const properties = {
+      title: 'Search',
+      url: 'https://atlasng.dev/search?q=secret#results',
+      path: '/search',
+      search: '?q=secret',
+      hash: '#results',
+      referrer: 'https://example.org/page?token=abc',
+    };
+
+    function sendPage(config: TelemetryPluginConfig): Record<string, unknown> {
+      const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+      vi.stubGlobal('fetch', fetchSpy);
+      const { plugin } = createPlugin(config);
+      const page = plugin['page'] as ((args: AnyPluginMethodArgs<TelemetryPluginConfig>) => void) | undefined;
+      page?.({
+        ...createArgs(config),
+        payload: { type: 'page', properties },
+      } as AnyPluginMethodArgs<TelemetryPluginConfig>);
+      return parseQueryFromUrl(fetchSpy.mock.calls[0][0] as string)['e'] as Record<string, unknown>;
+    }
+
+    it('should strip query strings and fragments by default', () => {
+      expect(sendPage({ endpoint: 'https://api.atlasng.dev/t' })).toEqual({
+        title: 'Search',
+        url: 'https://atlasng.dev/search',
+        path: '/search',
+        referrer: 'https://example.org/page',
+      });
+    });
+
+    it('should keep query strings and fragments when keepQueryParams is set', () => {
+      expect(sendPage({ endpoint: 'https://api.atlasng.dev/t', keepQueryParams: true })).toEqual(properties);
+    });
+  });
+
+  it('should keep query parameters that are part of the endpoint', () => {
+    const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal('fetch', fetchSpy);
+    const { plugin, config } = createPlugin({ endpoint: 'https://api.atlasng.dev/t?key=abc' });
+    const track = plugin['track'] as ((args: AnyPluginMethodArgs<TelemetryPluginConfig>) => void) | undefined;
+
+    track?.({
+      ...createArgs(config),
+      payload: { type: 'track', event: CoreEvents.Click, properties: { label: 'a b&c' } },
+    } as AnyPluginMethodArgs<TelemetryPluginConfig>);
+
+    const url = new URL(fetchSpy.mock.calls[0][0] as string);
+    expect(url.origin + url.pathname).toBe('https://api.atlasng.dev/t');
+    expect(url.searchParams.get('key')).toBe('abc');
+    expect(url.searchParams.get('e.label')).toBe('a b&c');
+  });
+
+  it('should resolve relative endpoints against the current page', () => {
+    const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal('fetch', fetchSpy);
+    const { plugin, config } = createPlugin({ endpoint: '/telemetry' });
+    const track = plugin['track'] as ((args: AnyPluginMethodArgs<TelemetryPluginConfig>) => void) | undefined;
+
+    track?.({
+      ...createArgs(config),
+      payload: { type: 'track', event: CoreEvents.Click, properties: {} },
+    } as AnyPluginMethodArgs<TelemetryPluginConfig>);
+
+    expect(new URL(fetchSpy.mock.calls[0][0] as string).href.startsWith(`${location.origin}/telemetry?`)).toBe(true);
+  });
 });
