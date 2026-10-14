@@ -2,14 +2,12 @@ import { render, screen } from '@testing-library/angular';
 import { ContentHeader } from './content-header';
 
 describe('ContentHeader', () => {
-  function setup({ id, underlined }: { id?: string; underlined?: boolean } = {}) {
-    return render(ContentHeader, {
-      inputs: {
-        tagline: 'Content title',
-        level: 2,
-        ...(id !== undefined && { id }),
-        ...(underlined !== undefined && { underlined }),
-      },
+  // Render through a wrapper template: ContentHeader clears its host id, which would also clear the
+  // fixture root id that Angular's test teardown uses to remove rendered elements.
+  function setup({ id, underlined = true }: { id?: string; underlined?: boolean } = {}) {
+    return render('<ang-content-header tagline="Content title" [level]="2" [id]="id" [underlined]="underlined" />', {
+      imports: [ContentHeader],
+      componentProperties: { id, underlined },
     });
   }
 

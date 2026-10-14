@@ -2,12 +2,12 @@ import { render, screen } from '@testing-library/angular';
 import { Heading, headingLevelAttribute } from './heading';
 
 describe('Heading', () => {
+  // Tests render through wrapper templates: Heading clears its host id, which would also clear the
+  // fixture root id that Angular's test teardown uses to remove rendered elements.
   it.each([1, 2, 3, 4, 5, 6] as const)('renders a level %i heading', async (level) => {
-    await render(Heading, {
-      inputs: {
-        level,
-        tagline: `Level ${level}`,
-      },
+    await render('<ang-heading [level]="level" [tagline]="tagline" />', {
+      imports: [Heading],
+      componentProperties: { level, tagline: `Level ${level}` },
     });
 
     expect(screen.getByRole('heading', { level, name: `Level ${level}` })).toBeVisible();
@@ -22,12 +22,9 @@ describe('Heading', () => {
   });
 
   it('applies an ID to the rendered heading', async () => {
-    await render(Heading, {
-      inputs: {
-        level: 2,
-        id: 'section-title',
-        tagline: 'Section title',
-      },
+    await render('<ang-heading [level]="2" [id]="id" tagline="Section title" />', {
+      imports: [Heading],
+      componentProperties: { id: 'section-title' },
     });
 
     expect(screen.getByRole('heading', { name: 'Section title' })).toHaveAttribute('id', 'section-title');
@@ -42,11 +39,8 @@ describe('Heading', () => {
   });
 
   it('does not add an empty ID attribute', async () => {
-    await render(Heading, {
-      inputs: {
-        level: 2,
-        tagline: 'Section title',
-      },
+    await render('<ang-heading [level]="2" tagline="Section title" />', {
+      imports: [Heading],
     });
 
     expect(screen.getByRole('heading', { name: 'Section title' })).not.toHaveAttribute('id');
