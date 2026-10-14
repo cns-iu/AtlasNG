@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
 import { AnalyticsPlugin } from 'analytics';
+import { ANONYMOUS_ID_KEY } from './consent-storage';
 import { serializeTelemetryData } from './telemetry-serializer';
 import { AnyPluginMethodArgs } from './types';
 
@@ -83,7 +84,8 @@ function prepareTelemetryData(args: AnyPluginMethodArgs<TelemetryPluginConfig>):
 
   return {
     sv: 0,
-    sessionId: args.payload.anonymousId,
+    // Read the ID from storage rather than the payload: the payload's ID can be set with the `an_aid` URL parameter
+    sessionId: args.instance.storage.getItem(ANONYMOUS_ID_KEY),
     app: args.instance.getState('context.app'),
     version: args.instance.getState('context.version'),
     event,

@@ -50,6 +50,17 @@ The default backend accepts these options:
 - `enableServerSideTracking`: allow events during server-side rendering. Defaults to `false`.
 - `plugins`: extra [`analytics` plugins](https://getanalytics.io/plugins/), as an array or a factory, appended after the built-in ones.
 
+#### Anonymous session ID
+
+The default backend never writes to `localStorage` or cookies. It generates a random anonymous ID and sends it as `sessionId` with every event:
+
+- Until the user grants the `statistics` category, the ID is kept in memory only, so each page load gets a new one.
+- Once `statistics` is granted, the ID is kept in `sessionStorage` under `__atlasng_analytics_anon_id__`, so it lasts until the tab is closed. If consent is revoked, the key is removed and the ID is kept in memory again.
+
+The consent decision itself is stored separately by `AnalyticsPermissionsManager` (see [Managing consent](#managing-consent)).
+
+The underlying `analytics` package always parses the `an_uid`, `an_aid`, `an_trait_*`, `an_event`, and `an_prop_*` URL parameters on startup and has no option to turn this off. The default backend neutralizes them: the URL can't replace the anonymous ID, a user ID or traits from the URL are kept in memory only and never sent by the built-in telemetry, and the `identify` and `track` calls the package makes for these parameters are dropped. Plugins added through `plugins` still receive the URL values in the `userId` and `anonymousId` payload fields, so don't rely on those fields.
+
 ### Managing consent
 
 Events are grouped into four `AnalyticsEventCategory` values: `necessary`, `statistics`, `preferences`, and `marketing`. Only `necessary` is enabled by default, and it cannot be disabled.

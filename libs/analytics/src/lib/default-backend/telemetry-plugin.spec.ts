@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { CoreEvents } from '@atlasng/analytics/events';
 import { parse } from 'qs';
+import { ANONYMOUS_ID_KEY } from './consent-storage';
 import { telemetryPlugin, TelemetryPluginConfig } from './telemetry-plugin';
 import { AnyPluginMethodArgs } from './types';
 
@@ -15,10 +16,16 @@ describe('telemetryPlugin', () => {
     return { plugin, config };
   }
 
-  function createArgs(config: TelemetryPluginConfig): Omit<AnyPluginMethodArgs<TelemetryPluginConfig>, 'payload'> {
+  function createArgs(
+    config: TelemetryPluginConfig,
+    sessionId = 'session-123',
+  ): Omit<AnyPluginMethodArgs<TelemetryPluginConfig>, 'payload'> {
     return {
       config,
       instance: {
+        storage: {
+          getItem: (key: string) => (key === ANONYMOUS_ID_KEY ? sessionId : null),
+        },
         getState: (key: string) => {
           if (key === 'context.app') {
             return 'AtlasNG';
@@ -54,14 +61,14 @@ describe('telemetryPlugin', () => {
     expect(plugin.config).toBe(config);
   });
 
-  it('should send track telemetry using fetch by default', () => {
+  it('should send track telemetry with fetch and the stored session ID instead of the payload ID', () => {
     const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
     vi.stubGlobal('fetch', fetchSpy);
 
     const { plugin, config } = createPlugin({ endpoint: 'https://api.atlasng.dev/t' });
     const track = plugin['track'] as ((args: AnyPluginMethodArgs<TelemetryPluginConfig>) => void) | undefined;
     const args = {
-      ...createArgs(config),
+      ...createArgs(config, 'session-123'),
       payload: {
         type: 'track',
         event: CoreEvents.Click,
@@ -71,7 +78,7 @@ describe('telemetryPlugin', () => {
           triggerData: { id: 'cta' },
           label: 'Get started',
         },
-        anonymousId: 'session-123',
+        anonymousId: 'from-url',
       },
     } as AnyPluginMethodArgs<TelemetryPluginConfig>;
 
@@ -141,12 +148,11 @@ describe('telemetryPlugin', () => {
     const track = plugin['track'] as ((args: AnyPluginMethodArgs<TelemetryPluginConfig>) => void) | undefined;
 
     track?.({
-      ...createArgs(config),
+      ...createArgs(config, 'session-http'),
       payload: {
         type: 'track',
         event: CoreEvents.Error,
         properties: { message: 'failed' },
-        anonymousId: 'session-http',
       },
     } as AnyPluginMethodArgs<TelemetryPluginConfig>);
 
