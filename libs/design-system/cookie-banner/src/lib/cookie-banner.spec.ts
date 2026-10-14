@@ -1,6 +1,14 @@
-import { Component, Type, viewChild } from '@angular/core';
+import { Component, signal, Type, viewChild } from '@angular/core';
 import { RESIZE_OBSERVER } from '@atlasng/core';
-import { createEvent, fireEvent, render, RenderComponentOptions, screen, waitFor } from '@testing-library/angular';
+import {
+  createEvent,
+  fireEvent,
+  render,
+  RenderComponentOptions,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import {
   CookieBanner,
@@ -40,12 +48,14 @@ class CustomContentHost {
 @Component({
   imports: [CookieBanner, CookieBannerContainer],
   template: `
-    <div angCookieBannerContainer>
-      <ang-cookie-banner />
+    <div angCookieBannerContainer data-testid="container">
+      <ang-cookie-banner [opened]="opened()" />
     </div>
   `,
 })
-class CookieBannerContainerHost {}
+class CookieBannerContainerHost {
+  readonly opened = signal(true);
+}
 
 describe('CookieBanner', () => {
   async function sharedSetup<T>(component: Type<T>, options?: RenderComponentOptions<T>) {
@@ -221,7 +231,37 @@ describe('CookieBanner', () => {
   });
 
   it('can be anchored to a container component', async () => {
-    await expect(setupContainerHost()).resolves.toBeDefined();
+    await setupContainerHost();
+
+    expect(screen.getByTestId('container')).toHaveClass('ang-cookie-banner--container');
+    expect(document.body).not.toHaveClass('ang-cookie-banner--container');
+  });
+
+  it('hides a banner that is initially closed and reserves no spacing', async () => {
+    const { fixture, emitResize } = await setupContainerHost({ componentProperties: { opened: signal(false) } });
+    const container = screen.getByTestId('container');
+    const bannerElement = within(container).getByRole('region', { hidden: true });
+
+    emitResize(72);
+    fixture.detectChanges();
+
+    expect(screen.queryByRole('region')).not.toBeInTheDocument();
+    expect(bannerElement).not.toBeVisible();
+    await waitFor(() => expect(container).toHaveStyle({ '--ang-cookie-banner-spacing': '0px' }));
+    expect(container).not.toHaveClass('ang-cookie-banner--closed');
+  });
+
+  it('shows an initially closed banner when it is opened', async () => {
+    const { fixture, emitResize } = await setupContainerHost({ componentProperties: { opened: signal(false) } });
+    const container = screen.getByTestId('container');
+
+    emitResize(72);
+    fixture.componentInstance.opened.set(true);
+    fixture.detectChanges();
+
+    expect(screen.getByRole('region', { name: 'Manage your privacy preferences' })).toBeVisible();
+    expect(container).toHaveClass('ang-cookie-banner--opened');
+    await waitFor(() => expect(container).toHaveStyle({ '--ang-cookie-banner-spacing': '72px' }));
   });
 
   it('works when ResizeObserver is not available', async () => {
@@ -245,7 +285,7 @@ describe('CookieBanner', () => {
 
   it('updates container spacing when resize observer reports a new height', async () => {
     const { emitResize } = await setupContainerHost();
-    const container = document.querySelector('.ang-cookie-banner--container') as HTMLElement;
+    const container = screen.getByTestId('container');
 
     emitResize(72);
 

@@ -28,15 +28,27 @@ export class LinkSnippet {
   /** ID for the url label */
   protected readonly labelId = inject(IdGenerator).getId('ang-link-snippet--label');
 
+  /** ID for the hint announcing that the link opens in a new tab */
+  protected readonly newTabHintId = inject(IdGenerator).getId('ang-link-snippet--new-tab-hint');
+
   /** Snackbar service */
   readonly #snackbar = inject(MatSnackBar);
 
   /**
-   * Copys url to clipboard and shows a snackbar notification.
+   * Copies the URL to the clipboard and shows a snackbar notification.
+   * The notification reports a failure when the clipboard write is rejected,
+   * for example because of missing permissions or an insecure context.
+   * @returns Promise that resolves once the clipboard write has settled and the notification is shown
    */
-  copyUrl(): void {
-    navigator.clipboard.writeText(this.url());
-    this.#snackbar.open('Link copied', '', {
+  async copyUrl(): Promise<void> {
+    let message = 'Link copied';
+    try {
+      await navigator.clipboard.writeText(this.url());
+    } catch {
+      message = 'Could not copy link';
+    }
+
+    this.#snackbar.open(message, '', {
       duration: 2000,
       panelClass: 'ang-link-snippet--copy-notification-panel',
       verticalPosition: 'top',

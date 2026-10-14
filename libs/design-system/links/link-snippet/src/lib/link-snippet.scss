@@ -1,3 +1,4 @@
+@use '@angular/cdk' as cdk;
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/link-snippet' as tokens;
@@ -38,6 +39,8 @@
     display: flex;
     align-items: center;
   }
+
+  @include cdk.a11y-visually-hidden;
 
   .ang-link-snippet--copy {
     @include mat.button-overrides(

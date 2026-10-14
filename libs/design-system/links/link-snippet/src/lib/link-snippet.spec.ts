@@ -35,6 +35,15 @@ describe('LinkSnippet', () => {
     expect(screen.getByRole('link', { name: 'example.com/resources/example' })).toHaveAttribute('href', url);
   });
 
+  it('describes that the link opens in a new tab', async () => {
+    await setup();
+
+    const link = screen.getByRole('link', { name: 'example.com/resources/example' });
+    expect(link).toHaveAccessibleDescription('Opens in a new tab');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
   it('copies the URL and displays a confirmation snackbar', async () => {
     const { open, user, writeText } = await setup();
 
@@ -49,5 +58,16 @@ describe('LinkSnippet', () => {
       politeness: 'polite',
       verticalPosition: 'top',
     });
+  });
+
+  it('reports a failure when the clipboard write is rejected', async () => {
+    const { open, user, writeText } = await setup();
+    writeText.mockRejectedValue(new Error('Denied'));
+
+    await user.click(screen.getByRole('button', { name: 'Copy' }));
+
+    expect(open).toHaveBeenCalledOnce();
+    expect(open).toHaveBeenCalledWith('Could not copy link', '', expect.objectContaining({ politeness: 'polite' }));
+    expect(open).not.toHaveBeenCalledWith('Link copied', expect.anything(), expect.anything());
   });
 });
