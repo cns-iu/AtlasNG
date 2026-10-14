@@ -1,5 +1,13 @@
-import { formatFiles, getProjects, joinPathFragments, readJson, readNxJson, type Tree, writeJson } from '@nx/devkit';
-import type { SyncGeneratorResult } from 'nx/src/utils/sync-generators';
+import {
+  formatFiles,
+  type GeneratorCallback,
+  getProjects,
+  joinPathFragments,
+  readJson,
+  readNxJson,
+  type Tree,
+  writeJson,
+} from '@nx/devkit';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +26,21 @@ export interface SyncGeneratorSchema {
   /** Do not format the changed files. Used by `init`, which formats everything at the end. */
   skipFormat?: boolean;
 }
+
+/**
+ * Result of a sync generator. Mirrors the `SyncGeneratorResult` type of Nx, which is only exported from the private
+ * `nx/src/utils/sync-generators` module.
+ */
+export type SyncGeneratorResult =
+  | undefined
+  | {
+      /** Runs after the changes are written. */
+      callback?: GeneratorCallback;
+      /** Message shown by `nx sync:check` when the workspace is out of sync. */
+      outOfSyncMessage?: string;
+      /** Details listed below `outOfSyncMessage`. */
+      outOfSyncDetails?: string[];
+    };
 
 /** Specifier under which the generator is registered in `nx.json` `sync.globalGenerators`. */
 export const SYNC_GENERATOR = '@atlasng/nx-plugin:sync';
