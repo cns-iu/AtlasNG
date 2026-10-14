@@ -33,6 +33,14 @@
     "ngx-scrollbar": "^19.1.5",
     "rxjs": "^7.8.2"
   },
+  "peerDependenciesMeta": {
+    "@angular/youtube-player": {
+      "optional": true
+    },
+    "@swimlane/ngx-datatable": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "type-fest": "^5.9.0"
   },

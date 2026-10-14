@@ -1,6 +1,6 @@
 <section class="ang-content-section--section">
   <div class="ang-content-section--header">
-    <ng-content select="angContentSectionHeader" />
+    <ng-content select="[angContentSectionHeader]" />
   </div>
   <ang-content-header [tagline]="title()" [level]="level()" [id]="id()" [underlined]="underlined()" />
   <div [class]="`ang-content-section--content ang-content-section--level-${level()}`">

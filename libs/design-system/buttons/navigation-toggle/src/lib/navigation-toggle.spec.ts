@@ -34,4 +34,14 @@ describe('NavigationToggle', () => {
     await user.click(toggle as Element);
     expect(icon).toHaveAttribute('data-mat-icon-name', 'expand_more');
   });
+
+  it('reflects the selected state with aria-expanded', async () => {
+    const { user } = await setup();
+    const button = screen.getByRole('button', { name: 'Category' });
+
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+  });
 });
