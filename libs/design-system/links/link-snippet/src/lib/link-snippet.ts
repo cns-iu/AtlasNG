@@ -7,7 +7,9 @@ import { AnyLink, IdGenerator } from '@atlasng/common';
 /** Regular expression to match URL prefixes. */
 const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
 
-/** Displays a link in a code-snippet-style presentation with related actions. */
+/**
+ * Displays a link in a code-snippet-style presentation with an open-in-new-tab link and a copy button.
+ */
 @Component({
   selector: 'ang-link-snippet',
   imports: [AnyLink, MatIconModule, MatButtonModule],
