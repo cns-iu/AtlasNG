@@ -58,12 +58,27 @@ describe('Footer', () => {
     });
   }
 
+  it('exposes the footer as the contentinfo landmark', async () => {
+    await setup();
+
+    expect(screen.getByRole('contentinfo')).toHaveClass('ang-footer');
+  });
+
   it('renders the logo image with the configured source', async () => {
     await setup();
 
     const logo = screen.getByRole('img', { name: 'Visit Whole Person Physiome' });
     expect(logo).toHaveAttribute('src', '/assets/wpp.svg');
     expect(logo).toHaveClass('ang-footer--logo-image');
+  });
+
+  it('uses a generic logo label when no organization is set', async () => {
+    await render(Footer, {
+      inputs: { logoImage: '/assets/wpp.svg' },
+      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    });
+
+    expect(screen.getByRole('img', { name: 'Logo' })).toBeInTheDocument();
   });
 
   it('renders social media buttons from the socials input', async () => {

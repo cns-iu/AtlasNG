@@ -21,6 +21,15 @@ describe('ContentSection', () => {
     expect(screen.getByRole('heading', { name: 'Overview' })).toHaveAttribute('id', 'overview');
   });
 
+  it('applies a static ID only to the heading', async () => {
+    await render(
+      '<ang-content-section title="Overview" level="2" id="overview"><span>Section content</span></ang-content-section>',
+      { imports: [ContentSection] },
+    );
+
+    expect(document.getElementById('overview')).toBe(screen.getByRole('heading', { name: 'Overview' }));
+  });
+
   it('can hide the heading divider', async () => {
     await render(
       '<ang-content-section title="Overview" level="2" [underlined]="false"><span>Section content</span></ang-content-section>',

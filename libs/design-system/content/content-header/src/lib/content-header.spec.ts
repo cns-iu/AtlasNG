@@ -26,6 +26,14 @@ describe('ContentHeader', () => {
     expect(screen.getByRole('link', { name: 'Content title' })).toHaveAttribute('href', '/#docs');
   });
 
+  it('applies a static ID only to the heading', async () => {
+    await render('<ang-content-header tagline="Content title" level="2" id="docs" />', {
+      imports: [ContentHeader],
+    });
+
+    expect(document.getElementById('docs')).toBe(screen.getByRole('heading', { name: 'Content title' }));
+  });
+
   it('renders the tagline without a link when an ID is not provided', async () => {
     await setup();
 

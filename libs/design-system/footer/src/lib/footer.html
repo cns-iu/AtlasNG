@@ -2,14 +2,19 @@
   <div class="ang-footer--logo-container">
     <ng-content select="ang-footer-logo, [angFooterLogo]">
       <a class="ang-footer--logo" target="_blank" [angAnyLink]="organizationLink()">
-        <img class="ang-footer--logo-image" fill [ngSrc]="logoImage()" [attr.alt]="`Visit ${organization()}`" />
+        <img
+          class="ang-footer--logo-image"
+          fill
+          [ngSrc]="logoImage()"
+          [attr.alt]="organization() ? `Visit ${organization()}` : 'Logo'"
+        />
       </a>
     </ng-content>
     <ng-container [ngTemplateOutlet]="copyrightTemplate" />
   </div>
 
   <div class="ang-footer--socials">
-    @for (social of socials(); track social) {
+    @for (social of socials(); track $index) {
       @if (typeof social === 'string') {
         <ang-social-media-button class="ang-footer--social-icon" [id]="social" />
       } @else {

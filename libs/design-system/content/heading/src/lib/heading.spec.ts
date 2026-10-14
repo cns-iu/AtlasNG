@@ -33,6 +33,14 @@ describe('Heading', () => {
     expect(screen.getByRole('heading', { name: 'Section title' })).toHaveAttribute('id', 'section-title');
   });
 
+  it('applies a static ID only to the rendered heading', async () => {
+    await render('<ang-heading level="2" id="section-title" tagline="Section title" />', {
+      imports: [Heading],
+    });
+
+    expect(document.getElementById('section-title')).toBe(screen.getByRole('heading', { name: 'Section title' }));
+  });
+
   it('does not add an empty ID attribute', async () => {
     await render(Heading, {
       inputs: {
