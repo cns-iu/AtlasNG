@@ -55,6 +55,23 @@ export const CUSTOM_ELEMENT_REGISTRY = new InjectionToken<CustomElementRegistry 
 );
 
 /**
+ * Injection token for the browser {@link Navigation} API, when available.
+ *
+ * Resolves to `undefined` when no window is available or the browser does not support the Navigation API.
+ */
+export const NAVIGATION = new InjectionToken<Navigation | undefined>('NAVIGATION', {
+  providedIn: 'root',
+  factory: () => {
+    const window = inject(WINDOW);
+    if (typeof window?.navigation === 'object' && window.navigation !== null) {
+      return window.navigation;
+    }
+
+    return undefined;
+  },
+});
+
+/**
  * Injection token for the browser {@link ResizeObserver} API, when available.
  *
  * Resolves to `undefined` when no window is available, for example during server-side rendering.

@@ -21,6 +21,7 @@ Inject browser globals through tokens instead of referencing them directly. The 
 | `LOCATION`                | `document.location`                                                            |
 | `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked or there is no window   |
 | `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked or there is no window |
+| `NAVIGATION`              | The Navigation API (`window.navigation`), or `undefined` when unsupported      |
 | `RESIZE_OBSERVER`         | The `ResizeObserver` constructor, or `undefined`                               |
 | `CUSTOM_ELEMENT_REGISTRY` | `window.customElements`, or `undefined`                                        |
 
