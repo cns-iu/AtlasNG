@@ -1,5 +1,4 @@
 import { Location } from '@angular/common';
-import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
   DefaultUrlSerializer,
@@ -7,7 +6,7 @@ import {
   type NavigationBehaviorOptions,
   UrlSerializer,
 } from '@angular/router';
-import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
+import { CUSTOM_ELEMENT_REGISTRY, LOCATION, NAVIGATION, WINDOW } from '@atlasng/core';
 import { LinkHandler, type LinkAttributes } from './handler';
 import { RouterlessLinkHandler, type RouterlessPreparedLink } from './routerless-handler';
 
@@ -311,23 +310,21 @@ describe('RouterlessLinkHandler', () => {
     });
 
     it('updates on Navigation API current entry changes when supported', () => {
-      const navigation = new EventTarget();
-      vi.stubGlobal('navigation', navigation);
-      try {
-        const { browserLocation, handler } = setup('/current');
-        const active = handler.isActive(preparedLink('/other'));
+      const navigation = new EventTarget() as Navigation;
+      TestBed.configureTestingModule({
+        providers: [{ provide: NAVIGATION, useValue: navigation }],
+      });
+      const { browserLocation, handler } = setup('/current');
+      const active = handler.isActive(preparedLink('/other'));
 
-        browserLocation.href = '/other';
-        navigation.dispatchEvent(new Event('currententrychange'));
+      browserLocation.href = '/other';
+      navigation.dispatchEvent(new Event('currententrychange'));
 
-        expect(active()).toBe(true);
-        TestBed.resetTestingModule();
-        browserLocation.href = '/current';
-        navigation.dispatchEvent(new Event('currententrychange'));
-        expect(active()).toBe(true);
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(active()).toBe(true);
+      TestBed.resetTestingModule();
+      browserLocation.href = '/current';
+      navigation.dispatchEvent(new Event('currententrychange'));
+      expect(active()).toBe(true);
     });
 
     it('removes its listeners when the injector is destroyed', () => {
@@ -342,7 +339,10 @@ describe('RouterlessLinkHandler', () => {
 
     it('does not track URL changes without a window', () => {
       TestBed.configureTestingModule({
-        providers: [{ provide: DOCUMENT, useValue: { defaultView: null } }],
+        providers: [
+          { provide: WINDOW, useValue: undefined },
+          { provide: NAVIGATION, useValue: undefined },
+        ],
       });
       const { browserLocation, handler } = setup('/current');
       const active = handler.isActive(preparedLink('/current'));

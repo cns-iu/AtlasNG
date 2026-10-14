@@ -1,6 +1,6 @@
-import { computed, DestroyRef, DOCUMENT, inject, Injector, Service, Signal, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injector, Service, Signal, signal } from '@angular/core';
 import type { IsActiveMatchOptions, NavigationBehaviorOptions } from '@angular/router';
-import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
+import { CUSTOM_ELEMENT_REGISTRY, LOCATION, NAVIGATION, WINDOW } from '@atlasng/core';
 import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from './handler';
 import { isAnchorLikeElement } from './utils/anchor-element';
 import { RouterlessCommandSerializer } from './utils/command-serializer';
@@ -16,11 +16,6 @@ export interface RouterlessPreparedLink extends PreparedLink {
    */
   isAnchorLikeElement: boolean;
 }
-
-/**
- * Browser events after which the current URL is re-read for active-state tracking.
- */
-const WINDOW_URL_CHANGE_EVENTS = ['popstate', 'hashchange'] as const;
 
 /**
  * Default link handler that navigates through `window.location` without Angular Router navigation.
@@ -145,23 +140,18 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
    * Registers browser listeners that refresh the current URL and removes them when the injector is destroyed.
    */
   #listenForUrlChanges(): void {
-    const window = inject(DOCUMENT).defaultView;
-    if (!window) {
-      return;
-    }
-
+    const window = inject(WINDOW);
+    const navigation = inject(NAVIGATION);
     const listener = () => this.#updateCurrentUrl();
-    const navigation = (window as { navigation?: EventTarget }).navigation;
-    for (const type of WINDOW_URL_CHANGE_EVENTS) {
-      window.addEventListener(type, listener);
-    }
-    navigation?.addEventListener?.('currententrychange', listener);
+
+    window?.addEventListener('popstate', listener);
+    window?.addEventListener('hashchange', listener);
+    navigation?.addEventListener('currententrychange', listener);
 
     inject(DestroyRef).onDestroy(() => {
-      for (const type of WINDOW_URL_CHANGE_EVENTS) {
-        window.removeEventListener(type, listener);
-      }
-      navigation?.removeEventListener?.('currententrychange', listener);
+      window?.removeEventListener('popstate', listener);
+      window?.removeEventListener('hashchange', listener);
+      navigation?.removeEventListener('currententrychange', listener);
     });
   }
 

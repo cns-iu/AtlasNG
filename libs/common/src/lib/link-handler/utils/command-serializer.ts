@@ -13,16 +13,6 @@ import { LinkCommand } from '../handler';
 import { applyQueryParamsAndFragmentToUrl, isUrlTree, tryParseAbsoluteUrl } from './url';
 
 /**
- * Removes query params whose value is `null` or `undefined`, matching Angular Router.
- *
- * @param params Query params to filter.
- * @returns A new params object without `null` or `undefined` values.
- */
-function removeEmptyParams(params: Params): Params {
-  return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== null && value !== undefined));
-}
-
-/**
  * Serializes router-style link commands without requiring Angular Router navigation.
  */
 @Service()
@@ -173,13 +163,15 @@ export class RouterlessCommandSerializer {
     newParams: Params,
     handling: QueryParamsHandling | null | undefined,
   ): Params {
+    let params = newParams;
     if (handling === 'preserve') {
-      return removeEmptyParams(currentParams);
+      params = currentParams;
     } else if (handling === 'merge') {
-      return removeEmptyParams({ ...currentParams, ...newParams });
+      params = { ...currentParams, ...newParams };
     }
 
-    return removeEmptyParams(newParams);
+    // Drop null and undefined values like the Router does, so a null removes a param when merging
+    return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== null && value !== undefined));
   }
 
   /**
