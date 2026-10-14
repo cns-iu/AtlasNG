@@ -85,11 +85,30 @@ export class AnalyticsPermissionsManager {
   /** Window abstraction used for browser event wiring, or `undefined` when no window is available. */
   readonly #window = inject(WINDOW);
 
-  /** Writable permission state signal. */
-  readonly #permissions = signal(inject(INITIAL_ANALYTICS_PERMISSIONS));
+  /** Permissions used until a decision is loaded or made, and after a stored decision is removed. */
+  readonly #initialPermissions = inject(INITIAL_ANALYTICS_PERMISSIONS);
+
+  /**
+   * Writable permission state signal.
+   * Compares values with {@link AnalyticsPermissions.equals} so equal updates don't notify consumers.
+   */
+  readonly #permissions = signal(this.#initialPermissions, { equal: (a, b) => a.equals(b) });
+
+  /** Writable decision state signal. */
+  readonly #decided = signal(false);
 
   /** Current permissions. */
   readonly permissions = this.#permissions.asReadonly();
+
+  /**
+   * Whether the user has made a consent decision.
+   *
+   * `true` once permissions are loaded from storage, set through this manager,
+   * or received from another tab or application. It returns to `false` when the
+   * stored decision is removed in another tab. Use it to decide whether to show
+   * a cookie banner.
+   */
+  readonly decided = this.#decided.asReadonly();
 
   /** Initializes event listeners and attempts initial storage sync. */
   constructor() {
@@ -118,17 +137,20 @@ export class AnalyticsPermissionsManager {
 
   /**
    * Updates the active permissions through a callback and broadcasts the change.
+   * The result is always recorded as a decision, even when it equals the current permissions,
+   * so choosing the defaults (for example "necessary only") is persisted too.
    *
    * @param updater Callback that receives the current permissions and returns the new permissions.
    */
   updatePermissions(updater: (permissions: AnalyticsPermissions) => AnalyticsPermissions): void {
     const permissions = this.#permissions();
     const newPermissions = updater(permissions);
-    if (newPermissions.equals(permissions)) {
+    if (newPermissions.equals(permissions) && this.#decided()) {
       return;
     }
 
     this.#permissions.set(newPermissions);
+    this.#decided.set(true);
     this.#broadcastPermissionsChange();
     this.syncToStorage();
   }
@@ -165,13 +187,20 @@ export class AnalyticsPermissionsManager {
       return false;
     }
 
-    const storedPermissions = storage.getItem(storageKey) ?? '';
-    const newPermissions = AnalyticsPermissions.tryFromJSON(storedPermissions);
+    let storedPermissions: string | null = null;
+    try {
+      storedPermissions = storage.getItem(storageKey);
+    } catch {
+      // Ignore storage errors (e.g. access denied)
+    }
+
+    const newPermissions = AnalyticsPermissions.tryFromJSON(storedPermissions ?? '');
     if (!newPermissions) {
       return false;
     }
 
     this.#permissions.set(newPermissions);
+    this.#decided.set(true);
     if (broadcastChange) {
       this.#broadcastPermissionsChange();
     }
@@ -222,18 +251,29 @@ export class AnalyticsPermissionsManager {
     let value: unknown;
     if (event instanceof StorageEvent) {
       const { storage, storageKey } = this.config;
-      if (event.storageArea === storage && event.key === storageKey) {
-        value = event.newValue;
+      // A null key means the whole storage area was cleared
+      if (event.storageArea !== storage || (event.key !== null && event.key !== storageKey)) {
+        return;
+      } else if (event.newValue === null) {
+        this.#resetDecision();
+        return;
       }
+
+      value = event.newValue;
     } else if (event instanceof CustomEvent) {
       value = event.detail;
     }
 
-    if (typeof value === 'string') {
-      this.#permissions.update((current) => {
-        const newPermissions = AnalyticsPermissions.tryFromJSON(value, current);
-        return newPermissions ?? current;
-      });
+    const newPermissions = typeof value === 'string' && AnalyticsPermissions.tryFromJSON(value, this.#permissions());
+    if (newPermissions) {
+      this.#permissions.set(newPermissions);
+      this.#decided.set(true);
     }
+  }
+
+  /** Restores the initial permissions after the stored decision was removed in another browser context. */
+  #resetDecision(): void {
+    this.#permissions.set(this.#initialPermissions);
+    this.#decided.set(false);
   }
 }

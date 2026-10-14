@@ -1,3 +1,4 @@
+import { computed } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { LOCAL_STORAGE, WINDOW } from '@atlasng/core';
@@ -145,9 +146,28 @@ describe('PermissionsManager', () => {
     expect(eventSpy).toHaveBeenCalledOnce();
   });
 
-  it('does not replace, broadcast, or persist permissions when an update is unchanged', () => {
+  it('records an unchanged update as a decision', () => {
     const storage = createStorage();
     const { manager, fakeWindow } = setup({ storage });
+    const eventSpy = vi.fn();
+    fakeWindow.addEventListener(getChangeEventName(manager), eventSpy);
+
+    expect(manager.decided()).toBe(false);
+    manager.setDefaultPermissions();
+
+    expect(manager.decided()).toBe(true);
+    expect(storage.setItem).toHaveBeenCalledWith(
+      manager.config.storageKey,
+      JSON.stringify(AnalyticsPermissions.DEFAULT),
+    );
+    expect(eventSpy).toHaveBeenCalledOnce();
+  });
+
+  it('does not replace, broadcast, or persist permissions when an update after a decision is unchanged', () => {
+    const storage = createStorage();
+    const { manager, fakeWindow } = setup({ storage });
+    manager.setDefaultPermissions();
+    vi.mocked(storage.setItem).mockClear();
     const eventSpy = vi.fn();
     fakeWindow.addEventListener(getChangeEventName(manager), eventSpy);
     const currentPermissions = manager.permissions();
@@ -323,5 +343,69 @@ describe('PermissionsManager', () => {
     expect(manager.permissions().isCategoryEnabled(AnalyticsEventCategory.Marketing)).toBe(true);
 
     storage.removeItem(manager.config.storageKey);
+  });
+
+  it('marks permissions loaded from storage as decided', () => {
+    const storage = createStorage({ [DEFAULT_STORAGE_KEY]: JSON.stringify(AnalyticsPermissions.FULL) });
+    const { manager } = setup({ storage });
+
+    expect(manager.decided()).toBe(true);
+  });
+
+  it('ignores storage read errors', () => {
+    const storage = createStorage();
+    vi.mocked(storage.getItem).mockImplementation(() => {
+      throw new Error('access denied');
+    });
+    const { manager } = setup({ storage });
+
+    expect(manager.syncFromStorage()).toBe(false);
+    expect(manager.decided()).toBe(false);
+  });
+
+  it('notifies consumers once per change', () => {
+    const { manager, fakeWindow } = setup();
+    let computations = 0;
+    const tracked = computed(() => {
+      computations++;
+      return manager.permissions();
+    });
+    tracked();
+
+    manager.setFullPermissions();
+    tracked();
+    fakeWindow.dispatchEvent(
+      new CustomEvent(getChangeEventName(manager), { detail: JSON.stringify(AnalyticsPermissions.FULL) }),
+    );
+    tracked();
+
+    expect(computations).toBe(2);
+  });
+
+  it('marks permissions received from other contexts as decided', () => {
+    const { manager, fakeWindow } = setup();
+
+    fakeWindow.dispatchEvent(
+      new CustomEvent(getChangeEventName(manager), { detail: JSON.stringify(AnalyticsPermissions.FULL) }),
+    );
+
+    expect(manager.decided()).toBe(true);
+  });
+
+  it.each([
+    ['the stored key is removed', DEFAULT_STORAGE_KEY],
+    ['the storage is cleared', null],
+  ])('resets to the initial permissions when %s in another tab', (_label, key) => {
+    const storage = window.localStorage;
+    storage.removeItem(DEFAULT_STORAGE_KEY);
+    const initialPermissions = AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Preferences);
+    const { manager, fakeWindow } = setup({ storage, initialPermissions });
+    manager.setFullPermissions();
+
+    fakeWindow.dispatchEvent(new StorageEvent('storage', { key, newValue: null, storageArea: storage }));
+
+    expect(manager.permissions()).toBe(initialPermissions);
+    expect(manager.decided()).toBe(false);
+    storage.removeItem(DEFAULT_STORAGE_KEY);
   });
 });

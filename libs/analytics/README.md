@@ -94,7 +94,9 @@ manager.updatePermissions((permissions) => permissions.enableCategory(AnalyticsE
 const statisticsAllowed = manager.permissions().isCategoryEnabled(AnalyticsEventCategory.Statistics);
 ```
 
-By default, consent is saved to `localStorage` and kept in sync across tabs and across Angular applications on the same page. Use `withPermissionsConfig()` to change the `storage`, `storageKey`, `storageEvents`, or `changeEventName` settings, or set `storage: false` to disable persistence. Use `provideInitialAnalyticsPermissions()` to set the permissions used before any stored value is found.
+By default, consent is saved to `localStorage` and kept in sync across tabs and across Angular applications on the same page. Use `withPermissionsConfig()` to change the `storage`, `storageKey`, `storageEvents`, or `changeEventName` settings, or set `storage: false` to disable persistence. Use `provideInitialAnalyticsPermissions()` to set the permissions used before any stored value is found. If another tab removes the stored value or clears the storage, the manager returns to these initial permissions.
+
+`manager.decided()` is a signal that is `false` until the user has made a choice, either in this session or in a stored value, so a cookie banner can show itself while it is `false`. Every call to `setPermissions()`, `setDefaultPermissions()`, `setFullPermissions()`, or `updatePermissions()` counts as a decision and is saved, even when the permissions don't change.
 
 ### Logging events
 
