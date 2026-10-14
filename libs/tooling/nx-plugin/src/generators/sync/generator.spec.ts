@@ -207,9 +207,8 @@ describe('sync generator', () => {
 
       await syncGenerator(tree);
 
-      const budgets = (readNxJson(tree)?.targetDefaults?.['@nx/angular:application']?.configurations?.['production']?.[
-        'budgets'
-      ] ?? []) as { type: string; maximumWarning: string }[];
+      const application = readNxJson(tree)?.targetDefaults?.['@nx/angular:application'] as TargetConfiguration;
+      const budgets = (application.configurations?.['production']?.['budgets'] ?? []) as { type: string }[];
       expect(budgets.filter(({ type }) => type === 'initial')).toEqual([
         { type: 'initial', maximumWarning: '600kb', maximumError: '2mb' },
       ]);
