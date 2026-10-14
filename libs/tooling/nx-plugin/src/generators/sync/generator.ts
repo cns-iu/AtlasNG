@@ -363,13 +363,15 @@ function listTreeFiles(tree: Tree, dir: string): string[] {
 
 /**
  * Merges the Nx Console generator lists into `.vscode/settings.json` and sets `conventionalCommits.scopes` to the
- * sorted project names plus the extra scopes.
+ * sorted project names plus the extra scopes. npm scopes are stripped from project names (`@org/name` becomes
+ * `name`) to match the scopes `@commitlint/config-nx-scopes` accepts.
  *
  * @param tree The virtual file system.
  * @param context The resolved options.
  */
 function syncVscodeSettings(tree: Tree, context: SyncContext): void {
-  const scopes = [...new Set([...getProjects(tree).keys(), ...context.extraScopes])].sort();
+  const projectScopes = [...getProjects(tree).keys()].map((name) => name.replace(/^@[^/]+\//, ''));
+  const scopes = [...new Set([...projectScopes, ...context.extraScopes])].sort();
   updateJsonFile(tree, '.vscode/settings.json', (json) => ({
     ...(mergeShared(json, readTemplateJson('vscode/settings.json')) as JsonObject),
     'conventionalCommits.scopes': scopes,
