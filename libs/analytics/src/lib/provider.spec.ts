@@ -88,7 +88,27 @@ describe('provideAnalytics', () => {
     expect(typeof backend.track).toBe('function');
   });
 
-  it.todo('should provide the default backend');
+  it('should drop statistics events in the default backend under default permissions', async () => {
+    const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal('fetch', fetchSpy);
+    const providers = provideAnalytics(
+      {},
+      withDefaultBackend({ endpoint: 'https://api.atlasng.dev/t' }),
+      withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
+    );
+    TestBed.configureTestingModule({ providers: [providers] });
+
+    try {
+      const backend = TestBed.inject(ANALYTICS_BACKEND);
+      void backend.track(CoreEvents.Click, {});
+      await backend.track(CoreEvents.Error, { message: 'boom' });
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(new URL(fetchSpy.mock.calls[0]?.[0] as string).searchParams.get('event')).toBe(CoreEvents.Error);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
 
   it('should throw if multiple backends are provided', () => {
     const backend1 = createMockBackend();
