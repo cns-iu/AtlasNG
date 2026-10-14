@@ -16,7 +16,7 @@
     margin-bottom: 0.5rem;
     text-align: center;
 
-    ang-error-page-title {
+    .ang-error-page--title-content {
       font: token-utils.slot(title-font, $config);
       letter-spacing: token-utils.slot(title-letter-spacing, $config);
       color: token-utils.slot(title-color, $config);
@@ -27,7 +27,7 @@
     margin-bottom: 4rem;
     text-align: center;
 
-    ang-error-page-description {
+    .ang-error-page--description-content {
       font: token-utils.slot(description-font, $config);
       letter-spacing: token-utils.slot(description-letter-spacing, $config);
       color: token-utils.slot(description-color, $config);
