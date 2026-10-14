@@ -43,7 +43,7 @@ bootstrapApplication(App, {
 | `withPermissionsConfig(config)` | Configures consent storage and cross-tab synchronization                                     |
 | `withGlobalErrorHandler()`      | Installs an `ErrorHandler` that logs uncaught errors (and prints them to the console in dev) |
 
-The default backend accepts these options:
+The default backend accepts these options (typed as `DefaultAnalyticsBackendConfig`):
 
 - `endpoint` (required): URL that receives the serialized events.
 - `useHttpClient`: send requests through Angular's `HttpClient` instead of `fetch`. Requires `provideHttpClient()`. Requests then pass through your `HttpClient` interceptors, which may attach headers such as authentication tokens to the telemetry endpoint.

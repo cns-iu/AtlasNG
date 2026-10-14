@@ -1,5 +1,8 @@
 export { Analytics, ANALYTICS_CONFIG, type AnalyticsConfig } from './lib/analytics';
 export { ANALYTICS_BACKEND, type AnalyticsBackend } from './lib/backend';
+export { type DefaultAnalyticsBackendConfig } from './lib/default-backend/default-backend';
+export { type EventFilterPluginConfig } from './lib/default-backend/event-filter-plugin';
+export { type TelemetryPluginConfig } from './lib/default-backend/telemetry-plugin';
 export {
   TrackBlur,
   TrackChange,
@@ -17,6 +20,7 @@ export { MultiTrackEvent, TrackEvent, type AnalyticsEventTrackingDef } from './l
 export { payloadAttribute, triggersAttribute } from './lib/directives/track-event-transforms';
 export { initializeTrackEvent } from './lib/directives/track-event/initialize-track-event';
 export {
+  AnalyticsFeatureKind,
   provideAnalytics,
   withCustomBackend,
   withDefaultBackend,
