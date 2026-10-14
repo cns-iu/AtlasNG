@@ -1,7 +1,8 @@
+import { AnalyticsPermissions, provideInitialAnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { Type } from '@angular/core';
 import { fireEvent, render } from '@testing-library/angular';
 import { EventType } from '@testing-library/dom';
-import { provideAnalytics, withCustomBackend } from '../provider';
+import { provideAnalytics, withCustomBackend, withPermissionsConfig } from '../provider';
 import { EventScope } from '../scope';
 import {
   TrackBlur,
@@ -77,7 +78,9 @@ describe.for<SpecializedTrackEventTestCase>([
         provideAnalytics(
           { rootScope },
           withCustomBackend(() => backend),
+          withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
         ),
+        provideInitialAnalyticsPermissions(AnalyticsPermissions.FULL),
       ],
       componentProperties: {
         payload,

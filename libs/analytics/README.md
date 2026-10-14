@@ -26,7 +26,13 @@ Register analytics once at bootstrap. Exactly one backend is required, either `w
 import { provideAnalytics, withDefaultBackend, withGlobalErrorHandler } from '@atlasng/analytics';
 
 bootstrapApplication(App, {
-  providers: [provideAnalytics({ appName: 'my-app', appVersion: '1.2.3' }, withDefaultBackend({ endpoint: 'https://telemetry.example.org/tr' }), withGlobalErrorHandler())],
+  providers: [
+    provideAnalytics(
+      { appName: 'my-app', appVersion: '1.2.3' },
+      withDefaultBackend({ endpoint: 'https://telemetry.example.org/tr' }),
+      withGlobalErrorHandler(),
+    ),
+  ],
 });
 ```
 
@@ -47,6 +53,8 @@ The default backend accepts these options:
 ### Managing consent
 
 Events are grouped into four `AnalyticsEventCategory` values: `necessary`, `statistics`, `preferences`, and `marketing`. Only `necessary` is enabled by default, and it cannot be disabled.
+
+The `Analytics` service checks the current permissions before it passes an event to the backend, so events in a category the user hasn't granted never reach any backend, including one registered with `withCustomBackend()`. The default backend repeats the check in a plugin as a second line of defense.
 
 `AnalyticsPermissionsManager` holds the current consent as a signal of immutable `AnalyticsPermissions` values:
 
@@ -106,11 +114,16 @@ Define custom events with `createAnalyticsEvent`. The payload type parameter mak
 ```ts
 import { AnalyticsEventCategory, createAnalyticsEvent } from '@atlasng/analytics/events';
 
-export const FilterApplied = createAnalyticsEvent<{ filter: string; count: number }>('filterApplied', AnalyticsEventCategory.Statistics);
+export const FilterApplied = createAnalyticsEvent<{ filter: string; count: number }>(
+  'filterApplied',
+  AnalyticsEventCategory.Statistics,
+);
 ```
 
 ```html
-<button [angTrackEvent]="FilterApplied" [angTrackEventPayload]="{ filter: 'year', count: 3 }" angTrackEventOn="click">Apply</button>
+<button [angTrackEvent]="FilterApplied" [angTrackEventPayload]="{ filter: 'year', count: 3 }" angTrackEventOn="click">
+  Apply
+</button>
 ```
 
 Use `MultiTrackEvent` (`[angMultiTrackEvent]`) to track several event definitions on one element.
