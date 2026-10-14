@@ -21,7 +21,6 @@
         "setupFiles": ["{projectRoot}/src/test-setup.ts"]
       }
     },
-    "test-storybook": {},
     "nx-release-publish": {}
   }
 }
