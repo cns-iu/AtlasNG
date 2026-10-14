@@ -12,12 +12,12 @@ npm install @atlasng/core
 
 ### Browser tokens
 
-Inject browser globals through tokens instead of referencing them directly. The tokens resolve through Angular's `DOCUMENT`, so they can be replaced in tests and during server-side rendering. When no window is available (for example during server-side rendering without a DOM), `WINDOW` throws, while the optional tokens resolve to `undefined`.
+Inject browser globals through tokens instead of referencing them directly. The tokens resolve through Angular's `DOCUMENT`, so they can be replaced in tests and during server-side rendering. When no window is available (for example during server-side rendering without a DOM), `WINDOW` and the tokens derived from it resolve to `undefined`.
 
 | Token                     | Value                                                                          |
 | ------------------------- | ------------------------------------------------------------------------------ |
 | `DOCUMENT`                | Re-export of Angular's `DOCUMENT` token                                        |
-| `WINDOW`                  | The global `window` object; throws when none is available                      |
+| `WINDOW`                  | The global `window` object, or `undefined` when none is available              |
 | `LOCATION`                | `document.location`                                                            |
 | `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked or there is no window   |
 | `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked or there is no window |

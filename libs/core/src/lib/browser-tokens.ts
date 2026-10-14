@@ -7,15 +7,12 @@ import { isStorageAvailable } from './utils/storage';
 export { DOCUMENT };
 
 /**
- * Injection token for the global {@link Window} object.
+ * Injection token for the global {@link Window} object, when available.
  *
- * Resolves to `DOCUMENT.defaultView`, falling back to the global `window`.
- *
- * @throws {Error} When neither `DOCUMENT.defaultView` nor a global `window` is available,
- * for example during server-side rendering. Use the optional tokens such as
- * {@link LOCAL_STORAGE} when a missing window should be tolerated.
+ * Resolves to `DOCUMENT.defaultView`, falling back to the global `window`, and to `undefined`
+ * when neither is available, for example during server-side rendering.
  */
-export const WINDOW = new InjectionToken<Window & typeof globalThis>('WINDOW', {
+export const WINDOW = new InjectionToken<(Window & typeof globalThis) | undefined>('WINDOW', {
   providedIn: 'root',
   factory: () => {
     const document = inject(DOCUMENT);
@@ -25,24 +22,9 @@ export const WINDOW = new InjectionToken<Window & typeof globalThis>('WINDOW', {
       return window;
     }
 
-    throw new Error('No global "window" object available.');
+    return undefined;
   },
 });
-
-/**
- * Injects {@link WINDOW}, returning `undefined` instead of throwing when no window is available.
- *
- * Must be called in an injection context.
- *
- * @returns The injected window, or `undefined` when none is available.
- */
-function injectOptionalWindow(): (Window & typeof globalThis) | undefined {
-  try {
-    return inject(WINDOW);
-  } catch {
-    return undefined;
-  }
-}
 
 /**
  * Injection token for the current {@link Location} object.
@@ -62,7 +44,7 @@ export const CUSTOM_ELEMENT_REGISTRY = new InjectionToken<CustomElementRegistry 
   {
     providedIn: 'root',
     factory: () => {
-      const window = injectOptionalWindow();
+      const window = inject(WINDOW);
       if (typeof window?.customElements === 'object') {
         return window.customElements;
       }
@@ -80,7 +62,7 @@ export const CUSTOM_ELEMENT_REGISTRY = new InjectionToken<CustomElementRegistry 
 export const RESIZE_OBSERVER = new InjectionToken<typeof ResizeObserver | undefined>('RESIZE_OBSERVER', {
   providedIn: 'root',
   factory: () => {
-    const window = injectOptionalWindow();
+    const window = inject(WINDOW);
     if (typeof window?.ResizeObserver === 'function') {
       return window.ResizeObserver;
     }
@@ -97,7 +79,7 @@ export const RESIZE_OBSERVER = new InjectionToken<typeof ResizeObserver | undefi
 export const LOCAL_STORAGE = new InjectionToken<Storage | undefined>('LOCAL_STORAGE', {
   providedIn: 'root',
   factory: () => {
-    const window = injectOptionalWindow();
+    const window = inject(WINDOW);
     if (!window) {
       return undefined;
     }
@@ -115,7 +97,7 @@ export const LOCAL_STORAGE = new InjectionToken<Storage | undefined>('LOCAL_STOR
 export const SESSION_STORAGE = new InjectionToken<Storage | undefined>('SESSION_STORAGE', {
   providedIn: 'root',
   factory: () => {
-    const window = injectOptionalWindow();
+    const window = inject(WINDOW);
     if (!window) {
       return undefined;
     }

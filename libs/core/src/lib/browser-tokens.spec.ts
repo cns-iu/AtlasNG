@@ -57,15 +57,13 @@ describe('browser tokens', () => {
       expect(TestBed.inject(WINDOW)).toBe(fakeWindow);
     });
 
-    it('should throw when DOCUMENT.defaultView and global window are unavailable', () => {
+    it('should return undefined when DOCUMENT.defaultView and global window are unavailable', () => {
       const fakeDocument = { defaultView: undefined } as unknown as Document;
 
       vi.stubGlobal('window', undefined);
       configureDocument(fakeDocument);
 
-      expect(() => TestBed.inject(WINDOW)).toThrowErrorMatchingInlineSnapshot(
-        `[Error: No global "window" object available.]`,
-      );
+      expect(TestBed.inject(WINDOW)).toBeUndefined();
     });
   });
 
