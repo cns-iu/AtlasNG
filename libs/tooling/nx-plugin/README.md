@@ -121,7 +121,7 @@ ng-packagr secondary entry points are skipped. The targets run `npx compodoc`, s
 
 ### `release-notes`
 
-Combines the `CHANGELOG.md` sections of a fixed release group into one set of GitHub release notes. Projects whose section only records a version bump are left out. The group's projects come from `nx.json` and may be names, globs, directories or tags.
+Combines the `CHANGELOG.md` sections of a fixed release group into one set of GitHub release notes. Projects whose section only records a version bump are left out, and projects without a section for the version are left out with a warning. Version headings may carry a date (`## 1.2.3 (2026-01-02)`), no date (`## 1.2.3`) or a compare link (`## [1.2.3](...)`). The group's projects come from `nx.json` and may be names, globs, directories or tags.
 
 | Option   | Default     | Description                                                                         |
 | -------- | ----------- | ----------------------------------------------------------------------------------- |
