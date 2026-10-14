@@ -5,9 +5,22 @@ import { AnalyticsEvent, AnalyticsEventPayloadFor, PageViewAnalyticsEventPayload
  * Analytics backend interface for handling analytics events.
  */
 export interface AnalyticsBackend {
-  /** Log a page view event. */
+  /**
+   * Log a page view event.
+   *
+   * @param payload Overrides for the default page view properties
+   * @param options Backend-specific options
+   * @returns A promise that resolves when the page view has been handled
+   */
   page(payload?: PageViewAnalyticsEventPayload, options?: Record<string, unknown>): Promise<void>;
-  /** Log an analytics event. */
+  /**
+   * Log an analytics event.
+   *
+   * @param event The event to log
+   * @param payload The event payload
+   * @param options Backend-specific options
+   * @returns A promise that resolves when the event has been handled
+   */
   track<E extends AnalyticsEvent>(
     event: E,
     payload: AnalyticsEventPayloadFor<E>,

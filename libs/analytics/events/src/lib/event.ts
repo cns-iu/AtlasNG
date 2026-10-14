@@ -5,9 +5,13 @@ export type AnalyticsEventType = Tagged<string, 'AnalyticsEventType'>;
 
 /** Category for an analytics event. */
 export enum AnalyticsEventCategory {
+  /** Events required for the application to work, such as errors. Always enabled. */
   Necessary = 'necessary',
+  /** Events that measure how the application is used. */
   Statistics = 'statistics',
+  /** Events related to remembering user preferences. */
   Preferences = 'preferences',
+  /** Events used for marketing or by third-party content. */
   Marketing = 'marketing',
 }
 
@@ -42,6 +46,9 @@ export function createAnalyticsEvent<P = AnalyticsEventPayload>(
 
 /**
  * Get the category of an analytics event.
+ *
+ * @param event The analytics event
+ * @returns The event's category
  */
 export function getAnalyticsEventCategory<E extends AnalyticsEvent>(event: E): AnalyticsEventCategory {
   return event.split(':')[0] as AnalyticsEventCategory;
@@ -49,6 +56,9 @@ export function getAnalyticsEventCategory<E extends AnalyticsEvent>(event: E): A
 
 /**
  * Get the type of an analytics event.
+ *
+ * @param event The analytics event
+ * @returns The event's type
  */
 export function getAnalyticsEventType<E extends AnalyticsEvent>(event: E): AnalyticsEventType {
   return event.split(':')[1] as AnalyticsEventType;

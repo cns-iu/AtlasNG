@@ -18,16 +18,23 @@ export interface AnalyticsFeature {
 
 /** The different kinds of analytics features that can be added to the configuration. */
 export enum AnalyticsFeatureKind {
+  /** A custom backend added with {@link withCustomBackend}. */
   CustomBackend,
+  /** The default backend added with {@link withDefaultBackend}. */
   DefaultBackend,
+  /** Permissions manager configuration added with {@link withPermissionsConfig}. */
   PermissionsManagerConfiguration,
+  /** The global error handler added with {@link withGlobalErrorHandler}. */
   GlobalErrorHandler,
 }
 
 /**
  * Add a custom analytics backend.
  *
- * @param backendFactory Factory used to create a custom backend.
+ * Events reach the backend only when the user has granted their consent category.
+ *
+ * @param backendFactory Factory used to create a custom backend. Runs in an injection context.
+ * @returns The custom backend feature.
  */
 export function withCustomBackend(backendFactory: () => AnalyticsBackend): AnalyticsFeature {
   return {
@@ -43,6 +50,9 @@ export function withCustomBackend(backendFactory: () => AnalyticsBackend): Analy
 
 /**
  * Add the default analytics backend provided by this library.
+ *
+ * @param config Endpoint, transport, filtering, and plugin options for the default backend.
+ * @returns The default backend feature.
  */
 export function withDefaultBackend(config: DefaultAnalyticsBackendConfig): AnalyticsFeature {
   return {
@@ -60,6 +70,7 @@ export function withDefaultBackend(config: DefaultAnalyticsBackendConfig): Analy
  * Configure the permissions manager.
  *
  * @param config The permissions manager configuration.
+ * @returns The permissions manager configuration feature.
  */
 export function withPermissionsConfig(config: AnalyticsPermissionsManagerConfig): AnalyticsFeature {
   return {
@@ -71,6 +82,8 @@ export function withPermissionsConfig(config: AnalyticsPermissionsManagerConfig)
 /**
  * Set up a global `ErrorHandler` to automatically log uncaught errors to analytics.
  * During development it also logs errors to the console to aid debugging.
+ *
+ * @returns The global error handler feature.
  */
 export function withGlobalErrorHandler(): AnalyticsFeature {
   return {
@@ -89,6 +102,7 @@ export function withGlobalErrorHandler(): AnalyticsFeature {
  *
  * @param config Analytics configuration options.
  * @param features Additional features to configure the analytics system with.
+ * @returns Environment providers for the analytics system.
  */
 export function provideAnalytics(config?: AnalyticsConfig, ...features: AnalyticsFeature[]): EnvironmentProviders {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -104,6 +118,9 @@ export function provideAnalytics(config?: AnalyticsConfig, ...features: Analytic
 /**
  * Check the provided features for valid backend configuration.
  * Ensures that there is exactly one analytics backend provided, either custom or default, but not both.
+ *
+ * @param features The features passed to {@link provideAnalytics}.
+ * @throws Error when no backend, multiple custom backends, or both a custom and the default backend are provided.
  */
 function checkBackendConfiguration(features: AnalyticsFeature[]): void {
   const customBackends = features.filter((feature) => feature.kind === AnalyticsFeatureKind.CustomBackend);

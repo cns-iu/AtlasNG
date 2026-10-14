@@ -35,6 +35,10 @@ const EVENT_SCOPE_ENTRIES = new InjectionToken<(string | IEventScope)[]>('EVENT_
 
 /**
  * Builds a full scope path from the parent scope path and current name.
+ *
+ * @param parent The parent scope, or `null` for a root scope
+ * @param name Returns the current scope name
+ * @returns The dot-separated scope path
  */
 function buildPath(parent: IEventScope | null, name: () => string): string {
   const parentPath = parent?.path();
@@ -44,6 +48,8 @@ function buildPath(parent: IEventScope | null, name: () => string): string {
 /**
  * Resolves the active scope by combining the inherited parent scope with
  * local scope entries registered in the current injector.
+ *
+ * @returns The scope for the current injector
  */
 function buildEventScope(): IEventScope {
   const parentScope = inject(EVENT_SCOPE, { skipSelf: true });
@@ -57,6 +63,7 @@ function buildEventScope(): IEventScope {
  * Registers a new scope with the specified name for the current provider scope.
  *
  * @param name The scope name
+ * @returns Providers that register the scope
  */
 export function provideEventScope(name: string): Provider[] {
   return [
