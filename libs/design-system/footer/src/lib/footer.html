@@ -1,4 +1,4 @@
-<div class="ang-footer--container">
+<footer class="ang-footer--container">
   <div class="ang-footer--logo-container">
     <ng-content select="ang-footer-logo, [angFooterLogo]">
       <a class="ang-footer--logo" target="_blank" [angAnyLink]="organizationLink()">
@@ -31,7 +31,7 @@
   </div>
 
   <ng-container [ngTemplateOutlet]="copyrightTemplate" />
-</div>
+</footer>
 
 <ng-template #copyrightTemplate>
   <span class="ang-footer--copyright"> © {{ copyrightYear() }} {{ organization() }} </span>

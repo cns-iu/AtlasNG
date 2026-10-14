@@ -61,7 +61,7 @@ describe('Footer', () => {
   it('exposes the footer as the contentinfo landmark', async () => {
     await setup();
 
-    expect(screen.getByRole('contentinfo')).toHaveClass('ang-footer');
+    expect(screen.getByRole('contentinfo')).toHaveClass('ang-footer--container');
   });
 
   it('renders the logo image with the configured source', async () => {

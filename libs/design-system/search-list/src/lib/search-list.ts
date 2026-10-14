@@ -54,16 +54,17 @@ export class SearchList<T extends SearchListOption> {
    * @param event Selection change emitted by the selection list
    */
   protected updateSelection(event: MatSelectionListChange): void {
-    const added = new Set<T>();
-    const removed = new Set<T>();
-    for (const option of event.options) {
-      (option.selected ? added : removed).add(option.value as T);
-    }
-
     this.selected.update((current) => {
-      const kept = current.filter((option) => !removed.has(option));
-      const additions = [...added].filter((option) => !kept.includes(option));
-      return [...kept, ...additions];
+      const selected = new Set(current);
+      for (const option of event.options) {
+        if (option.selected) {
+          selected.add(option.value as T);
+        } else {
+          selected.delete(option.value as T);
+        }
+      }
+
+      return [...selected];
     });
   }
 

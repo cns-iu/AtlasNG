@@ -1,17 +1,22 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-system/table';
+import { RequireOneOrNone, Simplify } from 'type-fest';
 
 /**
- * Optional strategies for naming each row checkbox.
- * When both are set, `labelFn` takes precedence over `labelProp`.
+ * Optional, mutually exclusive strategies for naming each row checkbox.
  */
-export interface CheckboxCellConfig<TRow extends Row = Row> {
-  /** Function that derives a row label, announced as "Select <label>". */
-  labelFn?: (row: TRow) => string;
-  /** Row property whose string value is announced as "Select <value>". */
-  labelProp?: keyof TRow;
-}
+export type CheckboxCellConfig<TRow extends Row = Row> = Simplify<
+  RequireOneOrNone<
+    {
+      /** Function that derives a row label, announced as "Select <label>". */
+      labelFn: (row: TRow) => string;
+      /** Row property whose string value is announced as "Select <value>". */
+      labelProp: keyof TRow;
+    },
+    'labelFn' | 'labelProp'
+  >
+>;
 
 /**
  * Reusable Material checkbox body-cell definition.
@@ -51,23 +56,24 @@ export class CheckboxCellDefinition<TRow extends Row = Row> extends CellDefiniti
   TRow,
   CheckboxCellConfig<TRow> | undefined
 > {
+  /** Label accessor selected from the mutually exclusive configuration strategy. */
+  protected readonly getLabel = this.#createLabelAccessor();
+
   /**
-   * Builds the accessible name of a row checkbox.
+   * Creates the configured label accessor once for this definition instance.
    *
-   * @param row Row rendered in the cell.
-   * @param rowIndex Zero-based index of the row, when known.
-   * @returns Checkbox label, falling back to "Select row".
+   * @returns Function that derives a checkbox label from a row and its zero-based index,
+   * falling back to the one-based row number or "Select row".
    */
-  protected getLabel(row: TRow, rowIndex: number | undefined): string {
+  #createLabelAccessor(): (row: TRow, rowIndex: number | undefined) => string {
     const { labelFn, labelProp } = this.config ?? {};
     if (labelFn !== undefined) {
-      return `Select ${labelFn(row)}`;
+      return (row: TRow) => `Select ${labelFn(row)}`;
     } else if (labelProp !== undefined) {
-      return `Select ${String(row[labelProp] ?? '')}`;
-    } else if (typeof rowIndex === 'number') {
-      return `Select row ${rowIndex + 1}`;
+      return (row: TRow) => `Select ${String(row[labelProp] ?? '')}`;
     }
 
-    return 'Select row';
+    return (_row: TRow, rowIndex: number | undefined) =>
+      typeof rowIndex === 'number' ? `Select row ${rowIndex + 1}` : 'Select row';
   }
 }

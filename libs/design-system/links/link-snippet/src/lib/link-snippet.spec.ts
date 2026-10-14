@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -12,12 +13,16 @@ describe('LinkSnippet', () => {
 
   async function setup() {
     const user = userEvent.setup();
-    const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
+    const copy = vi.fn().mockReturnValue(true);
     const open = vi.fn();
 
     const result = await render(LinkSnippet, {
       inputs: { url },
       providers: [
+        {
+          provide: Clipboard,
+          useValue: { copy },
+        },
         {
           provide: MatSnackBar,
           useValue: { open },
@@ -25,7 +30,7 @@ describe('LinkSnippet', () => {
       ],
     });
 
-    return { ...result, open, user, writeText };
+    return { ...result, copy, open, user };
   }
 
   it('renders the URL and links to it', async () => {
@@ -45,12 +50,12 @@ describe('LinkSnippet', () => {
   });
 
   it('copies the URL and displays a confirmation snackbar', async () => {
-    const { open, user, writeText } = await setup();
+    const { copy, open, user } = await setup();
 
     await user.click(screen.getByRole('button', { name: 'Copy' }));
 
-    expect(writeText).toHaveBeenCalledOnce();
-    expect(writeText).toHaveBeenCalledWith(url);
+    expect(copy).toHaveBeenCalledOnce();
+    expect(copy).toHaveBeenCalledWith(url);
     expect(open).toHaveBeenCalledOnce();
     expect(open).toHaveBeenCalledWith('Link copied', '', {
       duration: 2000,
@@ -60,9 +65,9 @@ describe('LinkSnippet', () => {
     });
   });
 
-  it('reports a failure when the clipboard write is rejected', async () => {
-    const { open, user, writeText } = await setup();
-    writeText.mockRejectedValue(new Error('Denied'));
+  it('reports a failure when the copy fails', async () => {
+    const { copy, open, user } = await setup();
+    copy.mockReturnValue(false);
 
     await user.click(screen.getByRole('button', { name: 'Copy' }));
 

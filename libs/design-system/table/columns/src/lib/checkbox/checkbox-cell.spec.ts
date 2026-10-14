@@ -37,9 +37,9 @@ describe('CheckboxCellDefinition', () => {
     expect(screen.getByRole('checkbox', { name: 'Select Ada' })).toBeInTheDocument();
   });
 
-  it('prefers a configured label function over a row property', async () => {
+  it('names the checkbox with a configured label function', async () => {
     await renderDefinition(CheckboxCellDefinition, cellContext({ onCheckboxChangeFn: vi.fn() }), {
-      config: { labelFn: (row: TestRow) => `${row.name} (${row.url})`, labelProp: 'url' },
+      config: { labelFn: (row: TestRow) => `${row.name} (${row.url})` },
     });
 
     expect(screen.getByRole('checkbox', { name: 'Select Ada (/ada)' })).toBeInTheDocument();

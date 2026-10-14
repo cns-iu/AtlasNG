@@ -27,7 +27,7 @@ export class FooterAction {}
 
 /**
  * Bottom section of a webpage, providing essential information and navigation options.
- * The host is exposed as the `contentinfo` landmark.
+ * The content is wrapped in a `<footer>` element, which is exposed as the `contentinfo` landmark.
  */
 @Component({
   selector: 'ang-footer',
@@ -38,7 +38,6 @@ export class FooterAction {}
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-footer',
-    role: 'contentinfo',
   },
 })
 export class Footer {
