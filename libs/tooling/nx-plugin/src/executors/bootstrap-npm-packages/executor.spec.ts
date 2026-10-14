@@ -55,7 +55,7 @@ describe('bootstrap-npm-packages executor', () => {
       }
       if (command === 'npm' && argv[0] === 'view') {
         if (!published.has(argv[1] as string)) {
-          throw new Error('E404');
+          throw Object.assign(new Error('Command failed: npm view'), { stderr: 'npm error code E404\n' });
         }
         return argv[1];
       }
@@ -108,6 +108,127 @@ describe('bootstrap-npm-packages executor', () => {
       { stdio: 'inherit', cwd: root },
     );
     expect(exec).not.toHaveBeenCalledWith('npm', expect.arrayContaining(['libs/b']), expect.anything());
+  });
+
+  it('fails without publishing when npm cannot tell whether a package exists', async () => {
+    exec.mockImplementation((command) => {
+      if (command === 'npm') {
+        throw Object.assign(new Error('Command failed: npm view'), { stderr: 'npm error code ETIMEDOUT\n' });
+      }
+      return 'git@github.com:owner/repo.git';
+    });
+
+    const result = await bootstrapNpmPackagesExecutor({}, context);
+
+    expect(result).toEqual({ success: false });
+    expect(logger.error).toHaveBeenCalledWith(
+      'Unable to check whether @scope/a exists on npm: npm error code ETIMEDOUT',
+    );
+    expect(exec).not.toHaveBeenCalledWith('npx', expect.anything(), expect.anything());
+  });
+
+  it('reports the npm error message when npm prints nothing', async () => {
+    exec.mockImplementation((command) => {
+      if (command === 'npm') {
+        throw new Error('spawn npm ENOENT');
+      }
+      return 'git@github.com:owner/repo.git';
+    });
+
+    const result = await bootstrapNpmPackagesExecutor({ repository: 'owner/repo' }, context);
+
+    expect(result).toEqual({ success: false });
+    expect(logger.error).toHaveBeenCalledWith('Unable to check whether @scope/a exists on npm: spawn npm ENOENT');
+  });
+
+  it('keeps going and reports the commands to run when npm trust fails', async () => {
+    published.clear();
+    const view = exec.getMockImplementation();
+    exec.mockImplementation((command, args, options) => {
+      const argv = args as string[];
+      if (command === 'npm' && argv[0] === 'trust' && argv[2] === '@scope/a') {
+        throw new Error('npm trust failed');
+      }
+      return view?.(command, args, options) ?? '';
+    });
+
+    const result = await bootstrapNpmPackagesExecutor({}, context);
+
+    expect(result).toEqual({ success: false });
+    expect(exec).toHaveBeenCalledWith('npm', ['publish', 'libs/b', '--access=public'], {
+      stdio: 'inherit',
+      cwd: root,
+    });
+    expect(exec).toHaveBeenCalledWith('npm', expect.arrayContaining(['trust', '@scope/b']), expect.anything());
+    expect(logger.error).toHaveBeenCalledWith('npm trust failed for @scope/a: npm trust failed');
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining(
+        '\n  npm trust github @scope/a --file=publish.yml --repo=owner/repo --allow-publish --yes',
+      ),
+    );
+    expect(logger.error).not.toHaveBeenCalledWith(expect.stringContaining('github @scope/b'));
+  });
+
+  it('stops when npm publish fails', async () => {
+    published.clear();
+    const view = exec.getMockImplementation();
+    exec.mockImplementation((command, args, options) => {
+      if (command === 'npm' && (args as string[])[0] === 'publish') {
+        throw new Error('npm publish failed');
+      }
+      return view?.(command, args, options) ?? '';
+    });
+
+    const result = await bootstrapNpmPackagesExecutor({}, context);
+
+    expect(result).toEqual({ success: false });
+    expect(logger.error).toHaveBeenCalledWith('npm publish failed');
+    expect(exec).not.toHaveBeenCalledWith('npm', expect.arrayContaining(['trust']), expect.anything());
+  });
+
+  describe('on Windows', () => {
+    const platform = Object.getOwnPropertyDescriptor(process, 'platform') as PropertyDescriptor;
+
+    beforeEach(() => {
+      Object.defineProperty(process, 'platform', { ...platform, value: 'win32' });
+    });
+
+    afterEach(() => {
+      Object.defineProperty(process, 'platform', platform);
+    });
+
+    it('runs npm and npx through the shell with quoted arguments', async () => {
+      exec.mockImplementation((command) => {
+        if (String(command).startsWith('npm view @scope/b')) {
+          return '@scope/b';
+        }
+        if (String(command).startsWith('npm view')) {
+          throw Object.assign(new Error('Command failed'), { stdout: '{"error":{"code":"E404"}}' });
+        }
+        return '';
+      });
+
+      const result = await bootstrapNpmPackagesExecutor(
+        { repository: 'owner/repo', workflow: 'my publish.yml' },
+        context,
+      );
+
+      expect(result).toEqual({ success: true });
+      expect(exec).toHaveBeenCalledWith('npm view @scope/a name', {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: true,
+      });
+      expect(exec).toHaveBeenCalledWith('npx nx run-many -t build --projects=a', {
+        stdio: 'inherit',
+        cwd: root,
+        shell: true,
+      });
+      expect(exec).toHaveBeenCalledWith(
+        'npm trust github @scope/a "--file=my publish.yml" --repo=owner/repo --allow-publish --yes',
+        { stdio: 'inherit', cwd: root, shell: true },
+      );
+    });
   });
 
   it('only prints the commands in dry-run mode', async () => {

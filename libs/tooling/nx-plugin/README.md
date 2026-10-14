@@ -149,7 +149,12 @@ gh release create v1.2.3 --notes-file tmp/release-notes.md
 
 ### `bootstrap-npm-packages`
 
-npm trusted publishing can only be configured for packages that already exist on the registry. This executor builds every project with an `nx-release-publish` target that is not on npm yet, publishes each one with `npm publish` (dependencies first, attached to the terminal so npm can wait for two-factor authentication), then runs `npm trust github` so later releases can be published from CI. Packages already on npm are skipped, so if `npm publish` succeeds but `npm trust` fails, a rerun does not retry it; run `npm trust github` for that package manually.
+npm trusted publishing can only be configured for packages that already exist on the registry. This executor builds every project with an `nx-release-publish` target that is not on npm yet, publishes each one with `npm publish` (dependencies first, attached to the terminal so npm can wait for two-factor authentication), then runs `npm trust github` so later releases can be published from CI.
+
+- Packages already on npm are skipped. Only an `E404` from `npm view` counts as "not published"; any other `npm view` failure, such as a network or authentication error, stops the executor before anything is built or published.
+- A failed `npm publish` stops the executor, because later packages may depend on the package.
+- A failed `npm trust` does not stop the remaining packages, but the executor fails and prints the `npm trust github` command for each affected package. A rerun skips these packages because they now exist on npm, so run the printed commands by hand.
+- On Windows, `npm` and `npx` are run through the shell, because they are `.cmd` scripts.
 
 | Option       | Default             | Description                                         |
 | ------------ | ------------------- | --------------------------------------------------- |
