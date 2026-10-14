@@ -1,10 +1,9 @@
 import { DecimalPipe } from '@angular/common';
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatListModule, MatListOption } from '@angular/material/list';
+import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 
 /** Search list option interface */
 export interface SearchListOption {
@@ -16,9 +15,16 @@ export interface SearchListOption {
   count?: number;
 }
 
+/**
+ * Searchable multi-select list of options, each showing a label, an optional
+ * result count and optional description lines.
+ *
+ * Selections are matched by option object identity and are kept while the
+ * search filter hides the selected options.
+ */
 @Component({
   selector: 'ang-search-list',
-  imports: [DecimalPipe, FormsModule, MatButtonModule, MatIconModule, MatInputModule, MatListModule],
+  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,18 +42,29 @@ export class SearchList<T extends SearchListOption> {
   /** Current search bar value */
   readonly search = model<string>('');
 
-  /** Whether to hide the autocomplete search bar */
+  /** Whether to hide the search field */
   readonly searchDisabled = input(false, { transform: booleanAttribute });
 
   /** Filtered options (after typing in search bar) */
   protected readonly filteredOptions = computed(() => this.#getFilteredOptions());
 
   /**
-   * Updates selected options on update
-   * @param event Selected options in list
+   * Merges the options toggled by the user into the current selection.
+   * Selected options that are hidden by the search filter are kept.
+   * @param event Selection change emitted by the selection list
    */
-  protected updateSelection(event: MatListOption[]): void {
-    this.selected.set(event.map((option) => option.value));
+  protected updateSelection(event: MatSelectionListChange): void {
+    const added = new Set<T>();
+    const removed = new Set<T>();
+    for (const option of event.options) {
+      (option.selected ? added : removed).add(option.value as T);
+    }
+
+    this.selected.update((current) => {
+      const kept = current.filter((option) => !removed.has(option));
+      const additions = [...added].filter((option) => !kept.includes(option));
+      return [...kept, ...additions];
+    });
   }
 
   /**
@@ -62,7 +79,10 @@ export class SearchList<T extends SearchListOption> {
     return description ? [description] : [];
   }
 
-  /** Filters options according to the search bar value */
+  /**
+   * Filters options according to the search field value
+   * @returns Options whose label or description matches the search term
+   */
   #getFilteredOptions(): T[] {
     const searchTerm = this.search().toLowerCase().trim();
     if (searchTerm === '') {

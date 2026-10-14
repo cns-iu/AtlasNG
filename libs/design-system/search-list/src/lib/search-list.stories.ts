@@ -82,9 +82,19 @@ const FILTER_OPTIONS_THREE_LINE = [
   },
 ] as SearchListOption[];
 
+/**
+ * Picks the first, third and fifth options so the story starts with a selection.
+ * Selection is matched by identity, so the selected values must reuse the option objects.
+ * @param options Options shown in the story
+ * @returns Options to pre-select
+ */
+function preselect(options: SearchListOption[]): SearchListOption[] {
+  return [options[0], options[2], options[4]];
+}
+
 const meta: Meta<SearchList<SearchListOption>> = {
   component: SearchList,
-  title: 'Design System / Search List',
+  title: 'Design System/Search List',
   parameters: {
     design: {
       type: 'figma',
@@ -92,7 +102,6 @@ const meta: Meta<SearchList<SearchListOption>> = {
     },
   },
   args: {
-    selected: [{ label: 'A' }, { label: 'ABC' }, { label: 'ABCDE' }],
     searchDisabled: false,
   },
   argTypes: {
@@ -108,6 +117,7 @@ type Story = StoryObj<SearchList<SearchListOption>>;
 export const Default: Story = {
   args: {
     options: FILTER_OPTIONS,
+    selected: preselect(FILTER_OPTIONS),
   },
   render: (args) => ({
     props: args,
@@ -118,6 +128,7 @@ export const Default: Story = {
 export const MultiLine: Story = {
   args: {
     options: FILTER_OPTIONS_MULTI,
+    selected: preselect(FILTER_OPTIONS_MULTI),
   },
   render: (args) => ({
     props: args,
@@ -128,6 +139,7 @@ export const MultiLine: Story = {
 export const ThreeLine: Story = {
   args: {
     options: FILTER_OPTIONS_THREE_LINE,
+    selected: preselect(FILTER_OPTIONS_THREE_LINE),
   },
   render: (args) => ({
     props: args,
