@@ -9,7 +9,11 @@
     "build": {
       "executor": "@nx/angular:package"
     },
-    "test": {},
+    "test": {
+      "options": {
+        "setupFiles": ["{projectRoot}/src/test-setup.ts"]
+      }
+    },
     "nx-release-publish": {}
   }
 }
