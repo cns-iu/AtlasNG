@@ -3,6 +3,7 @@ import {
   type CreateNodesResult,
   type CreateNodes,
   createNodesFromFiles,
+  offsetFromRoot,
   type TargetConfiguration,
 } from '@nx/devkit';
 import { existsSync } from 'node:fs';
@@ -34,12 +35,16 @@ const STORYBOOK_DIR = '.storybook';
 const PROJECT_FILES = ['project.json', 'package.json'];
 
 /**
- * Compodoc command shared by the build and serve targets. Writes to `dist/compodoc/{projectName}`.
- * `${PWD%/{projectRoot}}` is a shell expansion that resolves the workspace root from the project directory.
+ * Creates the Compodoc command shared by the build and serve targets, which writes to `dist/compodoc/{projectName}` in
+ * the workspace root. The command runs in the project root, so the output directory is relative to it: Nx only
+ * interpolates `{workspaceRoot}` at the start of an option, and a relative path works in every shell.
+ *
+ * @param projectRoot The project root, relative to the workspace root.
+ * @returns The command.
  */
-const COMPODOC_COMMAND =
-  // eslint-disable-next-line no-template-curly-in-string -- shell parameter expansion, not a JS template
-  'npx compodoc -p tsconfig.lib.json -d ${PWD%/{projectRoot}}/dist/compodoc/{projectName} -n {projectName}';
+function compodocCommand(projectRoot: string): string {
+  return `npx compodoc -p tsconfig.lib.json -d ${offsetFromRoot(projectRoot)}dist/compodoc/{projectName} -n {projectName}`;
+}
 
 /**
  * Compodoc command that writes the JSON documentation Storybook reads to `{projectRoot}/.storybook/compodoc`.
@@ -85,8 +90,8 @@ function createNodesInternal(
 
   const { buildCompodocTargetName, compodocTargetName, buildStorybookCompodocTargetName } = normalizeOptions(options);
   const targets: Record<string, TargetConfiguration> = {
-    [buildCompodocTargetName]: buildCompodocTarget(),
-    [compodocTargetName]: compodocTarget(),
+    [buildCompodocTargetName]: buildCompodocTarget(projectRoot),
+    [compodocTargetName]: compodocTarget(projectRoot),
   };
   if (existsSync(join(absoluteRoot, STORYBOOK_DIR))) {
     targets[buildStorybookCompodocTargetName] = buildStorybookCompodocTarget();
@@ -112,33 +117,40 @@ function normalizeOptions(options: CompodocPluginOptions | undefined): Required<
 /**
  * Creates the cached target that builds the static documentation site.
  *
+ * @param projectRoot The project root, relative to the workspace root.
  * @returns The target configuration.
  */
-function buildCompodocTarget(): TargetConfiguration {
+function buildCompodocTarget(projectRoot: string): TargetConfiguration {
   return {
     executor: 'nx:run-commands',
     cache: true,
     inputs: ['default', { externalDependencies: ['@compodoc/compodoc'] }],
     outputs: ['{workspaceRoot}/dist/compodoc/{projectName}'],
     options: {
-      commands: [COMPODOC_COMMAND],
+      commands: [compodocCommand(projectRoot)],
       cwd: '{projectRoot}',
     },
+    metadata: { technologies: ['compodoc'], description: 'Builds the Compodoc API documentation' },
   };
 }
 
 /**
  * Creates the continuous target that serves the documentation and rebuilds it on change.
  *
+ * @param projectRoot The project root, relative to the workspace root.
  * @returns The target configuration.
  */
-function compodocTarget(): TargetConfiguration {
+function compodocTarget(projectRoot: string): TargetConfiguration {
   return {
     executor: 'nx:run-commands',
     continuous: true,
     options: {
-      commands: [`${COMPODOC_COMMAND} --serve --watch`],
+      commands: [`${compodocCommand(projectRoot)} --serve --watch`],
       cwd: '{projectRoot}',
+    },
+    metadata: {
+      technologies: ['compodoc'],
+      description: 'Serves the Compodoc API documentation and rebuilds it on change',
     },
   };
 }
@@ -158,5 +170,6 @@ function buildStorybookCompodocTarget(): TargetConfiguration {
       commands: [STORYBOOK_COMPODOC_COMMAND],
       cwd: '{projectRoot}',
     },
+    metadata: { technologies: ['compodoc'], description: 'Builds the Compodoc JSON that Storybook reads' },
   };
 }
