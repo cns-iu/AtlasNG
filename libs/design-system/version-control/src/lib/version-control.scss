@@ -36,16 +36,15 @@
 
 .ang-version-control--download-options {
   padding: 0;
-  margin-bottom: 1.5rem;
+  max-height: 30rem;
+  overflow-y: auto;
 
   .ang-version-control--download-option {
     height: auto;
     padding-bottom: 10.5px;
-  }
 
-  &.ang-version-control--scrollable {
-    max-height: 30rem;
-    overflow-y: auto;
-    margin-bottom: 0;
+    &:last-child {
+      margin-bottom: 1.5rem;
+    }
   }
 }

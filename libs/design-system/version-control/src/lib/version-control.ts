@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, model, resource } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, model, output } from '@angular/core';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -6,56 +6,42 @@ import { MatActionList, MatListModule } from '@angular/material/list';
 import { MatSelect } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { createSnackBarConfig, Snackbar } from '@atlasng/design-system/snackbar';
-import { saveAs } from 'file-saver';
-import { parse } from 'yaml';
 
-/** Number of download options at which the list becomes scrollable. */
-const SCROLLABLE_DOWNLOAD_OPTIONS_THRESHOLD = 12;
-
-/** URL of the asset that describes each known file format. */
-const FILE_FORMATS_URL = 'assets/file-formats.yaml';
-
-/** A downloadable representation of a version. */
-export interface VersionControlDownloadOption {
-  /** Displayed file format. */
-  fileFormat: string;
-  /** URL used to download the file. */
-  downloadUrl: string;
-}
-
-/** A version and the files available for it. */
-export interface VersionControlVersion {
+/**
+ * A version and the file formats available for it.
+ *
+ * `T` is the format type, so consumers can attach extra data such as a download URL to each
+ * format and get it back unchanged in the {@link VersionDownload} event.
+ */
+export interface VersionControlItem<T extends VersionControlFileFormat> {
   /** Displayed version identifier. */
-  version: string;
-  /** Files available for this version. */
-  downloadOptions: readonly VersionControlDownloadOption[];
+  label: string;
+  /** File formats available for this version, in display order. */
+  formats: T[];
 }
 
-/** Supporting copy for a file format. */
-export interface FileFormatDescription {
-  /** File format matched against a download option. */
-  fileFormat: string;
-  /** Supporting text displayed under the file format. */
-  supportingText: string;
+/** A file format offered for download. */
+export interface VersionControlFileFormat {
+  /** Displayed file format. */
+  label: string;
+  /** Supporting text displayed under the file format. Nothing is shown when it is empty. */
+  description: string;
+}
+
+/** Emitted when a file format is chosen for download. */
+export interface VersionDownload<T extends VersionControlFileFormat> {
+  /** Version the format belongs to. */
+  item: VersionControlItem<T>;
+  /** File format to download. */
+  format: T;
 }
 
 /**
- * Loads the file-format descriptions from the shared asset.
+ * Selects a version and requests a download of one of its file formats.
  *
- * @returns File formats and their supporting copy.
- * @throws When the asset cannot be fetched.
+ * The component does not download files itself. Choosing a format shows a confirmation
+ * snackbar and emits {@link VersionControl.download}, and the consumer performs the download.
  */
-async function loadFileFormats(): Promise<readonly FileFormatDescription[]> {
-  const response = await fetch(FILE_FORMATS_URL);
-  if (!response.ok) {
-    throw new Error(`Unable to load file-format descriptions: ${response.status}`);
-  }
-
-  const formats: unknown = parse(await response.text());
-  return Array.isArray(formats) ? (formats as FileFormatDescription[]) : [];
-}
-
-/** Selects a version and downloads one of the files available for it. */
 @Component({
   selector: 'ang-version-control',
   imports: [MatActionList, MatFormField, MatIcon, MatLabel, MatListModule, MatOption, MatSelect],
@@ -63,47 +49,30 @@ async function loadFileFormats(): Promise<readonly FileFormatDescription[]> {
   styleUrl: './version-control.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VersionControl {
+export class VersionControl<T extends VersionControlFileFormat = VersionControlFileFormat> {
+  /** Heading displayed beside the version selector. */
+  readonly tagline = input.required<string>();
+
+  /** Versions and their available file formats. */
+  readonly versions = input.required<readonly VersionControlItem<T>[]>();
+
+  /** Selected version, matched to {@link versions} by label. Defaults to the first version. */
+  readonly selectedVersion = model<VersionControlItem<T> | undefined>();
+
+  /** Emits the version and file format whenever a download option is chosen. */
+  readonly download = output<VersionDownload<T>>();
+
+  /** Selected version, falling back to the first version when none is selected or it is not found. */
+  protected readonly currentVersion = computed<VersionControlItem<T> | undefined>(() => {
+    const versions = this.versions();
+    return versions.find(({ label }) => label === this.selectedVersion()?.label) ?? versions[0];
+  });
+
   /** Snackbar service used for download confirmation. */
   readonly #snackbar = inject(MatSnackBar);
 
-  /** Versions and their available downloads. */
-  readonly versions = input.required<readonly VersionControlVersion[]>();
-
-  /** Supporting copy for each known file format, loaded from the file-format asset. */
-  protected readonly fileFormats = resource({ loader: loadFileFormats });
-
-  /** Selected version identifier, defaulting to the first supplied version. */
-  readonly selectedVersion = model<string>();
-
-  /** Currently selected version and its download options. */
-  protected readonly currentVersion = computed<VersionControlVersion | undefined>(() => {
-    const versions = this.versions();
-    return versions.find(({ version }) => version === this.selectedVersion()) ?? versions[0];
-  });
-
-  /** Whether the current version has enough download options to scroll the list. */
-  protected readonly scrollable = computed(
-    () => (this.currentVersion()?.downloadOptions.length ?? 0) >= SCROLLABLE_DOWNLOAD_OPTIONS_THRESHOLD,
-  );
-
-  /**
-   * Gets the supporting copy for a file format.
-   *
-   * @param fileFormat File format to look up.
-   * @returns Supporting text when the format is known.
-   */
-  protected descriptionFor(fileFormat: string): string | undefined {
-    const formats = this.fileFormats.hasValue() ? this.fileFormats.value() : [];
-    return formats.find((format) => format.fileFormat === fileFormat)?.supportingText;
-  }
-
-  /**
-   * Downloads a file from the url and shows a confirmation snackbar.
-   * @param url File url
-   */
-  download(url: string): void {
-    saveAs(url, url.split('/').pop());
+  /** Shows a snackbar confirming that a file was downloaded. */
+  openSnackbar(): void {
     this.#snackbar.openFromComponent(
       Snackbar,
       createSnackBarConfig('File downloaded', {

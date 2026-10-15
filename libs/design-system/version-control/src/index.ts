@@ -1,6 +1,7 @@
+export * from './lib/file-formats';
 export {
   VersionControl,
-  type FileFormatDescription,
-  type VersionControlDownloadOption,
-  type VersionControlVersion,
+  type VersionControlFileFormat,
+  type VersionControlItem,
+  type VersionDownload,
 } from './lib/version-control';
