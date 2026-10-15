@@ -58,9 +58,12 @@ describe('ScrollArea', () => {
       const viewport = scrollbar.adapter.viewportElement;
       Object.defineProperty(viewport, 'scrollHeight', { configurable: true, value: 1000 });
       Object.defineProperty(viewport, 'clientHeight', { configurable: true, value: 300 });
+      Object.defineProperty(viewport, 'scrollWidth', { configurable: true, value: 800 });
+      Object.defineProperty(viewport, 'clientWidth', { configurable: true, value: 400 });
 
-      const scrollTo = (top: number) => {
+      const scrollTo = (top: number, left = 0) => {
         viewport.scrollTop = top;
+        viewport.scrollLeft = left;
         fireEvent.scroll(viewport);
         result.fixture.detectChanges();
       };
@@ -92,12 +95,46 @@ describe('ScrollArea', () => {
       expect(host).not.toHaveClass('ang-scroll-area--fade-bottom');
     });
 
-    it('does not fade when the fade input is false', async () => {
-      const { host, scrollTo } = await setup('<ang-scroll-area [fade]="false">Content</ang-scroll-area>');
-      scrollTo(350);
+    it('fades only the end edge at the inline start of the content', async () => {
+      const { host, scrollTo } = await setup();
+      scrollTo(0, 0);
+
+      expect(host).not.toHaveClass('ang-scroll-area--fade-start');
+      expect(host).toHaveClass('ang-scroll-area--fade-end');
+    });
+
+    it('fades both inline edges in the middle of the content', async () => {
+      const { host, scrollTo } = await setup();
+      scrollTo(0, 200);
+
+      expect(host).toHaveClass('ang-scroll-area--fade-start');
+      expect(host).toHaveClass('ang-scroll-area--fade-end');
+    });
+
+    it('fades only the start edge at the inline end of the content', async () => {
+      const { host, scrollTo } = await setup();
+      scrollTo(0, 400);
+
+      expect(host).toHaveClass('ang-scroll-area--fade-start');
+      expect(host).not.toHaveClass('ang-scroll-area--fade-end');
+    });
+
+    it('treats negative right-to-left scroll offsets as distance from the inline start', async () => {
+      const { host, scrollTo } = await setup();
+      scrollTo(0, -400);
+
+      expect(host).toHaveClass('ang-scroll-area--fade-start');
+      expect(host).not.toHaveClass('ang-scroll-area--fade-end');
+    });
+
+    it('does not fade when disableFade is set', async () => {
+      const { host, scrollTo } = await setup('<ang-scroll-area disableFade>Content</ang-scroll-area>');
+      scrollTo(350, 200);
 
       expect(host).not.toHaveClass('ang-scroll-area--fade-top');
       expect(host).not.toHaveClass('ang-scroll-area--fade-bottom');
+      expect(host).not.toHaveClass('ang-scroll-area--fade-start');
+      expect(host).not.toHaveClass('ang-scroll-area--fade-end');
     });
   });
 });

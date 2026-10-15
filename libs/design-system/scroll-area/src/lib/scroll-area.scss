@@ -41,12 +41,22 @@
   // Sits above the scrolling content but below the scrollbars.
   > .ang-scroll-area--fade {
     position: absolute;
-    inset-inline: 0;
     z-index: 2;
-    height: token-utils.slot(fade-size, $config);
     pointer-events: none;
     opacity: 0;
     transition: opacity 150ms linear;
+  }
+
+  > .ang-scroll-area--fade-top-overlay,
+  > .ang-scroll-area--fade-bottom-overlay {
+    inset-inline: 0;
+    height: token-utils.slot(fade-size, $config);
+  }
+
+  > .ang-scroll-area--fade-start-overlay,
+  > .ang-scroll-area--fade-end-overlay {
+    inset-block: 0;
+    width: token-utils.slot(fade-size, $config);
   }
 
   > .ang-scroll-area--fade-top-overlay {
@@ -59,8 +69,29 @@
     background-image: fade-gradient(to top);
   }
 
+  // Gradients have no logical directions, so the horizontal fades flip in right-to-left layouts.
+  > .ang-scroll-area--fade-start-overlay {
+    inset-inline-start: 0;
+    background-image: fade-gradient(to right);
+
+    &:dir(rtl) {
+      background-image: fade-gradient(to left);
+    }
+  }
+
+  > .ang-scroll-area--fade-end-overlay {
+    inset-inline-end: 0;
+    background-image: fade-gradient(to left);
+
+    &:dir(rtl) {
+      background-image: fade-gradient(to right);
+    }
+  }
+
   &.ang-scroll-area--fade-top > .ang-scroll-area--fade-top-overlay,
-  &.ang-scroll-area--fade-bottom > .ang-scroll-area--fade-bottom-overlay {
+  &.ang-scroll-area--fade-bottom > .ang-scroll-area--fade-bottom-overlay,
+  &.ang-scroll-area--fade-start > .ang-scroll-area--fade-start-overlay,
+  &.ang-scroll-area--fade-end > .ang-scroll-area--fade-end-overlay {
     opacity: 1;
   }
 

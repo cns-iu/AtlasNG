@@ -45,7 +45,7 @@ const meta: Meta<ScrollArea> = {
     orientation: 'auto',
     visibility: 'hover',
     position: 'native',
-    fade: true,
+    disableFade: false,
   },
   argTypes: {
     orientation: {
@@ -63,9 +63,9 @@ const meta: Meta<ScrollArea> = {
       options: ['native', 'invertY', 'invertX', 'invertAll'] satisfies ScrollbarPosition[],
       description: 'Side of the container each scrollbar is placed on.',
     },
-    fade: {
+    disableFade: {
       control: 'boolean',
-      description: 'Whether to fade the top and bottom edges while there is more content in that direction.',
+      description: 'Whether to disable fade effects.',
     },
   },
   render: (args) => ({
@@ -91,7 +91,7 @@ type Story = StoryObj<ScrollArea>;
  */
 export const Default: Story = {};
 
-/** A row of cards that only scrolls horizontally. */
+/** A row of cards that only scrolls horizontally, with the start and end edges fading while there is more to scroll to. */
 export const Horizontal: Story = {
   args: { orientation: 'horizontal' },
   render: (args) => ({
@@ -116,7 +116,7 @@ export const Horizontal: Story = {
  * because the top fade would cover the sticky header.
  */
 export const Table: Story = {
-  args: { fade: false },
+  args: { disableFade: true },
   render: (args) => ({
     props: { ...args, rows: ROWS },
     template: `
