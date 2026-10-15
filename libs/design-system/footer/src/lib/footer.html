@@ -7,7 +7,7 @@
     </ng-content>
   </div>
 
-  <div class="ang-footer--socials">
+  <div class="ang-footer--social-icons">
     @for (social of socials(); track social) {
       @if (typeof social === 'string') {
         <ang-social-media-button class="ang-footer--social-icon" [id]="social" />

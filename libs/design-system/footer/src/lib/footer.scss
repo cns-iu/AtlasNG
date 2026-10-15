@@ -6,14 +6,16 @@
 .ang-footer {
   display: block;
   background: token-utils.slot(background-color, $config);
+  container-type: inline-size;
+  min-width: 15rem;
+  padding: 2.5rem;
 
   .ang-footer--container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-width: 20rem;
-    padding: 2.5rem;
     margin: 0 auto;
+    align-items: center;
   }
 
   .ang-footer--logo-container {
@@ -24,6 +26,7 @@
     justify-content: center;
     margin-bottom: 0.75rem;
     gap: 1rem;
+    width: 8rem;
 
     .ang-footer--logo {
       position: relative;
@@ -32,28 +35,30 @@
     }
   }
 
-  .ang-footer--socials {
+  .ang-footer--social-icons {
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
 
-    .ang-footer--social-icon {
-      height: 2.5rem;
-      margin: 0.25rem;
-    }
+  .ang-footer--social-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0.25rem;
   }
 
   .ang-footer--actions {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
+    display: flex;
     justify-content: center;
-    max-width: 18.75rem;
     margin: 0 auto;
     margin-bottom: 0.5rem;
+    height: 3rem;
+    align-items: center;
   }
 
   .ang-footer--action {
+    text-wrap: nowrap;
+
     @include mat.button-overrides(
       (
         text-label-text-font: token-utils.slot(action-font, $config),
@@ -74,15 +79,14 @@
     align-content: center;
     text-align: center;
     height: 3rem;
+    text-wrap: wrap;
   }
 
   @include breakpoints.breakpoint(medium) {
     .ang-footer--container {
-      display: grid;
-      grid-template-columns: repeat(3, auto);
-      align-items: start;
-      max-width: 80rem;
-      padding: 2.5rem;
+      flex-direction: row;
+      align-items: center;
+      max-width: 100rem;
     }
 
     .ang-footer--logo-container {
@@ -97,17 +101,11 @@
       }
     }
 
-    .ang-footer--socials {
-      align-items: flex-start;
-      margin: 0;
-    }
-
     .ang-footer--actions {
       margin: 0;
     }
 
     .ang-footer--copyright {
-      grid-column: 1 / -1;
       text-align: left;
     }
   }
