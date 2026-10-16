@@ -20,10 +20,7 @@
           "projects": ["design-system", "labs", "kg-explorer"],
           "target": "storybook"
         }
-      ],
-      "options": {
-        "port": 4400
-      }
+      ]
     }
   }
 }
