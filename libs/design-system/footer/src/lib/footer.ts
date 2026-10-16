@@ -1,7 +1,8 @@
-import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Directive, input, output, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 import { SocialMediaButton, SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 
@@ -31,7 +32,7 @@ export class FooterAction {}
  */
 @Component({
   selector: 'ang-footer',
-  imports: [NgTemplateOutlet, MatButtonModule, MatIconModule, SocialMediaButton, AnyLink, NgOptimizedImage],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, SocialMediaButton, AnyLink, NgOptimizedImage],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,9 +47,9 @@ export class Footer {
   /** The URL of the organization's logo. */
   readonly logoImage = input.required<string>();
   /** The name of the organization. */
-  readonly organization = input<string>();
+  readonly organization = input.required<string>();
   /** A command for navigating to the organization's link. */
-  readonly organizationLink = input<AnyLinkCommand>();
+  readonly organizationLink = input<AnyLinkCommand>('/');
   /** Year used for copyright purposes. */
   readonly copyrightYear = input<number>(new Date().getFullYear());
   /** An event emitted when the privacy policy link is clicked. */
