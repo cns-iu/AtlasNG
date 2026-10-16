@@ -6,15 +6,20 @@ Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasN
 
 ## Packages
 
-| Package                                                           | Description                                                                   |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| [`@atlasng/core`](libs/core/README.md)                            | Foundation layer: application-wide configuration, DI tokens, and providers    |
-| [`@atlasng/common`](libs/common/README.md)                        | Reusable directives, services, and utilities shared across libraries and apps |
-| [`@atlasng/cdk`](libs/cdk/README.md)                              | Low-level infrastructure for component authors                                |
-| [`@atlasng/analytics`](libs/analytics/README.md)                  | Consent-aware event tracking and permission management                        |
-| [`@atlasng/design-system`](libs/design-system/README.md)          | Angular Material–based components and Sass theming utilities                  |
-| [`@atlasng/labs`](libs/labs/README.md)                            | Experimental components without a stable API                                  |
-| [`@atlasng/kg-explorer`](libs/applications/kg-explorer/README.md) | Knowledge graph explorer application library                                  |
+| Package                                                                  | Description                                                                   |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`@atlasng/core`](libs/core/README.md)                                   | Foundation layer: application-wide configuration, DI tokens, and providers    |
+| [`@atlasng/common`](libs/common/README.md)                               | Reusable directives, services, and utilities shared across libraries and apps |
+| [`@atlasng/cdk`](libs/cdk/README.md)                                     | Low-level infrastructure for component authors                                |
+| [`@atlasng/analytics`](libs/analytics/README.md)                         | Consent-aware event tracking and permission management                        |
+| [`@atlasng/design-system`](libs/design-system/README.md)                 | Angular Material–based components and Sass theming utilities                  |
+| [`@atlasng/labs`](libs/labs/README.md)                                   | Experimental components without a stable API                                  |
+| [`@atlasng/kg-explorer`](libs/applications/kg-explorer/README.md)        | Knowledge graph explorer application library                                  |
+| [`@atlasng/nx-plugin`](libs/tooling/nx-plugin/README.md)                 | Nx plugin with shared generators, executors, inferred targets, and presets    |
+| [`@atlasng/eslint-plugin`](libs/tooling/eslint-plugin/README.md)         | Shared ESLint flat configurations                                             |
+| [`@atlasng/commitlint-config`](libs/tooling/commitlint-config/README.md) | Shared commitlint configuration with Nx project scopes                        |
+| [`@atlasng/prettier-config`](libs/tooling/prettier-config/README.md)     | Shared Prettier configuration                                                 |
+| [`@atlasng/tsconfig`](libs/tooling/tsconfig/README.md)                   | Shared TypeScript configurations                                              |
 
 ## Development
 
@@ -96,12 +101,13 @@ Where the workflows are hosted long term and how other repos pin versions is sti
 
 ## Releasing
 
-Packages are released with [Nx Release](https://nx.dev/docs/guides/nx-release) in two release groups configured in [nx.json](nx.json):
+Packages are released with [Nx Release](https://nx.dev/docs/guides/nx-release) in three release groups configured in [nx.json](nx.json):
 
 | Group          | Projects                                                      | Versioning                 | Git tag               |
 | -------------- | ------------------------------------------------------------- | -------------------------- | --------------------- |
 | `libraries`    | `core`, `common`, `cdk`, `analytics`, `design-system`, `labs` | Fixed (one shared version) | `v<version>`          |
 | `applications` | `libs/applications/*` (for example `kg-explorer`)             | Independent                | `<project>@<version>` |
+| `tooling`      | `libs/tooling/*` (for example `nx-plugin`)                    | Independent                | `<project>@<version>` |
 
 Until 1.0.0, every release is a patch release:
 
@@ -114,7 +120,7 @@ npx nx release patch --skip-publish --groups=libraries
 npx nx release patch --skip-publish --projects=kg-explorer
 ```
 
-This bumps versions, prepends to each project's `CHANGELOG.md`, commits, and tags. Push the release commit and tags yourself (`git push origin main <tags>`); releases that include an application library push automatically, because Nx needs the tag on GitHub to create GitHub Releases for application libraries (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml) (a caller of [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group, with notes from `npx nx run @atlasng/monorepo:release-notes --tag=v<version> --output=<file>`. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
+This bumps versions, prepends to each project's `CHANGELOG.md`, commits, and tags. Push the release commit and tags yourself (`git push origin main <tags>`); releases that include an application or tooling library push automatically, because Nx needs the tag on GitHub to create GitHub Releases for independently versioned projects (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml) (a caller of [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group, with notes from `npx nx run @atlasng/monorepo:release-notes --tag=v<version> --output=<file>`. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
 
 ### New packages
 
@@ -126,7 +132,7 @@ npx nx run @atlasng/monorepo:bootstrap-npm-packages --dryRun  # list what would 
 npx nx run @atlasng/monorepo:bootstrap-npm-packages
 ```
 
-The [`bootstrap-npm-packages` executor](libs/tooling/nx-plugin/README.md#bootstrap-npm-packages) only touches packages that are not on npm yet, so it is safe to rerun.
+The [`bootstrap-npm-packages` executor](libs/tooling/nx-plugin/README.md#bootstrap-npm-packages) only touches packages that are not on npm yet. If `npm publish` succeeds but `npm trust` fails, a rerun skips that package, so run `npm trust github` for it manually.
 
 ## Contributing
 

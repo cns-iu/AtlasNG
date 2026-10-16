@@ -41,6 +41,7 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  HUSKY: 0
 
 jobs:
   publish:
@@ -69,11 +70,12 @@ jobs:
         run: npx nx report
 
       # nx release publish reads the dist manifests (version.manifestRootsToUpdate) before
-      # running any tasks, so the packages must be built up front.
+      # running any tasks, so the packages must be built up front. The build skips the Nx
+      # cache for the same reason the npm cache stays off: published artifacts must be fresh.
       - name: Build packages
         env:
           BUILD_PROJECTS: ${{ inputs.build-projects }}
-        run: npx nx run-many -t build --projects="$BUILD_PROJECTS"
+        run: npx nx run-many -t build --projects="$BUILD_PROJECTS" --skip-nx-cache
 
       # Tags are either v<version> (fixed group) or <project>@<version> (independent project);
       # only the tagged group or project is published. A manual run on a branch publishes every

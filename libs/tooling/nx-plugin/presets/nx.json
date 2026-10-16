@@ -79,7 +79,14 @@
     },
     "lint": {
       "cache": true,
-      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.mjs",
+        {
+          "externalDependencies": ["eslint", "angular-eslint", "typescript-eslint"]
+        }
+      ],
       "configurations": {
         "fix": {
           "fix": true

@@ -10,7 +10,7 @@ Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasN
 npm install @atlasng/design-system
 ```
 
-The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@angular/youtube-player`, `@swimlane/ngx-datatable`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically.
+The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player` and `@swimlane/ngx-datatable` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
 
 ## Setup
 
@@ -35,16 +35,17 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/content/content-paragraph`           | `ContentParagraph`                                                        |
 | `@atlasng/design-system/content/content-section`             | `ContentSection`                                                          |
 | `@atlasng/design-system/content/heading`                     | `Heading`                                                                 |
-| `@atlasng/design-system/cookie-banner`                       | `CookieBanner` and its content directives                                 |
+| `@atlasng/design-system/cookie-banner`                       | `CookieBanner`, `CookieBannerContainer`, and its content directives       |
 | `@atlasng/design-system/error-page`                          | `ErrorPage` and its content directives, `NotFoundPage`, `ServerErrorPage` |
-| `@atlasng/design-system/footer`                              | `Footer`                                                                  |
+| `@atlasng/design-system/footer`                              | `Footer`, `FooterLogo`, `FooterAction`                                    |
 | `@atlasng/design-system/indicators/end-of-results-indicator` | `EndOfResultsIndicator`                                                   |
 | `@atlasng/design-system/indicators/no-results-indicator`     | `NoResultsIndicator`                                                      |
 | `@atlasng/design-system/indicators/notice`                   | `Notice`                                                                  |
 | `@atlasng/design-system/indicators/results-indicator`        | `ResultsIndicator`                                                        |
 | `@atlasng/design-system/links/link-snippet`                  | `LinkSnippet`                                                             |
 | `@atlasng/design-system/links/text-link`                     | `TextLink`                                                                |
-| `@atlasng/design-system/snackbar`                            | `Snackbar`                                                                |
+| `@atlasng/design-system/search-list`                         | `SearchList`, `SearchListOption`                                          |
+| `@atlasng/design-system/snackbar`                            | `Snackbar`, `createSnackBarConfig`, `SnackBarConfig`, `SnackBarData`      |
 | `@atlasng/design-system/table`                               | `Table` and its column and template APIs                                  |
 | `@atlasng/design-system/table/columns`                       | Ready-made header and cell definitions                                    |
 | `@atlasng/design-system/table-of-contents`                   | `TableOfContents`                                                         |
@@ -64,7 +65,7 @@ export class Maintenance {}
 
 A few components with notable options:
 
-- **Table:** `Table` wraps `@swimlane/ngx-datatable`. Text and number headers, plus checkbox, number, link, and code cells, are available from `@atlasng/design-system/table/columns`. Tables default to the `stripes` appearance and also support `grid`, `vertical-rules`, and `none`.
+- **Table:** `Table` wraps `@swimlane/ngx-datatable`. Text and number headers, plus checkbox, number, link, and code cells, are available from `@atlasng/design-system/table/columns`. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
 
 ## Sass API

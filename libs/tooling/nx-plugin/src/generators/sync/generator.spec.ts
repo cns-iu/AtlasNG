@@ -141,6 +141,7 @@ describe('sync generator', () => {
       addProjectConfiguration(tree, 'zeta', { root: 'libs/zeta' });
       addProjectConfiguration(tree, 'Alpha', { root: 'apps/alpha' });
       addProjectConfiguration(tree, 'beta', { root: 'libs/beta' });
+      addProjectConfiguration(tree, '@org/root', { root: '.' });
       writeJson(tree, '.vscode/settings.json', {
         'editor.formatOnSave': true,
         'conventionalCommits.scopes': ['removed-project'],
@@ -151,7 +152,7 @@ describe('sync generator', () => {
       await syncGenerator(tree);
 
       const settings = readJson(tree, '.vscode/settings.json');
-      expect(settings['conventionalCommits.scopes']).toEqual(['Alpha', 'beta', 'release', 'zeta']);
+      expect(settings['conventionalCommits.scopes']).toEqual(['Alpha', 'beta', 'release', 'root', 'zeta']);
       expect(settings['editor.formatOnSave']).toBe(true);
       expect(settings['nxConsole.generatorAllowlist'][0]).toBe('@local/plugin:*');
       expect(settings['nxConsole.generatorAllowlist']).toContain('@nx/angular:*');
