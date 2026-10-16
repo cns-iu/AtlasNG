@@ -4,4 +4,5 @@ export {
   provideAnalyticsPermissionsManagerConfig,
   provideInitialAnalyticsPermissions,
   type AnalyticsPermissionsManagerConfig,
+  type AnalyticsPermissionsSource,
 } from './lib/permissions-manager';

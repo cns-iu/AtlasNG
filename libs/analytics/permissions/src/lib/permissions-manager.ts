@@ -1,4 +1,4 @@
-import { DestroyRef, inject, InjectionToken, Provider, Service, signal } from '@angular/core';
+import { computed, DestroyRef, inject, InjectionToken, Provider, Service, signal } from '@angular/core';
 import { createConfigurationToken, LOCAL_STORAGE, type, WINDOW } from '@atlasng/core';
 import { AnalyticsPermissions } from './permissions';
 
@@ -27,6 +27,39 @@ export interface AnalyticsPermissionsManagerConfig {
    * Whether `storage` events should be observed for cross-tab synchronization.
    */
   storageEvents?: boolean;
+}
+
+/**
+ * Where the current permissions of an {@link AnalyticsPermissionsManager} came from.
+ *
+ * - `'initial'`: no decision has been made; the initial permissions are active.
+ * - `'storage'`: loaded from the configured storage backend.
+ * - `'local'`: set through the manager in this browser context.
+ * - `'external'`: received from another tab or application.
+ */
+export type AnalyticsPermissionsSource = 'initial' | 'storage' | 'local' | 'external';
+
+/** Detail payload of the custom permissions change event. */
+interface PermissionsChangeEventDetail {
+  /** Serialized permissions. */
+  permissions: string;
+  /** Identifies the manager that dispatched the event. */
+  sender: symbol;
+}
+
+/**
+ * Checks whether a value is a {@link PermissionsChangeEventDetail}.
+ *
+ * @param value Value to check.
+ * @returns `true` when the value has a string `permissions` and a symbol `sender`.
+ */
+function isPermissionsChangeEventDetail(value: unknown): value is PermissionsChangeEventDetail {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as PermissionsChangeEventDetail).permissions === 'string' &&
+    typeof (value as PermissionsChangeEventDetail).sender === 'symbol'
+  );
 }
 
 /** Permission manager configuration. */
@@ -94,21 +127,27 @@ export class AnalyticsPermissionsManager {
    */
   readonly #permissions = signal(this.#initialPermissions, { equal: (a, b) => a.equals(b) });
 
-  /** Writable decision state signal. */
-  readonly #decided = signal(false);
+  /** Writable permissions source signal. */
+  readonly #permissionsSource = signal<AnalyticsPermissionsSource>('initial');
+
+  /** Identifies change events dispatched by this manager so it can ignore its own broadcasts. */
+  readonly #sender = Symbol('AnalyticsPermissionsManager');
 
   /** Current permissions. */
   readonly permissions = this.#permissions.asReadonly();
 
   /**
-   * Whether the user has made a consent decision.
+   * Where the current permissions came from.
    *
-   * `true` once permissions are loaded from storage, set through this manager,
-   * or received from another tab or application. It returns to `false` when the
-   * stored decision is removed in another tab. Use it to decide whether to show
-   * a cookie banner.
+   * Returns to `'initial'` when the stored decision is removed in another tab.
    */
-  readonly decided = this.#decided.asReadonly();
+  readonly permissionsSource = this.#permissionsSource.asReadonly();
+
+  /**
+   * Whether the user has made a consent decision, i.e. {@link permissionsSource} is not `'initial'`.
+   * Use it to decide whether to show a cookie banner.
+   */
+  readonly hasDecision = computed(() => this.#permissionsSource() !== 'initial');
 
   /** Initializes event listeners and attempts initial storage sync. */
   constructor() {
@@ -145,12 +184,12 @@ export class AnalyticsPermissionsManager {
   updatePermissions(updater: (permissions: AnalyticsPermissions) => AnalyticsPermissions): void {
     const permissions = this.#permissions();
     const newPermissions = updater(permissions);
-    if (newPermissions.equals(permissions) && this.#decided()) {
+    if (newPermissions.equals(permissions) && this.hasDecision()) {
       return;
     }
 
     this.#permissions.set(newPermissions);
-    this.#decided.set(true);
+    this.#permissionsSource.set('local');
     this.#broadcastPermissionsChange();
     this.syncToStorage();
   }
@@ -200,7 +239,7 @@ export class AnalyticsPermissionsManager {
     }
 
     this.#permissions.set(newPermissions);
-    this.#decided.set(true);
+    this.#permissionsSource.set('storage');
     if (broadcastChange) {
       this.#broadcastPermissionsChange();
     }
@@ -237,8 +276,11 @@ export class AnalyticsPermissionsManager {
       return;
     }
 
-    const permissions = JSON.stringify(this.permissions());
-    const event = new CustomEvent(changeEventName, { detail: permissions });
+    const detail: PermissionsChangeEventDetail = {
+      permissions: JSON.stringify(this.permissions()),
+      sender: this.#sender,
+    };
+    const event = new CustomEvent(changeEventName, { detail });
     this.#window.dispatchEvent(event);
   }
 
@@ -260,20 +302,24 @@ export class AnalyticsPermissionsManager {
       }
 
       value = event.newValue;
-    } else if (event instanceof CustomEvent) {
-      value = event.detail;
+    } else if (event instanceof CustomEvent && isPermissionsChangeEventDetail(event.detail)) {
+      if (event.detail.sender === this.#sender) {
+        return;
+      }
+
+      value = event.detail.permissions;
     }
 
     const newPermissions = typeof value === 'string' && AnalyticsPermissions.tryFromJSON(value, this.#permissions());
     if (newPermissions) {
       this.#permissions.set(newPermissions);
-      this.#decided.set(true);
+      this.#permissionsSource.set('external');
     }
   }
 
   /** Restores the initial permissions after the stored decision was removed in another browser context. */
   #resetDecision(): void {
     this.#permissions.set(this.#initialPermissions);
-    this.#decided.set(false);
+    this.#permissionsSource.set('initial');
   }
 }
