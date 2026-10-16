@@ -4,6 +4,7 @@ import {
   DOCUMENT,
   LOCAL_STORAGE,
   LOCATION,
+  NAVIGATION,
   RESIZE_OBSERVER,
   SESSION_STORAGE,
   WINDOW,
@@ -104,6 +105,35 @@ describe('browser tokens', () => {
       });
 
       expect(TestBed.inject(CUSTOM_ELEMENT_REGISTRY)).toBeUndefined();
+    });
+  });
+
+  describe('NAVIGATION', () => {
+    it('should return undefined when no window is available', () => {
+      configureWithoutWindow();
+
+      expect(TestBed.inject(NAVIGATION)).toBeUndefined();
+    });
+
+    it('should return window.navigation when available', () => {
+      const fakeNavigation = new EventTarget() as Navigation;
+      const fakeWindow = { navigation: fakeNavigation } as unknown as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(NAVIGATION)).toBe(fakeNavigation);
+    });
+
+    it('should return undefined when the Navigation API is missing', () => {
+      const fakeWindow = {} as Window;
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: WINDOW, useValue: fakeWindow }],
+      });
+
+      expect(TestBed.inject(NAVIGATION)).toBeUndefined();
     });
   });
 

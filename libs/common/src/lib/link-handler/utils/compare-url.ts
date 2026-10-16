@@ -26,6 +26,20 @@ function stripLeadingHash(fragment: string): string {
 }
 
 /**
+ * Decode a URI component, falling back to the raw value when it contains malformed escapes.
+ *
+ * @param value Value to decode
+ * @returns The decoded value, or `value` unchanged when it cannot be decoded
+ */
+function safeDecodeURIComponent(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+/**
  * Test whether a set could possibly be a subset of another set purely based on their sizes.
  *
  * @param size1 Size of the first set
@@ -191,10 +205,10 @@ export function isUrlActive(targetUrl: string, currentUrl: string, options: IsAc
   const base = 'http://localhost';
   const target = new URL(targetUrl, base);
   const current = new URL(currentUrl, base);
-  const targetPathname = decodeURIComponent(target.pathname);
-  const currentPathname = decodeURIComponent(current.pathname);
-  const targetHash = decodeURIComponent(target.hash);
-  const currentHash = decodeURIComponent(current.hash);
+  const targetPathname = safeDecodeURIComponent(target.pathname);
+  const currentPathname = safeDecodeURIComponent(current.pathname);
+  const targetHash = safeDecodeURIComponent(target.hash);
+  const currentHash = safeDecodeURIComponent(current.hash);
   const sameOrigin = target.origin === current.origin || target.origin === base;
 
   return (

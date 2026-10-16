@@ -1,5 +1,10 @@
 export { AnyLink } from './lib/any-link/any-link';
-export { AnyLinkActive, type AnyLinkActiveClassList, type AnyLinkActiveOptions } from './lib/any-link/any-link-active';
+export {
+  AnyLinkActive,
+  type AnyLinkActiveClassList,
+  type AnyLinkActiveOptions,
+  type AriaCurrent,
+} from './lib/any-link/any-link-active';
 export { commandAttribute, isAnyLinkCommand, type AnyLinkCommand } from './lib/any-link/any-link-command';
 export { IdGenerator, provideIdGeneratorConfig, type IdGeneratorConfig } from './lib/id-generator';
 export {
@@ -10,6 +15,7 @@ export {
   type PreparedLink,
 } from './lib/link-handler/handler';
 export {
+  LinkHandlerFeatureKind,
   provideLinkHandler,
   withCustomHandler,
   withRouterHandler,

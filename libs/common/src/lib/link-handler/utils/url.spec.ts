@@ -1,5 +1,5 @@
 import type { UrlTree } from '@angular/router';
-import { applyQueryParamsAndFragmentToUrl, isUrlTree, tryParseAbsoluteUrl } from './url';
+import { applyQueryParamsAndFragmentToUrl, isSafeNavigationUrl, isUrlTree, tryParseAbsoluteUrl } from './url';
 
 const BASE_URL = 'https://example.com/path';
 
@@ -82,6 +82,27 @@ describe('applyQueryParamsAndFragmentToUrl', () => {
     expect(url.hash).toBe('#old');
   });
 
+  it('drops null and undefined query params', () => {
+    const url = new URL(`${BASE_URL}?existing=1`);
+
+    applyQueryParamsAndFragmentToUrl(url, {
+      queryParams: { next: '2', empty: null, missing: undefined },
+    });
+
+    expect(url.toString()).toBe(`${BASE_URL}?next=2`);
+  });
+
+  it('removes existing query params set to null when merging', () => {
+    const url = new URL(`${BASE_URL}?existing=1&keep=2`);
+
+    applyQueryParamsAndFragmentToUrl(url, {
+      queryParamsHandling: 'merge',
+      queryParams: { existing: null, other: undefined },
+    });
+
+    expect(url.toString()).toBe(`${BASE_URL}?keep=2`);
+  });
+
   it('preserves query params when queryParamsHandling is preserve', () => {
     const url = new URL(`${BASE_URL}?existing=1#old`);
 
@@ -108,5 +129,34 @@ describe('applyQueryParamsAndFragmentToUrl', () => {
     const urlTreeLike = { root: {}, queryParams: {}, fragment: null } as UrlTree;
 
     expect(isUrlTree(urlTreeLike)).toBe(true);
+  });
+});
+
+describe('isSafeNavigationUrl', () => {
+  it.each([
+    '/relative',
+    'relative/path',
+    '?query',
+    '#fragment',
+    BASE_URL,
+    'http://example.com',
+    'mailto:a@b.c',
+    'tel:+1',
+  ])('accepts %s', (href) => {
+    expect(isSafeNavigationUrl(href)).toBe(true);
+  });
+
+  it.each([
+    'javascript:alert(1)',
+    ' JavaScript:alert(1)',
+    'java\tscript:alert(1)',
+    'data:text/html,<p>x</p>',
+    'vbscript:x',
+  ])('rejects %s', (href) => {
+    expect(isSafeNavigationUrl(href)).toBe(false);
+  });
+
+  it('rejects URLs that cannot be parsed', () => {
+    expect(isSafeNavigationUrl('http://[invalid')).toBe(false);
   });
 });
