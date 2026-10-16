@@ -8,13 +8,22 @@ Consent-aware analytics for Angular applications. Every event belongs to a conse
 npm install @atlasng/analytics
 ```
 
+The default backend (`@atlasng/analytics/default-backend`) also needs the `analytics` and `qs` packages. They are optional peer dependencies, so install them only if you use `withDefaultBackend()`:
+
+```bash
+npm install analytics qs
+```
+
+Apps that only use `withCustomBackend()` don't need them.
+
 ## Entry points
 
-| Import path                      | Contents                                                                 |
-| -------------------------------- | ------------------------------------------------------------------------ |
-| `@atlasng/analytics`             | `provideAnalytics`, the `Analytics` service, tracking directives, scopes |
-| `@atlasng/analytics/events`      | Event definitions, categories, and the built-in `CoreEvents`             |
-| `@atlasng/analytics/permissions` | `AnalyticsPermissions` and `AnalyticsPermissionsManager`                 |
+| Import path                          | Contents                                                                 |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `@atlasng/analytics`                 | `provideAnalytics`, the `Analytics` service, tracking directives, scopes |
+| `@atlasng/analytics/events`          | Event definitions, categories, and the built-in `CoreEvents`             |
+| `@atlasng/analytics/permissions`     | `AnalyticsPermissions` and `AnalyticsPermissionsManager`                 |
+| `@atlasng/analytics/default-backend` | `withDefaultBackend` and related types. Requires `analytics` and `qs`    |
 
 ## Usage
 
@@ -23,7 +32,8 @@ npm install @atlasng/analytics
 Register analytics once at bootstrap. Exactly one backend is required, either `withDefaultBackend()` or `withCustomBackend()`; development builds throw an error if none or both are provided.
 
 ```ts
-import { provideAnalytics, withDefaultBackend, withGlobalErrorHandler } from '@atlasng/analytics';
+import { provideAnalytics, withGlobalErrorHandler } from '@atlasng/analytics';
+import { withDefaultBackend } from '@atlasng/analytics/default-backend';
 
 bootstrapApplication(App, {
   providers: [
@@ -36,15 +46,15 @@ bootstrapApplication(App, {
 });
 ```
 
-| Feature                                 | Purpose                                                                                      |
-| --------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `withDefaultBackend(config)`            | Sends events to `config.endpoint` as query parameters                                        |
-| `withCustomBackend(factory)`            | Replaces the backend with any object implementing `AnalyticsBackend`                         |
-| `withPermissionsConfig(config)`         | Configures consent storage and cross-tab synchronization                                     |
-| `withInitialPermissions(permissions)`   | Sets the permissions used until a consent decision is loaded or made                         |
-| `withPermissionedStorageConfig(config)` | Configures the backing storage of `AnalyticsPermissionedStorage`                             |
-| `withPermissionedStorageKeys(keys)`     | Registers keys that `AnalyticsPermissionedStorage` persists while their category is granted  |
-| `withGlobalErrorHandler()`              | Installs an `ErrorHandler` that logs uncaught errors (and prints them to the console in dev) |
+| Feature                                 | Purpose                                                                                           |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `withDefaultBackend(config)`            | Sends events to `config.endpoint` as query parameters (from `@atlasng/analytics/default-backend`) |
+| `withCustomBackend(factory)`            | Replaces the backend with any object implementing `AnalyticsBackend`                              |
+| `withPermissionsConfig(config)`         | Configures consent storage and cross-tab synchronization                                          |
+| `withInitialPermissions(permissions)`   | Sets the permissions used until a consent decision is loaded or made                              |
+| `withPermissionedStorageConfig(config)` | Configures the backing storage of `AnalyticsPermissionedStorage`                                  |
+| `withPermissionedStorageKeys(keys)`     | Registers keys that `AnalyticsPermissionedStorage` persists while their category is granted       |
+| `withGlobalErrorHandler()`              | Installs an `ErrorHandler` that logs uncaught errors (and prints them to the console in dev)      |
 
 The default backend accepts these options (typed as `DefaultAnalyticsBackendConfig`):
 
@@ -60,7 +70,7 @@ The default backend accepts these options (typed as `DefaultAnalyticsBackendConf
 The default backend drops every `page`, `track`, and `identify` call that wasn't made through it, including the calls the `analytics` package makes for URL parameters (see [Anonymous ID](#anonymous-id)). A plugin added through `plugins` that sends its own calls must mark them as safe with `getDefaultBackendEventFilterMethods()`:
 
 ```ts
-import { getDefaultBackendEventFilterMethods } from '@atlasng/analytics';
+import { getDefaultBackendEventFilterMethods } from '@atlasng/analytics/default-backend';
 import { AnalyticsEventCategory, CoreEvents, createAnalyticsEvent } from '@atlasng/analytics/events';
 import { AnalyticsPlugin } from 'analytics';
 
@@ -133,7 +143,8 @@ By default, consent is saved to `localStorage` and kept in sync across tabs and 
 `AnalyticsPermissionedStorage` keeps values in memory and persists only the keys registered with `withPermissionedStorageKeys()`, and only while their consent category is granted. Persisted values are JSON-encoded. When consent is revoked, a value is removed from storage and kept in memory again. A key with a `generate` function creates its value on first read and ignores writes. The default backend uses this for the anonymous ID.
 
 ```ts
-import { provideAnalytics, withDefaultBackend, withPermissionedStorageKeys } from '@atlasng/analytics';
+import { provideAnalytics, withPermissionedStorageKeys } from '@atlasng/analytics';
+import { withDefaultBackend } from '@atlasng/analytics/default-backend';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 
 provideAnalytics(

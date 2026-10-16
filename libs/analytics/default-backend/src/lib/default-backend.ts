@@ -1,8 +1,7 @@
 import { inject } from '@angular/core';
 import { AnalyticsPermissionedStorage } from '@atlasng/analytics/permissions';
 import { Analytics, AnalyticsInstance, AnalyticsPlugin } from 'analytics';
-import { ANALYTICS_CONFIG } from '../analytics';
-import { AnalyticsBackend } from '../backend';
+import { ANALYTICS_CONFIG, AnalyticsBackend } from '@atlasng/analytics';
 import { eventFilterPlugin, EventFilterPluginConfig, getDefaultBackendEventFilterMethods } from './event-filter-plugin';
 import { telemetryPlugin, TelemetryPluginConfig } from './telemetry-plugin';
 

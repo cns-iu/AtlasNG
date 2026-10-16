@@ -1,10 +1,5 @@
 export { Analytics, ANALYTICS_CONFIG, type AnalyticsConfig } from './lib/analytics';
 export { ANALYTICS_BACKEND, type AnalyticsBackend } from './lib/backend';
-export { type DefaultAnalyticsBackendConfig } from './lib/default-backend/default-backend';
-export {
-  getDefaultBackendEventFilterMethods,
-  type DefaultBackendEventFilterMethods,
-} from './lib/default-backend/event-filter-plugin';
 export {
   TrackBlur,
   TrackChange,
@@ -25,7 +20,6 @@ export {
   AnalyticsFeatureKind,
   provideAnalytics,
   withCustomBackend,
-  withDefaultBackend,
   withGlobalErrorHandler,
   withInitialPermissions,
   withPermissionedStorageConfig,

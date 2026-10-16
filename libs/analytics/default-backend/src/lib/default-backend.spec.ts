@@ -10,7 +10,7 @@ import {
 import { LOCAL_STORAGE } from '@atlasng/core';
 import { Analytics, AnalyticsPlugin } from 'analytics';
 import { parse } from 'qs';
-import { ANALYTICS_CONFIG } from '../analytics';
+import { ANALYTICS_CONFIG } from '@atlasng/analytics';
 import { ANONYMOUS_ID_KEY, ANONYMOUS_ID_STORAGE_KEY, ANONYMOUS_ID_STORAGE_KEYS } from './anonymous-id';
 import { DefaultAnalyticsBackendConfig, defaultBackendFactory } from './default-backend';
 import { DefaultBackendEventFilterMethods } from './event-filter-plugin';

@@ -11,8 +11,6 @@ import {
 } from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG, AnalyticsConfig } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
-import { ANONYMOUS_ID_STORAGE_KEYS } from './default-backend/anonymous-id';
-import { DefaultAnalyticsBackendConfig, defaultBackendFactory } from './default-backend/default-backend';
 import { AnalyticsErrorHandler } from './features/error-handler';
 
 /** Represents a feature that can be added to the analytics configuration. */
@@ -27,7 +25,7 @@ export interface AnalyticsFeature {
 export enum AnalyticsFeatureKind {
   /** A custom backend added with {@link withCustomBackend}. */
   CustomBackend,
-  /** The default backend added with {@link withDefaultBackend}. */
+  /** The default backend added with `withDefaultBackend` from `@atlasng/analytics/default-backend`. */
   DefaultBackend,
   /** Permissions manager configuration added with {@link withPermissionsConfig}. */
   PermissionsManagerConfiguration,
@@ -57,25 +55,6 @@ export function withCustomBackend(backendFactory: () => AnalyticsBackend): Analy
         provide: ANALYTICS_BACKEND,
         useFactory: backendFactory,
       },
-    ],
-  };
-}
-
-/**
- * Add the default analytics backend provided by this library.
- *
- * @param config Endpoint, transport, filtering, and plugin options for the default backend.
- * @returns The default backend feature.
- */
-export function withDefaultBackend(config: DefaultAnalyticsBackendConfig): AnalyticsFeature {
-  return {
-    kind: AnalyticsFeatureKind.DefaultBackend,
-    providers: [
-      {
-        provide: ANALYTICS_BACKEND,
-        useFactory: () => defaultBackendFactory(config),
-      },
-      provideAnalyticsPermissionedStorageKeys(ANONYMOUS_ID_STORAGE_KEYS),
     ],
   };
 }
@@ -186,7 +165,7 @@ function checkBackendConfiguration(features: AnalyticsFeature[]): void {
     throw new Error('Cannot provide both a custom analytics backend and the default backend. Please choose one.');
   } else if (customBackends.length === 0 && !hasDefaultBackend) {
     throw new Error(
-      'No analytics backend was provided. Please provide a backend using withDefaultBackend() or withCustomBackend().',
+      'No analytics backend was provided. Please provide a backend using withDefaultBackend() from @atlasng/analytics/default-backend or withCustomBackend().',
     );
   }
 }
