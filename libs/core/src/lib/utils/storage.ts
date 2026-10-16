@@ -26,7 +26,7 @@ export function isStorageAvailable(getStorage: () => Storage): boolean {
  * reports failures through its return values instead. When no storage is provided, for example
  * during server-side rendering, every read returns an empty result and every write fails.
  */
-export class SafeStorage {
+export class SafeStorage implements Storage {
   /** Wrapped storage, or `undefined` when unavailable. */
   readonly #storage: Storage | undefined;
 
@@ -46,7 +46,7 @@ export class SafeStorage {
    * @param storage Storage to wrap, or `undefined` when unavailable
    */
   constructor(storage: Storage | undefined) {
-    this.#storage = storage;
+    this.#storage = storage instanceof SafeStorage ? storage.#storage : storage;
   }
 
   /**
