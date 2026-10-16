@@ -31,13 +31,19 @@ export function headingLevelAttribute(value: number | string): HeadingLevel {
   imports: [NgTemplateOutlet],
   templateUrl: './heading.html',
   styleUrl: './heading.scss',
-  host: { class: 'ang-heading' },
+  host: {
+    class: 'ang-heading',
+    '[attr.id]': 'null',
+  },
 })
 export class Heading {
   /** Native heading level used to select the rendered `h1` through `h6` element. */
   readonly level = input.required({ transform: headingLevelAttribute });
 
-  /** Optional ID applied to the rendered heading element. */
+  /**
+   * Optional ID applied to the rendered heading element.
+   * The ID is never applied to the host element, so a static `id` attribute does not create duplicate IDs.
+   */
   readonly id = input<string>();
 
   /** Fallback text displayed when no content is projected into the component. */

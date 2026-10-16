@@ -134,9 +134,13 @@
       "cache": true,
       "inputs": [
         "default",
+        "^default",
         "{workspaceRoot}/eslint.config.mjs",
         "{workspaceRoot}/libs/tooling/eslint-plugin/index.js",
-        "{workspaceRoot}/libs/tooling/eslint-plugin/configs/*.js"
+        "{workspaceRoot}/libs/tooling/eslint-plugin/configs/*.js",
+        {
+          "externalDependencies": ["eslint", "angular-eslint", "typescript-eslint"]
+        }
       ],
       "configurations": {
         "fix": {

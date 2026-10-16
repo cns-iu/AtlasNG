@@ -27,7 +27,8 @@ export class FooterLogo {}
 export class FooterAction {}
 
 /**
- * Bottom section of a webpage, providing essential information and navigation options
+ * Bottom section of a webpage, providing essential information and navigation options.
+ * The content is wrapped in a `<footer>` element, which is exposed as the `contentinfo` landmark.
  */
 @Component({
   selector: 'ang-footer',

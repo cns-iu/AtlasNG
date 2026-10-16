@@ -10,7 +10,7 @@
     <div class="ang-basic-profile-card--name">{{ name() }}</div>
   }
   <div class="ang-basic-profile-card--descriptions">
-    @for (desc of description(); track desc) {
+    @for (desc of description(); track $index) {
       <p class="ang-basic-profile-card--description">{{ desc }}</p>
     }
   </div>

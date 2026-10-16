@@ -47,4 +47,10 @@ describe('BasicProfileCard', () => {
     expect(screen.getByText('Accessibility advocate')).toBeVisible();
     expect(screen.getByText('Public speaker')).toBeVisible();
   });
+
+  it('renders repeated description lines', async () => {
+    await setup({ description: ['Researcher', 'Researcher'] });
+
+    expect(screen.getAllByText('Researcher')).toHaveLength(2);
+  });
 });

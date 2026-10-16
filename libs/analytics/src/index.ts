@@ -17,10 +17,13 @@ export { MultiTrackEvent, TrackEvent, type AnalyticsEventTrackingDef } from './l
 export { payloadAttribute, triggersAttribute } from './lib/directives/track-event-transforms';
 export { initializeTrackEvent } from './lib/directives/track-event/initialize-track-event';
 export {
+  AnalyticsFeatureKind,
   provideAnalytics,
   withCustomBackend,
-  withDefaultBackend,
   withGlobalErrorHandler,
+  withInitialPermissions,
+  withPermissionedStorageConfig,
+  withPermissionedStorageKeys,
   withPermissionsConfig,
   type AnalyticsFeature,
 } from './lib/provider';

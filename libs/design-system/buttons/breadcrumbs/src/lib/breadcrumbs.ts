@@ -10,6 +10,13 @@ export interface BreadcrumbItem {
   command?: AnyLinkCommand;
 }
 
+/**
+ * Breadcrumb trail showing the current page's location in the site hierarchy.
+ *
+ * Renders an ordered list inside a navigation landmark labelled "Breadcrumb".
+ * Crumbs with a command render as links, and the link matching the current URL is
+ * marked with `aria-current="page"`. Crumbs without a command render as plain text.
+ */
 @Component({
   selector: 'ang-breadcrumbs',
   imports: [TextLink, AnyLink, AnyLinkActive],

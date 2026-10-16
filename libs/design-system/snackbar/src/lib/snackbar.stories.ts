@@ -32,7 +32,7 @@ class SnackbarDemoComponent {
 
 const meta: Meta<SnackbarDemoComponent> = {
   component: SnackbarDemoComponent,
-  title: 'Design System / Snackbar',
+  title: 'Design System/Snackbar',
   parameters: {
     design: {
       type: 'figma',

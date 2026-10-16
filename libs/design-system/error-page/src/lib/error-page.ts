@@ -1,20 +1,23 @@
 import { Component, Directive, ViewEncapsulation } from '@angular/core';
 
-/** Title for the error page */
+/** Marks projected content as the error page title. Works as an element or an attribute. */
 @Directive({
   selector: 'ang-error-page-title, [angErrorPageTitle]',
+  host: { class: 'ang-error-page--title-content' },
 })
 export class ErrorPageTitle {}
 
-/** Informs user about the error */
+/** Marks projected content as the description that informs the user about the error. Works as an element or an attribute. */
 @Directive({
   selector: 'ang-error-page-description, [angErrorPageDescription]',
+  host: { class: 'ang-error-page--description-content' },
 })
 export class ErrorPageDescription {}
 
-/** Action for the error page */
+/** Marks projected content as an error page action. Works as an element or an attribute. */
 @Directive({
   selector: 'ang-error-page-action, [angErrorPageAction]',
+  host: { class: 'ang-error-page--action' },
 })
 export class ErrorPageAction {}
 

@@ -1,6 +1,6 @@
 # @atlasng/core
 
-The foundation layer of AtlasNG. It provides SSR-safe injection tokens for browser globals and a small helper for building typed, defaults-aware configuration tokens. Every other AtlasNG library builds on it, and it has no dependencies on other `@atlasng/*` packages.
+The foundation layer of AtlasNG. It provides injection tokens for browser globals and a small helper for building typed, defaults-aware configuration tokens. Most AtlasNG libraries build on it, and it has no dependencies on other `@atlasng/*` packages.
 
 ## Installation
 
@@ -12,17 +12,20 @@ npm install @atlasng/core
 
 ### Browser tokens
 
-Inject browser globals through tokens instead of referencing them directly. The tokens resolve through Angular's `DOCUMENT`, so they can be replaced in tests and during server-side rendering.
+Inject browser globals through tokens instead of referencing them directly. The tokens resolve through Angular's `DOCUMENT`, so they can be replaced in tests and during server-side rendering. When no window is available (for example during server-side rendering without a DOM), `WINDOW` and the tokens derived from it resolve to `undefined`.
 
-| Token                     | Value                                                    |
-| ------------------------- | -------------------------------------------------------- |
-| `DOCUMENT`                | Re-export of Angular's `DOCUMENT` token                  |
-| `WINDOW`                  | The global `window` object                               |
-| `LOCATION`                | `document.location`                                      |
-| `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked   |
-| `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked |
-| `RESIZE_OBSERVER`         | The `ResizeObserver` constructor, or `undefined`         |
-| `CUSTOM_ELEMENT_REGISTRY` | `window.customElements`, or `undefined`                  |
+| Token                     | Value                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| `DOCUMENT`                | Re-export of Angular's `DOCUMENT` token                                        |
+| `WINDOW`                  | The global `window` object, or `undefined` when none is available              |
+| `LOCATION`                | `document.location`                                                            |
+| `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked or there is no window   |
+| `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked or there is no window |
+| `SAFE_LOCAL_STORAGE`      | `SafeStorage` wrapping `LOCAL_STORAGE`                                         |
+| `SAFE_SESSION_STORAGE`    | `SafeStorage` wrapping `SESSION_STORAGE`                                       |
+| `NAVIGATION`              | The Navigation API (`window.navigation`), or `undefined` when unsupported      |
+| `RESIZE_OBSERVER`         | The `ResizeObserver` constructor, or `undefined`                               |
+| `CUSTOM_ELEMENT_REGISTRY` | `window.customElements`, or `undefined`                                        |
 
 ```ts
 import { inject } from '@angular/core';
@@ -33,6 +36,23 @@ export class PreferencesStore {
 
   save(value: string): void {
     this.#storage?.setItem('preferences', value);
+  }
+}
+```
+
+### Safe storage
+
+Browsers can throw from storage methods, for example when the quota is exceeded. `SafeStorage` wraps a `Storage`, or `undefined`, and catches those errors: `getItem` and `key` return `null`, `length` returns `0`, and `setItem`, `removeItem`, and `clear` return `false` on failure instead of throwing. `available` tells whether a storage backend was provided. Inject `SAFE_LOCAL_STORAGE` or `SAFE_SESSION_STORAGE` to get adapters for the browser storages.
+
+```ts
+import { inject } from '@angular/core';
+import { SAFE_LOCAL_STORAGE } from '@atlasng/core';
+
+export class PreferencesStore {
+  readonly #storage = inject(SAFE_LOCAL_STORAGE);
+
+  save(value: string): boolean {
+    return this.#storage.setItem('preferences', value);
   }
 }
 ```

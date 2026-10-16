@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   Component,
   computed,
   contentChild,
@@ -92,7 +93,7 @@ export class CookieBannerAction {
   /**
    * When true, this action requests closing the banner after click.
    */
-  readonly closeOnClick = input(true);
+  readonly closeOnClick = input(true, { transform: booleanAttribute });
 
   /** Reference to the parent cookie banner. */
   readonly #banner = inject(CookieBanner);
@@ -150,7 +151,7 @@ export class CookieBanner {
   /**
    * Global close behavior for built-in click handlers.
    */
-  readonly closeOnClick = input(true);
+  readonly closeOnClick = input(true, { transform: booleanAttribute });
 
   /** Emits when the user accepts all cookies. */
   readonly allowAll = output<void>();
@@ -189,6 +190,12 @@ export class CookieBanner {
   /** Current measured banner block size in pixels. */
   readonly #height = signal(0);
 
+  /**
+   * Whether the banner was rendered closed and has not been opened since.
+   * The banner is hidden without animation and reserves no container spacing in that state.
+   */
+  readonly #initiallyClosed = signal(false);
+
   /** Initializes the cookie banner. */
   constructor() {
     this.#initializeContainer();
@@ -196,16 +203,20 @@ export class CookieBanner {
 
     let isFirstChange = true;
     effect(() => {
-      const animationClasses = this.opened() ? OPENED_CLASS : CLOSED_CLASS;
+      const opened = this.opened();
       if (isFirstChange) {
         isFirstChange = false;
+        if (!opened) {
+          this.#hideInitially();
+        }
       } else {
-        this.#setAnimationClasses(animationClasses);
+        this.#initiallyClosed.set(false);
+        this.#setAnimationClasses(opened ? OPENED_CLASS : CLOSED_CLASS);
       }
     });
 
     effect(() => {
-      const height = `${this.#height()}px`;
+      const height = `${this.#initiallyClosed() ? 0 : this.#height()}px`;
       this.#renderer.setStyle(this.#containerEl, SPACING_VARIABLE, height, RendererStyleFlags2.DashCase);
     });
   }
@@ -276,6 +287,14 @@ export class CookieBanner {
       resizeObserver.observe(this.#el);
       inject(DestroyRef).onDestroy(() => resizeObserver.disconnect());
     }
+  }
+
+  /**
+   * Hides a banner that is rendered closed, without running the close animation.
+   */
+  #hideInitially(): void {
+    this.#initiallyClosed.set(true);
+    this.#renderer.setStyle(this.#el, 'display', 'none');
   }
 
   /**

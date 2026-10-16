@@ -67,6 +67,7 @@ describe('release-notes executor', () => {
     });
     vi.spyOn(logger, 'info').mockImplementation(() => undefined);
     vi.spyOn(logger, 'error').mockImplementation(() => undefined);
+    vi.spyOn(logger, 'warn').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
@@ -147,6 +148,15 @@ describe('release-notes executor', () => {
       expect(extractVersion(tag, pattern, 'libraries')).toBe(version);
     });
 
+    it('warns about projects without a section for the version', async () => {
+      await buildReleaseNotes({ tag: 'v1.1.0' }, context);
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        '@scope/docs has no CHANGELOG.md section for 1.1.0; it is left out of the release notes.',
+      );
+      expect(logger.warn).toHaveBeenCalledTimes(1);
+    });
+
     it('falls back to the workspace and default tag patterns', async () => {
       context = createContext({ releaseTag: { pattern: 'r{version}' }, groups: { libraries: { projects: 'cdk' } } });
 
@@ -161,6 +171,23 @@ describe('release-notes executor', () => {
   describe('extractVersionSection', () => {
     it('returns undefined for a missing version', () => {
       expect(extractVersionSection(CDK_CHANGELOG, '9.9.9')).toBeUndefined();
+    });
+
+    it.each([
+      ['a dated heading', '## 1.2.3 (2026-01-02)\n\n- change\n'],
+      ['a heading without a date', '## 1.2.3\n\n- change\n'],
+      ['a linked heading', '## [1.2.3](https://github.com/o/r/compare/v1.2.2...v1.2.3) (2026-01-02)\n\n- change\n'],
+      ['a heading with a trailing space', '## 1.2.3 \n\n- change\n'],
+    ])('finds the section under %s', (_, changelog) => {
+      expect(extractVersionSection(`${changelog}\n## 1.2.2\n\n- older\n`, '1.2.3')).toBe('- change');
+    });
+
+    it('does not match a longer version with the same prefix', () => {
+      expect(extractVersionSection('## 1.2.3-beta.1\n\n- beta\n\n## 1.2.30\n\n- other\n', '1.2.3')).toBeUndefined();
+    });
+
+    it('returns an empty body for a heading at the end of the file', () => {
+      expect(extractVersionSection('## 1.2.3', '1.2.3')).toBe('');
     });
   });
 });
