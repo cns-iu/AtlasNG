@@ -76,12 +76,32 @@ describe('telemetry serializer', () => {
     ['Enter', 'enter'],
     ['Escape', 'escape'],
     ['Tab', 'tab'],
+    ['ArrowUp', 'navigation'],
     ['ArrowDown', 'navigation'],
+    ['ArrowLeft', 'navigation'],
+    ['ArrowRight', 'navigation'],
+    ['Home', 'navigation'],
+    ['End', 'navigation'],
     ['PageUp', 'navigation'],
+    ['PageDown', 'navigation'],
   ])('should report a coarse key group for %s', (key, keyGroup) => {
     const event = new KeyboardEvent('keydown', { key, code: key, shiftKey: true });
 
     expect(serializeTelemetryValue(event)).toEqual({ type: 'keydown', shiftKey: true, keyGroup });
+  });
+
+  it('should use a custom key group mapping', () => {
+    const getKeyGroup = vi.fn((key: string) => (key === ' ' ? 'space' : undefined));
+
+    expect(serializeTelemetryValue(new KeyboardEvent('keydown', { key: ' ' }), { getKeyGroup })).toEqual({
+      type: 'keydown',
+      keyGroup: 'space',
+    });
+    expect(serializeTelemetryValue(new KeyboardEvent('keydown', { key: 'Enter' }), { getKeyGroup })).toEqual({
+      type: 'keydown',
+    });
+    expect(getKeyGroup).toHaveBeenCalledWith(' ');
+    expect(getKeyGroup).toHaveBeenCalledWith('Enter');
   });
 
   it('should serialize MouseEvent values and include link target attributes', () => {

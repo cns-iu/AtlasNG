@@ -28,34 +28,27 @@ interface ZodErrorLike {
  */
 export interface TelemetrySerializerOptions {
   /**
-   * Keep query strings and fragments in link `href` values.
-   * Defaults to `false`, which removes them.
+   * Keep query strings and fragments in link `href` values. The telemetry plugin also applies this
+   * to page view `url` and `referrer` values and the page view `search` and `hash` values.
+   *
+   * Defaults to `false`: query strings and fragments often carry tokens or
+   * personal data, so they are removed before sending.
    */
   keepQueryParams?: boolean;
+
+  /**
+   * Maps a keyboard event's `key` to the coarse group reported as `keyGroup`.
+   * Return `undefined` to leave the group out. The pressed key itself is never reported,
+   * so the mapping should not return values that reveal what the user types.
+   * Defaults to reporting `enter`, `escape`, `tab`, or `navigation`, and no group for all other keys.
+   */
+  getKeyGroup?: (key: string) => string | undefined;
 }
 
 /**
  * Maximum number of characters retained when serializing stack traces.
  */
 const MAX_STACK_LENGTH = 2000;
-
-/**
- * Coarse key groups reported for keyboard events instead of the pressed key.
- * Keys not listed here (including all character keys) are not reported.
- */
-const KEY_GROUPS: Partial<Record<string, string>> = {
-  Enter: 'enter',
-  Escape: 'escape',
-  Tab: 'tab',
-  ArrowUp: 'navigation',
-  ArrowDown: 'navigation',
-  ArrowLeft: 'navigation',
-  ArrowRight: 'navigation',
-  Home: 'navigation',
-  End: 'navigation',
-  PageUp: 'navigation',
-  PageDown: 'navigation',
-};
 
 /**
  * Serializes telemetry payloads into a query-string representation.
@@ -111,7 +104,8 @@ export function serializeTelemetryValue(value: unknown, options: TelemetrySerial
   // DOM events
   if (value instanceof KeyboardEvent) {
     const props = pick(value, ['type', 'altKey', 'ctrlKey', 'shiftKey', 'metaKey'], filterFalse);
-    const keyGroup = KEY_GROUPS[value.key];
+    const getKeyGroup = options.getKeyGroup ?? defaultGetKeyGroup;
+    const keyGroup = getKeyGroup(value.key);
     return keyGroup ? { ...props, keyGroup } : props;
   } else if (value instanceof MouseEvent) {
     const isLinkTarget = value.target instanceof Element && ['A', 'AREA'].includes(value.target.tagName);
@@ -247,4 +241,34 @@ function pickAttributes<T extends Element, K extends string>(el: T, keys: K[]): 
  */
 function filterFalse(_key: string, value: unknown): boolean {
   return value !== false;
+}
+
+/**
+ * Default key grouping for keyboard events.
+ * Reports `enter`, `escape`, `tab`, or `navigation` (arrow keys, `Home`, `End`, `PageUp`, `PageDown`);
+ * all other keys, including all character keys, get no group.
+ *
+ * @param key The keyboard event's `key` value
+ * @returns The key group, or `undefined` when the key is not reported
+ */
+function defaultGetKeyGroup(key: string): string | undefined {
+  switch (key) {
+    case 'Enter':
+      return 'enter';
+    case 'Escape':
+      return 'escape';
+    case 'Tab':
+      return 'tab';
+    case 'ArrowUp':
+    case 'ArrowDown':
+    case 'ArrowLeft':
+    case 'ArrowRight':
+    case 'Home':
+    case 'End':
+    case 'PageUp':
+    case 'PageDown':
+      return 'navigation';
+  }
+
+  return undefined;
 }
