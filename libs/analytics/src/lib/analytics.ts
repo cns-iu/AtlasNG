@@ -1,11 +1,11 @@
-import { inject, Service, Signal } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import {
   AnalyticsEvent,
   AnalyticsEventPayloadFor,
   CoreEvents,
   PageViewAnalyticsEventPayload,
 } from '@atlasng/analytics/events';
-import { AnalyticsPermissions, AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
+import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
 import { createConfigurationToken, type } from '@atlasng/core';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
 
@@ -29,24 +29,6 @@ export const ANALYTICS_CONFIG = createConfigurationToken({
   defaults: () => ({}),
 });
 
-/** Analytics backend paired with the consent permissions that gate it. */
-interface AnalyticsTarget {
-  /** Backend that receives permitted events. */
-  backend: AnalyticsBackend;
-  /** Current consent permissions. */
-  permissions: Signal<AnalyticsPermissions>;
-}
-
-/**
- * Resolves the backend and, when one exists, the consent permissions signal.
- *
- * @returns The backend and permissions, or `undefined` when no backend is provided
- */
-function injectAnalyticsTarget(): AnalyticsTarget | undefined {
-  const backend = inject(ANALYTICS_BACKEND, { optional: true });
-  return backend ? { backend, permissions: inject(AnalyticsPermissionsManager).permissions } : undefined;
-}
-
 /**
  * Log analytics events and page views.
  * If no analytics backend is available, the methods of this class are no-ops.
@@ -60,12 +42,11 @@ export class Analytics {
   /** Analytics configuration. */
   readonly config = ANALYTICS_CONFIG.inject();
 
-  /**
-   * Logging backend paired with the consent permissions that gate it.
-   * The permissions manager is only injected when a backend exists, so the
-   * no-op service has no browser dependencies.
-   */
-  readonly #target = injectAnalyticsTarget();
+  /** Logging backend, or `null` when none is provided. */
+  readonly #backend = inject(ANALYTICS_BACKEND, { optional: true });
+
+  /** Consent permissions that gate the backend. */
+  readonly #permissionsManager = inject(AnalyticsPermissionsManager);
 
   /**
    * Track a page view event.
@@ -75,7 +56,7 @@ export class Analytics {
    * @returns A promise that resolves when the page view event has been tracked
    */
   trackPageView(payload?: PageViewAnalyticsEventPayload, options?: Record<string, unknown>): Promise<void> {
-    return this.#backendFor(CoreEvents.PageView)?.page(payload, options) ?? Promise.resolve();
+    return this.#run(CoreEvents.PageView, (backend) => backend.page(payload, options));
   }
 
   /**
@@ -91,17 +72,22 @@ export class Analytics {
     payload: AnalyticsEventPayloadFor<E>,
     options?: Record<string, unknown>,
   ): Promise<void> {
-    return this.#backendFor(event)?.track(event, payload, options) ?? Promise.resolve();
+    return this.#run(event, (backend) => backend.track(event, payload, options));
   }
 
   /**
-   * Returns the backend when the user has granted consent for the event's category.
+   * Runs an operation against the backend when the user has granted consent for the event's category.
    *
-   * @param event Event to check
-   * @returns The backend, or `undefined` when there is no backend or consent is missing
+   * @param event Event whose consent category gates the operation
+   * @param operation Operation to run
+   * @returns The operation's promise, or a resolved promise when there is no backend or consent is missing
    */
-  #backendFor(event: AnalyticsEvent): AnalyticsBackend | undefined {
-    const target = this.#target;
-    return target?.permissions().isEventEnabled(event) ? target.backend : undefined;
+  #run(event: AnalyticsEvent, operation: (backend: AnalyticsBackend) => Promise<void>): Promise<void> {
+    const backend = this.#backend;
+    if (!backend || !this.#permissionsManager.permissions().isEventEnabled(event)) {
+      return Promise.resolve();
+    }
+
+    return operation(backend);
   }
 }
