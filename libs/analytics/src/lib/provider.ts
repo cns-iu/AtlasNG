@@ -1,10 +1,17 @@
 import { EnvironmentProviders, ErrorHandler, makeEnvironmentProviders, Provider } from '@angular/core';
 import {
+  AnalyticsPermissionedStorageConfig,
+  AnalyticsPermissionedStorageKeys,
+  AnalyticsPermissions,
   AnalyticsPermissionsManagerConfig,
+  provideAnalyticsPermissionedStorageConfig,
+  provideAnalyticsPermissionedStorageKeys,
   provideAnalyticsPermissionsManagerConfig,
+  provideInitialAnalyticsPermissions,
 } from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG, AnalyticsConfig } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
+import { ANONYMOUS_ID_STORAGE_KEYS } from './default-backend/anonymous-id';
 import { DefaultAnalyticsBackendConfig, defaultBackendFactory } from './default-backend/default-backend';
 import { AnalyticsErrorHandler } from './features/error-handler';
 
@@ -26,6 +33,12 @@ export enum AnalyticsFeatureKind {
   PermissionsManagerConfiguration,
   /** The global error handler added with {@link withGlobalErrorHandler}. */
   GlobalErrorHandler,
+  /** Initial permissions added with {@link withInitialPermissions}. */
+  InitialPermissions,
+  /** Permissioned storage configuration added with {@link withPermissionedStorageConfig}. */
+  PermissionedStorageConfiguration,
+  /** Permissioned storage keys added with {@link withPermissionedStorageKeys}. */
+  PermissionedStorageKeys,
 }
 
 /**
@@ -62,6 +75,7 @@ export function withDefaultBackend(config: DefaultAnalyticsBackendConfig): Analy
         provide: ANALYTICS_BACKEND,
         useFactory: () => defaultBackendFactory(config),
       },
+      provideAnalyticsPermissionedStorageKeys(ANONYMOUS_ID_STORAGE_KEYS),
     ],
   };
 }
@@ -76,6 +90,46 @@ export function withPermissionsConfig(config: AnalyticsPermissionsManagerConfig)
   return {
     kind: AnalyticsFeatureKind.PermissionsManagerConfiguration,
     providers: [provideAnalyticsPermissionsManagerConfig(config)],
+  };
+}
+
+/**
+ * Set the permissions used until a consent decision is loaded or made.
+ *
+ * @param permissions The initial permissions.
+ * @returns The initial permissions feature.
+ */
+export function withInitialPermissions(permissions: AnalyticsPermissions): AnalyticsFeature {
+  return {
+    kind: AnalyticsFeatureKind.InitialPermissions,
+    providers: [provideInitialAnalyticsPermissions(permissions)],
+  };
+}
+
+/**
+ * Configure the permissioned storage.
+ *
+ * @param config The permissioned storage configuration.
+ * @returns The permissioned storage configuration feature.
+ */
+export function withPermissionedStorageConfig(config: AnalyticsPermissionedStorageConfig): AnalyticsFeature {
+  return {
+    kind: AnalyticsFeatureKind.PermissionedStorageConfiguration,
+    providers: [provideAnalyticsPermissionedStorageConfig(config)],
+  };
+}
+
+/**
+ * Register keys that the permissioned storage persists while their consent category is granted.
+ * Can be added multiple times; when the same key is registered more than once, the last registration wins.
+ *
+ * @param keys Persisted keys, mapped from the key callers read and write.
+ * @returns The permissioned storage keys feature.
+ */
+export function withPermissionedStorageKeys(keys: AnalyticsPermissionedStorageKeys): AnalyticsFeature {
+  return {
+    kind: AnalyticsFeatureKind.PermissionedStorageKeys,
+    providers: [provideAnalyticsPermissionedStorageKeys(keys)],
   };
 }
 

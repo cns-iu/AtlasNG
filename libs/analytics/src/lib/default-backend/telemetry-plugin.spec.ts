@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { CoreEvents } from '@atlasng/analytics/events';
 import { parse } from 'qs';
-import { ANONYMOUS_ID_KEY } from './consent-storage';
+import { ANONYMOUS_ID_KEY } from './anonymous-id';
 import { telemetryPlugin, TelemetryPluginConfig } from './telemetry-plugin';
 import { AnyPluginMethodArgs } from './types';
 
@@ -99,6 +99,28 @@ describe('telemetryPlugin', () => {
     expect(parsed['trigger']).toBe('button');
     expect(parsed['triggerData']).toEqual({ id: 'cta' });
     expect(parsed['e']).toEqual({ label: 'Get started' });
+  });
+
+  it('should pass the key group mapping to the serializer', () => {
+    const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const { plugin, config } = createPlugin({
+      endpoint: 'https://api.atlasng.dev/t',
+      getKeyGroup: (key) => (key === ' ' ? 'space' : undefined),
+    });
+    const track = plugin['track'] as ((args: AnyPluginMethodArgs<TelemetryPluginConfig>) => void) | undefined;
+    track?.({
+      ...createArgs(config),
+      payload: {
+        type: 'track',
+        event: CoreEvents.Keyboard,
+        properties: { trigger: 'keydown', triggerData: new KeyboardEvent('keydown', { key: ' ' }) },
+      },
+    } as AnyPluginMethodArgs<TelemetryPluginConfig>);
+
+    const parsed = parseQueryFromUrl(fetchSpy.mock.calls[0]?.[0] as string);
+    expect(parsed['triggerData']).toEqual({ type: 'keydown', keyGroup: 'space' });
   });
 
   it('should send page and identify telemetry with core events', () => {

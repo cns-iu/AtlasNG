@@ -1,8 +1,10 @@
 export { Analytics, ANALYTICS_CONFIG, type AnalyticsConfig } from './lib/analytics';
 export { ANALYTICS_BACKEND, type AnalyticsBackend } from './lib/backend';
 export { type DefaultAnalyticsBackendConfig } from './lib/default-backend/default-backend';
-export { type EventFilterPluginConfig } from './lib/default-backend/event-filter-plugin';
-export { type TelemetryPluginConfig } from './lib/default-backend/telemetry-plugin';
+export {
+  getDefaultBackendEventFilterMethods,
+  type DefaultBackendEventFilterMethods,
+} from './lib/default-backend/event-filter-plugin';
 export {
   TrackBlur,
   TrackChange,
@@ -25,6 +27,9 @@ export {
   withCustomBackend,
   withDefaultBackend,
   withGlobalErrorHandler,
+  withInitialPermissions,
+  withPermissionedStorageConfig,
+  withPermissionedStorageKeys,
   withPermissionsConfig,
   type AnalyticsFeature,
 } from './lib/provider';

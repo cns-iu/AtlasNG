@@ -2,14 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
 import { AnalyticsPlugin } from 'analytics';
-import { ANONYMOUS_ID_KEY } from './consent-storage';
-import { serializeTelemetryData, stripQueryAndFragment } from './telemetry-serializer';
+import { ANONYMOUS_ID_KEY } from './anonymous-id';
+import { serializeTelemetryData, stripQueryAndFragment, TelemetrySerializerOptions } from './telemetry-serializer';
 import { AnyPluginMethodArgs } from './types';
 
 /**
- * Configuration for telemetry transport.
+ * Configuration for telemetry transport and serialization.
  */
-export interface TelemetryPluginConfig {
+export interface TelemetryPluginConfig extends TelemetrySerializerOptions {
   /**
    * Backend endpoint that accepts serialized telemetry via query params.
    */
@@ -22,15 +22,6 @@ export interface TelemetryPluginConfig {
    * interceptors, which may, for example, attach authentication headers.
    */
   useHttpClient?: boolean;
-
-  /**
-   * Keep query strings and fragments in page view `url` and `referrer` values,
-   * the page view `search` and `hash` values, and link `href` values.
-   *
-   * Defaults to `false`: query strings and fragments often carry tokens or
-   * personal data, so they are removed before sending.
-   */
-  keepQueryParams?: boolean;
 }
 
 /**
@@ -48,7 +39,7 @@ export function telemetryPlugin(config: TelemetryPluginConfig): AnalyticsPlugin 
    */
   const handleEvent = (args: AnyPluginMethodArgs<TelemetryPluginConfig>): void => {
     const data = prepareTelemetryData(args);
-    const query = serializeTelemetryData(data, { keepQueryParams: args.config.keepQueryParams });
+    const query = serializeTelemetryData(data, args.config);
     const url = buildTelemetryUrl(args.config.endpoint, query);
     sendTelemetry(url, http);
   };
@@ -70,24 +61,26 @@ export function telemetryPlugin(config: TelemetryPluginConfig): AnalyticsPlugin 
  * @throws Error when the payload type is unsupported.
  */
 function prepareTelemetryData(args: AnyPluginMethodArgs<TelemetryPluginConfig>): object {
+  const { config, instance, payload } = args;
+  const { keepQueryParams } = config;
   let event: AnalyticsEvent;
   let path: string | undefined;
   let trigger: string | undefined;
   let triggerData: unknown;
   let props: unknown;
 
-  switch (args.payload.type) {
+  switch (payload.type) {
     case 'page':
       event = CoreEvents.PageView;
-      props = args.config.keepQueryParams ? args.payload.properties : stripPageQueryParams(args.payload.properties);
+      props = keepQueryParams ? payload.properties : stripPageQueryParams(payload.properties);
       break;
     case 'identify':
       event = CoreEvents.Identify;
-      props = args.payload.traits;
+      props = payload.traits;
       break;
     case 'track':
-      event = args.payload.event;
-      ({ path, trigger, triggerData, ...props } = args.payload.properties);
+      event = payload.event;
+      ({ path, trigger, triggerData, ...props } = payload.properties);
       break;
     default:
       throw new Error(`Unsupported telemetry payload type: ${args.payload.type}`);
@@ -96,9 +89,9 @@ function prepareTelemetryData(args: AnyPluginMethodArgs<TelemetryPluginConfig>):
   return {
     sv: 0,
     // Read the ID from storage rather than the payload: the payload's ID can be set with the `an_aid` URL parameter
-    sessionId: args.instance.storage.getItem(ANONYMOUS_ID_KEY),
-    app: args.instance.getState('context.app'),
-    version: args.instance.getState('context.version'),
+    sessionId: instance.storage.getItem(ANONYMOUS_ID_KEY),
+    app: instance.getState('context.app'),
+    version: instance.getState('context.version'),
     event,
     path,
     trigger,

@@ -1,198 +1,321 @@
-/**
- * Key under which the `analytics` package reads and writes the anonymous ID.
- */
-export const ANONYMOUS_ID_KEY = '__anon_id';
+import { isPlatformBrowser } from '@angular/common';
+import { effect, inject, InjectionToken, PLATFORM_ID, Provider, Service } from '@angular/core';
+import { AnalyticsEventCategory } from '@atlasng/analytics/events';
+import { createConfigurationToken, LOCAL_STORAGE, SafeStorage, type } from '@atlasng/core';
+import { AnalyticsPermissionsManager } from './permissions-manager';
 
 /**
- * `sessionStorage` key used to keep the anonymous ID once consent is granted.
+ * Configuration for {@link AnalyticsPermissionedStorage}.
  */
-export const ANONYMOUS_ID_SESSION_STORAGE_KEY = '__atlasng_analytics_anon_id__';
-
-/**
- * Storage adapter accepted by the `analytics` package through its `storage` option.
- */
-export interface ConsentStorage {
+export interface AnalyticsPermissionedStorageConfig {
   /**
-   * Reads a value.
+   * Storage used for registered keys whose consent category is granted, unless a key sets its own.
+   * Defaults to `localStorage` in the browser. Set to `false` to keep all values in memory only.
+   */
+  storage?: Storage | false;
+}
+
+/**
+ * Describes how a key of {@link AnalyticsPermissionedStorage} is persisted.
+ */
+export interface AnalyticsPermissionedStorageKey {
+  /** Key under which the value is kept in the backing storage. */
+  key: string;
+
+  /** Consent category that must be granted before the value is persisted. */
+  category: AnalyticsEventCategory;
+
+  /**
+   * Backing storage for this key. Defaults to the configured storage.
+   * Set to `false` to keep this key in memory only.
+   */
+  storage?: Storage | false;
+
+  /**
+   * Creates the value the first time it is read.
+   * A key with a generator is owned by the storage: writes to it are ignored, and removing it
+   * discards the value so the next read creates a new one.
+   */
+  generate?: () => unknown;
+}
+
+/**
+ * Persisted keys of {@link AnalyticsPermissionedStorage}, mapped from the key callers read and write.
+ */
+export type AnalyticsPermissionedStorageKeys = Record<string, AnalyticsPermissionedStorageKey>;
+
+/** Permissioned storage configuration. */
+const ANALYTICS_PERMISSIONED_STORAGE_CONFIG = createConfigurationToken({
+  name: 'ANALYTICS_PERMISSIONED_STORAGE_CONFIG',
+  config: type<AnalyticsPermissionedStorageConfig>(),
+  defaults: () => ({
+    storage: (isPlatformBrowser(inject(PLATFORM_ID)) && inject(LOCAL_STORAGE)) || false,
+  }),
+});
+
+/**
+ * Provides configuration for {@link AnalyticsPermissionedStorage}.
+ *
+ * @param config Partial permissioned storage configuration.
+ * @returns Provider entry for the config token.
+ */
+export const provideAnalyticsPermissionedStorageConfig = ANALYTICS_PERMISSIONED_STORAGE_CONFIG.provide;
+
+/** Persisted key registrations, merged in provider order. */
+const ANALYTICS_PERMISSIONED_STORAGE_KEYS = new InjectionToken<AnalyticsPermissionedStorageKeys[]>(
+  'ANALYTICS_PERMISSIONED_STORAGE_KEYS',
+);
+
+/**
+ * Registers keys that {@link AnalyticsPermissionedStorage} persists while their consent category is granted.
+ * Can be provided multiple times; when the same key is registered more than once, the last registration wins.
+ *
+ * @param keys Persisted keys, mapped from the key callers read and write.
+ * @returns Provider entry for the keys token.
+ */
+export function provideAnalyticsPermissionedStorageKeys(keys: AnalyticsPermissionedStorageKeys): Provider {
+  return { provide: ANALYTICS_PERMISSIONED_STORAGE_KEYS, useValue: keys, multi: true };
+}
+
+/** Runtime state of a registered key. */
+interface PersistedEntry {
+  /** Registration of the key. */
+  readonly definition: AnalyticsPermissionedStorageKey;
+  /** Backing storage of the key. */
+  readonly storage: SafeStorage;
+  /** Whether the value currently lives in the backing storage. */
+  persisted: boolean;
+}
+
+/**
+ * Consent-aware storage, for example for the `storage` option of the `analytics` package.
+ *
+ * - Values of keys registered with {@link provideAnalyticsPermissionedStorageKeys} are persisted
+ *   as JSON while their consent category is granted in {@link AnalyticsPermissionsManager}. Until
+ *   then, and after consent is revoked, they are kept in memory and removed from the backing storage.
+ * - Values of all other keys are kept in memory only.
+ * - When a backing storage fails, values fall back to memory.
+ *
+ * Values follow consent changes automatically.
+ * Public methods are bound in the constructor, because the `analytics` package calls them unbound.
+ */
+@Service()
+export class AnalyticsPermissionedStorage {
+  /** Resolved storage configuration with defaults applied. */
+  readonly config = ANALYTICS_PERMISSIONED_STORAGE_CONFIG.inject();
+
+  /** Current consent permissions. */
+  readonly #permissions = inject(AnalyticsPermissionsManager).permissions;
+
+  /** Safe storage adapters, one per backing storage. */
+  readonly #safeStorages = new Map<Storage, SafeStorage>();
+
+  /** Shared adapter for keys without a backing storage. */
+  readonly #unavailableStorage = new SafeStorage(undefined);
+
+  /** Runtime state of the registered keys. */
+  readonly #entries = new Map<string, PersistedEntry>();
+
+  /** In-memory values of unregistered keys and of registered keys that are not persisted. */
+  readonly #memory = new Map<string, unknown>();
+
+  /**
+   * Binds the public methods, removes values left in storage by an earlier page load
+   * whose consent is no longer granted, and starts following consent changes.
+   */
+  constructor() {
+    this.getItem = this.getItem.bind(this);
+    this.setItem = this.setItem.bind(this);
+    this.removeItem = this.removeItem.bind(this);
+    this.sync = this.sync.bind(this);
+
+    const registrations = inject(ANALYTICS_PERMISSIONED_STORAGE_KEYS, { optional: true }) ?? [];
+    const keys: AnalyticsPermissionedStorageKeys = Object.assign({}, ...registrations);
+    for (const [key, definition] of Object.entries(keys)) {
+      const storage = this.#safeStorageFor(definition.storage ?? this.config.storage);
+      const entry: PersistedEntry = { definition, storage, persisted: false };
+      entry.persisted = this.#shouldPersist(entry);
+      if (!entry.persisted) {
+        storage.removeItem(definition.key);
+      }
+
+      this.#entries.set(key, entry);
+    }
+
+    effect(() => this.sync());
+  }
+
+  /**
+   * Reads a value. Reading a key with a generator creates its value when none exists.
    *
    * @param key Storage key
    * @returns The stored value, or `null` when missing
    */
-  getItem(key: string): unknown;
+  getItem(key: string): unknown {
+    this.sync();
+    const entry = this.#entries.get(key);
+    if (!entry) {
+      return this.#memory.get(key) ?? null;
+    }
+
+    let value = this.#read(key, entry);
+    if (value === null && entry.definition.generate) {
+      value = entry.definition.generate();
+      this.#write(key, entry, value);
+    }
+    return value;
+  }
 
   /**
-   * Writes a value.
+   * Writes a value. Writes to keys with a generator are ignored.
    *
    * @param key Storage key
    * @param value Value to store
    */
-  setItem(key: string, value: unknown): void;
-
-  /**
-   * Removes a value.
-   *
-   * @param key Storage key
-   */
-  removeItem(key: string): void;
-
-  /**
-   * Moves the anonymous ID between memory and `sessionStorage` to match the current consent.
-   * Called automatically on every access; call it directly to react to consent changes promptly.
-   */
-  sync(): void;
-}
-
-/**
- * Creates the storage adapter used by the default backend.
- *
- * Nothing is ever written to `localStorage` or cookies:
- * - The anonymous ID is generated and owned by the adapter. Writes to
- *   {@link ANONYMOUS_ID_KEY} are ignored, so the `an_aid` URL parameter
- *   can't replace it.
- * - Until `hasConsent` returns `true`, the anonymous ID is kept in memory only.
- *   Once it returns `true`, the ID moves to `sessionStorage`. When consent is
- *   revoked, the ID is removed from `sessionStorage` and kept in memory again.
- * - All other keys (such as the user ID and traits) are kept in memory only.
- *
- * Methods are closures, because the `analytics` package calls them unbound.
- *
- * @param sessionStorage Session storage, or `undefined` when unavailable (for example on the server)
- * @param hasConsent Returns whether the anonymous ID may be kept in `sessionStorage`
- * @param generateId Creates a new anonymous ID
- * @returns Storage adapter for the `analytics` package
- */
-export function createConsentStorage(
-  sessionStorage: Storage | undefined,
-  hasConsent: () => boolean,
-  generateId: () => string = generateAnonymousId,
-): ConsentStorage {
-  const memory = new Map<string, unknown>();
-  let memoryId: string | undefined;
-  let persisted = !!sessionStorage && hasConsent();
-
-  if (!persisted) {
-    // Clear an ID left behind by an earlier page load whose consent has since been revoked
-    safeRemove(sessionStorage);
+  setItem(key: string, value: unknown): void {
+    this.sync();
+    const entry = this.#entries.get(key);
+    if (!entry) {
+      this.#memory.set(key, value);
+    } else if (!entry.definition.generate) {
+      this.#write(key, entry, value);
+    }
   }
 
   /**
-   * Reads the anonymous ID from its current location.
+   * Removes a value. Removing a key with a generator discards its value, so the next read creates a new one.
    *
-   * @returns The anonymous ID, or `undefined` when none has been created
+   * @param key Storage key
    */
-  const readId = (): string | undefined => (persisted ? safeGet(sessionStorage) : undefined) ?? memoryId;
+  removeItem(key: string): void {
+    this.sync();
+    this.#memory.delete(key);
+    const entry = this.#entries.get(key);
+    entry?.storage.removeItem(entry.definition.key);
+  }
 
   /**
-   * Writes the anonymous ID to its current location, falling back to memory when storage fails.
-   *
-   * @param id Anonymous ID to store
+   * Moves the values of registered keys between memory and their backing storage to match the current consent.
+   * Called automatically on every access; call it directly to react to consent changes promptly.
    */
-  const writeId = (id: string): void => {
-    memoryId = persisted && safeSet(sessionStorage, id) ? undefined : id;
-  };
+  sync(): void {
+    for (const [key, entry] of this.#entries) {
+      const shouldPersist = this.#shouldPersist(entry);
+      if (shouldPersist === entry.persisted) {
+        continue;
+      }
 
-  /** Moves the anonymous ID between memory and session storage when consent changes. */
-  const sync = (): void => {
-    const shouldPersist = !!sessionStorage && hasConsent();
-    if (shouldPersist === persisted) {
+      const value = this.#read(key, entry);
+      if (entry.persisted) {
+        entry.storage.removeItem(entry.definition.key);
+      }
+
+      entry.persisted = shouldPersist;
+      this.#memory.delete(key);
+      if (value !== null) {
+        this.#write(key, entry, value);
+      }
+    }
+  }
+
+  /**
+   * Returns the safe adapter for a backing storage, creating it on first use.
+   *
+   * @param storage Backing storage, or `false` when there is none
+   * @returns The shared adapter for the storage
+   */
+  #safeStorageFor(storage: Storage | false): SafeStorage {
+    if (!storage) {
+      return this.#unavailableStorage;
+    }
+
+    let safeStorage = this.#safeStorages.get(storage);
+    if (!safeStorage) {
+      safeStorage = new SafeStorage(storage);
+      this.#safeStorages.set(storage, safeStorage);
+    }
+    return safeStorage;
+  }
+
+  /**
+   * Checks whether a registered key should currently live in its backing storage.
+   *
+   * @param entry Registered key
+   * @returns `true` when the backing storage is available and the key's category is granted
+   */
+  #shouldPersist(entry: PersistedEntry): boolean {
+    return entry.storage.available && this.#permissions().isCategoryEnabled(entry.definition.category);
+  }
+
+  /**
+   * Reads the value of a registered key from its current location.
+   *
+   * @param key Storage key
+   * @param entry Registered key
+   * @returns The value, or `null` when missing
+   */
+  #read(key: string, entry: PersistedEntry): unknown {
+    const stored = entry.persisted ? decode(entry.storage.getItem(entry.definition.key)) : null;
+    return stored ?? this.#memory.get(key) ?? null;
+  }
+
+  /**
+   * Writes the value of a registered key to its current location, falling back to memory
+   * when the value can't be encoded or storage fails.
+   *
+   * @param key Storage key
+   * @param entry Registered key
+   * @param value Value to store
+   */
+  #write(key: string, entry: PersistedEntry, value: unknown): void {
+    const { key: storageKey } = entry.definition;
+    if (value === undefined) {
+      this.#memory.delete(key);
+      entry.storage.removeItem(storageKey);
       return;
     }
 
-    const id = readId();
-    if (persisted) {
-      safeRemove(sessionStorage);
+    const json = entry.persisted ? encode(value) : undefined;
+    if (json !== undefined && entry.storage.setItem(storageKey, json)) {
+      this.#memory.delete(key);
+    } else {
+      this.#memory.set(key, value);
+      if (entry.persisted) {
+        // Drop the stale stored value so it doesn't shadow the in-memory one
+        entry.storage.removeItem(storageKey);
+      }
     }
-
-    persisted = shouldPersist;
-    memoryId = undefined;
-    if (id) {
-      writeId(id);
-    }
-  };
-
-  return {
-    sync,
-    getItem: (key) => {
-      sync();
-      if (key !== ANONYMOUS_ID_KEY) {
-        return memory.get(key) ?? null;
-      }
-
-      let id = readId();
-      if (!id) {
-        id = generateId();
-        writeId(id);
-      }
-      return id;
-    },
-    setItem: (key, value) => {
-      sync();
-      if (key !== ANONYMOUS_ID_KEY) {
-        memory.set(key, value);
-      }
-    },
-    removeItem: (key) => {
-      sync();
-      if (key !== ANONYMOUS_ID_KEY) {
-        memory.delete(key);
-      } else {
-        memoryId = undefined;
-        safeRemove(sessionStorage);
-      }
-    },
-  };
+  }
 }
 
 /**
- * Generates a random anonymous ID.
- * Uses `crypto.getRandomValues`, which, unlike `crypto.randomUUID`, also works outside secure contexts.
+ * Encodes a value for persistence.
  *
- * @returns A 32 character hexadecimal ID
+ * @param value Value to encode
+ * @returns The JSON string, or `undefined` when the value can't be encoded
  */
-function generateAnonymousId(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(16));
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
-/**
- * Reads the anonymous ID from session storage, ignoring storage errors.
- *
- * @param storage Session storage
- * @returns The stored ID, or `undefined` when missing or unreadable
- */
-function safeGet(storage: Storage | undefined): string | undefined {
+function encode(value: unknown): string | undefined {
   try {
-    return storage?.getItem(ANONYMOUS_ID_SESSION_STORAGE_KEY) || undefined;
+    return JSON.stringify(value);
   } catch {
     return undefined;
   }
 }
 
 /**
- * Writes the anonymous ID to session storage, ignoring storage errors.
+ * Decodes a persisted value.
  *
- * @param storage Session storage
- * @param id Anonymous ID
- * @returns `true` when the ID was written
+ * @param raw Raw value from the backing storage
+ * @returns The parsed JSON value, the raw string when it isn't valid JSON, or `null` when missing
  */
-function safeSet(storage: Storage | undefined, id: string): boolean {
-  try {
-    storage?.setItem(ANONYMOUS_ID_SESSION_STORAGE_KEY, id);
-    return !!storage;
-  } catch {
-    return false;
+function decode(raw: string | null): unknown {
+  if (raw === null) {
+    return null;
   }
-}
 
-/**
- * Removes the anonymous ID from session storage, ignoring storage errors.
- *
- * @param storage Session storage
- */
-function safeRemove(storage: Storage | undefined): void {
   try {
-    storage?.removeItem(ANONYMOUS_ID_SESSION_STORAGE_KEY);
+    return JSON.parse(raw);
   } catch {
-    // Ignore storage errors
+    return raw;
   }
 }

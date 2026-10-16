@@ -1,14 +1,22 @@
 import { ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { CoreEvents } from '@atlasng/analytics/events';
-import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
+import { AnalyticsEventCategory, CoreEvents } from '@atlasng/analytics/events';
+import {
+  AnalyticsPermissionedStorage,
+  AnalyticsPermissions,
+  AnalyticsPermissionsManager,
+} from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
+import { ANONYMOUS_ID_KEY } from './default-backend/anonymous-id';
 import {
   provideAnalytics,
   withCustomBackend,
   withDefaultBackend,
   withGlobalErrorHandler,
+  withInitialPermissions,
+  withPermissionedStorageConfig,
+  withPermissionedStorageKeys,
   withPermissionsConfig,
 } from './provider';
 
@@ -86,6 +94,23 @@ describe('provideAnalytics', () => {
     expect(backend.track).toBeDefined();
     expect(typeof backend.page).toBe('function');
     expect(typeof backend.track).toBe('function');
+  });
+
+  it('should register the anonymous ID with the permissioned storage in the default backend', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideAnalytics(
+          { appName: 'DefaultBackendTest' },
+          withDefaultBackend(DEFAULT_BACKEND_CONFIG),
+          withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
+        ),
+      ],
+    });
+
+    const storage = TestBed.inject(AnalyticsPermissionedStorage);
+    storage.setItem(ANONYMOUS_ID_KEY, 'from-url');
+
+    expect(storage.getItem(ANONYMOUS_ID_KEY)).toMatch(/^[0-9a-f]{32}$/);
   });
 
   it('should drop statistics events in the default backend under default permissions', async () => {
@@ -169,5 +194,43 @@ describe('provideAnalytics', () => {
     expect(manager.config.storage).toBe(false);
     expect(manager.config.storageKey).toBe('custom-permissions-key');
     expect(manager.config.storageEvents).toBe(false);
+  });
+
+  it('should set the initial permissions', () => {
+    const backend = createMockBackend();
+    const initialPermissions = AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Preferences);
+    const providers = provideAnalytics(
+      {},
+      withCustomBackend(() => backend),
+      withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
+      withInitialPermissions(initialPermissions),
+    );
+
+    TestBed.configureTestingModule({ providers: [providers] });
+
+    expect(TestBed.inject(AnalyticsPermissionsManager).permissions()).toBe(initialPermissions);
+  });
+
+  it('should configure the permissioned storage and register its keys', () => {
+    const backend = createMockBackend();
+    const storage = window.sessionStorage;
+    storage.removeItem('stored-theme');
+    const providers = provideAnalytics(
+      {},
+      withCustomBackend(() => backend),
+      withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
+      withInitialPermissions(AnalyticsPermissions.FULL),
+      withPermissionedStorageConfig({ storage }),
+      withPermissionedStorageKeys({ theme: { key: 'stored-theme', category: AnalyticsEventCategory.Preferences } }),
+    );
+
+    TestBed.configureTestingModule({ providers: [providers] });
+
+    const permissionedStorage = TestBed.inject(AnalyticsPermissionedStorage);
+    permissionedStorage.setItem('theme', 'dark');
+
+    expect(permissionedStorage.config.storage).toBe(storage);
+    expect(storage.getItem('stored-theme')).toBe('"dark"');
+    storage.removeItem('stored-theme');
   });
 });

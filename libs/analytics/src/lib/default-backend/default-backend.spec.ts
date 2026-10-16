@@ -1,21 +1,26 @@
 import { PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { CoreEvents } from '@atlasng/analytics/events';
-import { AnalyticsPermissions, AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
-import { SESSION_STORAGE } from '@atlasng/core';
+import {
+  AnalyticsPermissions,
+  AnalyticsPermissionsManager,
+  AnalyticsPermissionedStorage,
+  provideAnalyticsPermissionedStorageKeys,
+} from '@atlasng/analytics/permissions';
+import { LOCAL_STORAGE } from '@atlasng/core';
 import { Analytics, AnalyticsPlugin } from 'analytics';
 import { parse } from 'qs';
 import { ANALYTICS_CONFIG } from '../analytics';
-import { ANONYMOUS_ID_KEY, ANONYMOUS_ID_SESSION_STORAGE_KEY, ConsentStorage } from './consent-storage';
+import { ANONYMOUS_ID_KEY, ANONYMOUS_ID_STORAGE_KEY, ANONYMOUS_ID_STORAGE_KEYS } from './anonymous-id';
 import { DefaultAnalyticsBackendConfig, defaultBackendFactory } from './default-backend';
-import { ATLASNG_CALL_OPTION } from './event-filter-plugin';
+import { DefaultBackendEventFilterMethods } from './event-filter-plugin';
 
 describe('defaultBackendFactory', () => {
   const analyticsFactoryMock = vi.fn();
   const permissions = signal(AnalyticsPermissions.FULL);
-  let sessionStorageMock: Storage;
+  let localStorageMock: Storage;
 
-  function createSessionStorage(): Storage {
+  function createLocalStorage(): Storage {
     const data = new Map<string, string>();
     return {
       get length() {
@@ -38,7 +43,8 @@ describe('defaultBackendFactory', () => {
       providers: [
         ANALYTICS_CONFIG.provide(analyticsConfig ?? { appName: 'AtlasNG', appVersion: '1.2.3' }),
         { provide: PLATFORM_ID, useValue: platformId },
-        { provide: SESSION_STORAGE, useValue: sessionStorageMock },
+        { provide: LOCAL_STORAGE, useValue: localStorageMock },
+        provideAnalyticsPermissionedStorageKeys(ANONYMOUS_ID_STORAGE_KEYS),
         {
           provide: AnalyticsPermissionsManager,
           useValue: { permissions },
@@ -72,18 +78,22 @@ describe('defaultBackendFactory', () => {
     version: string;
     debug: boolean;
     plugins: AnalyticsPlugin[];
-    storage: ConsentStorage;
+    storage: AnalyticsPermissionedStorage;
   } {
     return analyticsFactoryMock.mock.calls[0]?.[0];
   }
 
   beforeEach(() => {
     permissions.set(AnalyticsPermissions.FULL);
-    sessionStorageMock = createSessionStorage();
-    analyticsFactoryMock.mockReturnValue({
+    localStorageMock = createLocalStorage();
+    // Like the `analytics` package, expose each plugin's custom methods under `instance.plugins[name]`
+    analyticsFactoryMock.mockImplementation((config: { plugins: AnalyticsPlugin[] }) => ({
       track: vi.fn().mockResolvedValue(undefined),
       page: vi.fn().mockResolvedValue(undefined),
-    });
+      plugins: Object.fromEntries(
+        config.plugins.filter((plugin) => plugin['methods']).map((plugin) => [plugin.name, plugin['methods']]),
+      ),
+    }));
   });
 
   afterEach(() => {
@@ -117,8 +127,9 @@ describe('defaultBackendFactory', () => {
     await backend.page({ title: 'Home' }, { custom: 1 });
     await backend.track(CoreEvents.Click, { id: 'cta' });
 
-    expect(instance.page).toHaveBeenCalledWith({ title: 'Home' }, { custom: 1, [ATLASNG_CALL_OPTION]: true });
-    expect(instance.track).toHaveBeenCalledWith(CoreEvents.Click, { id: 'cta' }, { [ATLASNG_CALL_OPTION]: true });
+    const { createSafeOptions } = instance.plugins['atlasng-event-filter'] as DefaultBackendEventFilterMethods;
+    expect(instance.page).toHaveBeenCalledWith({ title: 'Home' }, createSafeOptions({ custom: 1 }));
+    expect(instance.track).toHaveBeenCalledWith(CoreEvents.Click, { id: 'cta' }, createSafeOptions());
   });
 
   it('should resolve custom plugins from a factory function', () => {
@@ -161,27 +172,27 @@ describe('defaultBackendFactory', () => {
     const { storage } = getAnalyticsOptions();
 
     const id = storage.getItem(ANONYMOUS_ID_KEY);
-    expect(sessionStorageMock.getItem(ANONYMOUS_ID_SESSION_STORAGE_KEY)).toBeNull();
+    expect(localStorageMock.getItem(ANONYMOUS_ID_STORAGE_KEY)).toBeNull();
 
     permissions.set(AnalyticsPermissions.FULL);
     TestBed.tick();
-    expect(sessionStorageMock.getItem(ANONYMOUS_ID_SESSION_STORAGE_KEY)).toBe(id);
+    expect(localStorageMock.getItem(ANONYMOUS_ID_STORAGE_KEY)).toBe(JSON.stringify(id));
 
     permissions.set(AnalyticsPermissions.DEFAULT);
     TestBed.tick();
-    expect(sessionStorageMock.getItem(ANONYMOUS_ID_SESSION_STORAGE_KEY)).toBeNull();
+    expect(localStorageMock.getItem(ANONYMOUS_ID_STORAGE_KEY)).toBeNull();
     expect(storage.getItem(ANONYMOUS_ID_KEY)).toBe(id);
   });
 
-  it('should not use session storage on the server', () => {
+  it('should not use local storage on the server', () => {
     createBackend({ endpoint: 'https://api.atlasng.dev/telemetry' }, undefined, 'server');
     const { storage } = getAnalyticsOptions();
 
     expect(storage.getItem(ANONYMOUS_ID_KEY)).toEqual(expect.any(String));
-    expect(sessionStorageMock.length).toBe(0);
+    expect(localStorageMock.length).toBe(0);
   });
 
-  it('should never write to localStorage or cookies with the real analytics package', async () => {
+  it('should only write the anonymous ID through the consent storage and never set cookies with the real analytics package', async () => {
     const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
     const cookieSpy = vi.spyOn(document, 'cookie', 'set');
     configureProviders();
@@ -193,7 +204,7 @@ describe('defaultBackendFactory', () => {
 
     expect(setItemSpy).not.toHaveBeenCalled();
     expect(cookieSpy).not.toHaveBeenCalled();
-    expect(sessionStorageMock.getItem(ANONYMOUS_ID_SESSION_STORAGE_KEY)).toEqual(expect.any(String));
+    expect(localStorageMock.getItem(ANONYMOUS_ID_STORAGE_KEY)).toEqual(expect.any(String));
   });
 
   it('should ignore identity and events from analytics URL parameters', async () => {
@@ -208,7 +219,7 @@ describe('defaultBackendFactory', () => {
     configureProviders();
 
     try {
-      let storage: ConsentStorage | undefined;
+      let storage: AnalyticsPermissionedStorage | undefined;
       const backend = TestBed.runInInjectionContext(() =>
         defaultBackendFactory({ endpoint: 'https://api.atlasng.dev/telemetry' }, (config) => {
           storage = config.storage;
@@ -224,9 +235,34 @@ describe('defaultBackendFactory', () => {
       expect(query['sessionId']).toBe(storage?.getItem(ANONYMOUS_ID_KEY));
       expect(query['sessionId']).not.toBe('from-url');
       expect(storage?.getItem('__user_id')).toBe('someone');
-      expect(sessionStorageMock.length).toBe(1);
+      expect(localStorageMock.length).toBe(1);
     } finally {
       history.replaceState(null, '', originalUrl);
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('should pass the key group mapping through the real analytics package', async () => {
+    const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal('fetch', fetchSpy);
+    configureProviders();
+
+    try {
+      const backend = TestBed.runInInjectionContext(() =>
+        defaultBackendFactory({
+          endpoint: 'https://api.atlasng.dev/telemetry',
+          getKeyGroup: (key) => (key === ' ' ? 'space' : undefined),
+        }),
+      );
+
+      await backend.track(CoreEvents.Keyboard, {
+        trigger: 'keydown',
+        triggerData: new KeyboardEvent('keydown', { key: ' ' }),
+      });
+
+      const query = parse((fetchSpy.mock.calls[0]?.[0] as string).split('?')[1], { allowDots: true });
+      expect(query['triggerData']).toEqual({ type: 'keydown', keyGroup: 'space' });
+    } finally {
       vi.unstubAllGlobals();
     }
   });
