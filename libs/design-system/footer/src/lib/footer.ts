@@ -2,6 +2,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Directive, input, output, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 import { SocialMediaButton, SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 
@@ -30,7 +31,7 @@ export class FooterAction {}
  */
 @Component({
   selector: 'ang-footer',
-  imports: [MatButtonModule, MatIconModule, SocialMediaButton, AnyLink, NgOptimizedImage],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, SocialMediaButton, AnyLink, NgOptimizedImage],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

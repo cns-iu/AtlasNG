@@ -3,12 +3,14 @@
 @use 'tokens/footer' as *;
 @use 'breakpoints';
 
+/// Rendered width of a single social media icon.
+$_social-icon-size: 2.5rem;
+
 .ang-footer {
   display: block;
+  min-width: 20rem;
+  max-width: 100rem;
   background: token-utils.slot(background-color, $config);
-  container-type: inline-size;
-  min-width: 15rem;
-  padding: 2.5rem;
 
   .ang-footer--container {
     display: flex;
@@ -16,43 +18,55 @@
     justify-content: space-between;
     margin: 0 auto;
     align-items: center;
+    padding: 2.5rem 1.25rem;
+    gap: 1.5rem;
+  }
+
+  // Groups the logo, social icons, and actions so they stay together on one row
+  .ang-footer--content {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    align-items: center;
+    gap: 1.5rem;
   }
 
   .ang-footer--logo-container {
     position: relative;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.75rem;
-    gap: 1rem;
-    width: 8rem;
 
     .ang-footer--logo {
-      position: relative;
-      width: 100%;
-      height: 3rem;
+      min-width: 8rem;
+      min-height: 3rem;
     }
   }
 
   .ang-footer--social-icons {
+    $count: var(--ang-footer--social-icon-count, 0);
+    $row-width: calc($count * $_social-icon-size);
+
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+
+    // On narrow screens, keep a single row while it fits and wrap into rows of four
+    // once it is wider than the footer. The clamp() is 0 while the row fits and
+    // jumps to the width of the extra icons as soon as the row overflows.
+    @include breakpoints.breakpoint(small down) {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, $_social-icon-size);
+      width: calc($row-width - clamp(0px, ($row-width - 100%) * 10000, ($count - 4) * $_social-icon-size));
+    }
   }
 
   .ang-footer--social-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    margin: 0.25rem;
+    width: $_social-icon-size;
+    height: $_social-icon-size;
   }
 
   .ang-footer--actions {
     display: flex;
     justify-content: center;
-    margin: 0 auto;
-    margin-bottom: 0.5rem;
-    height: 3rem;
+    flex-wrap: wrap;
     align-items: center;
   }
 
@@ -83,16 +97,27 @@
   }
 
   @include breakpoints.breakpoint(medium) {
+    // The content group and the copyright share one row; only the copyright
+    // wraps onto its own row when the row runs out of space
     .ang-footer--container {
       flex-direction: row;
+      flex-wrap: wrap;
       align-items: center;
-      max-width: 100rem;
+      padding: 2.5rem;
+      gap: 3rem 1.5rem;
+    }
+
+    .ang-footer--content {
+      flex: 1 1 auto;
+      max-width: 100%;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
     }
 
     .ang-footer--logo-container {
       align-items: flex-start;
       justify-content: flex-start;
-      width: 10rem;
       margin: 0;
 
       .ang-footer--logo-image {
@@ -105,8 +130,14 @@
       margin: 0;
     }
 
+    .ang-footer--social-icon {
+      margin: 0.25rem;
+    }
+
     .ang-footer--copyright {
-      text-align: left;
+      text-wrap: nowrap;
+      height: auto;
+      text-align: start;
     }
   }
 }
