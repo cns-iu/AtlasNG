@@ -1,5 +1,5 @@
 import { computed, DestroyRef, inject, InjectionToken, Provider, Service, signal } from '@angular/core';
-import { createConfigurationToken, LOCAL_STORAGE, type, WINDOW } from '@atlasng/core';
+import { createConfigurationToken, LOCAL_STORAGE, SafeStorage, type, WINDOW } from '@atlasng/core';
 import { AnalyticsPermissions } from './permissions';
 
 /**
@@ -118,6 +118,9 @@ export class AnalyticsPermissionsManager {
   /** Window abstraction used for browser event wiring, or `undefined` when no window is available. */
   readonly #window = inject(WINDOW);
 
+  /** Error-safe adapter for the configured storage backend. */
+  readonly #storage = new SafeStorage(this.config.storage || undefined);
+
   /** Permissions used until a decision is loaded or made, and after a stored decision is removed. */
   readonly #initialPermissions = inject(INITIAL_ANALYTICS_PERMISSIONS);
 
@@ -200,18 +203,7 @@ export class AnalyticsPermissionsManager {
    * @returns `true` when permissions were written, otherwise `false`.
    */
   syncToStorage(): boolean {
-    const { storage, storageKey } = this.config;
-    if (!storage) {
-      return false;
-    }
-
-    try {
-      storage.setItem(storageKey, JSON.stringify(this.permissions()));
-      return true;
-    } catch {
-      // Ignore storage errors (e.g. quota exceeded)
-      return false;
-    }
+    return this.#storage.setItem(this.config.storageKey, JSON.stringify(this.permissions()));
   }
 
   /**
@@ -221,18 +213,7 @@ export class AnalyticsPermissionsManager {
    * @returns `true` when permissions were loaded and applied, otherwise `false`.
    */
   syncFromStorage(broadcastChange = true): boolean {
-    const { storage, storageKey } = this.config;
-    if (!storage) {
-      return false;
-    }
-
-    let storedPermissions: string | null = null;
-    try {
-      storedPermissions = storage.getItem(storageKey);
-    } catch {
-      // Ignore storage errors (e.g. access denied)
-    }
-
+    const storedPermissions = this.#storage.getItem(this.config.storageKey);
     const newPermissions = AnalyticsPermissions.tryFromJSON(storedPermissions ?? '');
     if (!newPermissions) {
       return false;
