@@ -1,5 +1,5 @@
 import { DOCUMENT, inject, InjectionToken } from '@angular/core';
-import { isStorageAvailable } from './utils/storage';
+import { isStorageAvailable, SafeStorage } from './utils/storage';
 
 /**
  * Re-export of Angular's platform-agnostic document token.
@@ -122,4 +122,24 @@ export const SESSION_STORAGE = new InjectionToken<Storage | undefined>('SESSION_
     const getStorage = () => window.sessionStorage;
     return isStorageAvailable(getStorage) ? getStorage() : undefined;
   },
+});
+
+/**
+ * Injection token for a {@link SafeStorage} wrapping {@link LOCAL_STORAGE}.
+ *
+ * Always resolves to an adapter; when local storage is unavailable, its reads return empty results and its writes fail.
+ */
+export const SAFE_LOCAL_STORAGE = new InjectionToken<SafeStorage>('SAFE_LOCAL_STORAGE', {
+  providedIn: 'root',
+  factory: () => new SafeStorage(inject(LOCAL_STORAGE)),
+});
+
+/**
+ * Injection token for a {@link SafeStorage} wrapping {@link SESSION_STORAGE}.
+ *
+ * Always resolves to an adapter; when session storage is unavailable, its reads return empty results and its writes fail.
+ */
+export const SAFE_SESSION_STORAGE = new InjectionToken<SafeStorage>('SAFE_SESSION_STORAGE', {
+  providedIn: 'root',
+  factory: () => new SafeStorage(inject(SESSION_STORAGE)),
 });
