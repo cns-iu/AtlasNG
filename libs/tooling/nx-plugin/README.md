@@ -75,7 +75,13 @@ It never overwrites existing custom configuration: an existing ESLint, Prettier 
 | `nx-json`              | `nx.json`                                      | JSON merge: `namedInputs`, `targetDefaults` and `generators` from [`presets/nx.json`](#nx-preset), plus `prefix` for the Angular generators |
 | `agents-md`            | `AGENTS.md`                                    | Marker block between `<!-- atlasng configuration start -->` and `<!-- atlasng configuration end -->`, appended when missing                 |
 
-A JSON merge keeps every local key. Objects are merged key by key, arrays get the missing shared entries appended and other shared values replace local ones. A file is only rewritten when its parsed value changes, so comments survive a run with nothing to do. Removing a shared entry from every workspace therefore needs a migration.
+A JSON merge keeps every local key:
+
+- Objects are merged key by key.
+- Arrays keep every local entry and get the missing shared entries appended. An object entry counts as present when a local entry has the same identity keys: `plugin`, `type`, `name`, `id`, `glob`, `input`, `target`, `projects`, `dependencies`, `fileset`, `runtime`, `env` and `dependentTasksOutputFiles` are compared by value, and `externalDependencies` by presence. The matched local entry keeps its values and only gets the keys and array items it lacks. A customised entry, such as an Angular budget `{ "type": "initial", "maximumWarning": "600kb" }`, is therefore kept and the preset's `initial` budget is not added next to it.
+- Other values, such as strings, numbers and booleans outside array entries, are always set to the shared value, so preset updates reach every workspace. A local change to one of them, for example `targetDefaults.test.options.coverageThresholds`, is reverted by `nx sync` and reported by `nx sync:check`. Override such values in the project's `project.json`, which takes precedence over `targetDefaults`, or exclude `nx-json`.
+
+A file is only rewritten when its parsed value changes, so comments survive a run with nothing to do. Removing a shared entry from every workspace, or changing a value inside an existing array entry, therefore needs a migration.
 
 Nx caches sync results in the daemon and does not see a file mode change on its own. If only the executable bit of a hook was lost, run `NX_DAEMON=false npx nx sync`.
 
@@ -115,7 +121,7 @@ ng-packagr secondary entry points are skipped. The targets run `npx compodoc`, s
 
 ### `release-notes`
 
-Combines the `CHANGELOG.md` sections of a fixed release group into one set of GitHub release notes. Projects whose section only records a version bump are left out. The group's projects come from `nx.json` and may be names, globs, directories or tags.
+Combines the `CHANGELOG.md` sections of a fixed release group into one set of GitHub release notes. Projects whose section only records a version bump are left out, and projects without a section for the version are left out with a warning. Version headings may carry a date (`## 1.2.3 (2026-01-02)`), no date (`## 1.2.3`) or a compare link (`## [1.2.3](...)`). The group's projects come from `nx.json` and may be names, globs, directories or tags.
 
 | Option   | Default     | Description                                                                         |
 | -------- | ----------- | ----------------------------------------------------------------------------------- |
@@ -143,7 +149,12 @@ gh release create v1.2.3 --notes-file tmp/release-notes.md
 
 ### `bootstrap-npm-packages`
 
-npm trusted publishing can only be configured for packages that already exist on the registry. This executor builds every project with an `nx-release-publish` target that is not on npm yet, publishes each one with `npm publish` (dependencies first, attached to the terminal so npm can wait for two-factor authentication), then runs `npm trust github` so later releases can be published from CI. Packages already on npm are skipped, so if `npm publish` succeeds but `npm trust` fails, a rerun does not retry it; run `npm trust github` for that package manually.
+npm trusted publishing can only be configured for packages that already exist on the registry. This executor builds every project with an `nx-release-publish` target that is not on npm yet, publishes each one with `npm publish` (dependencies first, attached to the terminal so npm can wait for two-factor authentication), then runs `npm trust github` so later releases can be published from CI.
+
+- Packages already on npm are skipped. Only an `E404` from `npm view` counts as "not published"; any other `npm view` failure, such as a network or authentication error, stops the executor before anything is built or published.
+- A failed `npm publish` stops the executor, because later packages may depend on the package.
+- A failed `npm trust` does not stop the remaining packages, but the executor fails and prints the `npm trust github` command for each affected package. A rerun skips these packages because they now exist on npm, so run the printed commands by hand.
+- On Windows, `npm` and `npx` are run through the shell, because they are `.cmd` scripts.
 
 | Option       | Default             | Description                                         |
 | ------------ | ------------------- | --------------------------------------------------- |

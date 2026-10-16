@@ -49,22 +49,23 @@ describe('compodoc plugin', () => {
       inputs: ['default', { externalDependencies: ['@compodoc/compodoc'] }],
       outputs: ['{workspaceRoot}/dist/compodoc/{projectName}'],
       options: {
-        commands: [
-          // eslint-disable-next-line no-template-curly-in-string -- shell parameter expansion
-          'npx compodoc -p tsconfig.lib.json -d ${PWD%/{projectRoot}}/dist/compodoc/{projectName} -n {projectName}',
-        ],
+        commands: ['npx compodoc -p tsconfig.lib.json -d ../../dist/compodoc/{projectName} -n {projectName}'],
         cwd: '{projectRoot}',
       },
+      metadata: { technologies: ['compodoc'], description: 'Builds the Compodoc API documentation' },
     });
     expect(targets['compodoc']).toEqual({
       executor: 'nx:run-commands',
       continuous: true,
       options: {
         commands: [
-          // eslint-disable-next-line no-template-curly-in-string -- shell parameter expansion
-          'npx compodoc -p tsconfig.lib.json -d ${PWD%/{projectRoot}}/dist/compodoc/{projectName} -n {projectName} --serve --watch',
+          'npx compodoc -p tsconfig.lib.json -d ../../dist/compodoc/{projectName} -n {projectName} --serve --watch',
         ],
         cwd: '{projectRoot}',
+      },
+      metadata: {
+        technologies: ['compodoc'],
+        description: 'Serves the Compodoc API documentation and rebuilds it on change',
       },
     });
   });
@@ -103,7 +104,28 @@ describe('compodoc plugin', () => {
         ],
         cwd: '{projectRoot}',
       },
+      metadata: { technologies: ['compodoc'], description: 'Builds the Compodoc JSON that Storybook reads' },
     });
+  });
+
+  it('writes to the workspace dist directory from nested and root projects', async () => {
+    write('libs/applications/kg/ng-package.json');
+    write('libs/applications/kg/project.json');
+    write('libs/applications/kg/tsconfig.lib.json');
+    write('ng-package.json');
+    write('project.json');
+    write('tsconfig.lib.json');
+
+    const results = await run(['libs/applications/kg/ng-package.json', 'ng-package.json']);
+    const command = (projectRoot: string) =>
+      (
+        results.find(([file]) => dirname(file) === projectRoot)?.[1].projects?.[projectRoot]?.targets?.[
+          'build-compodoc'
+        ]?.options as { commands: string[] }
+      ).commands[0];
+
+    expect(command('libs/applications/kg')).toContain(' -d ../../../dist/compodoc/{projectName} ');
+    expect(command('.')).toContain(' -d ./dist/compodoc/{projectName} ');
   });
 
   it('uses the configured Storybook Compodoc target name', async () => {
