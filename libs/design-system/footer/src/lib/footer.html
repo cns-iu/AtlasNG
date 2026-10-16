@@ -2,14 +2,20 @@
   <div class="ang-footer--content">
     <div class="ang-footer--logo-container">
       <ng-content select="ang-footer-logo, [angFooterLogo]">
-        <a class="ang-footer--logo" angAnyLink="/" matTooltip="Homepage">
-          <img class="ang-footer--logo-image" fill [ngSrc]="logoImage()" [attr.alt]="`Homepage`" />
+        <a class="ang-footer--logo" matTooltip="Homepage" [angAnyLink]="organizationLink()">
+          <img
+            class="ang-footer--logo-image"
+            fill
+            [ngSrc]="logoImage()"
+            [attr.alt]="'Logo'"
+            [aria-label]="`Logo of ${organization()}`"
+          />
         </a>
       </ng-content>
     </div>
 
     <div class="ang-footer--social-icons" [style.--ang-footer--social-icon-count]="socials()?.length ?? 0">
-      @for (social of socials(); track social) {
+      @for (social of socials(); track $index) {
         @if (typeof social === 'string') {
           <ang-social-media-button class="ang-footer--social-icon" [id]="social" />
         } @else {

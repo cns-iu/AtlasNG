@@ -67,9 +67,33 @@ describe('Footer', () => {
   it('renders the logo image with the configured source', async () => {
     await setup();
 
-    const logo = screen.getByRole('img', { name: 'Homepage' });
+    const logo = screen.getByRole('img', { name: 'Logo of Whole Person Physiome' });
     expect(logo).toHaveAttribute('src', '/assets/wpp.svg');
     expect(logo).toHaveClass('ang-footer--logo-image');
+  });
+
+  it('links the logo to the organization link', async () => {
+    await setup();
+
+    expect(screen.getByRole('link', { name: 'Logo of Whole Person Physiome' })).toHaveAttribute(
+      'href',
+      'https://www.cns.edu/',
+    );
+  });
+
+  it('links the logo to the homepage when no organization link is set', async () => {
+    await render(Footer, {
+      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome' },
+      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    });
+
+    expect(screen.getByRole('link', { name: 'Logo of Whole Person Physiome' })).toHaveAttribute('href', '/');
+  });
+
+  it('describes the logo link with a homepage tooltip', async () => {
+    await setup();
+
+    expect(screen.getByRole('link', { name: 'Logo of Whole Person Physiome' })).toHaveAccessibleDescription('Homepage');
   });
 
   it('renders social media buttons from the socials input', async () => {
@@ -78,6 +102,13 @@ describe('Footer', () => {
     expect(screen.getByRole('link', { name: 'LinkedIn' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'YouTube' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Instagram' })).toBeInTheDocument();
+  });
+
+  it('exposes the social icon count to the styles', async () => {
+    await setup();
+
+    const icons = screen.getByRole('link', { name: 'LinkedIn' }).closest('.ang-footer--social-icons');
+    expect(icons).toHaveStyle({ '--ang-footer--social-icon-count': '3' });
   });
 
   it('renders the privacy action buttons', async () => {
@@ -98,14 +129,11 @@ describe('Footer', () => {
     expect(fixture.componentInstance.openPrivacyPreferences).toHaveBeenCalledOnce();
   });
 
-  it('renders copyright text with current year and homepage link', async () => {
+  it('renders copyright text with the current year and organization', async () => {
     await setup();
 
-    const homepageLink = screen.getByRole('link', { name: 'Homepage' });
-    expect(homepageLink).toHaveAttribute('href', '/');
-
     const year = new Date().getFullYear();
-    expect(screen.getByText(new RegExp(`© ${year}`))).toBeVisible();
+    expect(screen.getByText(`© ${year} Copyright Whole Person Physiome. All rights reserved.`)).toBeVisible();
   });
 
   it('renders projected logo and action content when provided', async () => {
