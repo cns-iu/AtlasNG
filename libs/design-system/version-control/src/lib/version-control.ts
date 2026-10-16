@@ -5,6 +5,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatActionList, MatListModule } from '@angular/material/list';
 import { MatSelect } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { createSnackBarConfig, Snackbar } from '@atlasng/design-system/snackbar';
 
 /**
@@ -44,7 +45,7 @@ export interface VersionDownload<T extends VersionControlFileFormat> {
  */
 @Component({
   selector: 'ang-version-control',
-  imports: [MatActionList, MatFormField, MatIcon, MatLabel, MatListModule, MatOption, MatSelect],
+  imports: [MatActionList, MatFormField, MatIcon, MatLabel, MatListModule, MatOption, MatSelect, ScrollArea],
   templateUrl: './version-control.html',
   styleUrl: './version-control.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
