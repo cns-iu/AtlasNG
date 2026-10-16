@@ -32,6 +32,11 @@ describe('browser tokens', () => {
     vi.unstubAllGlobals();
   });
 
+  function configureWithoutWindow(): void {
+    vi.stubGlobal('window', undefined);
+    configureDocument({ defaultView: null } as unknown as Document);
+  }
+
   describe('WINDOW', () => {
     it('should return DOCUMENT.defaultView when available', () => {
       const fakeWindow = {} as Window;
@@ -52,15 +57,13 @@ describe('browser tokens', () => {
       expect(TestBed.inject(WINDOW)).toBe(fakeWindow);
     });
 
-    it('should throw when DOCUMENT.defaultView and global window are unavailable', () => {
+    it('should return undefined when DOCUMENT.defaultView and global window are unavailable', () => {
       const fakeDocument = { defaultView: undefined } as unknown as Document;
 
       vi.stubGlobal('window', undefined);
       configureDocument(fakeDocument);
 
-      expect(() => TestBed.inject(WINDOW)).toThrowErrorMatchingInlineSnapshot(
-        `[Error: No global "window" object available.]`,
-      );
+      expect(TestBed.inject(WINDOW)).toBeUndefined();
     });
   });
 
@@ -76,6 +79,12 @@ describe('browser tokens', () => {
   });
 
   describe('CUSTOM_ELEMENT_REGISTRY', () => {
+    it('should return undefined when no window is available', () => {
+      configureWithoutWindow();
+
+      expect(TestBed.inject(CUSTOM_ELEMENT_REGISTRY)).toBeUndefined();
+    });
+
     it('should return window.customElements when available', () => {
       const fakeRegistry = {} as CustomElementRegistry;
       const fakeWindow = { customElements: fakeRegistry } as unknown as Window;
@@ -99,6 +108,12 @@ describe('browser tokens', () => {
   });
 
   describe('RESIZE_OBSERVER', () => {
+    it('should return undefined when no window is available', () => {
+      configureWithoutWindow();
+
+      expect(TestBed.inject(RESIZE_OBSERVER)).toBeUndefined();
+    });
+
     it('should return the ResizeObserver constructor when available', () => {
       const fakeResizeObserver = class {} as unknown as typeof ResizeObserver;
       const fakeWindow = { ResizeObserver: fakeResizeObserver } as unknown as Window;
@@ -122,6 +137,12 @@ describe('browser tokens', () => {
   });
 
   describe('LOCAL_STORAGE', () => {
+    it('should return undefined when no window is available', () => {
+      configureWithoutWindow();
+
+      expect(TestBed.inject(LOCAL_STORAGE)).toBeUndefined();
+    });
+
     it('should return window.localStorage when available', () => {
       const fakeStorage = createStorage();
       const fakeWindow = { localStorage: fakeStorage } as Window;
@@ -149,6 +170,12 @@ describe('browser tokens', () => {
   });
 
   describe('SESSION_STORAGE', () => {
+    it('should return undefined when no window is available', () => {
+      configureWithoutWindow();
+
+      expect(TestBed.inject(SESSION_STORAGE)).toBeUndefined();
+    });
+
     it('should return window.sessionStorage when available', () => {
       const fakeStorage = createStorage();
       const fakeWindow = { sessionStorage: fakeStorage } as Window;

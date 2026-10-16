@@ -93,6 +93,22 @@ describe('PermissionsManager', () => {
     expect(manager.permissions()).toBe(initialPermissions);
   });
 
+  it('works without a window', () => {
+    const storage = createStorage();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: WINDOW, useValue: undefined },
+        { provide: LOCAL_STORAGE, useValue: storage },
+      ],
+    });
+    const manager = TestBed.inject(AnalyticsPermissionsManager);
+
+    manager.setPermissions(AnalyticsPermissions.FULL);
+
+    expect(manager.permissions().equals(AnalyticsPermissions.FULL)).toBe(true);
+    expect(storage.setItem).toHaveBeenCalledWith(manager.config.storageKey, JSON.stringify(AnalyticsPermissions.FULL));
+  });
+
   it('sets permissions, broadcasts change event, and syncs to storage', () => {
     const storage = createStorage();
     const { manager, fakeWindow } = setup({ storage });

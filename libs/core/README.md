@@ -1,6 +1,6 @@
 # @atlasng/core
 
-The foundation layer of AtlasNG. It provides SSR-safe injection tokens for browser globals and a small helper for building typed, defaults-aware configuration tokens. Every other AtlasNG library builds on it, and it has no dependencies on other `@atlasng/*` packages.
+The foundation layer of AtlasNG. It provides injection tokens for browser globals and a small helper for building typed, defaults-aware configuration tokens. Most AtlasNG libraries build on it, and it has no dependencies on other `@atlasng/*` packages.
 
 ## Installation
 
@@ -12,17 +12,17 @@ npm install @atlasng/core
 
 ### Browser tokens
 
-Inject browser globals through tokens instead of referencing them directly. The tokens resolve through Angular's `DOCUMENT`, so they can be replaced in tests and during server-side rendering.
+Inject browser globals through tokens instead of referencing them directly. The tokens resolve through Angular's `DOCUMENT`, so they can be replaced in tests and during server-side rendering. When no window is available (for example during server-side rendering without a DOM), `WINDOW` and the tokens derived from it resolve to `undefined`.
 
-| Token                     | Value                                                    |
-| ------------------------- | -------------------------------------------------------- |
-| `DOCUMENT`                | Re-export of Angular's `DOCUMENT` token                  |
-| `WINDOW`                  | The global `window` object                               |
-| `LOCATION`                | `document.location`                                      |
-| `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked   |
-| `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked |
-| `RESIZE_OBSERVER`         | The `ResizeObserver` constructor, or `undefined`         |
-| `CUSTOM_ELEMENT_REGISTRY` | `window.customElements`, or `undefined`                  |
+| Token                     | Value                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| `DOCUMENT`                | Re-export of Angular's `DOCUMENT` token                                        |
+| `WINDOW`                  | The global `window` object, or `undefined` when none is available              |
+| `LOCATION`                | `document.location`                                                            |
+| `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked or there is no window   |
+| `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked or there is no window |
+| `RESIZE_OBSERVER`         | The `ResizeObserver` constructor, or `undefined`                               |
+| `CUSTOM_ELEMENT_REGISTRY` | `window.customElements`, or `undefined`                                        |
 
 ```ts
 import { inject } from '@angular/core';
