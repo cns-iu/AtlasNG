@@ -92,11 +92,11 @@ describe('Footer', () => {
     expect(fixture.componentInstance.openPrivacyPreferences).toHaveBeenCalledOnce();
   });
 
-  it('renders copyright text with current year and organization link', async () => {
+  it('renders copyright text with current year and homepage link', async () => {
     await setup();
 
-    const orgLink = screen.getByRole('link', { name: 'Visit Whole Person Physiome' });
-    expect(orgLink).toHaveAttribute('href', 'https://www.cns.edu/');
+    const homepageLink = screen.getByRole('link', { name: 'Visit Whole Person Physiome' });
+    expect(homepageLink).toHaveAttribute('href', '/');
 
     const year = new Date().getFullYear();
     expect(screen.getByText(new RegExp(`© ${year}`))).toBeVisible();
