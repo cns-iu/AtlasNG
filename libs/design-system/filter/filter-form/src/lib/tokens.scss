@@ -1,0 +1,18 @@
+@use 'internal/token-utils';
+
+$config: (
+  namespace: 'filter-form',
+  tokens: (
+    category-text-color: token-utils.sys-token(on-surface),
+    counter-text-color: token-utils.sys-token(on-surface-variant),
+    counter-text-font: token-utils.sys-token(body-small-font),
+    counter-text-size: token-utils.sys-token(body-small-size),
+    counter-text-weight: token-utils.sys-token(body-small-weight),
+    counter-text-line-height: token-utils.sys-token(body-small-line-height),
+    counter-text-tracking: token-utils.sys-token(body-small-tracking),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
