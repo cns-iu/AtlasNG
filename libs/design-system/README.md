@@ -10,7 +10,7 @@ Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasN
 npm install @atlasng/design-system
 ```
 
-The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player` and `@swimlane/ngx-datatable` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
+The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@angular/forms`, `rxjs`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player` and `@swimlane/ngx-datatable` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
 
 ## Setup
 
@@ -47,7 +47,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/search-list`                         | `SearchList`, `SearchListOption`                                          |
 | `@atlasng/design-system/snackbar`                            | `Snackbar`, `createSnackBarConfig`, `SnackBarConfig`, `SnackBarData`      |
 | `@atlasng/design-system/table`                               | `Table` and its column and template APIs                                  |
-| `@atlasng/design-system/table/columns`                       | Ready-made header and cell definitions                                    |
+| `@atlasng/design-system/table/columns`                       | Ready-made header, cell, and summary definitions                          |
 | `@atlasng/design-system/table-of-contents`                   | `TableOfContents`                                                         |
 | `@atlasng/design-system/youtube-player`                      | `YouTubePlayer`, `provideYouTubePlayerConfig`                             |
 
@@ -65,7 +65,7 @@ export class Maintenance {}
 
 A few components with notable options:
 
-- **Table:** `Table` wraps `@swimlane/ngx-datatable`. Text and number headers, plus checkbox, number, link, and code cells, are available from `@atlasng/design-system/table/columns`. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
+- **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, and code cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
 
 ## Sass API

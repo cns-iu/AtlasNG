@@ -2,14 +2,12 @@ import { render, screen } from '@testing-library/angular';
 import { ContentHeader } from './content-header';
 
 describe('ContentHeader', () => {
-  function setup({ id, underlined }: { id?: string; underlined?: boolean } = {}) {
-    return render(ContentHeader, {
-      inputs: {
-        tagline: 'Content title',
-        level: 2,
-        ...(id !== undefined && { id }),
-        ...(underlined !== undefined && { underlined }),
-      },
+  // Render through a wrapper template: ContentHeader clears its host id, which would also clear the
+  // fixture root id that Angular's test teardown uses to remove rendered elements.
+  function setup({ id, underlined = true }: { id?: string; underlined?: boolean } = {}) {
+    return render('<ang-content-header tagline="Content title" [level]="2" [id]="id" [underlined]="underlined" />', {
+      imports: [ContentHeader],
+      componentProperties: { id, underlined },
     });
   }
 
@@ -24,6 +22,14 @@ describe('ContentHeader', () => {
 
     expect(screen.getByRole('heading', { name: 'Content title' })).toHaveAttribute('id', 'docs');
     expect(screen.getByRole('link', { name: 'Content title' })).toHaveAttribute('href', '/#docs');
+  });
+
+  it('applies a static ID only to the heading', async () => {
+    await render('<ang-content-header tagline="Content title" level="2" id="docs" />', {
+      imports: [ContentHeader],
+    });
+
+    expect(document.getElementById('docs')).toBe(screen.getByRole('heading', { name: 'Content title' }));
   });
 
   it('renders the tagline without a link when an ID is not provided', async () => {

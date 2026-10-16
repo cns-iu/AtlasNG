@@ -20,12 +20,15 @@ export interface SnackBarData {
   actionRow?: boolean;
   /** Flag to show/hide the close button */
   showClose?: boolean;
-  /** Duration in milliseconds before the snackbar closes */
+  /**
+   * Duration in milliseconds before the snackbar closes
+   * @deprecated Never read. Set `duration` on the {@link SnackBarConfig} passed to {@link createSnackBarConfig} instead.
+   */
   duration?: number;
 }
 
 /** Snackbar configuration accepted by {@link createSnackBarConfig} */
-export interface SnackBarConfig extends MatSnackBarConfig<never>, Omit<SnackBarData, 'message'> {}
+export interface SnackBarConfig extends MatSnackBarConfig<never>, Omit<SnackBarData, 'message' | 'duration'> {}
 
 /**
  * Creates a `MatSnackBar` configuration for opening the {@link Snackbar} component.

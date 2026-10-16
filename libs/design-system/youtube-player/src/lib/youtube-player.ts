@@ -29,7 +29,6 @@ const DEFAULT_PLAYER_HEIGHT = 390;
 /** Player parameters applied before consumer-provided overrides. */
 const DEFAULT_PLAYER_VARS: YT.PlayerVars = {
   rel: 0,
-  showinfo: 0,
 };
 
 /**
@@ -78,6 +77,7 @@ export class YouTubePlayerEnableRequest {}
   templateUrl: './youtube-player.html',
   styleUrl: './youtube-player.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ang-youtube-player' },
 })
 export class YouTubePlayer {
   /** YouTube video ID to load or link to. */

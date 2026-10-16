@@ -6,17 +6,9 @@
   </mat-form-field>
 }
 
-<mat-selection-list
-  class="ang-search-list--list"
-  (selectionChange)="updateSelection($event.source.selectedOptions.selected)"
->
-  @for (option of filteredOptions(); track $index) {
-    <mat-list-option
-      togglePosition="before"
-      [value]="option"
-      [selected]="selected().includes(option)"
-      [attr.aria-label]="`Toggle ${option.label}`"
-    >
+<mat-selection-list class="ang-search-list--list" (selectionChange)="updateSelection($event)">
+  @for (option of filteredOptions(); track option) {
+    <mat-list-option togglePosition="before" [value]="option" [selected]="selected().includes(option)">
       <div matListItemTitle>
         <div class="ang-search-list--label-count">
           <span class="ang-search-list--label">{{ option.label }}</span>

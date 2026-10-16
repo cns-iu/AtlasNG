@@ -3,6 +3,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
 
+/**
+ * Disclosure button used in site navigation to show or hide a menu or panel.
+ * Clicking toggles the two-way `selected` model, which is exposed as `aria-expanded`.
+ * Clicks are tracked in the `navigation-toggle` analytics event scope.
+ */
 @Component({
   selector: 'ang-navigation-toggle',
   imports: [MatButtonModule, MatIconModule, TrackClick],

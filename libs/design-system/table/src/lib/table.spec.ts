@@ -275,7 +275,7 @@ describe('Table', () => {
     );
 
     expect(screen.getByRole('checkbox', { name: 'Select all rows' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Select row' })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Select row 1' })).toBeInTheDocument();
   });
 
   it('uses the native header when no reusable header is configured', async () => {
