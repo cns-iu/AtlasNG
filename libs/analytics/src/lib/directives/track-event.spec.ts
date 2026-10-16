@@ -1,6 +1,7 @@
+import { AnalyticsPermissions, provideInitialAnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { AnalyticsEvent, AnalyticsEventCategory, CoreEvents, createAnalyticsEvent } from '@atlasng/analytics/events';
 import { fireEvent, render } from '@testing-library/angular';
-import { provideAnalytics, withCustomBackend } from '../provider';
+import { provideAnalytics, withCustomBackend, withPermissionsConfig } from '../provider';
 import { EventScope } from '../scope';
 import { AnalyticsEventTrackingDef, MultiTrackEvent, TrackEvent } from './track-event';
 
@@ -38,7 +39,9 @@ describe('TrackEvent', () => {
         provideAnalytics(
           { rootScope },
           withCustomBackend(() => backend),
+          withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
         ),
+        provideInitialAnalyticsPermissions(AnalyticsPermissions.FULL),
       ],
       componentProperties: {
         event,
@@ -128,7 +131,9 @@ describe('MultiTrackEvent', () => {
         provideAnalytics(
           { rootScope },
           withCustomBackend(() => backend),
+          withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
         ),
+        provideInitialAnalyticsPermissions(AnalyticsPermissions.FULL),
       ],
       componentProperties: {
         defs,

@@ -1,11 +1,16 @@
 import { EnvironmentProviders, ErrorHandler, makeEnvironmentProviders, Provider } from '@angular/core';
 import {
+  AnalyticsPermissionedStorageConfig,
+  AnalyticsPermissionedStorageKeys,
+  AnalyticsPermissions,
   AnalyticsPermissionsManagerConfig,
+  provideAnalyticsPermissionedStorageConfig,
+  provideAnalyticsPermissionedStorageKeys,
   provideAnalyticsPermissionsManagerConfig,
+  provideInitialAnalyticsPermissions,
 } from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG, AnalyticsConfig } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
-import { DefaultAnalyticsBackendConfig, defaultBackendFactory } from './default-backend/default-backend';
 import { AnalyticsErrorHandler } from './features/error-handler';
 
 /** Represents a feature that can be added to the analytics configuration. */
@@ -18,16 +23,29 @@ export interface AnalyticsFeature {
 
 /** The different kinds of analytics features that can be added to the configuration. */
 export enum AnalyticsFeatureKind {
+  /** A custom backend added with {@link withCustomBackend}. */
   CustomBackend,
+  /** The default backend added with `withDefaultBackend` from `@atlasng/analytics/default-backend`. */
   DefaultBackend,
+  /** Permissions manager configuration added with {@link withPermissionsConfig}. */
   PermissionsManagerConfiguration,
+  /** The global error handler added with {@link withGlobalErrorHandler}. */
   GlobalErrorHandler,
+  /** Initial permissions added with {@link withInitialPermissions}. */
+  InitialPermissions,
+  /** Permissioned storage configuration added with {@link withPermissionedStorageConfig}. */
+  PermissionedStorageConfiguration,
+  /** Permissioned storage keys added with {@link withPermissionedStorageKeys}. */
+  PermissionedStorageKeys,
 }
 
 /**
  * Add a custom analytics backend.
  *
- * @param backendFactory Factory used to create a custom backend.
+ * Events reach the backend only when the user has granted their consent category.
+ *
+ * @param backendFactory Factory used to create a custom backend. Runs in an injection context.
+ * @returns The custom backend feature.
  */
 export function withCustomBackend(backendFactory: () => AnalyticsBackend): AnalyticsFeature {
   return {
@@ -42,24 +60,10 @@ export function withCustomBackend(backendFactory: () => AnalyticsBackend): Analy
 }
 
 /**
- * Add the default analytics backend provided by this library.
- */
-export function withDefaultBackend(config: DefaultAnalyticsBackendConfig): AnalyticsFeature {
-  return {
-    kind: AnalyticsFeatureKind.DefaultBackend,
-    providers: [
-      {
-        provide: ANALYTICS_BACKEND,
-        useFactory: () => defaultBackendFactory(config),
-      },
-    ],
-  };
-}
-
-/**
  * Configure the permissions manager.
  *
  * @param config The permissions manager configuration.
+ * @returns The permissions manager configuration feature.
  */
 export function withPermissionsConfig(config: AnalyticsPermissionsManagerConfig): AnalyticsFeature {
   return {
@@ -69,8 +73,50 @@ export function withPermissionsConfig(config: AnalyticsPermissionsManagerConfig)
 }
 
 /**
+ * Set the permissions used until a consent decision is loaded or made.
+ *
+ * @param permissions The initial permissions.
+ * @returns The initial permissions feature.
+ */
+export function withInitialPermissions(permissions: AnalyticsPermissions): AnalyticsFeature {
+  return {
+    kind: AnalyticsFeatureKind.InitialPermissions,
+    providers: [provideInitialAnalyticsPermissions(permissions)],
+  };
+}
+
+/**
+ * Configure the permissioned storage.
+ *
+ * @param config The permissioned storage configuration.
+ * @returns The permissioned storage configuration feature.
+ */
+export function withPermissionedStorageConfig(config: AnalyticsPermissionedStorageConfig): AnalyticsFeature {
+  return {
+    kind: AnalyticsFeatureKind.PermissionedStorageConfiguration,
+    providers: [provideAnalyticsPermissionedStorageConfig(config)],
+  };
+}
+
+/**
+ * Register keys that the permissioned storage persists while their consent category is granted.
+ * Can be added multiple times; when the same key is registered more than once, the last registration wins.
+ *
+ * @param keys Persisted keys, mapped from the key callers read and write.
+ * @returns The permissioned storage keys feature.
+ */
+export function withPermissionedStorageKeys(keys: AnalyticsPermissionedStorageKeys): AnalyticsFeature {
+  return {
+    kind: AnalyticsFeatureKind.PermissionedStorageKeys,
+    providers: [provideAnalyticsPermissionedStorageKeys(keys)],
+  };
+}
+
+/**
  * Set up a global `ErrorHandler` to automatically log uncaught errors to analytics.
  * During development it also logs errors to the console to aid debugging.
+ *
+ * @returns The global error handler feature.
  */
 export function withGlobalErrorHandler(): AnalyticsFeature {
   return {
@@ -89,6 +135,7 @@ export function withGlobalErrorHandler(): AnalyticsFeature {
  *
  * @param config Analytics configuration options.
  * @param features Additional features to configure the analytics system with.
+ * @returns Environment providers for the analytics system.
  */
 export function provideAnalytics(config?: AnalyticsConfig, ...features: AnalyticsFeature[]): EnvironmentProviders {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -104,6 +151,9 @@ export function provideAnalytics(config?: AnalyticsConfig, ...features: Analytic
 /**
  * Check the provided features for valid backend configuration.
  * Ensures that there is exactly one analytics backend provided, either custom or default, but not both.
+ *
+ * @param features The features passed to {@link provideAnalytics}.
+ * @throws Error when no backend, multiple custom backends, or both a custom and the default backend are provided.
  */
 function checkBackendConfiguration(features: AnalyticsFeature[]): void {
   const customBackends = features.filter((feature) => feature.kind === AnalyticsFeatureKind.CustomBackend);
@@ -115,7 +165,7 @@ function checkBackendConfiguration(features: AnalyticsFeature[]): void {
     throw new Error('Cannot provide both a custom analytics backend and the default backend. Please choose one.');
   } else if (customBackends.length === 0 && !hasDefaultBackend) {
     throw new Error(
-      'No analytics backend was provided. Please provide a backend using withDefaultBackend() or withCustomBackend().',
+      'No analytics backend was provided. Please provide a backend using withDefaultBackend() from @atlasng/analytics/default-backend or withCustomBackend().',
     );
   }
 }

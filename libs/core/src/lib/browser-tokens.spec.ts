@@ -6,6 +6,8 @@ import {
   LOCATION,
   NAVIGATION,
   RESIZE_OBSERVER,
+  SAFE_LOCAL_STORAGE,
+  SAFE_SESSION_STORAGE,
   SESSION_STORAGE,
   WINDOW,
 } from './browser-tokens';
@@ -229,6 +231,33 @@ describe('browser tokens', () => {
       });
 
       expect(TestBed.inject(SESSION_STORAGE)).toBeUndefined();
+    });
+  });
+
+  describe.each([
+    ['SAFE_LOCAL_STORAGE', SAFE_LOCAL_STORAGE, LOCAL_STORAGE],
+    ['SAFE_SESSION_STORAGE', SAFE_SESSION_STORAGE, SESSION_STORAGE],
+  ] as const)('%s', (_name, token, storageToken) => {
+    it('should wrap the storage when available', () => {
+      const fakeStorage = createStorage();
+      vi.mocked(fakeStorage.getItem).mockReturnValue('value');
+
+      TestBed.configureTestingModule({
+        providers: [{ provide: storageToken, useValue: fakeStorage }],
+      });
+
+      const storage = TestBed.inject(token);
+      expect(storage.available).toBe(true);
+      expect(storage.getItem('key')).toBe('value');
+      expect(fakeStorage.getItem).toHaveBeenCalledWith('key');
+    });
+
+    it('should resolve to an unavailable adapter when no window is available', () => {
+      configureWithoutWindow();
+
+      const storage = TestBed.inject(token);
+      expect(storage.available).toBe(false);
+      expect(storage.setItem('key', 'value')).toBe(false);
     });
   });
 });

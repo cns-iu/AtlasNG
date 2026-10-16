@@ -21,6 +21,8 @@ Inject browser globals through tokens instead of referencing them directly. The 
 | `LOCATION`                | `document.location`                                                            |
 | `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked or there is no window   |
 | `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked or there is no window |
+| `SAFE_LOCAL_STORAGE`      | `SafeStorage` wrapping `LOCAL_STORAGE`                                         |
+| `SAFE_SESSION_STORAGE`    | `SafeStorage` wrapping `SESSION_STORAGE`                                       |
 | `NAVIGATION`              | The Navigation API (`window.navigation`), or `undefined` when unsupported      |
 | `RESIZE_OBSERVER`         | The `ResizeObserver` constructor, or `undefined`                               |
 | `CUSTOM_ELEMENT_REGISTRY` | `window.customElements`, or `undefined`                                        |
@@ -34,6 +36,23 @@ export class PreferencesStore {
 
   save(value: string): void {
     this.#storage?.setItem('preferences', value);
+  }
+}
+```
+
+### Safe storage
+
+Browsers can throw from storage methods, for example when the quota is exceeded. `SafeStorage` wraps a `Storage`, or `undefined`, and catches those errors: `getItem` and `key` return `null`, `length` returns `0`, and `setItem`, `removeItem`, and `clear` return `false` on failure instead of throwing. `available` tells whether a storage backend was provided. Inject `SAFE_LOCAL_STORAGE` or `SAFE_SESSION_STORAGE` to get adapters for the browser storages.
+
+```ts
+import { inject } from '@angular/core';
+import { SAFE_LOCAL_STORAGE } from '@atlasng/core';
+
+export class PreferencesStore {
+  readonly #storage = inject(SAFE_LOCAL_STORAGE);
+
+  save(value: string): boolean {
+    return this.#storage.setItem('preferences', value);
   }
 }
 ```
