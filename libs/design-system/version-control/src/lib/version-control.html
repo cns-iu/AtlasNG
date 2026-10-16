@@ -1,0 +1,40 @@
+<div class="ang-version-control--top">
+  <span class="ang-version-control--version-heading">{{ tagline() }}</span>
+
+  <mat-form-field class="ang-version-control--version" subscriptSizing="dynamic">
+    <mat-label>Version</mat-label>
+    <mat-select
+      [disabled]="versions().length === 0"
+      [value]="currentVersion()"
+      (selectionChange)="selectedVersion.set($event.value)"
+    >
+      @for (item of versions(); track item) {
+        <mat-option [value]="item">{{ item.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (currentVersion(); as version) {
+  @if (version.formats.length > 0) {
+    <span class="ang-version-control--heading">Download options</span>
+    <ang-scroll-area>
+      <mat-action-list class="ang-version-control--download-options" aria-label="Download options">
+        @for (option of version.formats; track option) {
+          <button
+            mat-list-item
+            lines="3"
+            class="ang-version-control--download-option"
+            (click)="$event.preventDefault(); openSnackbar(); download.emit({ item: version, format: option })"
+          >
+            <mat-icon matListItemIcon fontIcon="download" />
+            <span matListItemTitle>{{ option.label }}</span>
+            @if (option.description; as description) {
+              <span class="ang-version-control--download-description">{{ description }}</span>
+            }
+          </button>
+        }
+      </mat-action-list>
+    </ang-scroll-area>
+  }
+}
