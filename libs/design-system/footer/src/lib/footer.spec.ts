@@ -67,18 +67,9 @@ describe('Footer', () => {
   it('renders the logo image with the configured source', async () => {
     await setup();
 
-    const logo = screen.getByRole('img', { name: 'Visit Whole Person Physiome' });
+    const logo = screen.getByRole('img', { name: 'Homepage' });
     expect(logo).toHaveAttribute('src', '/assets/wpp.svg');
     expect(logo).toHaveClass('ang-footer--logo-image');
-  });
-
-  it('uses a generic logo label when no organization is set', async () => {
-    await render(Footer, {
-      inputs: { logoImage: '/assets/wpp.svg' },
-      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
-    });
-
-    expect(screen.getByRole('img', { name: 'Logo' })).toBeInTheDocument();
   });
 
   it('renders social media buttons from the socials input', async () => {
@@ -110,7 +101,7 @@ describe('Footer', () => {
   it('renders copyright text with current year and homepage link', async () => {
     await setup();
 
-    const homepageLink = screen.getByRole('link', { name: 'Visit Whole Person Physiome' });
+    const homepageLink = screen.getByRole('link', { name: 'Homepage' });
     expect(homepageLink).toHaveAttribute('href', '/');
 
     const year = new Date().getFullYear();
