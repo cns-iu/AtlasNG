@@ -1,3 +1,5 @@
+@let version = this.selectedVersion() ?? this.versions()[0];
+
 <div class="ang-version-control--top">
   <span class="ang-version-control--version-heading">{{ tagline() }}</span>
 
@@ -5,7 +7,7 @@
     <mat-label>Version</mat-label>
     <mat-select
       [disabled]="versions().length === 0"
-      [value]="currentVersion()"
+      [value]="version"
       (selectionChange)="selectedVersion.set($event.value)"
     >
       @for (item of versions(); track item) {
@@ -15,7 +17,7 @@
   </mat-form-field>
 </div>
 
-@if (currentVersion(); as version) {
+@if (version && version.formats.length > 0) {
   @if (version.formats.length > 0) {
     <span class="ang-version-control--heading">Download options</span>
     <ang-scroll-area>
@@ -25,7 +27,7 @@
             mat-list-item
             lines="3"
             class="ang-version-control--download-option"
-            (click)="$event.preventDefault(); openSnackbar(); download.emit({ item: version, format: option })"
+            (click)="download.emit({ item: version, format: option })"
           >
             <mat-icon matListItemIcon fontIcon="download" />
             <span matListItemTitle>{{ option.label }}</span>

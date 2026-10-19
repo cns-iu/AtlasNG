@@ -1,12 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatActionList, MatListModule } from '@angular/material/list';
 import { MatSelect } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
-import { createSnackBarConfig, Snackbar } from '@atlasng/design-system/snackbar';
 
 /**
  * A version and the file formats available for it.
@@ -40,8 +38,8 @@ export interface VersionDownload<T extends VersionControlFileFormat> {
 /**
  * Selects a version and requests a download of one of its file formats.
  *
- * The component does not download files itself. Choosing a format shows a confirmation
- * snackbar and emits {@link VersionControl.download}, and the consumer performs the download.
+ * The component does not download files itself. Choosing a format emits {@link VersionControl.download},
+ * and the consumer performs the download.
  */
 @Component({
   selector: 'ang-version-control',
@@ -62,24 +60,4 @@ export class VersionControl<T extends VersionControlFileFormat = VersionControlF
 
   /** Emits the version and file format whenever a download option is chosen. */
   readonly download = output<VersionDownload<T>>();
-
-  /** Selected version, falling back to the first version when none is selected or it is not found. */
-  protected readonly currentVersion = computed<VersionControlItem<T> | undefined>(() => {
-    const versions = this.versions();
-    return versions.find(({ label }) => label === this.selectedVersion()?.label) ?? versions[0];
-  });
-
-  /** Snackbar service used for download confirmation. */
-  readonly #snackbar = inject(MatSnackBar);
-
-  /** Shows a snackbar confirming that a file was downloaded. */
-  openSnackbar(): void {
-    this.#snackbar.openFromComponent(
-      Snackbar,
-      createSnackBarConfig('File downloaded', {
-        duration: 5000,
-        verticalPosition: 'top',
-      }),
-    );
-  }
 }
