@@ -50,6 +50,17 @@ const baseConfig = [
               ],
             },
             {
+              sourceTag: 'layer:app-library',
+              onlyDependOnLibsWithTags: [
+                'layer:labs',
+                'layer:design-system',
+                'layer:analytics',
+                'layer:cdk',
+                'layer:common',
+                'layer:core',
+              ],
+            },
+            {
               sourceTag: 'layer:application',
               onlyDependOnLibsWithTags: ['layer:*'],
             },

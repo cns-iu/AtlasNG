@@ -30,6 +30,11 @@ const PUBLISH_TARGET = 'nx-release-publish';
  * Builds and publishes release projects that do not exist on npm yet and configures npm trusted publishing for them,
  * so that later releases can be published from CI.
  *
+ * The packages are published with `npm publish` instead of the `nx-release-publish` target: that target also publishes
+ * every dependency and runs npm without a terminal, so npm cannot wait for browser-based two-factor authentication.
+ * A failed publish stops the run, because later packages may depend on it. A failed `npm trust` is reported with the
+ * command to run by hand, and the remaining packages are still bootstrapped.
+ *
  * @param options The executor options.
  * @param context The Nx executor context.
  * @returns Whether every package was bootstrapped.
@@ -52,14 +57,33 @@ export default async function bootstrapNpmPackagesExecutor(
       dryRun,
       cwd: context.root,
     });
+    const untrusted: string[] = [];
     for (const pkg of missing) {
       logger.info(`Bootstrapping ${pkg.packageName} (${pkg.project})`);
-      bootstrap(pkg, { repository, workflow, dryRun, cwd: context.root });
+      const settings = { repository, workflow, dryRun, cwd: context.root };
+      exec('npm', ['publish', pkg.packageRoot, '--access=public'], settings);
+      try {
+        exec('npm', trustArgs(pkg.packageName, settings), settings);
+      } catch (error) {
+        logger.error(`npm trust failed for ${pkg.packageName}: ${errorMessage(error)}`);
+        untrusted.push(pkg.packageName);
+      }
+    }
+
+    if (untrusted.length > 0) {
+      logger.error(
+        [
+          'These packages were published, but trusted publishing is not configured. Rerunning the executor skips them ' +
+            'because they now exist on npm, so run the commands yourself:',
+          ...untrusted.map((name) => `  npm ${trustArgs(name, { repository, workflow }).join(' ')}`),
+        ].join('\n'),
+      );
+      return { success: false };
     }
 
     return { success: true };
   } catch (error) {
-    logger.error(error instanceof Error ? error.message : String(error));
+    logger.error(errorMessage(error));
     return { success: false };
   }
 }
@@ -146,47 +170,47 @@ export function getGitHubRepository(cwd: string): string {
  *
  * @param packageName The npm package name.
  * @returns Whether the package has been published before.
+ * @throws When npm fails for any reason other than a missing package (`E404`), for example a network or
+ *   authentication error, so that the executor never tries to publish a package that may already exist.
  */
 function isPublished(packageName: string): boolean {
   try {
-    run('npm', ['view', packageName, 'name'], { stdio: ['ignore', 'pipe', 'ignore'] });
+    run('npm', ['view', packageName, 'name'], { stdio: ['ignore', 'pipe', 'pipe'] });
     return true;
-  } catch {
-    return false;
+  } catch (error) {
+    const { stdout, stderr } = error as { stdout?: unknown; stderr?: unknown };
+    const output = [stderr, stdout].map((value) => String(value ?? '')).join('\n');
+    if (/\bE404\b/.test(output)) {
+      return false;
+    }
+
+    throw new Error(`Unable to check whether ${packageName} exists on npm: ${output.trim() || errorMessage(error)}`, {
+      cause: error,
+    });
   }
 }
 
 /**
- * Publishes a built package for the first time and configures npm trusted publishing for the publish workflow.
+ * Builds the `npm trust github` arguments that allow the publish workflow to publish a package.
  *
- * The package is published with `npm publish` instead of the `nx-release-publish` target: that target also publishes
- * every dependency and runs npm without a terminal, so npm cannot wait for browser-based two-factor authentication.
- *
- * @param pkg The release project, its package name and its built package directory.
- * @param settings The resolved repository, workflow, dry-run flag and working directory.
+ * @param packageName The npm package name.
+ * @param settings The resolved repository and workflow.
  * @param settings.repository The GitHub repository in `owner/name` form.
  * @param settings.workflow The workflow file name.
- * @param settings.dryRun Whether to only print the commands.
- * @param settings.cwd The workspace root.
+ * @returns The npm arguments.
  */
-function bootstrap(
-  { packageName, packageRoot }: ReleasePackage,
-  settings: { repository: string; workflow: string; dryRun: boolean; cwd: string },
-): void {
-  exec('npm', ['publish', packageRoot, '--access=public'], settings);
-  exec(
-    'npm',
-    [
-      'trust',
-      'github',
-      packageName,
-      `--file=${settings.workflow}`,
-      `--repo=${settings.repository}`,
-      '--allow-publish',
-      '--yes',
-    ],
-    settings,
-  );
+function trustArgs(packageName: string, { repository, workflow }: { repository: string; workflow: string }): string[] {
+  return ['trust', 'github', packageName, `--file=${workflow}`, `--repo=${repository}`, '--allow-publish', '--yes'];
+}
+
+/**
+ * Reads the message of a thrown value.
+ *
+ * @param error The thrown value.
+ * @returns The error message.
+ */
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 /**
@@ -205,7 +229,7 @@ function exec(command: string, args: string[], { dryRun, cwd }: { dryRun: boolea
     return;
   }
 
-  execFileSync(command, args, { stdio: 'inherit', cwd });
+  execCommand(command, args, { stdio: 'inherit', cwd });
 }
 
 /**
@@ -217,5 +241,33 @@ function exec(command: string, args: string[], { dryRun, cwd }: { dryRun: boolea
  * @returns The trimmed stdout of the command.
  */
 function run(command: string, args: string[], options: ExecFileSyncOptions = {}): string {
-  return String(execFileSync(command, args, { encoding: 'utf8', ...options }) ?? '').trim();
+  return String(execCommand(command, args, { encoding: 'utf8', ...options }) ?? '').trim();
+}
+
+/**
+ * Runs a command synchronously. On Windows, `npm` and `npx` are `.cmd` shims that Node only starts through a shell,
+ * so the command line is built with quoted arguments and run with `shell: true`.
+ *
+ * @param command The executable to run.
+ * @param args The command arguments.
+ * @param options The exec options.
+ * @returns The command output, if it was piped.
+ */
+function execCommand(command: string, args: string[], options: ExecFileSyncOptions): string | Buffer {
+  if (process.platform === 'win32') {
+    return execFileSync([command, ...args].map(quoteWindowsArgument).join(' '), { ...options, shell: true });
+  }
+
+  return execFileSync(command, args, options);
+}
+
+/**
+ * Quotes an argument for the Windows command shell when it contains characters other than the ones that are safe in
+ * package names, paths and flags.
+ *
+ * @param arg The argument.
+ * @returns The argument, wrapped in double quotes when needed.
+ */
+function quoteWindowsArgument(arg: string): string {
+  return /^[\w@./:=,+-]+$/.test(arg) ? arg : `"${arg.replace(/"/g, '""')}"`;
 }

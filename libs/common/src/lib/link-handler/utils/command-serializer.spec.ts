@@ -188,6 +188,37 @@ describe('RouterlessCommandSerializer', () => {
       expect(TestBed.inject(UrlSerializer).serialize(result)).toBe('/target?next=2#new');
     });
 
+    it.each([
+      ['replace', undefined, '/target?next=2'],
+      ['merge', 'merge', '/target?keep=2&next=2'],
+    ] as const)('drops null and undefined query params when using %s handling', (_name, handling, expected) => {
+      const { serializer } = setup();
+      const relativeTo = TestBed.inject(UrlSerializer).parse('/current?existing=1&keep=2');
+
+      const result = serializer.commandToUrlTree(
+        {
+          command: '/target',
+          queryParams: { existing: null, missing: undefined, next: '2' },
+          queryParamsHandling: handling,
+        },
+        relativeTo,
+      );
+
+      expect(TestBed.inject(UrlSerializer).serialize(result)).toBe(expected);
+    });
+
+    it('drops null query params on absolute URL commands', () => {
+      const { serializer } = setup();
+
+      const href = serializer.serializeCommand({
+        command: `${BASE_URL}?existing=1`,
+        queryParams: { existing: null },
+        queryParamsHandling: 'merge',
+      });
+
+      expect(href).toBe(BASE_URL);
+    });
+
     it('uses empty relative state and omits a null preserved fragment when no base is provided', () => {
       const { serializer } = setup();
 

@@ -2,6 +2,7 @@ import { Type } from '@angular/core';
 import {
   CheckboxCellDefinition,
   CheckboxHeaderCellDefinition,
+  ChipCellDefinition,
   CodeCellDefinition,
   LinkCellDefinition,
   NumberCellDefinition,
@@ -20,14 +21,43 @@ interface Person extends Row {
   score: number;
   profile: string;
   source: string;
+  tags: string[];
 }
 
 /** Representative story data. */
 const ROWS: Person[] = [
-  { name: 'Ada Lovelace', role: 'Mathematician', score: 1234.5, profile: '/people/ada', source: 'ada' },
-  { name: 'Grace Hopper', role: 'Computer scientist', score: 942, profile: '/people/grace', source: 'grace' },
-  { name: 'Katherine Johnson', role: 'Mathematician', score: 98, profile: '/people/katherine', source: 'katherine' },
-  { name: 'Margaret Hamilton', role: 'Software engineer', score: 97, profile: '/people/margaret', source: 'margaret' },
+  {
+    name: 'Ada Lovelace',
+    role: 'Mathematician',
+    score: 1234.5,
+    profile: '/people/ada',
+    source: 'ada',
+    tags: ['Analytical engine', 'Algorithms'],
+  },
+  {
+    name: 'Grace Hopper',
+    role: 'Computer scientist',
+    score: 942,
+    profile: '/people/grace',
+    source: 'grace',
+    tags: ['COBOL', 'Compilers', 'Navy'],
+  },
+  {
+    name: 'Katherine Johnson',
+    role: 'Mathematician',
+    score: 98,
+    profile: '/people/katherine',
+    source: 'katherine',
+    tags: ['NASA'],
+  },
+  {
+    name: 'Margaret Hamilton',
+    role: 'Software engineer',
+    score: 97,
+    profile: '/people/margaret',
+    source: 'margaret',
+    tags: ['Apollo', 'NASA'],
+  },
 ];
 
 /** Extended story data for demonstrating vertical scrolling. */
@@ -83,6 +113,15 @@ const COLUMNS: TableColumn<Person>[] = [
     prop: 'source',
     minWidth: 200,
     cellTemplate: CodeCellDefinition,
+    headerTemplate: TextHeaderCellDefinition,
+    headerConfig: { align: 'start' },
+  },
+  {
+    name: 'Tags',
+    prop: 'tags',
+    minWidth: 280,
+    sortable: false,
+    cellTemplate: ChipCellDefinition,
     headerTemplate: TextHeaderCellDefinition,
     headerConfig: { align: 'start' },
   },
@@ -244,6 +283,60 @@ export const WithLinkLabels: Story = {
       },
     ],
   },
+};
+
+/** Row displayed in the chip cell story. */
+interface DigitalObject extends Row {
+  title: string;
+  organs: string[];
+}
+
+/** Digital objects tagged with a varying number of organs. */
+const DIGITAL_OBJECTS: DigitalObject[] = [
+  {
+    title: 'Whole Person Physiome',
+    organs: ['Large intestine', 'Kidney', 'Liver', 'Brain', 'Fallopian tube', 'Lung', 'Thymus', 'Ureter'],
+  },
+  { title: 'Calcium homeostasis', organs: ['Multiple organs'] },
+  { title: 'Glucose homeostasis', organs: ['Liver', 'Small intestine'] },
+  { title: 'Untagged object', organs: [] },
+];
+
+/** Columns displayed in the chip cell story. */
+const CHIP_COLUMNS: TableColumn<DigitalObject>[] = [
+  {
+    name: 'Digital object',
+    prop: 'title',
+    minWidth: 200,
+    cellTemplate: TextCellDefinition,
+    headerTemplate: TextHeaderCellDefinition,
+    headerConfig: { align: 'start' },
+  },
+  {
+    name: 'Organs',
+    prop: 'organs',
+    minWidth: 360,
+    sortable: false,
+    cellTemplate: ChipCellDefinition,
+    headerTemplate: TextHeaderCellDefinition,
+    headerConfig: { align: 'start' },
+  },
+];
+
+/**
+ * Data tags rendered as wrapping stateless chips. Rows are virtualized with a fixed height,
+ * so increase `rowHeight` to fit the expected number of chip lines; additional lines scroll within the cell.
+ */
+export const WithChips: StoryObj<Table<DigitalObject>> = {
+  args: {
+    rows: DIGITAL_OBJECTS,
+    columns: CHIP_COLUMNS,
+    rowHeight: 96,
+  },
+  render: (args) => ({
+    props: args,
+    template: `<ang-table style="max-height: 480px;" ${argsToTemplate(args)} />`,
+  }),
 };
 
 /** Summary row computed with default, custom, and disabled summary functions. */

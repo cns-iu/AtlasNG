@@ -231,6 +231,69 @@ describe('AnyLink', () => {
     expect(screen.getByTestId('any-link')).toHaveAttribute('tabindex', '-1');
   });
 
+  it('sets role=link on non-anchor hosts with a prepared link', async () => {
+    await setup('<div data-testid="any-link" [angAnyLink]="command"></div>');
+
+    expect(screen.getByRole('link')).toBe(screen.getByTestId('any-link'));
+  });
+
+  it('does not set a role when there is no prepared link', async () => {
+    await setup('<div data-testid="any-link" [angAnyLink]="command"></div>', { command: undefined });
+
+    expect(screen.getByTestId('any-link')).not.toHaveAttribute('role');
+  });
+
+  it('preserves an initial role on non-anchor hosts', async () => {
+    await setup('<div data-testid="any-link" role="menuitem" [angAnyLink]="command"></div>');
+
+    expect(screen.getByTestId('any-link')).toHaveAttribute('role', 'menuitem');
+  });
+
+  it('does not add a role to anchor or button hosts', async () => {
+    await setup(`
+      <a data-testid="anchor" [angAnyLink]="command"></a>
+      <button data-testid="button" [angAnyLink]="command"></button>
+    `);
+
+    expect(screen.getByTestId('anchor')).not.toHaveAttribute('role');
+    expect(screen.getByTestId('button')).not.toHaveAttribute('role');
+  });
+
+  it('navigates when Enter is pressed on a focused non-anchor host', async () => {
+    const { user, handler } = await setup('<div data-testid="any-link" [angAnyLink]="command"></div>');
+
+    screen.getByRole('link').focus();
+    await user.keyboard('{Enter}');
+
+    expect(handler.navigateTo).toHaveBeenCalledTimes(1);
+    expect(handler.navigateTo).toHaveBeenCalledWith(
+      expect.objectContaining({ href: '/resolved' }),
+      expect.any(KeyboardEvent),
+      expect.anything(),
+    );
+  });
+
+  it('ignores Enter key presses from descendants of non-anchor hosts', async () => {
+    const { user, handler } = await setup(
+      '<div [angAnyLink]="command"><input data-testid="nested" aria-label="nested" /></div>',
+    );
+
+    screen.getByTestId('nested').focus();
+    await user.keyboard('{Enter}');
+
+    expect(handler.navigateTo).not.toHaveBeenCalled();
+  });
+
+  it('leaves Enter handling to native behavior on button hosts', async () => {
+    const { user, handler } = await setup('<button data-testid="any-link" [angAnyLink]="command"></button>');
+
+    screen.getByTestId('any-link').focus();
+    await user.keyboard('{Enter}');
+
+    expect(handler.navigateTo).toHaveBeenCalledTimes(1);
+    expect(handler.navigateTo).toHaveBeenCalledWith(expect.anything(), expect.any(MouseEvent), expect.anything());
+  });
+
   it('returns native click behavior when no command is configured', async () => {
     const { user, handler } = await setup('<a data-testid="any-link" [angAnyLink]="command"></a>', {
       command: undefined,

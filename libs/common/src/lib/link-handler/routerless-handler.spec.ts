@@ -6,7 +6,7 @@ import {
   type NavigationBehaviorOptions,
   UrlSerializer,
 } from '@angular/router';
-import { CUSTOM_ELEMENT_REGISTRY, LOCATION } from '@atlasng/core';
+import { CUSTOM_ELEMENT_REGISTRY, LOCATION, NAVIGATION, WINDOW } from '@atlasng/core';
 import { LinkHandler, type LinkAttributes } from './handler';
 import { RouterlessLinkHandler, type RouterlessPreparedLink } from './routerless-handler';
 
@@ -159,6 +159,38 @@ describe('RouterlessLinkHandler', () => {
       expect(browserLocation.replace).not.toHaveBeenCalled();
     });
 
+    it.each(['javascript:alert(1)', 'data:text/html,<p>x</p>'])('does not navigate to the unsafe URL %s', (href) => {
+      const { browserLocation, handler } = setup();
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+      const shouldContinueNativeNavigation = handler.navigateTo(
+        { href, isAnchorLikeElement: false },
+        new Event('click'),
+        defaultOptions({ replaceUrl: href.startsWith('data:') }),
+      );
+
+      expect(shouldContinueNativeNavigation).toBe(false);
+      expect(browserLocation.assign).not.toHaveBeenCalled();
+      expect(browserLocation.replace).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(`Refusing to navigate to the unsafe URL "${href}".`);
+    });
+
+    it('does not warn about unsafe URLs in production mode', () => {
+      const { browserLocation, handler } = setup();
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+      runWithProdMode(() => {
+        handler.navigateTo(
+          { href: 'javascript:alert(1)', isAnchorLikeElement: false },
+          new Event('click'),
+          defaultOptions(),
+        );
+      });
+
+      expect(browserLocation.assign).not.toHaveBeenCalled();
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
     it('replaces browser location when replaceUrl is true', () => {
       const { browserLocation, handler } = setup();
 
@@ -252,6 +284,74 @@ describe('RouterlessLinkHandler', () => {
         expect(handler.isActive(link, options)()).toBe(false);
       },
     );
+
+    it.each(['popstate', 'hashchange'])('updates when the window dispatches %s', (type) => {
+      const { browserLocation, handler } = setup('/current');
+      const active = handler.isActive(preparedLink('/other'));
+      expect(active()).toBe(false);
+
+      browserLocation.href = '/other';
+      window.dispatchEvent(new Event(type));
+
+      expect(active()).toBe(true);
+    });
+
+    it('updates after its own navigations', () => {
+      const { browserLocation, handler } = setup('/current');
+      browserLocation.assign.mockImplementation((url) => {
+        browserLocation.href = String(url);
+      });
+      const active = handler.isActive(preparedLink('/current#section'), { fragment: 'exact' });
+      expect(active()).toBe(false);
+
+      handler.navigateTo(preparedLink('/current#section'), new Event('click'), defaultOptions());
+
+      expect(active()).toBe(true);
+    });
+
+    it('updates on Navigation API current entry changes when supported', () => {
+      const navigation = new EventTarget() as Navigation;
+      TestBed.configureTestingModule({
+        providers: [{ provide: NAVIGATION, useValue: navigation }],
+      });
+      const { browserLocation, handler } = setup('/current');
+      const active = handler.isActive(preparedLink('/other'));
+
+      browserLocation.href = '/other';
+      navigation.dispatchEvent(new Event('currententrychange'));
+
+      expect(active()).toBe(true);
+      TestBed.resetTestingModule();
+      browserLocation.href = '/current';
+      navigation.dispatchEvent(new Event('currententrychange'));
+      expect(active()).toBe(true);
+    });
+
+    it('removes its listeners when the injector is destroyed', () => {
+      const removeSpy = vi.spyOn(window, 'removeEventListener');
+      setup();
+
+      TestBed.resetTestingModule();
+
+      expect(removeSpy).toHaveBeenCalledWith('popstate', expect.any(Function));
+      expect(removeSpy).toHaveBeenCalledWith('hashchange', expect.any(Function));
+    });
+
+    it('does not track URL changes without a window', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: WINDOW, useValue: undefined },
+          { provide: NAVIGATION, useValue: undefined },
+        ],
+      });
+      const { browserLocation, handler } = setup('/current');
+      const active = handler.isActive(preparedLink('/current'));
+
+      browserLocation.href = '/other';
+      window.dispatchEvent(new Event('popstate'));
+
+      expect(active()).toBe(true);
+    });
 
     it('compares against the injected browser location href', () => {
       const { angularLocation, browserLocation, handler } = setup('/browser/path');

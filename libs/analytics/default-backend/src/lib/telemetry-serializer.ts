@@ -24,6 +24,28 @@ interface ZodErrorLike {
 }
 
 /**
+ * Options that control how telemetry values are serialized.
+ */
+export interface TelemetrySerializerOptions {
+  /**
+   * Keep query strings and fragments in link `href` values. The telemetry plugin also applies this
+   * to page view `url` and `referrer` values and the page view `search` and `hash` values.
+   *
+   * Defaults to `false`: query strings and fragments often carry tokens or
+   * personal data, so they are removed before sending.
+   */
+  keepQueryParams?: boolean;
+
+  /**
+   * Maps a keyboard event's `key` to the coarse group reported as `keyGroup`.
+   * Return `undefined` to leave the group out. The pressed key itself is never reported,
+   * so the mapping should not return values that reveal what the user types.
+   * Defaults to reporting `enter`, `escape`, `tab`, or `navigation`, and no group for all other keys.
+   */
+  getKeyGroup?: (key: string) => string | undefined;
+}
+
+/**
  * Maximum number of characters retained when serializing stack traces.
  */
 const MAX_STACK_LENGTH = 2000;
@@ -32,24 +54,40 @@ const MAX_STACK_LENGTH = 2000;
  * Serializes telemetry payloads into a query-string representation.
  *
  * @param data Raw telemetry payload.
+ * @param options Serialization options.
  * @returns Query string for GET-based telemetry submission.
  */
-export function serializeTelemetryData(data: unknown): string {
+export function serializeTelemetryData(data: unknown, options: TelemetrySerializerOptions = {}): string {
   return stringify(data, {
     allowDots: true,
     arrayFormat: 'indices',
     skipNulls: true,
-    filter: (_key, value) => serializeTelemetryValue(value),
+    filter: (_key, value) => serializeTelemetryValue(value, options),
   });
+}
+
+/**
+ * Removes the query string and fragment from a URL.
+ *
+ * @param url Absolute or relative URL.
+ * @returns The URL without its query string and fragment.
+ */
+export function stripQueryAndFragment(url: string): string {
+  return url.split(/[?#]/, 1)[0];
 }
 
 /**
  * Normalizes complex JavaScript values into telemetry-safe representations.
  *
+ * Keyboard events never include the pressed key or code, only modifier flags and
+ * a coarse `keyGroup` for Enter, Escape, Tab, and navigation keys. HTTP errors
+ * only include their status and URL without query string or fragment.
+ *
  * @param value Value to normalize.
+ * @param options Serialization options.
  * @returns Serialized-safe value.
  */
-export function serializeTelemetryValue(value: unknown): unknown {
+export function serializeTelemetryValue(value: unknown, options: TelemetrySerializerOptions = {}): unknown {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return value;
   }
@@ -65,15 +103,22 @@ export function serializeTelemetryValue(value: unknown): unknown {
 
   // DOM events
   if (value instanceof KeyboardEvent) {
-    return pick(value, ['type', 'key', 'code', 'altKey', 'ctrlKey', 'shiftKey', 'metaKey'], filterFalse);
+    const props = pick(value, ['type', 'altKey', 'ctrlKey', 'shiftKey', 'metaKey'], filterFalse);
+    const getKeyGroup = options.getKeyGroup ?? defaultGetKeyGroup;
+    const keyGroup = getKeyGroup(value.key);
+    return keyGroup ? { ...props, keyGroup } : props;
   } else if (value instanceof MouseEvent) {
     const isLinkTarget = value.target instanceof Element && ['A', 'AREA'].includes(value.target.tagName);
     const props = pick(value, ['type', 'button', 'buttons', 'altKey', 'ctrlKey', 'shiftKey', 'metaKey'], filterFalse);
     const targetProps = isLinkTarget ? pickAttributes(value.target, ['href', 'target', 'download', 'type']) : {};
+    if (targetProps.href !== undefined && !options.keepQueryParams) {
+      targetProps.href = stripQueryAndFragment(targetProps.href);
+    }
     return { ...props, ...targetProps };
   } else if (value instanceof ErrorEvent) {
-    const props = pick(value, ['message', 'filename', 'lineno', 'colno']);
-    return { ...props, error: serializeTelemetryValue(value.error) };
+    const props = pick(value, ['message', 'lineno', 'colno']);
+    const filename = value.filename ? stripQueryAndFragment(value.filename) : undefined;
+    return { ...props, filename, error: serializeTelemetryValue(value.error, options) };
   } else if (value instanceof Event) {
     return pick(value, ['type']);
   }
@@ -83,8 +128,10 @@ export function serializeTelemetryValue(value: unknown): unknown {
     const props = pick(value, ['name', 'message', 'issues']);
     return { ...props, stack: serializeStack(value.stack) };
   } else if (value instanceof HttpErrorResponse) {
-    const props = pick(value, ['status', 'url', 'message']);
-    return { ...props, error: serializeTelemetryValue(value.error) };
+    // Response bodies and the message (which embeds the full URL) are left out on purpose
+    const props = pick(value, ['name', 'status', 'statusText']);
+    const url = value.url ? stripQueryAndFragment(value.url) : undefined;
+    return { ...props, url };
   } else if (value instanceof Error) {
     const props = pick(value, ['name', 'message']);
     return { ...props, stack: serializeStack(value.stack) };
@@ -194,4 +241,34 @@ function pickAttributes<T extends Element, K extends string>(el: T, keys: K[]): 
  */
 function filterFalse(_key: string, value: unknown): boolean {
   return value !== false;
+}
+
+/**
+ * Default key grouping for keyboard events.
+ * Reports `enter`, `escape`, `tab`, or `navigation` (arrow keys, `Home`, `End`, `PageUp`, `PageDown`);
+ * all other keys, including all character keys, get no group.
+ *
+ * @param key The keyboard event's `key` value
+ * @returns The key group, or `undefined` when the key is not reported
+ */
+function defaultGetKeyGroup(key: string): string | undefined {
+  switch (key) {
+    case 'Enter':
+      return 'enter';
+    case 'Escape':
+      return 'escape';
+    case 'Tab':
+      return 'tab';
+    case 'ArrowUp':
+    case 'ArrowDown':
+    case 'ArrowLeft':
+    case 'ArrowRight':
+    case 'Home':
+    case 'End':
+    case 'PageUp':
+    case 'PageDown':
+      return 'navigation';
+  }
+
+  return undefined;
 }

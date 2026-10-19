@@ -33,7 +33,7 @@ import { AnyLink, AnyLinkActive } from '@atlasng/common';
 export class Nav {}
 ```
 
-On anchor-like hosts the directive sets `href`, `target`, `rel`, and `download`. On other elements it adds `tabindex="0"` (unless one is set) so the link stays keyboard-reachable.
+On anchor-like hosts the directive sets `href`, `target`, `rel`, and `download`. On other elements it adds `tabindex="0"` (unless one is set) so the link stays keyboard-reachable, adds `role="link"` unless the host has its own role or is a `<button>`, and navigates when Enter is pressed on the host.
 
 `AnyLinkActive` (`[angAnyLinkActive]`) applies CSS classes, and optionally `aria-current`, while a link is active. Place it on the link itself or on an ancestor to track every descendant `AnyLink`. Use `angAnyLinkActiveOptions` to control matching (for example `{ exact: true }`) and the `isActiveChange` output to react to changes.
 
@@ -52,9 +52,11 @@ bootstrapApplication(App, {
 
 | Feature                   | Behavior                                                                        |
 | ------------------------- | ------------------------------------------------------------------------------- |
-| `withRouterlessHandler()` | Default. Uses native anchors and `window.location`; no router required.         |
+| `withRouterlessHandler()` | Default. Uses native anchors and `window.location`; no `provideRouter` needed.  |
 | `withRouterHandler()`     | Navigates internal routes with the Angular Router.                              |
 | `withCustomHandler(fn)`   | Uses a handler returned by `fn`, for example a subclass of `RouterLinkHandler`. |
+
+The routerless handler still imports `UrlSerializer` and `UrlTree` from `@angular/router`, so the package must be installed, but no router configuration is required. It ignores URLs with unsafe schemes such as `javascript:` instead of passing them to `location.assign`, drops `null` and `undefined` query params the same way the Router does, and updates active state on `popstate`, `hashchange`, and its own navigations.
 
 Only one handler feature may be passed; development builds throw if more are provided. Router-only inputs such as `state` or `skipLocationChange` produce a development warning when used with the routerless handler.
 

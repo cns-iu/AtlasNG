@@ -6,7 +6,7 @@ import { ServerErrorPage } from './server-error-page/server-error-page';
 
 const meta: Meta = {
   component: ErrorPage,
-  title: 'Design System / Error Page',
+  title: 'Design System/Error Page',
   parameters: {
     design: {
       type: 'figma',

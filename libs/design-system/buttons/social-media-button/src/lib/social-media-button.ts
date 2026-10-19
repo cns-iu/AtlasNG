@@ -9,6 +9,12 @@ import {
   type SocialMediaButtonDefinition,
 } from './social-media-button-definitions';
 
+/**
+ * Icon link to a social media profile.
+ *
+ * The link, label, and icon come from an explicit `definition`, or from the definition
+ * matching `id` in the injected {@link SOCIAL_MEDIA_BUTTON_DEFINITIONS} or the built-in set.
+ */
 @Component({
   selector: 'ang-social-media-button',
   imports: [MatButtonModule, MatIconModule, TrackClick],
@@ -45,6 +51,8 @@ export class SocialMediaButton {
    * 3) built-in definition matching `id`
    *
    * In dev mode, missing inputs or unresolved `id` will throw.
+   *
+   * @returns Candidate definitions, which are `undefined` when a source has no match.
    */
   *#getDefinitionCandidates(): Iterable<SocialMediaButtonDefinition | undefined> {
     yield this.definition();

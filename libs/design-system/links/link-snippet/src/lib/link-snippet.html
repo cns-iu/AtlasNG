@@ -1,7 +1,15 @@
 <div class="ang-link-snippet--link">
-  <a matIconButton target="_blank" [angAnyLink]="url()" [attr.aria-labelledby]="labelId">
+  <a
+    matIconButton
+    target="_blank"
+    rel="noopener noreferrer"
+    [angAnyLink]="url()"
+    [attr.aria-labelledby]="labelId"
+    [attr.aria-describedby]="newTabHintId"
+  >
     <mat-icon>open_in_new</mat-icon>
   </a>
+  <span class="cdk-visually-hidden" [id]="newTabHintId">Opens in a new tab</span>
   <div class="ang-link-snippet--text" [attr.id]="labelId">
     {{ urlLabel() }}
   </div>

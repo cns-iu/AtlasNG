@@ -156,20 +156,22 @@ export class RouterlessCommandSerializer {
    * @param currentParams Query params from the current relative URL.
    * @param newParams Query params from the command.
    * @param handling Query param merge or preserve strategy.
-   * @returns Query params to apply to the resulting URL.
+   * @returns Query params to apply to the resulting URL, without `null` or `undefined` values.
    */
   #selectQueryParams(
     currentParams: Params,
     newParams: Params,
     handling: QueryParamsHandling | null | undefined,
   ): Params {
+    let params = newParams;
     if (handling === 'preserve') {
-      return currentParams;
+      params = currentParams;
     } else if (handling === 'merge') {
-      return { ...currentParams, ...newParams };
+      params = { ...currentParams, ...newParams };
     }
 
-    return newParams;
+    // Drop null and undefined values like the Router does, so a null removes a param when merging
+    return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== null && value !== undefined));
   }
 
   /**

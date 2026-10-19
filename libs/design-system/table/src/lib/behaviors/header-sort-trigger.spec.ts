@@ -1,5 +1,5 @@
 import { FocusMonitor } from '@angular/cdk/a11y';
-import { render, screen } from '@testing-library/angular';
+import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { HeaderSortTrigger } from './header-sort-trigger';
 
@@ -49,6 +49,13 @@ describe('HeaderSortTrigger', () => {
     header.focus();
     await user.keyboard(' ');
     expect(sortFn).toHaveBeenCalledOnce();
+  });
+
+  it('prevents the default page scroll when activated with Space', async () => {
+    await setup();
+    const header = screen.getByRole('button', { name: 'Sort' });
+
+    expect(fireEvent.keyDown(header, { key: ' ' })).toBe(false);
   });
 
   it('does not attach behavior without a containing sortable header', async () => {

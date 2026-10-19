@@ -27,7 +27,9 @@ import { commandAttribute } from './any-link-command';
     '[attr.rel]': 'relAttribute()',
     '[attr.download]': 'downloadAttribute()',
     '[attr.tabindex]': 'tabIndexAttribute()',
+    '[attr.role]': 'roleAttribute()',
     '(click)': 'onClick($event)',
+    '(keydown.enter)': 'onEnterKey($event)',
   },
   exportAs: 'angAnyLink',
 })
@@ -108,6 +110,12 @@ export class AnyLink {
   /** Initial static `tabindex` attribute from the host element, if present. */
   readonly #initialTabIndex = inject(new HostAttributeToken('tabindex'), { optional: true });
 
+  /** Initial static `role` attribute from the host element, if present. */
+  readonly #initialRole = inject(new HostAttributeToken('role'), { optional: true });
+
+  /** Whether the host is a native `<button>`, which already exposes its own role and keyboard activation. */
+  readonly #isButtonElement = this.#element.tagName === 'BUTTON';
+
   /** Whether the host behaves as an anchor-like element for native link semantics. */
   readonly #isAnchorLikeElement = isAnchorLikeElement(this.#element, inject(CUSTOM_ELEMENT_REGISTRY));
 
@@ -138,6 +146,15 @@ export class AnyLink {
     return this.preparedLink() ? '0' : null;
   });
 
+  /** Resolved `role` host attribute value, announcing non-anchor hosts without their own role as links. */
+  protected readonly roleAttribute = computed(() => {
+    if (this.#initialRole !== null || this.#isAnchorLikeElement || this.#isButtonElement) {
+      return this.#initialRole;
+    }
+
+    return this.preparedLink() ? 'link' : null;
+  });
+
   /**
    * Initializes the directive and asserts against invalid input combinations in development mode.
    */
@@ -163,10 +180,10 @@ export class AnyLink {
   /**
    * Delegates click handling to `LinkHandler` when a command is configured.
    *
-   * @param event Pointer event emitted by the host click interaction.
+   * @param event Event emitted by the host click or keyboard interaction.
    * @returns `true` to keep default browser behavior, or `false` to suppress it.
    */
-  protected onClick(event: PointerEvent): boolean {
+  protected onClick(event: Event): boolean {
     const link = this.preparedLink();
     if (!link) {
       return true;
@@ -181,6 +198,23 @@ export class AnyLink {
     });
 
     return result ?? !this.#isAnchorLikeElement;
+  }
+
+  /**
+   * Activates non-anchor, non-button hosts with the Enter key, matching native link behavior.
+   *
+   * Anchor-like hosts and buttons already turn Enter into a click, and key presses from descendants
+   * such as nested form controls are ignored.
+   *
+   * @param event Keyboard event emitted by the host.
+   * @returns `true` to keep default browser behavior, or `false` to suppress it.
+   */
+  protected onEnterKey(event: Event): boolean {
+    if (this.#isAnchorLikeElement || this.#isButtonElement || event.target !== this.#element) {
+      return true;
+    }
+
+    return this.onClick(event);
   }
 
   /**

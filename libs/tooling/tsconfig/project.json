@@ -10,6 +10,20 @@
     }
   },
   "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^production", { "externalDependencies": ["vitest", "typescript"] }],
+      "options": {
+        "command": "vitest run",
+        "cwd": "{projectRoot}"
+      },
+      "configurations": {
+        "watch": {
+          "command": "vitest"
+        }
+      }
+    },
     "nx-release-publish": {
       "dependsOn": [],
       "options": {
