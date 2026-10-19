@@ -28,7 +28,10 @@
 - Use `npx nx` for local commands in this repo (matches existing README examples and avoids global CLI drift).
 - Primary projects:
   - `AtlasNG` (application)
-  - `analytics`, `cdk`, `common`, `content-templates`, `core`, `design-system`, `kg-explorer` (publishable libraries)
+  - `analytics`, `cdk`, `common`, `content-templates`, `core`, `design-system`, `labs`, `kg-explorer` (publishable libraries)
+  - `internal-storybook` (internal Storybook configuration and composition)
+  - `nx-plugin`, `eslint-plugin`, `commitlint-config`, `prettier-config`, `tsconfig` (publishable tooling packages in `libs/tooling/`)
+- Release groups (see "Releasing" in [README.md](README.md)): libraries are listed by name in the fixed `libraries` group in `nx.json`; application libraries live in `libs/applications/` and tooling packages in `libs/tooling/`, and both are versioned independently. Add new publishable libraries to the `libraries` group explicitly.
 
 ## AI Customizations
 
@@ -46,26 +49,11 @@
 - Lint all: `npx nx run-many -t lint`
 - Test a single project: `npx nx test <project>` (example: `npx nx test cdk`)
 
-## Focused Validation
-
-| Change                                | First validation                                    |
-| ------------------------------------- | --------------------------------------------------- |
-| Single-library implementation or test | `npx nx test <project>` and `npx nx lint <project>` |
-| Cross-library or configuration change | `npx nx affected -t lint,test,build`                |
-
-## Token/Context Efficiency
-
-- Prefer scoped commands (`npx nx test <project>`) over workspace-wide `run-many`/`affected` when only one project changed.
-- Use `npx nx show project <name> --json` for non-interactive output; without `--json` it can open an interactive graph UI.
-- Never read files under `coverage/` (generated reports, e.g. `lcov.info`, `*.html`); grep for a specific value instead of reading whole reports.
-- Pipe verbose command output through `grep`/`head`/`tail` when only a subset is relevant (e.g. `npx nx run-many -t lint 2>&1 | tail -50`).
-
 ## Project-Specific Workflows
 
 - Design-system Storybook:
   - Dev: `npx nx storybook design-system`
   - Static build: `npx nx build-storybook design-system`
-  - Storybook tests: `npx nx test-storybook design-system`
 - Compodoc for libraries:
   - Build docs: `npx nx build-compodoc <project>`
   - Live docs: `npx nx compodoc <project>`
@@ -83,16 +71,6 @@
 - Third-party framework classes such as Angular Material icon classes are exempt.
 - When renaming a class, update its templates, styles, TypeScript references, stories, and tests together.
 
-## Testing Expectations
-
-- Unit tests use `@nx/angular:unit-test` with coverage enabled by default.
-- Workspace coverage thresholds are enforced at 85% for branches/functions/lines/statements.
-- Use watch mode when iterating: `npx nx test <project> --configuration=watch`.
-- When writing tests, prefer Testing Library APIs (`@testing-library/angular`, `@testing-library/dom`) over direct DOM access.
-- Prefer `user-event` for interaction and `@testing-library/jest-dom` matchers for assertions on rendered DOM state.
-- Import `@testing-library/jest-dom/vitest` in project `test-setup.ts` files (for example `libs/common/src/test-setup.ts`), not inside individual `*.spec.ts` files.
-- Avoid low-level patterns like `querySelector`, `querySelectorAll`, manual `dispatchEvent`, and raw `element.click()` unless there is no Testing Library equivalent.
-
 ## Documentation Map (Link, Don’t Duplicate)
 
 - Repo overview and standard commands: [README.md](README.md)
@@ -104,6 +82,62 @@
   - [libs/core/README.md](libs/core/README.md)
   - [libs/design-system/README.md](libs/design-system/README.md)
   - [libs/labs/README.md](libs/labs/README.md)
+  - [libs/applications/kg-explorer/README.md](libs/applications/kg-explorer/README.md)
+  - [libs/internal/storybook/README.md](libs/internal/storybook/README.md)
+- Tooling docs:
+  - [libs/tooling/nx-plugin/README.md](libs/tooling/nx-plugin/README.md)
+  - [libs/tooling/eslint-plugin/README.md](libs/tooling/eslint-plugin/README.md)
+  - [libs/tooling/commitlint-config/README.md](libs/tooling/commitlint-config/README.md)
+  - [libs/tooling/prettier-config/README.md](libs/tooling/prettier-config/README.md)
+  - [libs/tooling/tsconfig/README.md](libs/tooling/tsconfig/README.md)
+
+<!-- atlasng configuration start -->
+<!-- Leave the start & end comments to automatically receive updates. -->
+
+## Focused Validation
+
+| Change                                | First validation                                    |
+| ------------------------------------- | --------------------------------------------------- |
+| Single-library implementation or test | `npx nx test <project>` and `npx nx lint <project>` |
+| Cross-library or configuration change | `npx nx affected -t lint,test,build`                |
+
+## Token/Context Efficiency
+
+- Prefer scoped commands (`npx nx test <project>`) over workspace-wide `run-many`/`affected` when only one project changed.
+- Use `npx nx show project <name> --json` for non-interactive output; without `--json` it can open an interactive graph UI.
+- Never read files under `coverage/` (generated reports, e.g. `lcov.info`, `*.html`); grep for a specific value instead of reading whole reports.
+- Pipe verbose command output through `grep`/`head`/`tail` when only a subset is relevant (e.g. `npx nx run-many -t lint 2>&1 | tail -50`).
+
+## Commit Messages
+
+- Use a Conventional Commits subject line, for example `feat(design-system): add content section component`.
+- The scope must be one allowed by [commitlint.config.mjs](commitlint.config.mjs) (Nx project names from `npx nx show projects`, plus `release`); any other scope fails CI. If no allowed scope fits, omit the scope, for example `chore: update agent instructions`.
+- When adding, renaming, or removing an Nx project, run `npx nx sync` so `conventionalCommits.scopes` in [.vscode/settings.json](.vscode/settings.json) matches.
+- Default to a subject line only. Add a body only when it carries context that neither the subject nor the diff shows, such as the reason behind a non-obvious change, and keep it to a sentence or two.
+- Do not write long paragraphs or restate the diff file by file; reviewers read the diff anyway.
+
+## Pull Request Descriptions
+
+- Write the description as a bulleted list of the major changes, each a short imperative sentence, for example:
+
+  ```
+  - Add content section component
+  - Fix table column sorting edge case
+  - Improve types for data loader configs
+  ```
+
+- Leave out minor changes such as formatting, test updates for the listed changes, and small refactors.
+- Add a short note after the list only when reviewers need context the list and diff do not show, such as a breaking change or a required follow-up.
+
+## Testing Expectations
+
+- Unit tests use `@nx/angular:unit-test` with coverage enabled by default.
+- Workspace coverage thresholds are enforced at 85% for branches/functions/lines/statements.
+- Use watch mode when iterating: `npx nx test <project> --configuration=watch`.
+- When writing tests, prefer Testing Library APIs (`@testing-library/angular`, `@testing-library/dom`) over direct DOM access.
+- Prefer `user-event` for interaction and `@testing-library/jest-dom` matchers for assertions on rendered DOM state.
+- Import `@testing-library/jest-dom/vitest` in project `test-setup.ts` files, not inside individual `*.spec.ts` files.
+- Avoid low-level patterns like `querySelector`, `querySelectorAll`, manual `dispatchEvent`, and raw `element.click()` unless there is no Testing Library equivalent.
 
 ## Documentation Expectations
 
@@ -122,3 +156,5 @@
 - After generating code, run `npx nx format:write` to ensure the generated files follow workspace formatting conventions.
 - `npx nx show project <name>` may open an interactive project graph UI; use `--json` for non-interactive terminal output.
 - Do not edit generated coverage artifacts under `coverage/` unless explicitly requested.
+
+<!-- atlasng configuration end -->

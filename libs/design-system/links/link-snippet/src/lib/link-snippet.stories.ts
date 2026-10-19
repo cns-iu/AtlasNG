@@ -7,7 +7,7 @@ const meta: Meta = {
   parameters: {
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/design/gQEMLugLjweDvbsNNUVffD/AtlasNG-Design-System-Repository?node-id=12516-45367&t=XVMXP9ZuRCiOohEG-4',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=4453-105',
     },
   },
   args: {

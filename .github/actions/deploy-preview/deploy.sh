@@ -10,7 +10,7 @@ set -euo pipefail
 #
 # Options:
 #   -d, --deploy-dir  DIR   Directory to deploy                (env: DEPLOY_DIR,          default: deploy)
-#   -f, --filter      NAME  Netlify monorepo filter            (env: NETLIFY_FILTER,      default: AtlasNg)
+#   -f, --filter      NAME  Netlify monorepo filter            (env: NETLIFY_FILTER,      default: AtlasNG)
 #   -i, --issue-number NUM  Pull request / issue number        (env: ISSUE_NUMBER,        required unless alias set)
 #   -l, --alias       NAME  Netlify deploy alias               (env: NETLIFY_ALIAS,       default: pr-<issue-number>)
 #   -a, --auth-token  TOKEN Netlify auth token                 (env: NETLIFY_AUTH_TOKEN,  required)
@@ -25,7 +25,7 @@ usage() {
 }
 
 DEPLOY_DIR="${DEPLOY_DIR:-deploy}"
-NETLIFY_FILTER="${NETLIFY_FILTER:-AtlasNg}"
+NETLIFY_FILTER="${NETLIFY_FILTER:-AtlasNG}"
 ISSUE_NUMBER="${ISSUE_NUMBER:-}"
 NETLIFY_ALIAS="${NETLIFY_ALIAS:-}"
 NETLIFY_AUTH_TOKEN="${NETLIFY_AUTH_TOKEN:-}"

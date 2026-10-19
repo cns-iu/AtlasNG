@@ -1,6 +1,6 @@
 @use 'internal/token-utils';
 @use 'breakpoints';
-@use './tokens' as *;
+@use 'tokens/cookie-banner' as *;
 
 $container-padding: 24px;
 $container-gap: 32px;

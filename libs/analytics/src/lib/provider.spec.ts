@@ -1,20 +1,25 @@
 import { ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { CoreEvents } from '@atlasng/analytics/events';
-import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
+import { AnalyticsEventCategory, CoreEvents } from '@atlasng/analytics/events';
+import {
+  AnalyticsPermissionedStorage,
+  AnalyticsPermissions,
+  AnalyticsPermissionsManager,
+} from '@atlasng/analytics/permissions';
 import { ANALYTICS_CONFIG } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
 import {
+  AnalyticsFeatureKind,
   provideAnalytics,
   withCustomBackend,
-  withDefaultBackend,
   withGlobalErrorHandler,
+  withInitialPermissions,
+  withPermissionedStorageConfig,
+  withPermissionedStorageKeys,
   withPermissionsConfig,
 } from './provider';
 
 describe('provideAnalytics', () => {
-  const DEFAULT_BACKEND_CONFIG = { endpoint: '' };
-
   function runWithProdMode<T>(callback: () => T): T {
     const global = globalThis as Record<string, unknown>;
     const originalNgDevMode = global['ngDevMode'];
@@ -76,20 +81,6 @@ describe('provideAnalytics', () => {
     expect(injectedBackend).toBe(backend);
   });
 
-  it('should provide the default backend', () => {
-    const providers = provideAnalytics({ appName: 'DefaultBackendTest' }, withDefaultBackend(DEFAULT_BACKEND_CONFIG));
-    TestBed.configureTestingModule({ providers: [providers] });
-
-    const backend = TestBed.inject(ANALYTICS_BACKEND);
-    expect(backend).toBeDefined();
-    expect(backend.page).toBeDefined();
-    expect(backend.track).toBeDefined();
-    expect(typeof backend.page).toBe('function');
-    expect(typeof backend.track).toBe('function');
-  });
-
-  it.todo('should provide the default backend');
-
   it('should throw if multiple backends are provided', () => {
     const backend1 = createMockBackend();
     const backend2 = createMockBackend();
@@ -108,7 +99,7 @@ describe('provideAnalytics', () => {
     const setup = () =>
       provideAnalytics(
         {},
-        withDefaultBackend(DEFAULT_BACKEND_CONFIG),
+        { kind: AnalyticsFeatureKind.DefaultBackend, providers: [] },
         withCustomBackend(() => backend),
       );
 
@@ -149,5 +140,43 @@ describe('provideAnalytics', () => {
     expect(manager.config.storage).toBe(false);
     expect(manager.config.storageKey).toBe('custom-permissions-key');
     expect(manager.config.storageEvents).toBe(false);
+  });
+
+  it('should set the initial permissions', () => {
+    const backend = createMockBackend();
+    const initialPermissions = AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Preferences);
+    const providers = provideAnalytics(
+      {},
+      withCustomBackend(() => backend),
+      withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
+      withInitialPermissions(initialPermissions),
+    );
+
+    TestBed.configureTestingModule({ providers: [providers] });
+
+    expect(TestBed.inject(AnalyticsPermissionsManager).permissions()).toBe(initialPermissions);
+  });
+
+  it('should configure the permissioned storage and register its keys', () => {
+    const backend = createMockBackend();
+    const storage = window.sessionStorage;
+    storage.removeItem('stored-theme');
+    const providers = provideAnalytics(
+      {},
+      withCustomBackend(() => backend),
+      withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
+      withInitialPermissions(AnalyticsPermissions.FULL),
+      withPermissionedStorageConfig({ storage }),
+      withPermissionedStorageKeys({ theme: { key: 'stored-theme', category: AnalyticsEventCategory.Preferences } }),
+    );
+
+    TestBed.configureTestingModule({ providers: [providers] });
+
+    const permissionedStorage = TestBed.inject(AnalyticsPermissionedStorage);
+    permissionedStorage.setItem('theme', 'dark');
+
+    expect(permissionedStorage.config.storage).toBe(storage);
+    expect(storage.getItem('stored-theme')).toBe('"dark"');
+    storage.removeItem('stored-theme');
   });
 });

@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { UrlTree } from '@angular/router';
+import { provideRouter, UrlTree } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { LinkHandler, type LinkAttributes, type LinkCommand, type PreparedLink } from '../link-handler/handler';
-import { provideLinkHandler, withCustomHandler } from '../link-handler/providers';
+import { provideLinkHandler, withCustomHandler, withRouterHandler } from '../link-handler/providers';
 import { AnyLink } from './any-link';
 
 class MockLinkHandler implements LinkHandler {
@@ -30,6 +31,16 @@ class AnyLinkProductionHost {
   readonly command = new UrlTree();
   readonly queryParams = { source: 'test' };
 }
+
+@Component({
+  selector: 'ang-any-link-routed-host',
+  imports: [AnyLink],
+  template: `
+    <a [angAnyLink]="['posts']">relative link</a>
+    <a angAnyLink="/search" queryParamsHandling="merge" [queryParams]="{ page: 2 }">merge link</a>
+  `,
+})
+class AnyLinkRoutedHost {}
 
 describe('AnyLink', () => {
   async function setup(
@@ -220,6 +231,69 @@ describe('AnyLink', () => {
     expect(screen.getByTestId('any-link')).toHaveAttribute('tabindex', '-1');
   });
 
+  it('sets role=link on non-anchor hosts with a prepared link', async () => {
+    await setup('<div data-testid="any-link" [angAnyLink]="command"></div>');
+
+    expect(screen.getByRole('link')).toBe(screen.getByTestId('any-link'));
+  });
+
+  it('does not set a role when there is no prepared link', async () => {
+    await setup('<div data-testid="any-link" [angAnyLink]="command"></div>', { command: undefined });
+
+    expect(screen.getByTestId('any-link')).not.toHaveAttribute('role');
+  });
+
+  it('preserves an initial role on non-anchor hosts', async () => {
+    await setup('<div data-testid="any-link" role="menuitem" [angAnyLink]="command"></div>');
+
+    expect(screen.getByTestId('any-link')).toHaveAttribute('role', 'menuitem');
+  });
+
+  it('does not add a role to anchor or button hosts', async () => {
+    await setup(`
+      <a data-testid="anchor" [angAnyLink]="command"></a>
+      <button data-testid="button" [angAnyLink]="command"></button>
+    `);
+
+    expect(screen.getByTestId('anchor')).not.toHaveAttribute('role');
+    expect(screen.getByTestId('button')).not.toHaveAttribute('role');
+  });
+
+  it('navigates when Enter is pressed on a focused non-anchor host', async () => {
+    const { user, handler } = await setup('<div data-testid="any-link" [angAnyLink]="command"></div>');
+
+    screen.getByRole('link').focus();
+    await user.keyboard('{Enter}');
+
+    expect(handler.navigateTo).toHaveBeenCalledTimes(1);
+    expect(handler.navigateTo).toHaveBeenCalledWith(
+      expect.objectContaining({ href: '/resolved' }),
+      expect.any(KeyboardEvent),
+      expect.anything(),
+    );
+  });
+
+  it('ignores Enter key presses from descendants of non-anchor hosts', async () => {
+    const { user, handler } = await setup(
+      '<div [angAnyLink]="command"><input data-testid="nested" aria-label="nested" /></div>',
+    );
+
+    screen.getByTestId('nested').focus();
+    await user.keyboard('{Enter}');
+
+    expect(handler.navigateTo).not.toHaveBeenCalled();
+  });
+
+  it('leaves Enter handling to native behavior on button hosts', async () => {
+    const { user, handler } = await setup('<button data-testid="any-link" [angAnyLink]="command"></button>');
+
+    screen.getByTestId('any-link').focus();
+    await user.keyboard('{Enter}');
+
+    expect(handler.navigateTo).toHaveBeenCalledTimes(1);
+    expect(handler.navigateTo).toHaveBeenCalledWith(expect.anything(), expect.any(MouseEvent), expect.anything());
+  });
+
   it('returns native click behavior when no command is configured', async () => {
     const { user, handler } = await setup('<a data-testid="any-link" [angAnyLink]="command"></a>', {
       command: undefined,
@@ -264,5 +338,38 @@ describe('AnyLink', () => {
       },
     );
     expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('with the router handler', () => {
+    async function setupRouter() {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([{ path: 'user/:id', component: AnyLinkRoutedHost }]),
+          provideLinkHandler(withRouterHandler()),
+        ],
+      });
+
+      return RouterTestingHarness.create();
+    }
+
+    it('updates relative hrefs when a reused route navigates to new params', async () => {
+      const harness = await setupRouter();
+
+      await harness.navigateByUrl('/user/1');
+      expect(screen.getByRole('link', { name: 'relative link' })).toHaveAttribute('href', '/user/1/posts');
+
+      await harness.navigateByUrl('/user/2');
+      expect(screen.getByRole('link', { name: 'relative link' })).toHaveAttribute('href', '/user/2/posts');
+    });
+
+    it('updates merged query params when the current query changes', async () => {
+      const harness = await setupRouter();
+
+      await harness.navigateByUrl('/user/1?sort=name');
+      expect(screen.getByRole('link', { name: 'merge link' })).toHaveAttribute('href', '/search?sort=name&page=2');
+
+      await harness.navigateByUrl('/user/1?sort=date');
+      expect(screen.getByRole('link', { name: 'merge link' })).toHaveAttribute('href', '/search?sort=date&page=2');
+    });
   });
 });

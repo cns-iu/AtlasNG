@@ -54,7 +54,13 @@ export class HeaderSortTrigger {
     const listener = () => this.sortFn()();
     const cleanup: (() => void)[] = [];
     cleanup.push(this.#renderer.listen(el, 'click', listener));
-    cleanup.push(this.#renderer.listen(el, 'keydown.space', listener));
+    cleanup.push(
+      this.#renderer.listen(el, 'keydown.space', (event: KeyboardEvent) => {
+        // Prevent the default page scroll when activating the sort with Space
+        event.preventDefault();
+        listener();
+      }),
+    );
 
     this.#destroyRef.onDestroy(() => cleanup.forEach((fn) => fn()));
   }

@@ -1,0 +1,29 @@
+{
+  "name": "@atlasng/tsconfig",
+  "version": "0.0.0",
+  "description": "Shared TypeScript configurations for AtlasNG and related Nx workspaces",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cns-iu/AtlasNG",
+    "directory": "libs/tooling/tsconfig"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG/tree/main/libs/tooling/tsconfig",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "base.json",
+    "angular.json",
+    "node.json"
+  ],
+  "exports": {
+    "./base.json": "./base.json",
+    "./angular.json": "./angular.json",
+    "./node.json": "./node.json",
+    "./package.json": "./package.json"
+  }
+}

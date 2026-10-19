@@ -80,6 +80,12 @@ describe('isUrlActive', () => {
     it('compares decoded pathnames', () => {
       expect(isUrlActive('/caf%C3%A9/%41', '/café/A', matchOptions())).toBe(true);
     });
+
+    it('falls back to raw pathnames and fragments with malformed percent escapes', () => {
+      expect(isUrlActive('/a/%zz#%zz', '/a/%zz#%zz', matchOptions())).toBe(true);
+      expect(isUrlActive('/a', '/a/%E0%A4%A', matchOptions({ paths: 'subset' }))).toBe(true);
+      expect(isUrlActive('/b', '/a/%zz', matchOptions({ paths: 'subset' }))).toBe(false);
+    });
   });
 
   describe('matrix parameters', () => {
@@ -231,12 +237,14 @@ describe('isUrlActive', () => {
       expect(() => isUrlActive('http://[invalid', '/docs', matchOptions())).toThrow(TypeError);
     });
 
-    it('throws when a pathname contains invalid percent encoding', () => {
-      expect(() => isUrlActive('/docs/%ZZ', '/docs', matchOptions())).toThrow(URIError);
+    it('compares raw pathnames that contain invalid percent encoding', () => {
+      expect(isUrlActive('/docs/%ZZ', '/docs', matchOptions())).toBe(false);
+      expect(isUrlActive('/docs/%ZZ', '/docs/%ZZ', matchOptions())).toBe(true);
     });
 
-    it('throws when a fragment contains invalid percent encoding', () => {
-      expect(() => isUrlActive('/docs#%ZZ', '/docs', matchOptions())).toThrow(URIError);
+    it('compares raw fragments that contain invalid percent encoding', () => {
+      expect(isUrlActive('/docs#%ZZ', '/docs', matchOptions())).toBe(false);
+      expect(isUrlActive('/docs#%ZZ', '/docs#%ZZ', matchOptions())).toBe(true);
     });
   });
 });

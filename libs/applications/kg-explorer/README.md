@@ -1,9 +1,12 @@
-# @atlasng/apps/kg-explorer
+# @atlasng/kg-explorer
 
-Knowledge graph explorer application library for AtlasNG.
+Application library for the AtlasNG knowledge graph explorer. It is in early development and does not yet have a stable public API.
 
 ## Development
 
-- Build: `npx nx build kg-explorer`
-- Test: `npx nx test kg-explorer`
-- Storybook: `npx nx storybook kg-explorer`
+| Task      | Command                        |
+| --------- | ------------------------------ |
+| Build     | `npx nx build kg-explorer`     |
+| Test      | `npx nx test kg-explorer`      |
+| Lint      | `npx nx lint kg-explorer`      |
+| Storybook | `npx nx storybook kg-explorer` |

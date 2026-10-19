@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/social-media-button' as *;
 
 // Keep in sync with `DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS` in social-media-button-definitions.ts
 $builtin-icons: (instagram facebook linkedin github bluesky x youtube);

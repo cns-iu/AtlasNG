@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Bootstrap npm packages executor",
+  "description": "Publishes release projects that do not exist on npm yet and configures npm trusted publishing for them.",
+  "type": "object",
+  "properties": {
+    "repository": {
+      "type": "string",
+      "description": "GitHub repository (owner/name) allowed to publish. Defaults to the origin git remote."
+    },
+    "workflow": {
+      "type": "string",
+      "description": "Workflow file name that publishes the packages.",
+      "default": "publish.yml"
+    },
+    "dryRun": {
+      "type": "boolean",
+      "description": "Only print the commands that would run.",
+      "default": false
+    }
+  },
+  "required": []
+}

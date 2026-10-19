@@ -1,6 +1,6 @@
 @use 'internal/sass-utils';
 @use 'internal/token-utils';
-@use '../../../../src/lib/tokens' as *;
+@use 'tokens/table' as *;
 
 .ang-table--text-header {
   display: flex;

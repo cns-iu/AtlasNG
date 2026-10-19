@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/analytics",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Analytics library for AtlasNG",
   "license": "MIT",
   "repository": {
@@ -17,12 +17,20 @@
   "peerDependencies": {
     "@angular/core": "^22.1.5",
     "@angular/common": "^22.1.5",
-    "@atlasng/core": "0.0.6"
+    "@atlasng/core": "^0.0.8",
+    "analytics": "^0.8.19",
+    "qs": "^6.16.0"
+  },
+  "peerDependenciesMeta": {
+    "analytics": {
+      "optional": true
+    },
+    "qs": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "analytics": "^0.8.19",
-    "type-fest": "^5.9.0",
-    "qs": "^6.16.0"
+    "type-fest": "^5.9.0"
   },
   "sideEffects": false
 }

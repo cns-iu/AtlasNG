@@ -9,10 +9,14 @@
     "build": {
       "executor": "@nx/angular:package"
     },
-    "build-compodoc": {},
+    "check-sass": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "sass --no-source-map --load-path=dist/libs --load-path=node_modules tools/sass-smoke/design-system.scss > /dev/null"
+      }
+    },
     "build-storybook": {},
-    "compodoc": {},
-    "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {
       "options": {
@@ -24,7 +28,6 @@
         "setupFiles": ["{projectRoot}/src/test-setup.ts"]
       }
     },
-    "test-storybook": {},
     "nx-release-publish": {}
   }
 }
