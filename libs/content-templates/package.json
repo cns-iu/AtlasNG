@@ -18,8 +18,7 @@
     "@angular/common": "^22.1.5",
     "@angular/core": "^22.1.5",
     "rxjs": "^7.8.2",
-    "@atlasng/core": "^0.0.8",
-    "@atlasng/design-system": "^0.0.8"
+    "@atlasng/core": "^0.0.8"
   },
   "dependencies": {
     "@standard-schema/spec": "^1.1.0",
