@@ -9,26 +9,18 @@ $_social-icon-size: 2.5rem;
 .ang-footer {
   display: block;
   min-width: 20rem;
-  max-width: 100rem;
   background: token-utils.slot(background-color, $config);
 
   .ang-footer--container {
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: space-between;
-    margin: 0 auto;
-    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
     padding: 2.5rem 1.25rem;
-    gap: 1.5rem;
-  }
-
-  // Groups the logo, social icons, and actions so they stay together on one row
-  .ang-footer--content {
-    display: flex;
-    flex-direction: column;
-    align-self: stretch;
-    align-items: center;
-    gap: 1.5rem;
+    max-width: 100rem;
+    margin: 0 auto;
   }
 
   .ang-footer--logo-container {
@@ -66,8 +58,8 @@ $_social-icon-size: 2.5rem;
   .ang-footer--actions {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
     align-items: center;
+    flex-wrap: wrap;
   }
 
   .ang-footer--action {
@@ -92,27 +84,14 @@ $_social-icon-size: 2.5rem;
     line-height: token-utils.slot(copyright-line-height, $config);
     align-content: center;
     text-align: center;
-    height: 3rem;
     text-wrap: wrap;
   }
 
   @include breakpoints.breakpoint(medium) {
-    // The content group and the copyright share one row; only the copyright
-    // wraps onto its own row when the row runs out of space
     .ang-footer--container {
       flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      padding: 2.5rem;
       gap: 3rem 1.5rem;
-    }
-
-    .ang-footer--content {
-      flex: 1 1 auto;
-      max-width: 100%;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      justify-content: space-between;
+      padding: 2.5rem;
     }
 
     .ang-footer--logo-container {
@@ -127,7 +106,7 @@ $_social-icon-size: 2.5rem;
     }
 
     .ang-footer--actions {
-      margin: 0;
+      flex-wrap: nowrap;
     }
 
     .ang-footer--social-icon {
@@ -136,8 +115,6 @@ $_social-icon-size: 2.5rem;
 
     .ang-footer--copyright {
       text-wrap: nowrap;
-      height: auto;
-      text-align: start;
     }
   }
 }
