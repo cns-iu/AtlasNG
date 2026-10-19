@@ -1,5 +1,5 @@
 import { createConfigurationToken, type } from '@atlasng/core';
-import { ComponentOrLoader } from '../types/content-component-definition';
+import { TypeRef } from '@atlasng/content-templates/types';
 
 /** Configures the content renderer. */
 export interface ContentRendererConfig {
@@ -7,7 +7,7 @@ export interface ContentRendererConfig {
    * Error component used by boundaries whose definition declares none, and by the renderer root. Receives `node`,
    * `definition`, and `error` inputs when it declares them. Without one, a failed boundary renders nothing.
    */
-  errorComponent?: ComponentOrLoader<unknown>;
+  errorComponent?: TypeRef<unknown>;
 }
 
 /** Content renderer configuration, provided by `withRendererConfig`. */

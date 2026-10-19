@@ -1,8 +1,8 @@
-import { isObservable, Subscription } from 'rxjs';
-import { AsyncValue } from '../types/content-data';
+import { isObservable, Observable, Subscription } from 'rxjs';
+import { Promisable } from 'type-fest';
 
 /**
- * Converts an {@link AsyncValue} into a promise. Observables use their first emission and are unsubscribed when the
+ * Converts a value, promise, or observable into a promise. Observables use their first emission and are unsubscribed when the
  * signal aborts.
  *
  * @param value Value, promise, or observable.
@@ -10,7 +10,7 @@ import { AsyncValue } from '../types/content-data';
  * @returns Promise of the value. Rejects with the abort reason on abort, or when an observable completes without
  *   emitting.
  */
-export function fromAsyncValue<T>(value: AsyncValue<T>, signal: AbortSignal): Promise<T> {
+export function fromAsyncValue<T>(value: Promisable<T> | Observable<T>, signal: AbortSignal): Promise<T> {
   if (!isObservable(value)) {
     return Promise.resolve(value);
   }

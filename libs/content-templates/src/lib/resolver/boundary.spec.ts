@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { ContentComponentDefinition } from '../types/content-component-definition';
+import { ContentDefinition } from '@atlasng/content-templates/types';
 import { whenContentReady, whenElementReady } from './boundary';
 import { ResolvedContentElement, ResolvedContentNode } from './resolved-content';
 
@@ -24,10 +24,10 @@ function element(
     slotContent?: Record<string, ResolvedContentNode[]>;
   } = {},
 ): ResolvedContentElement {
-  const definition: ContentComponentDefinition = {
+  const definition: ContentDefinition = {
     name: 'test',
     component: Placeholder,
-    placeholder: options.placeholder ? (Placeholder as Type<unknown>) : undefined,
+    placeholderComponent: options.placeholder ? (Placeholder as Type<unknown>) : undefined,
   };
   return {
     kind: 'element',

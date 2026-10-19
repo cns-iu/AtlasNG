@@ -9,8 +9,12 @@ import {
   withDefinitions,
   withRendererConfig,
 } from '../registries/providers';
-import { ContentComponentDefinition } from '../types/content-component-definition';
-import { ContentDocument, ContentElementNode } from '../types/content-document';
+import {
+  ContentDefinition,
+  ContentDocument,
+  ContentElementNode,
+  DEFAULT_CONTENT,
+} from '@atlasng/content-templates/types';
 import { ContentRenderer } from './content-renderer';
 
 const string: StandardSchemaV1<string, string> = {
@@ -44,6 +48,9 @@ class Heading implements OnDestroy {
 })
 class Card {}
 
+@Component({ selector: 'ang-test-panel', template: '<article><ng-content select="[panel-body]" /></article>' })
+class Panel {}
+
 @Component({
   selector: 'ang-test-list',
   template: '<ul>@for (row of rows(); track $index) { <li>{{ row }}</li> }</ul>',
@@ -63,7 +70,7 @@ class Placeholder {
 })
 class ErrorView {
   readonly error = input<unknown>();
-  readonly definition = input<ContentComponentDefinition>();
+  readonly definition = input<ContentDefinition>();
 
   message(): string {
     return this.error() instanceof Error ? (this.error() as Error).message : String(this.error());
@@ -73,13 +80,20 @@ class ErrorView {
 @Component({ selector: 'ang-test-plain-error', template: '<span role="alert">Failed</span>' })
 class PlainError {}
 
-const definitions: ContentComponentDefinition[] = [
-  { name: 'paragraph', component: Paragraph, slots: { content: '*' }, defaultSlot: 'content' },
+const definitions: ContentDefinition[] = [
+  { name: 'paragraph', component: Paragraph, content: { content: '*' } },
   { name: 'heading', component: Heading, config: { title: string } },
-  { name: 'card', component: Card, slots: { title: '[slot=title]', body: '*' }, defaultSlot: 'body' },
-  { name: 'list', component: () => List, data: { rows: 'any' }, placeholder: Placeholder, error: ErrorView },
+  { name: 'card', component: Card, content: { title: '[slot=title]', body: '*' } },
+  {
+    name: 'list',
+    component: () => List,
+    data: { rows: 'any' },
+    placeholderComponent: Placeholder,
+    errorComponent: ErrorView,
+  },
   { name: 'eager-list', component: List, data: { rows: 'any' } },
-  { name: 'link', component: Link, host: 'a', slots: { content: '*' }, defaultSlot: 'content' },
+  { name: 'link', component: Link, host: 'a', content: { content: '*' } },
+  { name: 'panel', component: Panel, content: { body: '[panel-body]', [DEFAULT_CONTENT]: 'body' } },
 ];
 
 function doc(content: ContentDocument['content']): ContentDocument {
@@ -119,7 +133,7 @@ describe('ContentRenderer', () => {
     expect((await screen.findByText('Docs')).tagName).toBe('A');
   });
 
-  it('projects content into named slots', async () => {
+  it('projects content by name', async () => {
     await setup(doc({ component: 'card', content: { title: 'Sales', body: ['Body text'] } }));
 
     const title = await screen.findByRole('heading', { level: 3 });
@@ -128,12 +142,18 @@ describe('ContentRenderer', () => {
     expect(title.parentElement).toHaveTextContent('SalesBody text');
   });
 
+  it('projects unkeyed content into the entry named by DEFAULT_CONTENT', async () => {
+    await setup(doc({ component: 'panel', content: 'Panel text' }));
+
+    expect((await screen.findByText('Panel text')).tagName).toBe('ARTICLE');
+  });
+
   it('shows a placeholder until a boundary is ready without delaying the rest', async () => {
     const rows = new Subject<unknown[]>();
     await setup(
       doc([
         { component: 'heading', config: { title: 'Now' } },
-        { component: 'list', data: { rows: { loader: 'stream' } } },
+        { component: 'list', data: { rows: { type: 'stream' } } },
       ]),
       withDataLoaders({ stream: () => ({ load: () => rows }) }),
     );
@@ -152,13 +172,13 @@ describe('ContentRenderer', () => {
     const { errorHandler } = await setup(
       doc([
         { component: 'heading', config: { title: 'Still here' } },
-        { component: 'list', data: { rows: { loader: 'missing' } } },
+        { component: 'list', data: { rows: { type: 'missing' } } },
       ]),
     );
 
-    expect(await screen.findByRole('alert')).toHaveTextContent("list: Unknown registry entry 'missing'.");
+    expect(await screen.findByRole('alert')).toHaveTextContent("list: Unknown data loader 'missing'.");
     expect(screen.getByRole('heading', { name: 'Still here' })).toBeInTheDocument();
-    expect(errorHandler.handleError).toHaveBeenCalledWith(new Error("Unknown registry entry 'missing'."));
+    expect(errorHandler.handleError).toHaveBeenCalledWith(new Error("Unknown data loader 'missing'."));
   });
 
   it('shows the configured error component when the root fails', async () => {
@@ -204,23 +224,23 @@ describe('ContentRenderer', () => {
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      "Component 'eager-list' cannot project content without a default slot.",
+      "Component 'eager-list' cannot project content without a default entry.",
     );
     expect(errorHandler.handleError).toHaveBeenCalledTimes(1);
   });
 
-  it('fails in dev mode for unknown slots', async () => {
+  it('fails in dev mode for unknown content names', async () => {
     await setup(
       doc({ component: 'card', content: { footer: 'x' } }),
       withRendererConfig({ errorComponent: ErrorView }),
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      "Component 'card' cannot project content into slot 'footer'.",
+      "Component 'card' cannot project content named 'footer'.",
     );
   });
 
-  it('drops content for unknown slots in prod mode', async () => {
+  it('drops content with unknown names in prod mode', async () => {
     const global = globalThis as Record<string, unknown>;
     const originalNgDevMode = global['ngDevMode'];
     global['ngDevMode'] = false;
@@ -237,7 +257,7 @@ describe('ContentRenderer', () => {
   it('replaces content and aborts pending loads when the document changes', async () => {
     const rows = new Subject<unknown[]>();
     const { fixture } = await setup(
-      doc({ component: 'list', data: { rows: { loader: 'stream' } } }),
+      doc({ component: 'list', data: { rows: { type: 'stream' } } }),
       withDataLoaders({ stream: () => ({ load: () => rows }) }),
     );
     expect(await screen.findByText('Loading list')).toBeInTheDocument();

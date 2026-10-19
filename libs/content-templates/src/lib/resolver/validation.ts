@@ -1,10 +1,9 @@
 import { StandardSchemaV1 } from '@standard-schema/spec';
-import { ContentComponentDefinition } from '../types/content-component-definition';
-import { ContentElementNode } from '../types/content-document';
+import { ContentDefinition, ContentElementNode } from '@atlasng/content-templates/types';
 import { ContentValidationError } from './errors';
 
-/** A single data schema entry, as declared in {@link ContentComponentDefinition.data}. */
-type DataSchemaEntry = NonNullable<ContentComponentDefinition['data']>[string];
+/** A single data schema entry, as declared in {@link ContentDefinition.data}. */
+type DataSchemaEntry = NonNullable<ContentDefinition['data']>[string];
 
 /**
  * Validates a node's config against its definition.
@@ -16,7 +15,7 @@ type DataSchemaEntry = NonNullable<ContentComponentDefinition['data']>[string];
  *   {@link ContentValidationError}.
  */
 export async function validateConfig(
-  definition: ContentComponentDefinition,
+  definition: ContentDefinition,
   node: ContentElementNode,
   path: string,
 ): Promise<Record<string, unknown>> {
@@ -68,7 +67,7 @@ export async function validateConfig(
  *   {@link ContentValidationError}.
  */
 export async function validateData(
-  definition: ContentComponentDefinition,
+  definition: ContentDefinition,
   loaded: Record<string, Promise<unknown>>,
   path: string,
 ): Promise<Record<string, unknown>> {
@@ -85,7 +84,7 @@ export async function validateData(
     Object.entries(schemas).map(async ([key, entry]) => {
       const { schema, hasDefault, defaultValue } = normalizeDataEntry(entry);
       if (!Object.hasOwn(loaded, key) && hasDefault) {
-        output[key] = defaultValue;
+        output[key] = typeof defaultValue === 'function' ? defaultValue() : defaultValue;
         return;
       }
 

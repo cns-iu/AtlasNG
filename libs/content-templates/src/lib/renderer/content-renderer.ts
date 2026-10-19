@@ -13,7 +13,7 @@ import {
   untracked,
 } from '@angular/core';
 import { ContentResolver } from '../resolver/resolver';
-import { ContentDocument } from '../types/content-document';
+import { ContentDocument } from '@atlasng/content-templates/types';
 import { CONTENT_RENDERER_CONFIG } from './config';
 import { ContentBoundary, ContentRenderContext } from './content-view';
 
@@ -21,7 +21,7 @@ import { ContentBoundary, ContentRenderContext } from './content-view';
  * Renders a {@link ContentDocument}.
  *
  * The document's nodes are shown together once every node outside a nested boundary is ready. Nodes whose definition
- * declares a `placeholder` render independently inside an `ang-content-outlet` element. Changing the document aborts
+ * declares a `placeholderComponent` render independently inside an `ang-content-outlet` element. Changing the document aborts
  * pending loads and replaces the rendered content. Requires `provideContentTemplates`.
  */
 @Component({

@@ -1,16 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { Arrayable, JsonValue } from 'type-fest';
-import { CONTENT_DATA_LOADER_CONFIG, ContentDataLoaderRegistry } from '../registries/data-loader-registry';
-import { ContentDataParserRegistry } from '../registries/data-parser-registry';
-import { ContentDefinitionRegistry } from '../registries/definition-registry';
-import { ContentDataContext } from '../types/content-data';
+import { DataLoaderContext, DataLoaderRegistry } from '@atlasng/content-templates/loaders';
+import { DataParserContext, DataParserRegistry } from '@atlasng/content-templates/parsers';
+import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
+import { DefinitionRegistry } from '@atlasng/content-templates/definitions';
 import {
   CONTENT_DOCUMENT_VERSION,
   ContentDataSource,
   ContentDocument,
   ContentElementNode,
   ContentNode,
-} from '../types/content-document';
+} from '@atlasng/content-templates/types';
 import { fromAsyncValue, handled } from './async-utils';
 import { ContentValidationError } from './errors';
 import { isContentDataSource, isContentElementNode, isContentSlots } from './guards';
@@ -18,7 +18,10 @@ import { loadComponent } from './load-component';
 import { ResolvedContentElement, ResolvedContentNode } from './resolved-content';
 import { validateConfig, validateData } from './validation';
 
-/** A loader or parser reference in its object form. */
+/** Context passed to both the loader and the parser of a data value. */
+type DataContext = DataLoaderContext & DataParserContext;
+
+/** A parser reference in its object form. */
 type TypedConfig = { type: string; [key: string]: JsonValue };
 
 /**
@@ -30,13 +33,11 @@ type TypedConfig = { type: string; [key: string]: JsonValue };
 @Injectable()
 export class ContentResolver {
   /** Component definitions. */
-  readonly #definitions = inject(ContentDefinitionRegistry);
+  readonly #definitions = inject(DefinitionRegistry);
   /** Data loaders. */
-  readonly #loaders = inject(ContentDataLoaderRegistry);
+  readonly #loaders = inject(DataLoaderRegistry);
   /** Data parsers. */
-  readonly #parsers = inject(ContentDataParserRegistry);
-  /** Data loader configuration. */
-  readonly #loaderConfig = CONTENT_DATA_LOADER_CONFIG.inject();
+  readonly #parsers = inject(DataParserRegistry);
 
   /**
    * Resolves a document.
@@ -103,8 +104,8 @@ export class ContentResolver {
    * @throws {ContentValidationError} When a descendant is neither a string nor an element node.
    */
   #resolveElement(node: ContentElementNode, path: string, signal: AbortSignal): ResolvedContentElement {
-    const context: ContentDataContext = { node, signal };
-    const definition = handled(this.#definitions.get(node.component));
+    const context: DataContext = { node, signal };
+    const definition = handled(getEntry(this.#definitions, node.component, 'component definition'));
     const component = handled(definition.then((resolved) => loadComponent(resolved.component)));
     const config = handled(definition.then((resolved) => validateConfig(resolved, node, path)));
 
@@ -132,31 +133,24 @@ export class ContentResolver {
   /**
    * Loads a single data value.
    *
-   * @param value Data value from the node: a string for the default loader, inline array, or data source.
+   * @param value Data value from the node: an inline array or a data source.
    * @param key Data name, used in errors.
    * @param path Path of the node, used in errors.
    * @param context Context passed to loaders and parsers.
    * @returns The loaded and parsed value.
    */
   async #loadData(
-    value: string | unknown[] | ContentDataSource,
+    value: unknown[] | ContentDataSource,
     key: string,
     path: string,
-    context: ContentDataContext,
+    context: DataContext,
   ): Promise<unknown> {
     if (Array.isArray(value)) {
       return value;
     }
-    if (typeof value === 'string') {
-      const type = this.#loaderConfig.defaultLoader;
-      if (type === undefined) {
-        throw new Error(`No default data loader is configured for data '${key}' at '${path}'.`);
-      }
-      return this.#loadSource({ loader: { type, url: value } }, context);
-    }
     if (!isContentDataSource(value)) {
       throw new ContentValidationError(path, [
-        { message: 'Expected a string, an array, or an object with a `loader`.', path: ['data', key] },
+        { message: 'Expected an array or an object with a string `type`.', path: ['data', key] },
       ]);
     }
 
@@ -170,26 +164,38 @@ export class ContentResolver {
    * @param context Context passed to the loader and parser.
    * @returns The loaded and parsed value.
    */
-  async #loadSource(source: ContentDataSource, context: ContentDataContext): Promise<unknown> {
-    const loaderConfig = toTypedConfig(source.loader);
-    const loader = await this.#loaders.get(loaderConfig.type);
+  async #loadSource(source: ContentDataSource, context: DataContext): Promise<unknown> {
+    const { parser: parserReference, ...loaderConfig } = source;
+    const loader = await getEntry(this.#loaders, loaderConfig.type, 'data loader');
     const value = await fromAsyncValue(loader.load(loaderConfig, context), context.signal);
-    if (source.parser === undefined) {
+    if (parserReference === undefined) {
       return value;
     }
 
-    const parserConfig = toTypedConfig(source.parser);
-    const parser = await this.#parsers.get(parserConfig.type);
+    const parserConfig = toTypedConfig(parserReference);
+    const parser = await getEntry(this.#parsers, parserConfig.type, 'data parser');
     return parser.parse(value, parserConfig, context);
   }
 }
 
 /**
- * Normalizes a loader or parser reference to its object form. Objects are returned as is.
+ * Normalizes a parser reference to its object form. Objects are returned as is.
  *
  * @param reference Name or config object.
  * @returns The config object.
  */
 function toTypedConfig(reference: string | TypedConfig): TypedConfig {
   return typeof reference === 'string' ? { type: reference } : reference;
+}
+
+/**
+ * Looks up a registry entry, turning a miss into a rejection.
+ *
+ * @param registry Registry to look up.
+ * @param name Registered name.
+ * @param kind Entry kind, used in the error message, e.g. `data loader`.
+ * @returns The value. Rejects when `name` is not registered or its factory fails.
+ */
+function getEntry<T>(registry: LazyChainedRegistry<T>, name: string, kind: string): Promise<T> {
+  return registry.get(name) ?? Promise.reject(new Error(`Unknown ${kind} '${name}'.`));
 }

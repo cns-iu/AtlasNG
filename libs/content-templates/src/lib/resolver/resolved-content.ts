@@ -1,6 +1,5 @@
 import { Type } from '@angular/core';
-import { ContentComponentDefinition } from '../types/content-component-definition';
-import { ContentElementNode } from '../types/content-document';
+import { ContentDefinition, ContentElementNode } from '@atlasng/content-templates/types';
 
 /** A resolved node: text, or an element whose parts load in the background. */
 export type ResolvedContentNode = ResolvedContentText | ResolvedContentElement;
@@ -27,16 +26,16 @@ export interface ResolvedContentElement {
   /** The source node. */
   node: ContentElementNode;
   /** The node's definition. */
-  definition: Promise<ContentComponentDefinition>;
+  definition: Promise<ContentDefinition>;
   /** The component class to render. */
   component: Promise<Type<unknown>>;
   /** Validated config outputs keyed by config key. Keys whose output is `undefined` are omitted. */
   config: Promise<Record<string, unknown>>;
   /** Loaded, parsed, and validated data keyed by data name. Keys whose value is `undefined` are omitted. */
   data: Promise<Record<string, unknown>>;
-  /** Content not keyed by slot, for the definition's `defaultSlot`. */
+  /** Content not keyed by name, for the definition's default `content` entry. */
   defaultContent: ResolvedContentNode[];
-  /** Content keyed by slot name. */
+  /** Content keyed by content name. */
   slotContent: Record<string, ResolvedContentNode[]>;
   /** Settles once `definition`, `component`, `config`, and `data` have all settled; rejects if any of them rejects. */
   ready: Promise<void>;
