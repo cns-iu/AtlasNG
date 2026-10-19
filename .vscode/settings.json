@@ -15,7 +15,6 @@
     "@nx/plugin:plugin-lint-checks"
   ],
   "conventionalCommits.scopes": [
-    "@atlasng/monorepo",
     "AtlasNG",
     "analytics",
     "cdk",
@@ -27,6 +26,7 @@
     "internal-storybook",
     "kg-explorer",
     "labs",
+    "monorepo",
     "nx-plugin",
     "prettier-config",
     "release",

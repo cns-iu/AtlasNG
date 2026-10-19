@@ -141,7 +141,7 @@ describe('YouTubePlayer', () => {
     expect(ngPlayer.startSeconds).toBe(10);
     expect(ngPlayer.endSeconds).toBe(45);
     expect(ngPlayer.suggestedQuality).toBe('hd720');
-    expect(ngPlayer.playerVars).toEqual({ autoplay: 1, rel: 1, showinfo: 0 });
+    expect(ngPlayer.playerVars).toEqual({ autoplay: 1, rel: 1 });
     expect(ngPlayer.disablePlaceholder).toBe(true);
     expect(ngPlayer.placeholderButtonLabel).toBe('Play demo');
     expect(ngPlayer.placeholderImageQuality).toBe('high');

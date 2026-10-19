@@ -1,6 +1,7 @@
 export {
   CookieBanner,
   CookieBannerAction,
+  CookieBannerContainer,
   CookieBannerDescription,
   CookieBannerLogo,
   CookieBannerPrivacyPolicy,

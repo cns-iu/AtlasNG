@@ -1,5 +1,5 @@
 import { DOCUMENT, inject, InjectionToken } from '@angular/core';
-import { isStorageAvailable } from './utils/storage';
+import { isStorageAvailable, SafeStorage } from './utils/storage';
 
 /**
  * Re-export of Angular's platform-agnostic document token.
@@ -7,9 +7,12 @@ import { isStorageAvailable } from './utils/storage';
 export { DOCUMENT };
 
 /**
- * Injection token for the global {@link Window} object.
+ * Injection token for the global {@link Window} object, when available.
+ *
+ * Resolves to `DOCUMENT.defaultView`, falling back to the global `window`, and to `undefined`
+ * when neither is available, for example during server-side rendering.
  */
-export const WINDOW = new InjectionToken<Window & typeof globalThis>('WINDOW', {
+export const WINDOW = new InjectionToken<(Window & typeof globalThis) | undefined>('WINDOW', {
   providedIn: 'root',
   factory: () => {
     const document = inject(DOCUMENT);
@@ -19,7 +22,7 @@ export const WINDOW = new InjectionToken<Window & typeof globalThis>('WINDOW', {
       return window;
     }
 
-    throw new Error('No global "window" object available.');
+    return undefined;
   },
 });
 
@@ -33,6 +36,8 @@ export const LOCATION = new InjectionToken<Location>('LOCATION', {
 
 /**
  * Injection token for the browser {@link CustomElementRegistry}, when available.
+ *
+ * Resolves to `undefined` when no window is available, for example during server-side rendering.
  */
 export const CUSTOM_ELEMENT_REGISTRY = new InjectionToken<CustomElementRegistry | undefined>(
   'CUSTOM_ELEMENT_REGISTRY',
@@ -40,7 +45,7 @@ export const CUSTOM_ELEMENT_REGISTRY = new InjectionToken<CustomElementRegistry 
     providedIn: 'root',
     factory: () => {
       const window = inject(WINDOW);
-      if (typeof window.customElements === 'object') {
+      if (typeof window?.customElements === 'object') {
         return window.customElements;
       }
 
@@ -50,13 +55,32 @@ export const CUSTOM_ELEMENT_REGISTRY = new InjectionToken<CustomElementRegistry 
 );
 
 /**
+ * Injection token for the browser {@link Navigation} API, when available.
+ *
+ * Resolves to `undefined` when no window is available or the browser does not support the Navigation API.
+ */
+export const NAVIGATION = new InjectionToken<Navigation | undefined>('NAVIGATION', {
+  providedIn: 'root',
+  factory: () => {
+    const window = inject(WINDOW);
+    if (typeof window?.navigation === 'object' && window.navigation !== null) {
+      return window.navigation;
+    }
+
+    return undefined;
+  },
+});
+
+/**
  * Injection token for the browser {@link ResizeObserver} API, when available.
+ *
+ * Resolves to `undefined` when no window is available, for example during server-side rendering.
  */
 export const RESIZE_OBSERVER = new InjectionToken<typeof ResizeObserver | undefined>('RESIZE_OBSERVER', {
   providedIn: 'root',
   factory: () => {
     const window = inject(WINDOW);
-    if (typeof window.ResizeObserver === 'function') {
+    if (typeof window?.ResizeObserver === 'function') {
       return window.ResizeObserver;
     }
 
@@ -66,11 +90,17 @@ export const RESIZE_OBSERVER = new InjectionToken<typeof ResizeObserver | undefi
 
 /**
  * Injection token for the browser {@link localStorage} API, when available.
+ *
+ * Resolves to `undefined` when no window is available, for example during server-side rendering.
  */
 export const LOCAL_STORAGE = new InjectionToken<Storage | undefined>('LOCAL_STORAGE', {
   providedIn: 'root',
   factory: () => {
     const window = inject(WINDOW);
+    if (!window) {
+      return undefined;
+    }
+
     const getStorage = () => window.localStorage;
     return isStorageAvailable(getStorage) ? getStorage() : undefined;
   },
@@ -78,12 +108,38 @@ export const LOCAL_STORAGE = new InjectionToken<Storage | undefined>('LOCAL_STOR
 
 /**
  * Injection token for the browser {@link sessionStorage} API, when available.
+ *
+ * Resolves to `undefined` when no window is available, for example during server-side rendering.
  */
 export const SESSION_STORAGE = new InjectionToken<Storage | undefined>('SESSION_STORAGE', {
   providedIn: 'root',
   factory: () => {
     const window = inject(WINDOW);
+    if (!window) {
+      return undefined;
+    }
+
     const getStorage = () => window.sessionStorage;
     return isStorageAvailable(getStorage) ? getStorage() : undefined;
   },
+});
+
+/**
+ * Injection token for a {@link SafeStorage} wrapping {@link LOCAL_STORAGE}.
+ *
+ * Always resolves to an adapter; when local storage is unavailable, its reads return empty results and its writes fail.
+ */
+export const SAFE_LOCAL_STORAGE = new InjectionToken<SafeStorage>('SAFE_LOCAL_STORAGE', {
+  providedIn: 'root',
+  factory: () => new SafeStorage(inject(LOCAL_STORAGE)),
+});
+
+/**
+ * Injection token for a {@link SafeStorage} wrapping {@link SESSION_STORAGE}.
+ *
+ * Always resolves to an adapter; when session storage is unavailable, its reads return empty results and its writes fail.
+ */
+export const SAFE_SESSION_STORAGE = new InjectionToken<SafeStorage>('SAFE_SESSION_STORAGE', {
+  providedIn: 'root',
+  factory: () => new SafeStorage(inject(SESSION_STORAGE)),
 });

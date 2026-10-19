@@ -1,3 +1,4 @@
+import { computed } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { LOCAL_STORAGE, WINDOW } from '@atlasng/core';
@@ -62,6 +63,15 @@ describe('PermissionsManager', () => {
     return eventName;
   }
 
+  function createChangeEvent(eventName: string, permissions: string | AnalyticsPermissions): CustomEvent {
+    return new CustomEvent(eventName, {
+      detail: {
+        permissions: typeof permissions === 'string' ? permissions : JSON.stringify(permissions),
+        sender: Symbol('other-manager'),
+      },
+    });
+  }
+
   afterEach(() => {
     TestBed.resetTestingModule();
   });
@@ -93,6 +103,22 @@ describe('PermissionsManager', () => {
     expect(manager.permissions()).toBe(initialPermissions);
   });
 
+  it('works without a window', () => {
+    const storage = createStorage();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: WINDOW, useValue: undefined },
+        { provide: LOCAL_STORAGE, useValue: storage },
+      ],
+    });
+    const manager = TestBed.inject(AnalyticsPermissionsManager);
+
+    manager.setPermissions(AnalyticsPermissions.FULL);
+
+    expect(manager.permissions().equals(AnalyticsPermissions.FULL)).toBe(true);
+    expect(storage.setItem).toHaveBeenCalledWith(manager.config.storageKey, JSON.stringify(AnalyticsPermissions.FULL));
+  });
+
   it('sets permissions, broadcasts change event, and syncs to storage', () => {
     const storage = createStorage();
     const { manager, fakeWindow } = setup({ storage });
@@ -108,7 +134,10 @@ describe('PermissionsManager', () => {
     expect(eventSpy).toHaveBeenCalledTimes(1);
 
     const event = eventSpy.mock.calls[0]?.[0] as CustomEvent;
-    expect(event.detail).toBe(JSON.stringify(AnalyticsPermissions.FULL));
+    expect(event.detail).toEqual({
+      permissions: JSON.stringify(AnalyticsPermissions.FULL),
+      sender: expect.any(Symbol),
+    });
   });
 
   it('updates permissions from the current value, broadcasts, and syncs to storage', () => {
@@ -129,9 +158,29 @@ describe('PermissionsManager', () => {
     expect(eventSpy).toHaveBeenCalledOnce();
   });
 
-  it('does not replace, broadcast, or persist permissions when an update is unchanged', () => {
+  it('records an unchanged update as a decision', () => {
     const storage = createStorage();
     const { manager, fakeWindow } = setup({ storage });
+    const eventSpy = vi.fn();
+    fakeWindow.addEventListener(getChangeEventName(manager), eventSpy);
+
+    expect(manager.hasDecision()).toBe(false);
+    manager.setDefaultPermissions();
+
+    expect(manager.hasDecision()).toBe(true);
+    expect(manager.permissionsSource()).toBe('local');
+    expect(storage.setItem).toHaveBeenCalledWith(
+      manager.config.storageKey,
+      JSON.stringify(AnalyticsPermissions.DEFAULT),
+    );
+    expect(eventSpy).toHaveBeenCalledOnce();
+  });
+
+  it('does not replace, broadcast, or persist permissions when an update after a decision is unchanged', () => {
+    const storage = createStorage();
+    const { manager, fakeWindow } = setup({ storage });
+    manager.setDefaultPermissions();
+    vi.mocked(storage.setItem).mockClear();
     const eventSpy = vi.fn();
     fakeWindow.addEventListener(getChangeEventName(manager), eventSpy);
     const currentPermissions = manager.permissions();
@@ -223,9 +272,34 @@ describe('PermissionsManager', () => {
     const changeEventName = getChangeEventName(manager);
 
     const payload = JSON.stringify(AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Preferences));
-    fakeWindow.dispatchEvent(new CustomEvent(changeEventName, { detail: payload }));
+    fakeWindow.dispatchEvent(createChangeEvent(changeEventName, payload));
 
     expect(manager.permissions().isCategoryEnabled(AnalyticsEventCategory.Preferences)).toBe(true);
+  });
+
+  it('ignores its own change events', () => {
+    const { manager, fakeWindow } = setup();
+    const eventSpy = vi.fn();
+    fakeWindow.addEventListener(getChangeEventName(manager), eventSpy);
+
+    manager.setFullPermissions();
+
+    expect(eventSpy).toHaveBeenCalledOnce();
+    expect(manager.permissionsSource()).toBe('local');
+  });
+
+  it('ignores custom events without a valid detail payload', () => {
+    const { manager, fakeWindow } = setup();
+    const changeEventName = getChangeEventName(manager);
+
+    fakeWindow.dispatchEvent(new CustomEvent(changeEventName, { detail: JSON.stringify(AnalyticsPermissions.FULL) }));
+    fakeWindow.dispatchEvent(new CustomEvent(changeEventName, { detail: null }));
+    fakeWindow.dispatchEvent(
+      new CustomEvent(changeEventName, { detail: { permissions: JSON.stringify(AnalyticsPermissions.FULL) } }),
+    );
+
+    expect(manager.permissions().equals(AnalyticsPermissions.DEFAULT)).toBe(true);
+    expect(manager.permissionsSource()).toBe('initial');
   });
 
   it('does not broadcast or react to custom events when change events are disabled', () => {
@@ -238,9 +312,10 @@ describe('PermissionsManager', () => {
     manager.setPermissions(AnalyticsPermissions.FULL);
 
     fakeWindow.dispatchEvent(
-      new CustomEvent(DEFAULT_CHANGE_EVENT_NAME, {
-        detail: JSON.stringify(AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Marketing)),
-      }),
+      createChangeEvent(
+        DEFAULT_CHANGE_EVENT_NAME,
+        AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Marketing),
+      ),
     );
 
     expect(manager.permissions().equals(AnalyticsPermissions.FULL)).toBe(true);
@@ -262,7 +337,7 @@ describe('PermissionsManager', () => {
     const changeEventName = getChangeEventName(manager);
 
     manager.setPermissions(AnalyticsPermissions.FULL);
-    fakeWindow.dispatchEvent(new CustomEvent(changeEventName, { detail: 'not-json' }));
+    fakeWindow.dispatchEvent(createChangeEvent(changeEventName, 'not-json'));
 
     expect(manager.permissions().equals(AnalyticsPermissions.FULL)).toBe(true);
   });
@@ -305,7 +380,72 @@ describe('PermissionsManager', () => {
     );
 
     expect(manager.permissions().isCategoryEnabled(AnalyticsEventCategory.Marketing)).toBe(true);
+    expect(manager.permissionsSource()).toBe('external');
 
     storage.removeItem(manager.config.storageKey);
+  });
+
+  it('marks permissions loaded from storage as decided', () => {
+    const storage = createStorage({ [DEFAULT_STORAGE_KEY]: JSON.stringify(AnalyticsPermissions.FULL) });
+    const { manager } = setup({ storage });
+
+    expect(manager.hasDecision()).toBe(true);
+    expect(manager.permissionsSource()).toBe('storage');
+  });
+
+  it('ignores storage read errors', () => {
+    const storage = createStorage();
+    vi.mocked(storage.getItem).mockImplementation(() => {
+      throw new Error('access denied');
+    });
+    const { manager } = setup({ storage });
+
+    expect(manager.syncFromStorage()).toBe(false);
+    expect(manager.hasDecision()).toBe(false);
+    expect(manager.permissionsSource()).toBe('initial');
+  });
+
+  it('notifies consumers once per change', () => {
+    const { manager, fakeWindow } = setup();
+    let computations = 0;
+    const tracked = computed(() => {
+      computations++;
+      return manager.permissions();
+    });
+    tracked();
+
+    manager.setFullPermissions();
+    tracked();
+    fakeWindow.dispatchEvent(createChangeEvent(getChangeEventName(manager), AnalyticsPermissions.FULL));
+    tracked();
+
+    expect(computations).toBe(2);
+  });
+
+  it('marks permissions received from other contexts as decided', () => {
+    const { manager, fakeWindow } = setup();
+
+    fakeWindow.dispatchEvent(createChangeEvent(getChangeEventName(manager), AnalyticsPermissions.FULL));
+
+    expect(manager.hasDecision()).toBe(true);
+    expect(manager.permissionsSource()).toBe('external');
+  });
+
+  it.each([
+    ['the stored key is removed', DEFAULT_STORAGE_KEY],
+    ['the storage is cleared', null],
+  ])('resets to the initial permissions when %s in another tab', (_label, key) => {
+    const storage = window.localStorage;
+    storage.removeItem(DEFAULT_STORAGE_KEY);
+    const initialPermissions = AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Preferences);
+    const { manager, fakeWindow } = setup({ storage, initialPermissions });
+    manager.setFullPermissions();
+
+    fakeWindow.dispatchEvent(new StorageEvent('storage', { key, newValue: null, storageArea: storage }));
+
+    expect(manager.permissions()).toBe(initialPermissions);
+    expect(manager.hasDecision()).toBe(false);
+    expect(manager.permissionsSource()).toBe('initial');
+    storage.removeItem(DEFAULT_STORAGE_KEY);
   });
 });

@@ -30,7 +30,8 @@
   - `AtlasNG` (application)
   - `analytics`, `cdk`, `common`, `core`, `design-system`, `labs`, `kg-explorer` (publishable libraries)
   - `internal-storybook` (internal Storybook configuration and composition)
-- Release groups (see "Releasing" in [README.md](README.md)): libraries are listed by name in the fixed `libraries` group in `nx.json`; application libraries live in `libs/applications/` and are versioned independently. Add new publishable libraries to the `libraries` group explicitly.
+  - `nx-plugin`, `eslint-plugin`, `commitlint-config`, `prettier-config`, `tsconfig` (publishable tooling packages in `libs/tooling/`)
+- Release groups (see "Releasing" in [README.md](README.md)): libraries are listed by name in the fixed `libraries` group in `nx.json`; application libraries live in `libs/applications/` and tooling packages in `libs/tooling/`, and both are versioned independently. Add new publishable libraries to the `libraries` group explicitly.
 
 ## AI Customizations
 
@@ -53,7 +54,6 @@
 - Design-system Storybook:
   - Dev: `npx nx storybook design-system`
   - Static build: `npx nx build-storybook design-system`
-  - Storybook tests: `npx nx test-storybook design-system`
 - Compodoc for libraries:
   - Build docs: `npx nx build-compodoc <project>`
   - Live docs: `npx nx compodoc <project>`
@@ -83,6 +83,12 @@
   - [libs/labs/README.md](libs/labs/README.md)
   - [libs/applications/kg-explorer/README.md](libs/applications/kg-explorer/README.md)
   - [libs/internal/storybook/README.md](libs/internal/storybook/README.md)
+- Tooling docs:
+  - [libs/tooling/nx-plugin/README.md](libs/tooling/nx-plugin/README.md)
+  - [libs/tooling/eslint-plugin/README.md](libs/tooling/eslint-plugin/README.md)
+  - [libs/tooling/commitlint-config/README.md](libs/tooling/commitlint-config/README.md)
+  - [libs/tooling/prettier-config/README.md](libs/tooling/prettier-config/README.md)
+  - [libs/tooling/tsconfig/README.md](libs/tooling/tsconfig/README.md)
 
 <!-- atlasng configuration start -->
 <!-- Leave the start & end comments to automatically receive updates. -->

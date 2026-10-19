@@ -1,1 +1,1 @@
-export { SearchList } from './lib/search-list';
+export { SearchList, type SearchListOption } from './lib/search-list';

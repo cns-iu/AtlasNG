@@ -1,5 +1,6 @@
-export { CheckboxCellDefinition } from './lib/checkbox/checkbox-cell';
+export { CheckboxCellDefinition, type CheckboxCellConfig } from './lib/checkbox/checkbox-cell';
 export { CheckboxHeaderCellDefinition } from './lib/checkbox/checkbox-header-cell';
+export { ChipCellDefinition } from './lib/chip/chip-cell';
 export { CodeCellDefinition } from './lib/code/code-cell';
 export { LinkCellDefinition, type LinkCellConfig } from './lib/link/link-cell';
 export { NumberCellDefinition } from './lib/number/number-cell';

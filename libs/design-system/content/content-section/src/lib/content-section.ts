@@ -10,7 +10,10 @@ import { ContentHeader } from '@atlasng/design-system/content/content-header';
   templateUrl: './content-section.html',
   styleUrl: './content-section.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ang-content-section' },
+  host: {
+    class: 'ang-content-section',
+    '[attr.id]': 'null',
+  },
 })
 export class ContentSection {
   /** The text displayed in the section heading. */
@@ -19,7 +22,10 @@ export class ContentSection {
   /** The heading level to use for the section. */
   readonly level = input.required<number | string>();
 
-  /** The heading ID used for deep links. */
+  /**
+   * The heading ID used for deep links.
+   * The ID is never applied to the host element, so a static `id` attribute does not create duplicate IDs.
+   */
   readonly id = input<string>();
 
   /** Whether to display the divider beneath the section heading. */

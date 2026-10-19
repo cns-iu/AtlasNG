@@ -10,6 +10,7 @@ import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import {
   CheckboxCellDefinition,
   CheckboxHeaderCellDefinition,
+  ChipCellDefinition,
   CodeCellDefinition,
   LinkCellDefinition,
   NumberCellDefinition,
@@ -29,6 +30,7 @@ interface TestRow extends Row {
   score: number;
   url: string;
   code: string;
+  tags: string[];
 }
 
 class MockLinkHandler implements LinkHandler {
@@ -39,7 +41,7 @@ class MockLinkHandler implements LinkHandler {
   readonly isActive = vi.fn(() => signal(false));
 }
 
-const ROWS: TestRow[] = [{ name: 'Ada', score: 1234.5, url: '/ada', code: 'ada' }];
+const ROWS: TestRow[] = [{ name: 'Ada', score: 1234.5, url: '/ada', code: 'ada', tags: ['Liver', 'Kidney'] }];
 
 @Component({
   selector: 'ang-test-summary-cell-definition',
@@ -247,6 +249,20 @@ describe('Table', () => {
     expect(screen.getByText('ada')).toHaveClass('ang-table--code-cell');
   });
 
+  it('renders chip cells with the reusable chip definition', async () => {
+    await setup([
+      {
+        name: 'Tags',
+        prop: 'tags',
+        cellTemplate: ChipCellDefinition,
+        ...textHeader(),
+      },
+    ]);
+
+    expect(screen.getByRole('list')).toHaveClass('ang-table--chip-cell');
+    expect(screen.getAllByRole('listitem').map((item) => item.textContent?.trim())).toEqual(['Liver', 'Kidney']);
+  });
+
   it('renders text cells with the standard reusable definition', async () => {
     await setup([
       {
@@ -275,7 +291,7 @@ describe('Table', () => {
     );
 
     expect(screen.getByRole('checkbox', { name: 'Select all rows' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Select row' })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Select row 1' })).toBeInTheDocument();
   });
 
   it('uses the native header when no reusable header is configured', async () => {

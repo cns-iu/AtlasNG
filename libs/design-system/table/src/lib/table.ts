@@ -112,7 +112,7 @@ export class Table<TRow extends Row = Row> {
   readonly appearance = input<TableAppearance>('striped');
 
   /** Height of each virtualized row in pixels. */
-  readonly rowHeight = input<number>(TABLE_ROW_HEIGHT);
+  readonly rowHeight = input(TABLE_ROW_HEIGHT, { transform: numberAttribute });
 
   /** Enables horizontal scrolling when columns exceed the available width. */
   readonly scrollbarH = input(true, { transform: booleanAttribute });

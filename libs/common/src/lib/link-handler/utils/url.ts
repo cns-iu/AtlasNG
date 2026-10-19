@@ -37,7 +37,31 @@ export function tryParseAbsoluteUrl(value: unknown): URL | null {
 }
 
 /**
+ * URL schemes that are safe to navigate to programmatically.
+ */
+const SAFE_NAVIGATION_PROTOCOLS: ReadonlySet<string> = new Set(['http:', 'https:', 'mailto:', 'tel:', 'sms:', 'ftp:']);
+
+/**
+ * Checks whether a URL is safe to pass to `location.assign` or `location.replace`.
+ *
+ * Relative URLs are always safe. Absolute URLs are safe only when their scheme is in an allowlist,
+ * which rejects script-executing schemes such as `javascript:` and `data:`.
+ *
+ * @param href URL to check.
+ * @returns `true` when the URL can be navigated to safely, otherwise `false`.
+ */
+export function isSafeNavigationUrl(href: string): boolean {
+  try {
+    return SAFE_NAVIGATION_PROTOCOLS.has(new URL(href, 'http://localhost').protocol);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Applies query params and fragment options from a link command onto an URL.
+ *
+ * Query params whose value is `null` or `undefined` are removed, matching Angular Router.
  *
  * @param url URL instance to mutate.
  * @param options Query param and fragment options to apply.
@@ -48,8 +72,12 @@ export function applyQueryParamsAndFragmentToUrl(url: URL, options: UrlCreationO
   }
   if (options.queryParamsHandling !== 'preserve' && options.queryParams) {
     for (const [key, value] of Object.entries(options.queryParams)) {
-      const values = Array.isArray(value) ? value : [value];
       url.searchParams.delete(key);
+      if (value === null || value === undefined) {
+        continue;
+      }
+
+      const values = Array.isArray(value) ? value : [value];
       for (const v of values) {
         url.searchParams.append(key, v);
       }
