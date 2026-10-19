@@ -103,7 +103,10 @@ type ContentComponentConfigSchema =
   | StandardSchemaV1<JsonObject, object> // whole config object
   | Record<string, StandardSchemaV1<JsonValue | undefined, unknown>>; // one schema per config key
 
-type ContentComponentDataSchema = Record<string, 'any' | StandardSchemaV1<unknown> | { schema: 'any' | StandardSchemaV1<unknown>; defaultValue?: unknown }>;
+type ContentComponentDataSchema = Record<
+  string,
+  'any' | StandardSchemaV1<unknown> | { schema: 'any' | StandardSchemaV1<unknown>; defaultValue?: unknown }
+>;
 
 interface ContentComponentDefinition<TComponent = unknown> {
   name: string; // matches ContentElementNode.component
@@ -209,7 +212,15 @@ include path from `ng-package.json` (`styleIncludePaths`).
 Feature functions, following `provideLinkHandler(withX(), ...)` in `libs/common`:
 
 ```ts
-provideContentTemplates(withDefinitions([contentHeaderDefinition, contentParagraphDefinition]), withDefinitions({ table: () => import('./table.definition').then((m) => m.tableDefinition) }), withDataLoaders({ http: () => new HttpContentDataLoader(), inline: () => new InlineContentDataLoader() }, { defaultLoader: 'http' }), withDataParsers({ csv: () => new CsvContentDataParser() }));
+provideContentTemplates(
+  withDefinitions([contentHeaderDefinition, contentParagraphDefinition]),
+  withDefinitions({ table: () => import('./table.definition').then((m) => m.tableDefinition) }),
+  withDataLoaders(
+    { http: () => new HttpContentDataLoader(), inline: () => new InlineContentDataLoader() },
+    { defaultLoader: 'http' },
+  ),
+  withDataParsers({ csv: () => new CsvContentDataParser() }),
+);
 ```
 
 Loaders, parsers, and definition records are registered as factories returning a value or a promise. A factory runs
