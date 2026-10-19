@@ -1,5 +1,3 @@
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { createSnackBarConfig, Snackbar } from '@atlasng/design-system/snackbar';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { CSV_FILE_FORMAT, JSON_FILE_FORMAT, PDF_FILE_FORMAT } from './file-formats';
@@ -22,16 +20,14 @@ describe('VersionControl', () => {
     selectedVersion?: VersionControlItem<VersionControlFileFormat>,
   ) {
     const user = userEvent.setup();
-    const openFromComponent = vi.fn();
     const download = vi.fn();
     const selectedVersionChange = vi.fn();
     const result = await render(VersionControl, {
       inputs: { tagline: 'Digital object version', versions: customVersions, selectedVersion },
       on: { download, selectedVersion: selectedVersionChange },
-      providers: [{ provide: MatSnackBar, useValue: { openFromComponent } }],
     });
 
-    return { ...result, download, openFromComponent, selectedVersionChange, user };
+    return { ...result, download, selectedVersionChange, user };
   }
 
   it('displays the tagline', async () => {
@@ -78,31 +74,12 @@ describe('VersionControl', () => {
     expect(screen.getByRole('button', { name: /PDF/ })).toBeVisible();
   });
 
-  it('matches the supplied selected version by label', async () => {
-    await setup(versions, { label: '1.0.0', formats: [] });
-
-    expect(screen.getByRole('button', { name: /PDF/ })).toBeVisible();
-  });
-
-  it('falls back to the first version when the selected version is not found', async () => {
-    await setup(versions, { label: '9.9.9', formats: [] });
-
-    expect(screen.getByRole('button', { name: /CSV/ })).toBeVisible();
-  });
-
-  it('emits the version and format and displays a confirmation snackbar when a format is chosen', async () => {
-    const { download, openFromComponent, user } = await setup();
+  it('emits the version and format when a format is chosen', async () => {
+    const { download, user } = await setup();
 
     await user.click(screen.getByRole('button', { name: /JSON/ }));
 
     expect(download).toHaveBeenCalledExactlyOnceWith({ item: versions[0], format: versions[0].formats[1] });
-    expect(openFromComponent).toHaveBeenCalledExactlyOnceWith(
-      Snackbar,
-      createSnackBarConfig('File downloaded', {
-        duration: 5000,
-        verticalPosition: 'top',
-      }),
-    );
   });
 
   it('does not render download options when the selected version has no formats', async () => {

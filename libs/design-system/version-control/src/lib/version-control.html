@@ -18,25 +18,23 @@
 </div>
 
 @if (version && version.formats.length > 0) {
-  @if (version.formats.length > 0) {
-    <span class="ang-version-control--heading">Download options</span>
-    <ang-scroll-area>
-      <mat-action-list class="ang-version-control--download-options" aria-label="Download options">
-        @for (option of version.formats; track option) {
-          <button
-            mat-list-item
-            lines="3"
-            class="ang-version-control--download-option"
-            (click)="download.emit({ item: version, format: option })"
-          >
-            <mat-icon matListItemIcon fontIcon="download" />
-            <span matListItemTitle>{{ option.label }}</span>
-            @if (option.description; as description) {
-              <span class="ang-version-control--download-description">{{ description }}</span>
-            }
-          </button>
-        }
-      </mat-action-list>
-    </ang-scroll-area>
-  }
+  <span class="ang-version-control--heading">Download options</span>
+  <ang-scroll-area>
+    <mat-action-list class="ang-version-control--download-options" aria-label="Download options">
+      @for (option of version.formats; track option) {
+        <button
+          mat-list-item
+          lines="3"
+          class="ang-version-control--download-option"
+          (click)="download.emit({ item: version, format: option })"
+        >
+          <mat-icon matListItemIcon fontIcon="download" />
+          <span matListItemTitle>{{ option.label }}</span>
+          @if (option.description; as description) {
+            <span class="ang-version-control--download-description">{{ description }}</span>
+          }
+        </button>
+      }
+    </mat-action-list>
+  </ang-scroll-area>
 }

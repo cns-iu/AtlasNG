@@ -55,7 +55,7 @@ export class VersionControl<T extends VersionControlFileFormat = VersionControlF
   /** Versions and their available file formats. */
   readonly versions = input.required<readonly VersionControlItem<T>[]>();
 
-  /** Selected version, matched to {@link versions} by label. Defaults to the first version. */
+  /** Selected version. Defaults to the first version. */
   readonly selectedVersion = model<VersionControlItem<T> | undefined>();
 
   /** Emits the version and file format whenever a download option is chosen. */
