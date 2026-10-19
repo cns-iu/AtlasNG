@@ -10,6 +10,13 @@
 
 $themes: (cns, hra, wpp);
 
+// Emits the extended level colors from the theme's optional `$ext-palettes` map.
+@mixin level-colors($variables, $theme-type) {
+  @each $level, $palette in map.get($variables, 'ext-palettes') or () {
+    @include ds.ext-level-colors($level, $palette, $theme-type);
+  }
+}
+
 @each $name in $themes {
   $variables: meta.module-variables('#{$name}-theme');
   $theme: (
@@ -30,10 +37,12 @@ $themes: (cns, hra, wpp);
 
   .#{$name}-light-theme {
     @include mat.theme(map.set($theme, color, theme-type, light), $overrides);
+    @include level-colors($variables, light);
   }
 
   .#{$name}-dark-theme {
     @include mat.theme(map.set($theme, color, theme-type, dark), $overrides);
+    @include level-colors($variables, dark);
   }
 }
 

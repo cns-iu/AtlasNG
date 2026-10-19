@@ -1,16 +1,6 @@
 # @atlasng/cdk
 
-A low-level Angular Component Development Kit (CDK) that provides primitive building blocks for constructing higher-level UI components. This library contains abstract base classes, structural directives, behavioral utilities, and accessibility primitives used across the AtlasNG component family.
-
-## Overview
-
-The CDK enables library and application authors to:
-
-- **Compose Behaviors**: Apply reusable behavioral mixins and abstract base classes to custom components
-- **Accessibility Primitives**: Leverage focus management, keyboard navigation, and ARIA utilities out of the box
-- **Overlay & Positioning**: Position floating elements (tooltips, dropdowns, dialogs) with a flexible positioning engine
-- **Portal System**: Render Angular templates and components into arbitrary DOM locations
-- **Interaction Utilities**: Detect and respond to pointer events, scroll, and resize across component boundaries
+Low-level building blocks for AtlasNG component authors. The CDK holds behavior and infrastructure that components share, with no visual design of its own.
 
 ## Installation
 
@@ -20,10 +10,30 @@ npm install @atlasng/cdk
 
 ## Usage
 
-### TODO: Overlay & Positioning
+### Style loader
 
-### TODO: Portal System
+`StyleLoader` attaches a component's styles to the application once, without rendering the component anywhere in the page. This lets directives and other template-less features ship styles the same way components do. The service is adapted from an internal Angular CDK service.
 
-### TODO: Focus & Keyboard Navigation
+Define a component that only carries styles, then load it where the styles are needed. Repeated calls with the same component have no further effect, and loaded styles are removed when the application is destroyed.
 
-### TODO: Abstract Base Classes
+```ts
+import { Component, Directive, inject, ViewEncapsulation } from '@angular/core';
+import { StyleLoader } from '@atlasng/cdk';
+
+@Component({
+  template: '',
+  styleUrl: './highlight.scss',
+  encapsulation: ViewEncapsulation.None,
+})
+class HighlightStyles {}
+
+@Directive({
+  selector: '[appHighlight]',
+  host: { class: 'app-highlight' },
+})
+export class Highlight {
+  constructor() {
+    inject(StyleLoader).load(HighlightStyles);
+  }
+}
+```

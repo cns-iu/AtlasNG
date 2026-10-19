@@ -1,4 +1,4 @@
-<button matButton angTrackClick class="ang-navigation-toggle--button" disableRipple>
+<button matButton angTrackClick class="ang-navigation-toggle--button" disableRipple [attr.aria-expanded]="selected()">
   <span class="ang-navigation-toggle--text"><ng-content /></span>
 
   <mat-icon

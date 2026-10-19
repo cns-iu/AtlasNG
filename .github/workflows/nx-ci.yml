@@ -1,0 +1,147 @@
+# Reusable workflow (workflow_call): CI for Nx workspaces. Reusable workflows are prefixed with
+# `nx-`; AtlasNG's own entry points (ci.yml, publish.yml, storybook-gh-pages.yml) are thin callers.
+# Callers own triggers, concurrency, and permissions (grant actions: read, contents: read, and
+# pull-requests: write). Local `./.github/actions/*` refs resolve against the caller's checkout.
+name: Nx CI
+
+on:
+  workflow_call:
+    inputs:
+      targets:
+        description: Space-separated targets run with `nx affected -t`
+        type: string
+        required: false
+        default: lint test build
+      stop-agents-after:
+        description: >-
+          Comma-separated targets after which Nx Cloud agents stop. Defaults to the targets input,
+          which fits when `nx affected` is the last distributed command.
+        type: string
+        required: false
+        default: ''
+      distribute-on:
+        description: Nx Cloud distribution config (file path or agent spec); empty disables task distribution
+        type: string
+        required: false
+        default: .nx/workflows/distribution-config.yaml
+      vitest-max-workers:
+        description: Value of VITEST_MAX_WORKERS, forwarded to Nx Cloud agents
+        type: string
+        required: false
+        default: '2'
+      affected-timeout-minutes:
+        description: Timeout for the `nx affected` step
+        type: number
+        required: false
+        default: 30
+      node-version-file:
+        description: File that pins the Node.js version
+        type: string
+        required: false
+        default: .nvmrc
+      commitlint:
+        description: Validate commit messages with commitlint on branches other than the default branch
+        type: boolean
+        required: false
+        default: true
+      deploy-preview:
+        description: Deploy a Netlify preview of dist/ for pull requests (uses the caller's .github/actions/deploy-preview)
+        type: boolean
+        required: false
+        default: false
+      netlify-filter:
+        description: Netlify monorepo filter for the preview deploy
+        type: string
+        required: false
+        default: AtlasNG
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        description: Nx Cloud access token
+        required: false
+      NETLIFY_AUTH_TOKEN:
+        description: Netlify auth token, required when deploy-preview is true
+        required: false
+      NETLIFY_SITE_ID:
+        description: Netlify site ID, required when deploy-preview is true
+        required: false
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  VITEST_MAX_WORKERS: ${{ inputs.vitest-max-workers }}
+  HUSKY: 0
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          filter: tree:0
+          fetch-depth: 0
+
+      - name: Enable task distribution via Nx Cloud
+        if: inputs.distribute-on != ''
+        env:
+          DISTRIBUTE_ON: ${{ inputs.distribute-on }}
+          STOP_AGENTS_AFTER: ${{ inputs.stop-agents-after }}
+          TARGETS: ${{ inputs.targets }}
+        run: |
+          if [[ -z "$STOP_AGENTS_AFTER" ]]; then
+            read -ra targets <<< "$TARGETS"
+            STOP_AGENTS_AFTER=$(IFS=,; echo "${targets[*]}")
+          fi
+          npx nx start-ci-run \
+            --distribute-on="$DISTRIBUTE_ON" \
+            --with-env-vars="VITEST_MAX_WORKERS" \
+            --stop-agents-after="$STOP_AGENTS_AFTER"
+
+      - name: Set up Nx workspace
+        uses: ./.github/actions/setup-nx-workspace
+        with:
+          node-version-file: ${{ inputs.node-version-file }}
+          set-shas: 'true'
+
+      - name: Validate commit message format
+        if: inputs.commitlint && github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
+        env:
+          COMMITLINT_FROM: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
+          COMMITLINT_TO: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
+        run: |
+          if [[ -n "$COMMITLINT_FROM" && -n "$COMMITLINT_TO" ]]; then
+            npx nx record -- commitlint --from $COMMITLINT_FROM --to $COMMITLINT_TO
+          else
+            npx nx record -- commitlint --last
+          fi
+
+      - name: Check for un-formatted files
+        run: npx nx record -- nx format:check
+
+      # Fails when files managed by sync generators (such as @atlasng/nx-plugin:sync) drifted.
+      - name: Check workspace sync
+        run: npx nx record -- nx sync:check
+
+      - name: Run affected targets
+        timeout-minutes: ${{ inputs.affected-timeout-minutes }}
+        env:
+          TARGETS: ${{ inputs.targets }}
+        # TARGETS is intentionally unquoted so each space-separated target becomes its own argument.
+        run: npx nx affected -t $TARGETS
+
+      - name: Fix CI issues
+        if: failure()
+        run: npx nx fix-ci
+
+      - name: Deploy preview
+        if: inputs.deploy-preview && github.event_name == 'pull_request' && !cancelled()
+        uses: ./.github/actions/deploy-preview
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          commit-sha: ${{ github.event.pull_request.head.sha }}
+          netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
+          netlify-filter: ${{ inputs.netlify-filter }}

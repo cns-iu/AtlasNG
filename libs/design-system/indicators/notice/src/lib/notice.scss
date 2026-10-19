@@ -1,0 +1,65 @@
+@use '@angular/cdk' as cdk;
+@use 'internal/token-utils';
+@use 'tokens/notice' as *;
+
+$variants: (info, success, warning, critical, unavailable);
+
+:host {
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid;
+  border-radius: token-utils.slot(container-shape, $config);
+
+  @include cdk.a11y-visually-hidden;
+
+  .ang-notice--icon {
+    flex-shrink: 0;
+  }
+
+  .ang-notice--content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.25rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .ang-notice--tagline {
+    font-family: token-utils.sys-slot(title-medium-font);
+    font-size: token-utils.sys-slot(title-medium-size);
+    font-weight: token-utils.sys-slot(title-medium-weight);
+    line-height: token-utils.sys-slot(title-medium-line-height);
+    letter-spacing: token-utils.sys-slot(title-medium-tracking);
+  }
+
+  .ang-notice--body {
+    font-family: token-utils.sys-slot(body-large-font);
+    font-size: token-utils.sys-slot(body-large-size);
+    font-weight: token-utils.sys-slot(body-large-weight);
+    line-height: token-utils.sys-slot(body-large-line-height);
+    letter-spacing: token-utils.sys-slot(body-large-tracking);
+  }
+
+  @each $variant in $variants {
+    &.ang-notice--variant-#{$variant} {
+      border-color: token-utils.slot(#{$variant}-color, $config);
+      background-color: token-utils.slot(#{$variant}-container-color, $config);
+
+      .ang-notice--icon {
+        color: token-utils.slot(#{$variant}-color, $config);
+      }
+
+      .ang-notice--tagline {
+        color: token-utils.slot(#{$variant}-tagline-color, $config);
+      }
+
+      .ang-notice--body {
+        color: token-utils.slot(#{$variant}-body-color, $config);
+      }
+    }
+  }
+}

@@ -10,6 +10,7 @@ import {
   MatSnackBarRef,
 } from '@angular/material/snack-bar';
 
+/** Data passed to the {@link Snackbar} component */
 export interface SnackBarData {
   /** Message in the snackbar */
   message: string;
@@ -19,12 +20,24 @@ export interface SnackBarData {
   actionRow?: boolean;
   /** Flag to show/hide the close button */
   showClose?: boolean;
-  /** Duration in milliseconds before the snackbar closes */
+  /**
+   * Duration in milliseconds before the snackbar closes
+   * @deprecated Never read. Set `duration` on the {@link SnackBarConfig} passed to {@link createSnackBarConfig} instead.
+   */
   duration?: number;
 }
 
-export interface SnackBarConfig extends MatSnackBarConfig<never>, Omit<SnackBarData, 'message'> {}
+/** Snackbar configuration accepted by {@link createSnackBarConfig} */
+export interface SnackBarConfig extends MatSnackBarConfig<never>, Omit<SnackBarData, 'message' | 'duration'> {}
 
+/**
+ * Creates a `MatSnackBar` configuration for opening the {@link Snackbar} component.
+ * Snackbars with an action or close button stay open until dismissed.
+ *
+ * @param message Message to show in the snackbar
+ * @param config Additional snackbar configuration
+ * @returns Configuration to pass to `MatSnackBar.openFromComponent`
+ */
 export function createSnackBarConfig(message: string, config: SnackBarConfig = {}): MatSnackBarConfig<SnackBarData> {
   const { action, actionRow = false, showClose = false, panelClass = [] } = config;
 
@@ -39,7 +52,7 @@ export function createSnackBarConfig(message: string, config: SnackBarConfig = {
       showClose,
     },
     duration,
-    panelClass: [...panelClass, 'ang-snackbar--panel'],
+    panelClass: [...(typeof panelClass === 'string' ? [panelClass] : panelClass), 'ang-snackbar--panel'],
   };
 }
 

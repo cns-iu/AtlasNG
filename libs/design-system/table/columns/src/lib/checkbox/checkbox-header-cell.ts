@@ -28,7 +28,11 @@ import { HeaderCellDefinition, HeaderCellTemplateContext } from '@atlasng/design
 })
 export class CheckboxHeaderCellDefinition extends HeaderCellDefinition {
   /** Whether the table currently has both rows and a non-empty selection. */
-  protected readonly someRowsSelected = computed(
-    () => this.table.selected().length > 0 && this.table.rows().length !== 0,
-  );
+  protected readonly someRowsSelected = computed(() => {
+    if (this.table.selected().length === 0) {
+      return false;
+    }
+
+    return (this.table.rows()?.length ?? 0) !== 0;
+  });
 }

@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
-@use './tokens' as *;
+@use 'tokens/content-header' as *;
 
 :host {
   display: block;

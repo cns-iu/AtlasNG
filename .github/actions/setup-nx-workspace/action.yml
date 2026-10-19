@@ -1,0 +1,41 @@
+# Shared setup for Nx workspaces: installs Node from a version file, installs npm dependencies,
+# and optionally sets the Nx base/head SHAs for `nx affected`.
+# The calling workflow must check out the repository first.
+name: Set up Nx workspace
+description: Install Node.js and npm dependencies for an Nx workspace and optionally set the Nx affected SHAs.
+inputs:
+  node-version-file:
+    description: File that pins the Node.js version (for example .nvmrc)
+    required: false
+    default: .nvmrc
+  npm-cache:
+    description: Whether to cache the npm download cache ('true' or 'false')
+    required: false
+    default: 'true'
+  install-dependencies:
+    description: Whether to run `npm ci --no-audit` ('true' or 'false')
+    required: false
+    default: 'true'
+  set-shas:
+    description: Whether to run nrwl/nx-set-shas to set NX_BASE and NX_HEAD ('true' or 'false')
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version-file: ${{ inputs.node-version-file }}
+        cache: ${{ inputs.npm-cache == 'true' && 'npm' || '' }}
+        package-manager-cache: ${{ inputs.npm-cache == 'true' }}
+
+    - name: Install dependencies
+      if: inputs.install-dependencies == 'true'
+      shell: bash
+      run: npm ci --no-audit
+
+    - name: Set Nx SHAs
+      if: inputs.set-shas == 'true'
+      uses: nrwl/nx-set-shas@v5

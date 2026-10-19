@@ -1,7 +1,11 @@
 {
   "name": "@atlasng/monorepo",
   "version": "0.0.2",
+  "private": true,
   "license": "MIT",
+  "workspaces": [
+    "libs/tooling/*"
+  ],
   "scripts": {
     "prepare": "husky"
   },
@@ -11,6 +15,7 @@
   "engines": {
     "node": ">=24"
   },
+  "prettier": "@atlasng/prettier-config",
   "dependencies": {
     "@angular/cdk": "^22.1.5",
     "@angular/common": "^22.1.5",
@@ -24,6 +29,7 @@
     "@standard-schema/spec": "^1.1.0",
     "@swimlane/ngx-datatable": "^25.1.0",
     "analytics": "^0.8.19",
+    "ngx-scrollbar": "^19.1.5",
     "qs": "^6.16.0",
     "rxjs": "^7.8.2",
     "type-fest": "^5.9.0"
@@ -71,7 +77,6 @@
     "@testing-library/user-event": "^14.6.7",
     "@types/qs": "^6.15.1",
     "@types/youtube": "^0.3.0",
-    "@typescript-eslint/utils": "^8.69.0",
     "@vitest/coverage-v8": "^4.1.11",
     "angular-eslint": "^22.2.0",
     "commander": "^15.0.0",

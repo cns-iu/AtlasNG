@@ -15,6 +15,12 @@ describe('Breadcrumbs', () => {
     });
   }
 
+  it('labels the navigation landmark as a breadcrumb', async () => {
+    await setup({ inputs: { items: [{ name: 'Home', command: '/' }, { name: 'Current Page' }] } });
+
+    expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeInTheDocument();
+  });
+
   it('renders separators between crumbs and supports a custom separator', async () => {
     await setup({
       inputs: {

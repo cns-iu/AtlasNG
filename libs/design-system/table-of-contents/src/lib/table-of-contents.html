@@ -1,0 +1,19 @@
+<nav class="ang-table-of-contents--nav" [attr.aria-labelledby]="taglineId">
+  <div class="ang-table-of-contents--tagline" [id]="taglineId">{{ tagline() }}</div>
+  <mat-nav-list class="ang-table-of-contents--nav-list">
+    @for (item of items(); track item.anchor) {
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- angAnyLink sets href, so the link is focusable and Enter fires click -->
+      <a
+        class="ang-table-of-contents--item"
+        mat-list-item
+        angAnyLink="."
+        [fragment]="item.anchor"
+        [activated]="isActive(item)"
+        [style.--ang-table-of-contents--level]="item.level"
+        (click)="activeItem.set(item)"
+      >
+        <span matListItemTitle>{{ item.tagline }}</span>
+      </a>
+    }
+  </mat-nav-list>
+</nav>

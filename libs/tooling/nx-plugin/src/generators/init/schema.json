@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "AtlasNgInit",
+  "title": "Set up the shared AtlasNG tooling",
+  "description": "Adds the shared config packages, writes thin ESLint, Prettier, commitlint and TypeScript configs, and registers the plugin in nx.json.",
+  "type": "object",
+  "properties": {
+    "prefix": {
+      "type": "string",
+      "description": "Angular selector prefix written to the ESLint selector rules. Defaults to the prefix in the nx.json generator defaults, or app."
+    },
+    "tsconfigPreset": {
+      "type": "string",
+      "description": "The @atlasng/tsconfig preset that tsconfig.base.json extends.",
+      "enum": ["angular", "node"],
+      "default": "angular"
+    },
+    "skipPackageJson": {
+      "type": "boolean",
+      "description": "Do not add the config packages to package.json.",
+      "default": false
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Do not format the changed files.",
+      "default": false
+    }
+  },
+  "required": []
+}

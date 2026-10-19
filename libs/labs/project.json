@@ -9,22 +9,26 @@
     "build": {
       "executor": "@nx/angular:package"
     },
-    "build-compodoc": {},
+    "check-sass": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "sass --no-source-map --load-path=dist/libs --load-path=node_modules tools/sass-smoke/labs.scss > /dev/null"
+      }
+    },
     "build-storybook": {
       "options": {
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/labs/src/sass", "libs/internal/storybook/src/themes"]
+          "includePaths": ["libs/labs/src/sass", "libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
         }
       }
     },
-    "compodoc": {},
-    "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {
       "options": {
         "port": 4402,
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/labs/src/sass", "libs/internal/storybook/src/themes"]
+          "includePaths": ["libs/labs/src/sass", "libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
         }
       }
     },
@@ -33,7 +37,6 @@
         "setupFiles": ["{projectRoot}/src/test-setup.ts"]
       }
     },
-    "test-storybook": {},
     "nx-release-publish": {}
   }
 }

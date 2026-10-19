@@ -1,11 +1,17 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, input, type Type, viewChild } from '@angular/core';
-import { render, screen, type ComponentInput, type RenderComponentOptions } from '@testing-library/angular';
+import { Component, input, viewChild, type Type } from '@angular/core';
 import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
+import { render, screen, type ComponentInput, type RenderComponentOptions } from '@testing-library/angular';
 import { expectTypeOf } from 'vitest';
 import type { Table } from '../table';
-import { CellTemplateContext, HeaderCellTemplateContext } from './template-context';
-import { CellDefinition, HeaderCellDefinition, TABLE, TABLE_TEMPLATE_DEFINITION_CONFIG } from './template-definition';
+import { CellTemplateContext, HeaderCellTemplateContext, SummaryCellTemplateContext } from './template-context';
+import {
+  CellDefinition,
+  HeaderCellDefinition,
+  SummaryCellDefinition,
+  TABLE,
+  TABLE_TEMPLATE_DEFINITION_CONFIG,
+} from './template-definition';
 
 interface TestRow extends Row {
   name: string;
@@ -36,6 +42,15 @@ class TestCellDefinition extends CellDefinition<TestRow, TestConfig> {
 class TestHeaderCellDefinition extends HeaderCellDefinition<TestConfig> {}
 
 @Component({
+  selector: 'ang-test-summary-cell-definition',
+  imports: [SummaryCellTemplateContext],
+  template: `
+    <ng-template let-column="column" angSummaryCellTemplateContext>{{ config.prefix }}{{ column.name }}</ng-template>
+  `,
+})
+class TestSummaryCellDefinition extends SummaryCellDefinition<TestConfig> {}
+
+@Component({
   imports: [NgTemplateOutlet, TestCellDefinition],
   template: `
     <ang-test-cell-definition #definition />
@@ -57,6 +72,18 @@ class TestCellDefinitionHost {
 class TestHeaderCellDefinitionHost {
   readonly context = input.required<HeaderCellContext>();
   readonly definition = viewChild.required(TestHeaderCellDefinition);
+}
+
+@Component({
+  imports: [NgTemplateOutlet, TestSummaryCellDefinition],
+  template: `
+    <ang-test-summary-cell-definition #definition />
+    <ng-container [ngTemplateOutlet]="definition.template()" [ngTemplateOutletContext]="context()" />
+  `,
+})
+class TestSummaryCellDefinitionHost {
+  readonly context = input.required<CellContext>();
+  readonly definition = viewChild.required(TestSummaryCellDefinition);
 }
 
 function cellContext(row: TestRow): CellContext<TestRow> {
@@ -110,5 +137,16 @@ describe('template definitions', () => {
     expect(definition.table).toBe(table);
     expect(definition.config).toBe(config);
     expect(screen.getByText('Rendered: Name')).toBeInTheDocument();
+  });
+
+  it('injects configuration and renders the summary-cell context template', async () => {
+    const { fixture } = await setup(TestSummaryCellDefinitionHost, {
+      context: { column: { name: 'Total' } } as CellContext,
+    });
+    const definition = fixture.componentInstance.definition();
+
+    expect(definition.table).toBe(table);
+    expect(definition.config).toBe(config);
+    expect(screen.getByText('Rendered: Total')).toBeInTheDocument();
   });
 });

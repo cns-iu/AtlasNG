@@ -4,15 +4,12 @@
   "sourceRoot": "libs/applications/kg-explorer/src",
   "prefix": "ang",
   "projectType": "library",
-  "tags": ["library", "layer:application"],
+  "tags": ["library", "layer:app-library"],
   "targets": {
     "build": {
       "executor": "@nx/angular:package"
     },
-    "build-compodoc": {},
     "build-storybook": {},
-    "compodoc": {},
-    "build-storybook-compodoc": {},
     "serve-static-storybook": {},
     "storybook": {
       "options": {
@@ -24,7 +21,6 @@
         "setupFiles": ["{projectRoot}/src/test-setup.ts"]
       }
     },
-    "test-storybook": {},
     "nx-release-publish": {}
   }
 }

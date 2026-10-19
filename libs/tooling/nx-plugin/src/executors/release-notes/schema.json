@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Release notes executor",
+  "description": "Combines the changelog sections of a fixed release group into one set of GitHub release notes.",
+  "type": "object",
+  "properties": {
+    "group": {
+      "type": "string",
+      "description": "Name of the release group in nx.json.",
+      "default": "libraries"
+    },
+    "tag": {
+      "type": "string",
+      "description": "The release tag, for example v1.2.3. The version is extracted using the group's release tag pattern."
+    },
+    "output": {
+      "type": "string",
+      "description": "File to write the notes to, relative to the workspace root. When omitted, the notes are printed to stdout together with the Nx task output."
+    }
+  },
+  "required": ["tag"]
+}

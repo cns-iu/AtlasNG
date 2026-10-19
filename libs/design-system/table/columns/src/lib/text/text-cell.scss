@@ -1,0 +1,17 @@
+.ang-table--text-cell {
+  &.ang-table--text-cell-align-start {
+    text-align: start;
+  }
+
+  &.ang-table--text-cell-align-center {
+    text-align: center;
+  }
+
+  &.ang-table--text-cell-align-end {
+    text-align: end;
+  }
+}
+
+.datatable-body-cell:has(.ang-table--text-cell-align-end) {
+  padding-right: 24px;
+}

@@ -39,6 +39,13 @@ describe('createSnackBarConfig', () => {
     });
   });
 
+  it('should accept a single panel class string', () => {
+    expect(createSnackBarConfig(MESSAGE, { panelClass: 'custom-panel' }).panelClass).toEqual([
+      'custom-panel',
+      'ang-snackbar--panel',
+    ]);
+  });
+
   it.each([
     { action: 'Action', showClose: false },
     { action: undefined, showClose: true },
@@ -88,6 +95,6 @@ describe('SnackbarComponent', () => {
     matSnackBar.openFromComponent(Snackbar, createSnackBarConfig(MESSAGE, { actionRow: true }));
 
     const label = await screen.findByText(MESSAGE);
-    expect(label.closest('ang-snackbar')).not.toHaveClass('action-row');
+    expect(label.closest('ang-snackbar')).not.toHaveClass('ang-snackbar--action-row');
   });
 });

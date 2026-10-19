@@ -1,6 +1,6 @@
 import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
 import { expectTypeOf } from 'vitest';
-import { CellTemplateContext, HeaderCellTemplateContext } from './template-context';
+import { CellTemplateContext, HeaderCellTemplateContext, SummaryCellTemplateContext } from './template-context';
 
 describe('CellTemplateContext', () => {
   it('narrows an unknown value to CellContext', () => {
@@ -28,6 +28,19 @@ describe('HeaderCellTemplateContext', () => {
       const typedContext: HeaderCellContext = context;
 
       expectTypeOf(typedContext.column).toEqualTypeOf<HeaderCellContext['column']>();
+    }
+  });
+});
+
+describe('SummaryCellTemplateContext', () => {
+  it('narrows an unknown value to CellContext', () => {
+    const definition = null as unknown as SummaryCellTemplateContext;
+    const context: unknown = {};
+
+    if (SummaryCellTemplateContext.ngTemplateContextGuard(definition, context)) {
+      const typedContext: CellContext = context;
+
+      expectTypeOf(typedContext.column).toEqualTypeOf<CellContext['column']>();
     }
   });
 });

@@ -15,7 +15,10 @@ import { Heading } from '@atlasng/design-system/content/heading';
   imports: [AnyLink, Heading, MatDivider, MatIcon],
   templateUrl: './content-header.html',
   styleUrl: './content-header.scss',
-  host: { class: 'ang-content-header' },
+  host: {
+    class: 'ang-content-header',
+    '[attr.id]': 'null',
+  },
 })
 export class ContentHeader {
   /** Text displayed in the heading. */
@@ -24,7 +27,10 @@ export class ContentHeader {
   /** Native heading level used to render the tagline as an `h1` through `h6`. */
   readonly level = input.required<number | string>();
 
-  /** Optional heading ID used to create a self-link. */
+  /**
+   * Optional heading ID used to create a self-link.
+   * The ID is never applied to the host element, so a static `id` attribute does not create duplicate IDs.
+   */
   readonly id = input<string>();
 
   /** Whether to display a divider below the heading. */
