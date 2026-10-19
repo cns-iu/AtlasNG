@@ -13,7 +13,7 @@ import {
 import { whenContentReady, whenElementReady } from '../resolver/boundary';
 import { loadComponent } from '../resolver/load-component';
 import { ResolvedContentElement, ResolvedContentNode } from '../resolver/resolved-content';
-import { ComponentOrLoader, ContentComponentDefinition } from '../types/content-component-definition';
+import { ContentDefinition, DEFAULT_CONTENT, TypeRef } from '@atlasng/content-templates/types';
 import { createInputBindings, createOptionalBindings } from './bindings';
 
 /** Services and settings shared by every boundary of one rendered document. */
@@ -29,13 +29,13 @@ export interface ContentRenderContext {
   /** Receives every boundary failure. */
   errorHandler: ErrorHandler;
   /** Error component used when a definition declares none. */
-  errorComponent: ComponentOrLoader<unknown> | undefined;
+  errorComponent: TypeRef<unknown> | undefined;
 }
 
 /** What a boundary renders: the renderer root's node list, or a node whose definition declares a placeholder. */
 export type ContentBoundaryTarget =
   | { kind: 'root'; resolve: () => ResolvedContentNode[] }
-  | { kind: 'element'; element: ResolvedContentElement; definition: ContentComponentDefinition };
+  | { kind: 'element'; element: ResolvedContentElement; definition: ContentDefinition };
 
 /** Owns the component refs and nested boundaries created for one rendering of a boundary. */
 class ContentScope {
@@ -167,10 +167,10 @@ export class ContentBoundary {
       build = (scope) => this.#builder(scope).buildList(nodes);
     } else {
       const { element, definition } = target;
-      if (definition.placeholder) {
+      if (definition.placeholderComponent) {
         const scope = new ContentScope();
-        const bindings = createOptionalBindings(definition.placeholder, { node: element.node, definition });
-        this.#replace(scope, [scope.createComponent(this.#context, definition.placeholder, bindings)]);
+        const bindings = createOptionalBindings(definition.placeholderComponent, { node: element.node, definition });
+        this.#replace(scope, [scope.createComponent(this.#context, definition.placeholderComponent, bindings)]);
       }
       await whenElementReady(element);
       build = async (scope) => [await this.#builder(scope).buildElement(element)];
@@ -202,7 +202,7 @@ export class ContentBoundary {
     const target = this.#target;
     const node = target.kind === 'element' ? target.element.node : undefined;
     const definition = target.kind === 'element' ? target.definition : undefined;
-    const errorComponent = definition?.error ?? this.#context.errorComponent;
+    const errorComponent = definition?.errorComponent ?? this.#context.errorComponent;
     const scope = new ContentScope();
     const nodes: Node[] = [];
 
@@ -287,7 +287,7 @@ class ContentBuilder {
         }
 
         const definition = await node.definition;
-        return definition.placeholder ? this.#createOutlet(node, definition) : this.buildElement(node);
+        return definition.placeholderComponent ? this.#createOutlet(node, definition) : this.buildElement(node);
       }),
     );
   }
@@ -297,7 +297,7 @@ class ContentBuilder {
    *
    * @param element Ready element.
    * @returns The component's host element.
-   * @throws In dev mode, when config or data keys match no input, or content targets an unknown slot.
+   * @throws In dev mode, when config or data keys match no input, or content targets an unknown content name.
    */
   async buildElement(element: ResolvedContentElement): Promise<Node> {
     const [definition, component, config, data] = await Promise.all([
@@ -317,23 +317,26 @@ class ContentBuilder {
   }
 
   /**
-   * Builds an element's content and sorts it into projection slots.
+   * Builds an element's content and sorts it into the component's `ng-content` selectors, as mapped by the
+   * definition's `content`.
    *
    * @param selectors The component's `ng-content` selectors.
    * @param definition The element's definition.
    * @param element The element.
    * @returns Nodes per projection slot index.
-   * @throws In dev mode, when content targets a slot missing from the definition or component. In prod mode such
-   *   content is dropped.
+   * @throws In dev mode, when content targets a name missing from the definition or component, or is unkeyed without a
+   *   default entry. In prod mode such content is dropped.
    */
   async #project(
     selectors: readonly string[],
-    definition: ContentComponentDefinition,
+    definition: ContentDefinition,
     element: ResolvedContentElement,
   ): Promise<Node[][]> {
+    const projection = definition.content ?? {};
+    const defaultName = projection[DEFAULT_CONTENT] ?? Object.keys(projection).find((name) => projection[name] === '*');
     const projectableNodes: Node[][] = selectors.map(() => []);
-    const assign = async (slot: string | undefined, nodes: ResolvedContentNode[], description: string) => {
-      const selector = slot === undefined ? undefined : definition.slots?.[slot];
+    const assign = async (name: string | undefined, nodes: ResolvedContentNode[], description: string) => {
+      const selector = name !== undefined && Object.hasOwn(projection, name) ? projection[name] : undefined;
       const index = selector === undefined ? -1 : selectors.indexOf(selector);
       if (index === -1) {
         if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -346,10 +349,10 @@ class ContentBuilder {
 
     const assignments: Promise<void>[] = [];
     if (element.defaultContent.length > 0) {
-      assignments.push(assign(definition.defaultSlot, element.defaultContent, 'content without a default slot'));
+      assignments.push(assign(defaultName, element.defaultContent, 'content without a default entry'));
     }
-    for (const [slot, nodes] of Object.entries(element.slotContent)) {
-      assignments.push(assign(slot, nodes, `content into slot '${slot}'`));
+    for (const [name, nodes] of Object.entries(element.slotContent)) {
+      assignments.push(assign(name, nodes, `content named '${name}'`));
     }
     await Promise.all(assignments);
 
@@ -363,7 +366,7 @@ class ContentBuilder {
    * @param definition Its definition.
    * @returns The outlet host element.
    */
-  #createOutlet(element: ResolvedContentElement, definition: ContentComponentDefinition): Node {
+  #createOutlet(element: ResolvedContentElement, definition: ContentDefinition): Node {
     const renderer = this.#context.renderer;
     const host = renderer.createElement('ang-content-outlet') as Element;
     renderer.addClass(host, 'ang-content-outlet');

@@ -1,5 +1,5 @@
 import { Arrayable } from 'type-fest';
-import { ContentDataSource, ContentElementNode, ContentNode } from '../types/content-document';
+import { ContentDataSource, ContentElementNode, ContentNode } from '@atlasng/content-templates/types';
 
 /**
  * Checks whether a value is a {@link ContentElementNode}, i.e. an object with a string `component`.
@@ -12,20 +12,20 @@ export function isContentElementNode(value: unknown): value is ContentElementNod
 }
 
 /**
- * Checks whether a data value is a {@link ContentDataSource}, i.e. an object with a `loader`.
+ * Checks whether a data value is a {@link ContentDataSource}, i.e. an object with a string `type`.
  *
  * @param value Value to check.
  * @returns Whether the value is a data source.
  */
 export function isContentDataSource(value: unknown): value is ContentDataSource {
-  return isPlainObject(value) && 'loader' in value;
+  return isPlainObject(value) && typeof value['type'] === 'string';
 }
 
 /**
- * Checks whether node content is a slot record rather than a node or node list.
+ * Checks whether node content is a record keyed by content name rather than a node or node list.
  *
  * @param content Content of an element node.
- * @returns Whether the content maps slot names to content.
+ * @returns Whether the content maps content names to nodes.
  */
 export function isContentSlots(
   content: NonNullable<ContentElementNode['content']>,

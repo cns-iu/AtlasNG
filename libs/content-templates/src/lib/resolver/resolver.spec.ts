@@ -9,8 +9,9 @@ import {
   withDataParsers,
   withDefinitions,
 } from '../registries/providers';
-import { ContentDataLoader } from '../types/content-data';
-import { ContentDocument } from '../types/content-document';
+import { ContentDocument } from '@atlasng/content-templates/types';
+import { DataLoader } from '@atlasng/content-templates/loaders';
+import { DataParser } from '@atlasng/content-templates/parsers';
 import { ContentValidationError } from './errors';
 import { ResolvedContentElement } from './resolved-content';
 import { ContentResolver } from './resolver';
@@ -111,7 +112,7 @@ describe('ContentResolver', () => {
       signal,
     ) as ResolvedContentElement[];
 
-    await expect(unknown.ready).rejects.toThrow("Unknown registry entry 'missing'.");
+    await expect(unknown.ready).rejects.toThrow("Unknown component definition 'missing'.");
     await expect(invalid.ready).rejects.toThrow(ContentValidationError);
   });
 
@@ -124,9 +125,9 @@ describe('ContentResolver', () => {
     expect(load).toHaveBeenCalledTimes(1);
   });
 
-  it('loads inline, default-loader, and source data, passing configs as is', async () => {
+  it('loads inline and source data, passing configs as is', async () => {
     const loads: unknown[] = [];
-    const loader: ContentDataLoader<{ type: string; url?: string }> = {
+    const loader: DataLoader<{ url?: string }> = {
       load: (config, context) => {
         loads.push(config);
         expect(context.node.component).toBe('table');
@@ -134,37 +135,34 @@ describe('ContentResolver', () => {
       },
     };
     const resolver = setup(
-      withDataLoaders({ http: () => loader }, { defaultLoader: 'http' }),
+      withDataLoaders({ http: () => loader }),
       withDataParsers({
-        upper: () => ({
-          parse: (input, config) => `${String(input).toUpperCase()}:${String(config['type'])}`,
+        upper: (): DataParser<{ type: string }> => ({
+          parse: (input, config) => `${String(input).toUpperCase()}:${config.type}`,
         }),
       }),
     );
     const source = { type: 'http', url: 'b' };
-    const [inline, byString, bySource] = resolver.resolve(
+    const [inline, bySource] = resolver.resolve(
       doc([
         { component: 'table', data: { rows: [1, 2] } },
-        { component: 'table', data: { rows: 'a' } },
-        { component: 'table', data: { rows: { loader: source, parser: 'upper' }, label: { loader: 'http' } } },
+        { component: 'table', data: { rows: { ...source, parser: 'upper' }, label: { type: 'http' } } },
       ]),
       signal,
     ) as ResolvedContentElement[];
 
     await expect(inline.data).resolves.toEqual({ rows: [1, 2] });
-    await expect(byString.data).resolves.toEqual({ rows: 'loaded:a' });
     await expect(bySource.data).resolves.toEqual({ rows: 'LOADED:B:upper', label: 'loaded:undefined' });
-    expect(loads).toContainEqual({ type: 'http', url: 'a' });
-    expect(loads).toContain(source);
+    expect(loads).toContainEqual(source);
     expect(loads).toContainEqual({ type: 'http' });
   });
 
-  it('rejects string data without a default loader', async () => {
+  it('rejects string data', async () => {
     const resolver = setup();
-    const [element] = resolver.resolve(doc({ component: 'table', data: { rows: 'a' } }), signal);
+    const [element] = resolver.resolve(doc({ component: 'table', data: { rows: 'a' as never } }), signal);
 
     await expect((element as ResolvedContentElement).data).rejects.toThrow(
-      "No default data loader is configured for data 'rows' at 'content.0'.",
+      "Invalid content at 'content.0': data.rows: Expected an array or an object with a string `type`.",
     );
   });
 
@@ -173,13 +171,13 @@ describe('ContentResolver', () => {
     const [invalid, unknown] = resolver.resolve(
       doc([
         { component: 'table', data: { rows: { url: 'x' } as never } },
-        { component: 'table', data: { rows: { loader: 'missing' } } },
+        { component: 'table', data: { rows: { type: 'missing' } } },
       ]),
       signal,
     ) as ResolvedContentElement[];
 
-    await expect(invalid.data).rejects.toThrow("Invalid content at 'content.0': data.rows: Expected a string");
-    await expect(unknown.data).rejects.toThrow("Unknown registry entry 'missing'.");
+    await expect(invalid.data).rejects.toThrow("Invalid content at 'content.0': data.rows: Expected an array");
+    await expect(unknown.data).rejects.toThrow("Unknown data loader 'missing'.");
   });
 
   it('aborts pending observable loads', async () => {
@@ -187,7 +185,7 @@ describe('ContentResolver', () => {
     const controller = new AbortController();
     const resolver = setup(withDataLoaders({ stream: () => ({ load: () => subject }) }));
     const [element] = resolver.resolve(
-      doc({ component: 'table', data: { rows: { loader: 'stream' } } }),
+      doc({ component: 'table', data: { rows: { type: 'stream' } } }),
       controller.signal,
     );
 
@@ -212,7 +210,7 @@ describe('ContentResolver', () => {
         },
       }),
     );
-    const [element] = resolver.resolve(doc({ component: 'table', data: { rows: { loader: 'log' } } }), signal);
+    const [element] = resolver.resolve(doc({ component: 'table', data: { rows: { type: 'log' } } }), signal);
 
     await expect((element as ResolvedContentElement).data).resolves.toEqual({ rows: ['load'] });
   });

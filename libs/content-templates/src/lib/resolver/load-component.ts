@@ -1,6 +1,6 @@
 import { reflectComponentType, Type } from '@angular/core';
 import { Promisable } from 'type-fest';
-import { ComponentOrLoader, DefaultExport } from '../types/content-component-definition';
+import { TypeRef, DefaultExport } from '@atlasng/content-templates/types';
 
 /**
  * Resolves a component class from a class or a lazy loader. Classes are recognized with `reflectComponentType`.
@@ -8,7 +8,7 @@ import { ComponentOrLoader, DefaultExport } from '../types/content-component-def
  * @param loadable Component class or loader.
  * @returns The component class. Rejects when the loader does not resolve to a component.
  */
-export async function loadComponent<T>(loadable: ComponentOrLoader<T>): Promise<Type<T>> {
+export async function loadComponent<T>(loadable: TypeRef<T>): Promise<Type<T>> {
   if (reflectComponentType(loadable as Type<T>)) {
     return loadable as Type<T>;
   }

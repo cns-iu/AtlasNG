@@ -3,7 +3,7 @@ import { ResolvedContentElement, ResolvedContentNode } from './resolved-content'
 /**
  * Waits until a list of nodes, and their descendants up to nested boundaries, are ready.
  *
- * A node whose definition declares a `placeholder` is a nested boundary: only its definition is awaited, since the
+ * A node whose definition declares a `placeholderComponent` is a nested boundary: only its definition is awaited, since the
  * placeholder can be shown in the meantime.
  *
  * @param nodes Nodes of a content list.
@@ -12,7 +12,7 @@ import { ResolvedContentElement, ResolvedContentNode } from './resolved-content'
 export async function whenContentReady(nodes: ResolvedContentNode[]): Promise<void> {
   await Promise.all(
     nodes.map(async (node) => {
-      if (node.kind === 'element' && !(await node.definition).placeholder) {
+      if (node.kind === 'element' && !(await node.definition).placeholderComponent) {
         await whenElementReady(node);
       }
     }),

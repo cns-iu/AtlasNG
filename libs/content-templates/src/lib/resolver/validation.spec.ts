@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { JsonObject } from 'type-fest';
-import { ContentComponentDefinition } from '../types/content-component-definition';
+import { ContentDefinition } from '@atlasng/content-templates/types';
 import { ContentValidationError } from './errors';
 import { validateConfig, validateData } from './validation';
 
@@ -22,7 +22,7 @@ const optionalString = schema<string | undefined, string | undefined>((value) =>
 );
 const asyncUppercase = schema<string, string>(async (value) => ({ value: String(value).toUpperCase() }));
 
-function definition(overrides: Partial<ContentComponentDefinition> = {}): ContentComponentDefinition {
+function definition(overrides: Partial<ContentDefinition> = {}): ContentDefinition {
   return { name: 'test', component: TestComponent, ...overrides };
 }
 
@@ -108,6 +108,16 @@ describe('validateData', () => {
     await expect(
       validateData(definition({ data }), { title: Promise.resolve('a'), raw: Promise.resolve(1) }, 'p'),
     ).resolves.toEqual({ title: 'a', columns: 'default', raw: 1 });
+  });
+
+  it('calls function defaults for each validation', async () => {
+    const data = { rows: { schema: 'any' as const, defaultValue: () => [] } };
+
+    const first = await validateData(definition({ data }), {}, 'p');
+    const second = await validateData(definition({ data }), {}, 'p');
+
+    expect(first).toEqual({ rows: [] });
+    expect(first['rows']).not.toBe(second['rows']);
   });
 
   it('validates undefined for missing keys without a default', async () => {

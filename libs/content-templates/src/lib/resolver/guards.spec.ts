@@ -14,14 +14,15 @@ describe('isContentElementNode', () => {
 });
 
 describe('isContentDataSource', () => {
-  it('accepts objects with a loader', () => {
-    expect(isContentDataSource({ loader: 'http' })).toBe(true);
+  it('accepts objects with a string type', () => {
+    expect(isContentDataSource({ type: 'http' })).toBe(true);
   });
 
   it('rejects other values', () => {
     expect(isContentDataSource('http')).toBe(false);
     expect(isContentDataSource([])).toBe(false);
     expect(isContentDataSource({ parser: 'csv' })).toBe(false);
+    expect(isContentDataSource({ type: 1 })).toBe(false);
   });
 });
 
