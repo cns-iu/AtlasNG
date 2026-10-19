@@ -1,0 +1,37 @@
+@use '@angular/material' as mat;
+@use 'internal/token-utils';
+@use 'tokens/table' as *;
+
+// Stateless chips are display-only: no hover/focus state layer and selectable text.
+.ang-table--chip-cell {
+  display: block;
+  max-height: 100%;
+  overflow-y: auto;
+
+  @include mat.chips-overrides(
+    (
+      container-height: token-utils.slot('chip-cell-container-height', $config),
+      container-shape-radius: token-utils.slot('chip-cell-container-shape', $config),
+      elevated-container-color: token-utils.slot('chip-cell-container-color', $config),
+      label-text-color: token-utils.slot('chip-cell-text-color', $config),
+      label-text-font: token-utils.slot('chip-cell-text-font', $config),
+      label-text-line-height: token-utils.slot('chip-cell-text-line-height', $config),
+      label-text-size: token-utils.slot('chip-cell-text-size', $config),
+      label-text-tracking: token-utils.slot('chip-cell-text-tracking', $config),
+      label-text-weight: token-utils.slot('chip-cell-text-weight', $config),
+      outline-color: token-utils.slot('chip-cell-outline-color', $config),
+      outline-width: token-utils.slot('chip-cell-outline-width', $config),
+      hover-state-layer-opacity: 0,
+      focus-state-layer-opacity: 0,
+    )
+  );
+
+  .ang-table--chip-cell-item {
+    &,
+    .mdc-evolution-chip__action,
+    .mat-mdc-chip-action-label {
+      cursor: auto;
+      user-select: text;
+    }
+  }
+}
