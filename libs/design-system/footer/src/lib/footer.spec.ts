@@ -67,7 +67,7 @@ describe('Footer', () => {
   it('renders the logo image with the configured source', async () => {
     await setup();
 
-    const logo = screen.getByRole('img', { name: 'Logo of Whole Person Physiome' });
+    const logo = screen.getByRole('img', { name: 'Logo' });
     expect(logo).toHaveAttribute('src', '/assets/wpp.svg');
     expect(logo).toHaveClass('ang-footer--logo-image');
   });
@@ -75,7 +75,7 @@ describe('Footer', () => {
   it('links the logo to the organization link', async () => {
     await setup();
 
-    expect(screen.getByRole('link', { name: 'Logo of Whole Person Physiome' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAttribute(
       'href',
       'https://www.cns.edu/',
     );
@@ -87,13 +87,13 @@ describe('Footer', () => {
       providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
     });
 
-    expect(screen.getByRole('link', { name: 'Logo of Whole Person Physiome' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAttribute('href', '/');
   });
 
   it('describes the logo link with a homepage tooltip', async () => {
     await setup();
 
-    expect(screen.getByRole('link', { name: 'Logo of Whole Person Physiome' })).toHaveAccessibleDescription('Homepage');
+    expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAccessibleDescription('Homepage');
   });
 
   it('renders social media buttons from the socials input', async () => {
