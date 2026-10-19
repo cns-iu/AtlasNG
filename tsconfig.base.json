@@ -11,9 +11,11 @@
       "@atlasng/cdk": ["./libs/cdk/src/index.ts"],
       "@atlasng/common": ["./libs/common/src/index.ts"],
       "@atlasng/content-templates": ["./libs/content-templates/src/index.ts"],
-      "@atlasng/content-templates/design-system-definitions": [
-        "./libs/content-templates/design-system-definitions/src/index.ts"
-      ],
+      "@atlasng/content-templates/definitions": ["./libs/content-templates/definitions/src/index.ts"],
+      "@atlasng/content-templates/loaders": ["./libs/content-templates/loaders/src/index.ts"],
+      "@atlasng/content-templates/parsers": ["./libs/content-templates/parsers/src/index.ts"],
+      "@atlasng/content-templates/types": ["./libs/content-templates/types/src/index.ts"],
+      "@atlasng/content-templates/utils": ["./libs/content-templates/utils/src/index.ts"],
       "@atlasng/core": ["./libs/core/src/index.ts"],
       "@atlasng/design-system": ["./libs/design-system/src/index.ts"],
       "@atlasng/design-system/buttons": ["./libs/design-system/buttons/src/index.ts"],
