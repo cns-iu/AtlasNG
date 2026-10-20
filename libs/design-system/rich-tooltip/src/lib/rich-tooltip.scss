@@ -1,0 +1,42 @@
+@use 'internal/token-utils';
+@use 'tokens/rich-tooltip' as *;
+
+.ang-rich-tooltip {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-width: 20rem;
+  padding: 0.75rem 1rem 0.5rem;
+  border-radius: token-utils.slot(container-shape, $config);
+  background-color: token-utils.slot(container-color, $config);
+  box-shadow: token-utils.slot(container-elevation, $config);
+  overflow-wrap: anywhere;
+
+  .ang-rich-tooltip--tagline {
+    margin-bottom: 0.25rem;
+    color: token-utils.slot(tagline-color, $config);
+    font-family: token-utils.sys-slot(title-small-font);
+    font-size: token-utils.sys-slot(title-small-size);
+    font-weight: token-utils.sys-slot(title-small-weight);
+    line-height: token-utils.sys-slot(title-small-line-height);
+    letter-spacing: token-utils.sys-slot(title-small-tracking);
+  }
+
+  .ang-rich-tooltip--content {
+    color: token-utils.slot(content-color, $config);
+    font-family: token-utils.sys-slot(body-medium-font);
+    font-size: token-utils.sys-slot(body-medium-size);
+    font-weight: token-utils.sys-slot(body-medium-weight);
+    line-height: token-utils.sys-slot(body-medium-line-height);
+    letter-spacing: token-utils.sys-slot(body-medium-tracking);
+  }
+
+  .ang-rich-tooltip--actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    // Aligns the text button labels with the tagline and content.
+    margin-inline-start: -0.75rem;
+  }
+}

@@ -1,0 +1,16 @@
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'rich-tooltip',
+  tokens: (
+    container-color: token-utils.sys-token(surface-container),
+    container-shape: token-utils.sys-token(corner-medium),
+    container-elevation: token-utils.sys-token(level2),
+    tagline-color: token-utils.sys-token(on-surface-variant),
+    content-color: token-utils.sys-token(on-surface-variant),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
