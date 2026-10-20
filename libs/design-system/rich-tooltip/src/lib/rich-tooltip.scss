@@ -12,23 +12,23 @@
   box-shadow: token-utils.slot(container-elevation, $config);
   overflow-wrap: anywhere;
 
-  .ang-rich-tooltip--tagline {
+  .ang-rich-tooltip--tagline-container {
     margin-bottom: 0.25rem;
     color: token-utils.slot(tagline-color, $config);
-    font-family: token-utils.sys-slot(title-small-font);
-    font-size: token-utils.sys-slot(title-small-size);
-    font-weight: token-utils.sys-slot(title-small-weight);
-    line-height: token-utils.sys-slot(title-small-line-height);
-    letter-spacing: token-utils.sys-slot(title-small-tracking);
+    font-family: token-utils.slot(tagline-font, $config);
+    font-size: token-utils.slot(tagline-size, $config);
+    font-weight: token-utils.slot(tagline-weight, $config);
+    line-height: token-utils.slot(tagline-line-height, $config);
+    letter-spacing: token-utils.slot(tagline-tracking, $config);
   }
 
-  .ang-rich-tooltip--content {
+  .ang-rich-tooltip--content-container {
     color: token-utils.slot(content-color, $config);
-    font-family: token-utils.sys-slot(body-medium-font);
-    font-size: token-utils.sys-slot(body-medium-size);
-    font-weight: token-utils.sys-slot(body-medium-weight);
-    line-height: token-utils.sys-slot(body-medium-line-height);
-    letter-spacing: token-utils.sys-slot(body-medium-tracking);
+    font-family: token-utils.slot(content-font, $config);
+    font-size: token-utils.slot(content-size, $config);
+    font-weight: token-utils.slot(content-weight, $config);
+    line-height: token-utils.slot(content-line-height, $config);
+    letter-spacing: token-utils.slot(content-tracking, $config);
   }
 
   .ang-rich-tooltip--actions {

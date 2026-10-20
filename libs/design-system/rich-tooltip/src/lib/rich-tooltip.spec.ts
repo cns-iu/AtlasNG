@@ -48,9 +48,9 @@ describe('RichTooltip', () => {
 
     const dialog = screen.getByRole('dialog');
     expect(dialog).not.toHaveAttribute('aria-labelledby');
-    expect(dialog.querySelector('.ang-rich-tooltip--tagline')).toBeNull();
+    expect(dialog.querySelector('.ang-rich-tooltip--tagline-container')).toBeNull();
     expect(dialog.querySelector('.ang-rich-tooltip--actions')).toBeNull();
-    expect(dialog.querySelector('.ang-rich-tooltip--content')).toHaveTextContent('Only text');
+    expect(dialog.querySelector('.ang-rich-tooltip--content-container')).toHaveTextContent('Only text');
   });
 
   it('renders custom content and collects every action into the actions row', async () => {
