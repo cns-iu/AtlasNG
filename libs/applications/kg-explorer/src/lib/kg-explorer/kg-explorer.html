@@ -1,1 +1,30 @@
-<p>KG Explorer works!</p>
+@let isDocked = docked();
+
+<mat-sidenav-container class="ang-kg-explorer--container">
+  <mat-sidenav
+    class="ang-kg-explorer--sidenav"
+    aria-label="Filters"
+    [mode]="isDocked ? 'side' : 'over'"
+    [opened]="filtersOpen()"
+    (openedChange)="this.filtersOpen.set($event)"
+  >
+    <ang-kg-explorer-filter-menu-placeholder />
+  </mat-sidenav>
+
+  <mat-sidenav-content class="ang-kg-explorer--content">
+    <ang-kg-explorer-results-table
+      [rows]="items()"
+      [columns]="resolvedColumns()"
+      [rowHeight]="rowHeight()"
+      [searchFn]="searchFn()"
+      [searchLabelFn]="searchLabelFn()"
+      [showSearch]="showSearch()"
+      [showResultsCounter]="showResultsCounter()"
+      [showEndOfResults]="showEndOfResults()"
+      [tableEndTemplate]="tableEndSlot()?.template"
+      [(search)]="search"
+      [(sorts)]="sorts"
+      (clearResults)="clearFilters.emit()"
+    />
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,59 @@
+@let results = filteredRows();
+
+@if (showSearch() || showResultsCounter()) {
+  <div class="ang-kg-explorer-results-table--navigation">
+    @if (showSearch()) {
+      <mat-form-field class="ang-kg-explorer-results-table--search" subscriptSizing="dynamic">
+        <mat-icon matPrefix fontIcon="search" />
+        <mat-label>{{ searchLabel() }}</mat-label>
+        <input
+          matInput
+          type="search"
+          [value]="search()"
+          [matAutocomplete]="autocomplete"
+          [matAutocompleteDisabled]="!searchLabelFn()"
+          (input)="search.set($any($event.target).value)"
+        />
+        @if (search()) {
+          <button matIconButton matSuffix type="button" aria-label="Clear search" (click)="search.set('')">
+            <mat-icon fontIcon="close" />
+          </button>
+        }
+        <mat-autocomplete (optionSelected)="search.set($event.option.value)" #autocomplete="matAutocomplete">
+          @for (suggestion of suggestions(); track suggestion) {
+            <mat-option [value]="suggestion">{{ suggestion }}</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    }
+
+    @if (showResultsCounter()) {
+      <ang-results-indicator
+        class="ang-kg-explorer-results-table--counter"
+        prefix="Viewing"
+        aria-live="polite"
+        [value]="results.length"
+        [total]="rows().length"
+      />
+    }
+  </div>
+}
+
+<ang-scroll-area class="ang-kg-explorer-results-table--scroll-area" orientation="vertical">
+  <ang-table
+    class="ang-kg-explorer-results-table--table"
+    appearance="none"
+    [rows]="results"
+    [columns]="columns()"
+    [rowHeight]="rowHeight()"
+    [(sorts)]="sorts"
+  >
+    <ang-no-results-indicator class="ang-kg-explorer-results-table--empty" empty-content (clear)="clear()" />
+  </ang-table>
+
+  @if (showEndOfResults() && results.length > 0) {
+    <ang-end-of-results-indicator class="ang-kg-explorer-results-table--end" [count]="results.length" />
+  }
+
+  <ng-container [ngTemplateOutlet]="tableEnd()" />
+</ang-scroll-area>
