@@ -7,6 +7,7 @@ import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { RichTooltip, RichTooltipAction, RichTooltipContent } from './rich-tooltip';
 import { RichTooltipTrigger } from './rich-tooltip-trigger';
+import { MatButton } from '@angular/material/button';
 
 const IMPORTS = [RichTooltip, RichTooltipAction, RichTooltipContent, RichTooltipTrigger];
 
@@ -211,6 +212,33 @@ describe('RichTooltipTrigger', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(trigger).toHaveFocus();
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('clears the focus state of a panel button when closed with Escape', async () => {
+    const user = userEvent.setup();
+    await render(
+      `
+        <ang-rich-tooltip #tip tagline="Title">
+          <button matButton type="button" angRichTooltipAction>Learn more</button>
+        </ang-rich-tooltip>
+        <button type="button" [angRichTooltipTriggerFor]="tip">Open</button>
+      `,
+      {
+        imports: [...IMPORTS, MatButton],
+        providers: [{ provide: InteractivityChecker, useValue: INTERACTIVITY_CHECKER }],
+      },
+    );
+    const trigger = screen.getByRole('button', { name: 'Open' });
+
+    await user.click(trigger);
+    await user.tab();
+    expect(screen.getByRole('button', { name: 'Learn more' })).toHaveClass('cdk-keyboard-focused');
+
+    await user.keyboard('{Escape}');
+    await user.click(trigger);
+
+    expect(trigger).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Learn more' })).not.toHaveClass('cdk-focused');
   });
 
   it('ignores Escape with a modifier key', async () => {

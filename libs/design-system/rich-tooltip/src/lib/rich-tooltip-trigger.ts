@@ -200,7 +200,6 @@ export class RichTooltipTrigger {
       event.preventDefault();
       trigger.focus();
     } else if (!event.shiftKey && event.target === tabbables.at(-1)) {
-      // Without a next element the browser default moves focus past the end of the document
       const next = this.#getTabbableElementAfterTrigger();
       if (next) {
         event.preventDefault();
@@ -232,15 +231,12 @@ export class RichTooltipTrigger {
       return;
     }
 
-    const shouldRestoreFocus = this.#shouldRestoreFocus(reason);
-
-    this.isOpen.set(false);
-    this.#detachPanel();
-
-    if (shouldRestoreFocus) {
+    if (this.#shouldRestoreFocus(reason)) {
       this.#restoreFocus(reason);
     }
 
+    this.isOpen.set(false);
+    this.#detachPanel();
     this.closed.emit();
   }
 
@@ -320,7 +316,7 @@ export class RichTooltipTrigger {
   }
 
   /**
-   * Decides whether closing should return focus to the trigger. Must be called before the panel is detached.
+   * Decides whether closing should return focus to the trigger. Must be called while the panel is attached.
    *
    * @param reason Why the panel is being closed
    * @returns `true` for escape, or for panel and trigger closes while focus is within the panel
