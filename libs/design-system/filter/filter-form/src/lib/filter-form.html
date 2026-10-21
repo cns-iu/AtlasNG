@@ -7,12 +7,12 @@
         angTrackClick
         aria-label="Filter info"
         [matTooltip]="info()"
-        [angRichTooltip]="tooltip"
+        [angRichTooltipTriggerFor]="tooltip"
       >
         <mat-icon fontIcon="info" />
       </button>
 
-      <ang-rich-tooltip-container #tooltip>
+      <ang-rich-tooltip #tooltip>
         <ang-rich-tooltip-tagline>
           <ng-content select="[angInfoButtonTagline]">
             <span>{{ category() }}</span>
@@ -21,10 +21,10 @@
         <ang-rich-tooltip-content>
           <ng-content />
         </ang-rich-tooltip-content>
-        <ang-rich-tooltip-actions>
+        <ang-rich-tooltip-action>
           <ng-content select="[angInfoButtonActions]" />
-        </ang-rich-tooltip-actions>
-      </ang-rich-tooltip-container>
+        </ang-rich-tooltip-action>
+      </ang-rich-tooltip>
     }
 
     <button class="ang-filter-form--category" matButton angTrackClick (click)="actionClick.emit()">

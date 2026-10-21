@@ -16,6 +16,18 @@ describe('FilterForm', () => {
     expect(screen.getByRole('button', { name: 'Filter info' })).toBeInTheDocument();
   });
 
+  it('opens the rich tooltip with the category as tagline when the info button is clicked', async () => {
+    const user = userEvent.setup();
+
+    await render(FilterForm, {
+      inputs: { category: 'Organ', info: 'About this filter' },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Filter info' }));
+
+    expect(screen.getByRole('dialog', { name: 'Organ' })).toBeInTheDocument();
+  });
+
   it('hides the info button when info text is omitted', async () => {
     await render(FilterForm, {
       inputs: { category: 'Organ' },
