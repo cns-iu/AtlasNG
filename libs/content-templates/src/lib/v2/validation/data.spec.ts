@@ -1,4 +1,5 @@
 import { StandardSchemaV1 } from '@standard-schema/spec';
+import { JsonValue } from 'type-fest';
 import { ContentDefinition } from '@atlasng/content-templates/types';
 import { passthroughSchema } from '@atlasng/content-templates/utils';
 import { buildRenderTree } from '../nodes/build-tree';
@@ -7,7 +8,7 @@ import { checkUnknownDataKeys, validateDataValue } from './data';
 
 const definition: ContentDefinition = { name: 'table', component: class {}, data: { rows: passthroughSchema() } };
 
-function element(data: Record<string, unknown[]>): RenderElementNode {
+function element(data: Record<string, JsonValue[]>): RenderElementNode {
   return buildRenderTree({ version: 1, content: { component: 'table', data } })[0] as RenderElementNode;
 }
 
