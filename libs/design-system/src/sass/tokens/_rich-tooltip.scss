@@ -1,0 +1,26 @@
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'rich-tooltip',
+  tokens: (
+    container-color: token-utils.sys-token(surface-container),
+    container-shape: token-utils.sys-token(corner-medium),
+    container-elevation: token-utils.sys-token(level2),
+    tagline-color: token-utils.sys-token(on-surface-variant),
+    tagline-font: token-utils.sys-token(title-small-font),
+    tagline-line-height: token-utils.sys-token(title-small-line-height),
+    tagline-size: token-utils.sys-token(title-small-size),
+    tagline-tracking: token-utils.sys-token(title-small-tracking),
+    tagline-weight: token-utils.sys-token(title-small-weight),
+    content-color: token-utils.sys-token(on-surface-variant),
+    content-font: token-utils.sys-token(body-medium-font),
+    content-line-height: token-utils.sys-token(body-medium-line-height),
+    content-size: token-utils.sys-token(body-medium-size),
+    content-tracking: token-utils.sys-token(body-medium-tracking),
+    content-weight: token-utils.sys-token(body-medium-weight),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
