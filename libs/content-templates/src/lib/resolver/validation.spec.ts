@@ -100,7 +100,7 @@ describe('validateData', () => {
   it('validates loaded values, applies defaults, and skips any', async () => {
     const data = {
       title: string,
-      columns: { schema: string, defaultValue: 'default' },
+      columns: { schema: string, initialValue: 'default' },
       raw: passthroughSchema(),
       loose: { schema: passthroughSchema() },
       optional: optionalString,
@@ -112,7 +112,7 @@ describe('validateData', () => {
   });
 
   it('calls function defaults for each validation', async () => {
-    const data = { rows: { schema: passthroughSchema(), defaultValue: () => [] } };
+    const data = { rows: { schema: passthroughSchema(), initialValue: () => [] } };
 
     const first = await validateData(definition({ data }), {}, 'p');
     const second = await validateData(definition({ data }), {}, 'p');
