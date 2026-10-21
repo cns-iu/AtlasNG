@@ -1,4 +1,4 @@
-import { ContentElementNode, DEFAULT_CONTENT } from '@atlasng/content-templates/types';
+import { ContentDefinition, ContentElementNode, DEFAULT_CONTENT } from '@atlasng/content-templates/types';
 
 /** A node of the render tree: plain text, or an element rendered through a content definition. */
 export type RenderNode = RenderTextNode | RenderElementNode;
@@ -13,39 +13,37 @@ export type RenderNodeContent = Partial<Record<RenderNodeKey, RenderNode[]>>;
 const DEFAULT_CONTENT_SEGMENT = '@default';
 
 /**
- * Formats the document path of a node position, e.g. `content.@default[0].content.body[1]`. Content not keyed by name
- * is shown as `@default`, and the index is omitted for content given as a single node.
+ * Checks whether a render node is a text node.
  *
- * @param parent Enclosing element, or `null` for top level content.
- * @param key Content list holding the position.
- * @param index Index in the content list, or `undefined` for a single node.
- * @returns The path.
+ * @param node Node to check.
+ * @returns Whether the node is a {@link RenderTextNode}.
  */
-export function getRenderNodePath(parent: RenderElementNode | null, key: RenderNodeKey, index?: number): string {
-  const segments: (string | number)[] = [];
-
-  if (parent) {
-    segments.push(parent.path, '.');
-  }
-
-  segments.push('content', '.', key === DEFAULT_CONTENT ? DEFAULT_CONTENT_SEGMENT : key);
-
-  if (index !== undefined) {
-    segments.push('[', index, ']');
-  }
-
-  return segments.join('');
+export function isRenderTextNode(node: RenderNode): node is RenderTextNode {
+  return node.kind === 'text';
 }
 
-/** Position of a node in the render tree, shared by every node kind. */
-export abstract class RenderNodeLocation {
+/**
+ * Checks whether a render node is an element node.
+ *
+ * @param node Node to check.
+ * @returns Whether the node is a {@link RenderElementNode}.
+ */
+export function isRenderElementNode(node: RenderNode): node is RenderElementNode {
+  return node.kind === 'element';
+}
+
+/**
+ * Position in the render tree. Base of every node kind, and used on its own for the path of an invalid document node
+ * that gets no render node.
+ */
+export class RenderNodeLocation {
   /** Enclosing element, or `null` for top level nodes. */
   readonly parent: RenderElementNode | null;
   /** Content list holding the node. */
   readonly key: RenderNodeKey;
   /** Index of the node in its content list, or `undefined` for content given as a single node. */
   readonly index?: number;
-  /** Cached {@link path}. The tree does not change once built. */
+  /** Cached {@link path}. */
   #path?: string;
 
   /**
@@ -61,7 +59,31 @@ export abstract class RenderNodeLocation {
 
   /** Document path of the node, built by walking its parents, e.g. `content.@default[0].content.body[1]`. */
   get path(): string {
-    return (this.#path ??= getRenderNodePath(this.parent, this.key, this.index));
+    this.#path ??= this.#computePath();
+    return this.#path;
+  }
+
+  /**
+   * Formats {@link path}. Content not keyed by name is shown as `@default`, and the index is omitted for content given
+   * as a single node.
+   *
+   * @returns The path.
+   */
+  #computePath(): string {
+    const { parent, key, index } = this;
+    const segments: (string | number)[] = [];
+
+    if (parent) {
+      segments.push(parent.path, '.');
+    }
+
+    segments.push('content', '.', key === DEFAULT_CONTENT ? DEFAULT_CONTENT_SEGMENT : key);
+
+    if (index !== undefined) {
+      segments.push('[', index, ']');
+    }
+
+    return segments.join('');
   }
 }
 
@@ -94,6 +116,21 @@ export class RenderElementNode extends RenderNodeLocation {
   readonly abortController = new AbortController();
   /** Child nodes keyed by content name. */
   readonly content: RenderNodeContent = {};
+  /**
+   * The node's definition, checked for unknown keys. Set when the parent releases the node, so it stays `undefined`
+   * for nodes under a failed or aborted parent, and for nodes dropped with unknown content.
+   */
+  definition?: Promise<ContentDefinition>;
+
+  /** Child nodes in content order, unkeyed content included. Not cached, since prod mode drops unknown content. */
+  get children(): RenderNode[] {
+    return (Reflect.ownKeys(this.content) as RenderNodeKey[]).flatMap((key) => this.content[key] ?? []);
+  }
+
+  /** Element children in content order, i.e. the {@link children} that go through the pipeline. */
+  get elementChildren(): RenderElementNode[] {
+    return this.children.filter(isRenderElementNode);
+  }
 
   /**
    * @param parent Enclosing element, or `null` for top level nodes.

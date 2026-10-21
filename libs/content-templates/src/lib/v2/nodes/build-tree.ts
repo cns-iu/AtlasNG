@@ -7,7 +7,7 @@ import {
 import { Arrayable } from 'type-fest';
 import { isContentElementNode, isNamedContent } from '../utils/guards';
 import { ContentValidationError } from '../validation/errors';
-import { getRenderNodePath, RenderElementNode, RenderNode, RenderNodeKey, RenderTextNode } from './render-node';
+import { RenderElementNode, RenderNode, RenderNodeKey, RenderNodeLocation, RenderTextNode } from './render-node';
 
 /**
  * Builds the render tree of a document synchronously, without loading anything.
@@ -71,7 +71,8 @@ function buildNode(
     return new RenderTextNode(parent, key, index, node);
   }
   if (!isContentElementNode(node)) {
-    throw new ContentValidationError(getRenderNodePath(parent, key, index), [
+    const location = new RenderNodeLocation(parent, key, index);
+    throw new ContentValidationError(location.path, [
       { message: 'Expected a string or an object with a string `component`.' },
     ]);
   }
