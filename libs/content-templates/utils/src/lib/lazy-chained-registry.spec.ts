@@ -121,6 +121,33 @@ describe('LazyChainedRegistry', () => {
     await expect(registry.get('name')).resolves.toBe('second');
   });
 
+  describe('has', () => {
+    it('reports registered and unknown names', () => {
+      const registry = setup([['name', () => 'name']]);
+
+      expect(registry.has('name')).toBe(true);
+      expect(registry.has('missing')).toBe(false);
+    });
+
+    it('reports names registered in an ancestor', () => {
+      setup([['root', () => 'root']]);
+      const grandchild = createGrandchild([['middle', () => 'middle']]);
+
+      expect(grandchild.has('root')).toBe(true);
+      expect(grandchild.has('middle')).toBe(true);
+      expect(grandchild.has('missing')).toBe(false);
+    });
+
+    it('does not run the factory', () => {
+      const factory = vi.fn(() => 'name');
+      const registry = setup([['name', factory]]);
+
+      registry.has('name');
+
+      expect(factory).not.toHaveBeenCalled();
+    });
+  });
+
   describe('reset', () => {
     it('runs the factory again on the next get', async () => {
       const factory = vi.fn().mockReturnValueOnce('first').mockReturnValueOnce('second');

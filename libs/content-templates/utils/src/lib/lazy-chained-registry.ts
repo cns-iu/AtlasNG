@@ -20,11 +20,12 @@ export abstract class LazyChainedRegistry<T> {
   readonly #instances = new Map<string, Promise<T>>();
 
   /**
-   * Creates the registry. Must be called in an injection context.
+   * Creates the registry.
    *
-   * @param parent Registry used for names not registered here, or `null`.
    * @param injector Injector in which factories run.
-   * @param entries Factories keyed by name. A later entry replaces an earlier one with the same name.
+   * @param parent Registry used for names not registered here, or `null`.
+   * @param entries Factories as `[name, factory]` pairs or records keyed by name. A later entry replaces an earlier
+   *   one with the same name.
    */
   protected constructor(
     injector: Injector,
@@ -34,6 +35,17 @@ export abstract class LazyChainedRegistry<T> {
     this.#injector = injector;
     this.#parent = parent;
     this.#entries = new Map(entries ? flattenEntries(entries) : []);
+  }
+
+  /**
+   * Checks whether a factory is registered under a name, here or in a parent. Does not run the factory, so a name can
+   * be registered even though its {@link get} would reject.
+   *
+   * @param name Registered name.
+   * @returns Whether {@link get} returns a value instead of `undefined` for `name`.
+   */
+  has(name: string): boolean {
+    return this.#entries.has(name) || this.#parent?.has(name) === true;
   }
 
   /**
