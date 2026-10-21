@@ -4,10 +4,10 @@ import { DataParser, DataParserContext } from '../data-parser-registry';
 /**
  * Returns the loader's result unchanged, e.g. as a placeholder parser or to register a name that skips parsing.
  *
- * Provided in the root injector. Register with `withDataParsers({ noop: () => inject(NoopDataParser) })`.
+ * Provided in the root injector. Register with `withDataParsers({ passthrough: () => inject(PassthroughDataParser) })`.
  */
 @Service()
-export class NoopDataParser implements DataParser<unknown, unknown, unknown> {
+export class PassthroughDataParser implements DataParser<unknown, unknown, unknown> {
   /**
    * Returns `input` as is.
    *

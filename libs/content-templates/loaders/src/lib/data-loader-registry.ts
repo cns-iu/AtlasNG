@@ -3,6 +3,8 @@ import { ContentElementNode } from '@atlasng/content-templates/types';
 import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
 import { Observable } from 'rxjs';
 import { Promisable } from 'type-fest';
+import { HttpDataLoader } from './http-loader/http-loader';
+import { InlineDataLoader } from './inline-loader/inline-loader';
 
 /** Context passed to {@link DataLoader.load}. */
 export interface DataLoaderContext {
@@ -34,19 +36,30 @@ export interface DataLoader<TConfig = unknown, TResult = unknown> {
 export const DATA_LOADERS = new InjectionToken<Record<string, () => Promisable<DataLoader>>[]>('DATA_LOADERS');
 
 /**
+ * Loaders available in every application: `http` ({@link HttpDataLoader}) and `inline` ({@link InlineDataLoader}).
+ * Registering a loader under the same name replaces the built-in.
+ */
+const BUILT_IN_DATA_LOADERS: Record<string, () => Promisable<DataLoader>> = {
+  http: () => inject(HttpDataLoader),
+  inline: () => inject(InlineDataLoader),
+};
+
+/**
  * Resolves data loaders by name.
  *
- * Provided by `provideContentTemplates`. Names not registered in this injector are looked up in the registry of a
- * parent environment injector, if any.
+ * Provided by `provideDataLoaders`. Names not registered in this injector are looked up in the registry of a parent
+ * environment injector, if any. A registry without a parent also holds the built-in loaders, so they are available
+ * everywhere unless replaced.
  */
 @Service()
 export class DataLoaderRegistry extends LazyChainedRegistry<DataLoader> {
   /** Collects the factories registered in this injector. */
   constructor() {
-    super(
-      inject(Injector),
-      inject(DataLoaderRegistry, { optional: true, skipSelf: true }),
-      inject(DATA_LOADERS, { optional: true }),
-    );
+    const parent = inject(DataLoaderRegistry, { optional: true, skipSelf: true });
+    const loaders = inject(DATA_LOADERS, { optional: true }) ?? [];
+    // Only the root registry holds the built-ins; child registries reach them through the parent.
+    const loadersWithBuiltins = parent ? loaders : [BUILT_IN_DATA_LOADERS, ...loaders];
+
+    super(inject(Injector), parent, loadersWithBuiltins);
   }
 }

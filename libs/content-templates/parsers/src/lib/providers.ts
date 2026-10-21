@@ -12,5 +12,12 @@ import { DATA_PARSERS, DataParser, DataParserRegistry } from './data-parser-regi
  * @returns Providers to add to application or route providers.
  */
 export function provideDataParsers(parsers: Record<string, () => Promisable<DataParser>>): Provider {
-  return [{ provide: DATA_PARSERS, useValue: parsers, multi: true }, DataParserRegistry];
+  return [
+    {
+      provide: DATA_PARSERS,
+      useValue: parsers,
+      multi: true,
+    },
+    DataParserRegistry,
+  ];
 }

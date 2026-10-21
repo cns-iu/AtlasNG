@@ -12,5 +12,12 @@ import { DATA_LOADERS, DataLoader, DataLoaderRegistry } from './data-loader-regi
  * @returns Providers to add to application or route providers.
  */
 export function provideDataLoaders(loaders: Record<string, () => Promisable<DataLoader>>): Provider {
-  return [{ provide: DATA_LOADERS, useValue: loaders, multi: true }, DataLoaderRegistry];
+  return [
+    {
+      provide: DATA_LOADERS,
+      useValue: loaders,
+      multi: true,
+    },
+    DataLoaderRegistry,
+  ];
 }
