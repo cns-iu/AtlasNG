@@ -1,0 +1,130 @@
+@use '@angular/material' as mat;
+@use 'breakpoints';
+
+:host {
+  --ang-metadata-page--gap: 2.5rem;
+
+  display: block;
+  background: var(--mat-sys-background);
+  color: var(--mat-sys-on-background);
+
+  @include breakpoints.breakpoint(medium) {
+    --ang-metadata-page--gap: 3rem;
+  }
+}
+
+.ang-metadata-page--layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'header'
+    'first'
+    'version'
+    'rest';
+  row-gap: var(--ang-metadata-page--gap);
+  max-width: 100rem;
+  margin-inline: auto;
+  padding: 2.5rem 1.25rem;
+  box-sizing: border-box;
+
+  @include breakpoints.breakpoint(medium) {
+    grid-template-columns: minmax(0, 1fr) 25rem;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'header version'
+      'first version'
+      'rest version';
+    column-gap: 2.5rem;
+    padding: 2.5rem;
+  }
+}
+
+.ang-metadata-page--header {
+  grid-area: header;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.ang-metadata-page--breadcrumbs {
+  margin-bottom: 2rem;
+}
+
+.ang-metadata-page--icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ang-metadata-page--icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ang-metadata-page--title {
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-display-medium);
+  letter-spacing: var(--mat-sys-display-medium-tracking);
+  text-wrap: balance;
+}
+
+.ang-metadata-page--url {
+  margin-top: 1rem;
+}
+
+.ang-metadata-page--first-section {
+  grid-area: first;
+  min-width: 0;
+}
+
+.ang-metadata-page--version-control {
+  grid-area: version;
+  align-self: start;
+}
+
+.ang-metadata-page--sections {
+  grid-area: rest;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ang-metadata-page--gap);
+  min-width: 0;
+}
+
+.ang-metadata-page--image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+// Stateless chips are display-only: no state layers and selectable text.
+.ang-metadata-page--chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+
+  @include mat.chips-overrides(
+    (
+      container-height: 1.938rem,
+      container-shape-radius: var(--mat-sys-corner-small),
+      outline-width: 0,
+      elevated-container-color: var(--mat-sys-tertiary-container),
+      label-text-color: var(--mat-sys-tertiary),
+      label-text-font: var(--mat-sys-label-large-font),
+      label-text-size: var(--mat-sys-label-large-size),
+      label-text-weight: var(--mat-sys-label-large-weight),
+      label-text-line-height: var(--mat-sys-label-large-line-height),
+      label-text-tracking: var(--mat-sys-label-large-tracking),
+      hover-state-layer-opacity: 0,
+      focus-state-layer-opacity: 0,
+    )
+  );
+}
+
+.ang-metadata-page--chip {
+  cursor: auto;
+  user-select: text;
+}
