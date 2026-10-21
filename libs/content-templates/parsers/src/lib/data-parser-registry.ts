@@ -2,6 +2,8 @@ import { inject, InjectionToken, Injector, Service } from '@angular/core';
 import { ContentElementNode } from '@atlasng/content-templates/types';
 import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
 import { Promisable } from 'type-fest';
+import { JsonDataParser } from './json-parser/json-parser';
+import { PassthroughDataParser } from './passthrough-parser/passthrough-parser';
 
 /** Context passed to {@link DataParser.parse}. */
 export interface DataParserContext {
@@ -34,19 +36,30 @@ export interface DataParser<TConfig = unknown, TInput = unknown, TOutput = unkno
 export const DATA_PARSERS = new InjectionToken<Record<string, () => Promisable<DataParser>>[]>('DATA_PARSERS');
 
 /**
+ * Parsers available in every application: `json` ({@link JsonDataParser}) and `passthrough` ({@link PassthroughDataParser}).
+ * Registering a parser under the same name replaces the built-in.
+ */
+const BUILT_IN_DATA_PARSERS: Record<string, () => Promisable<DataParser>> = {
+  json: () => inject(JsonDataParser),
+  passthrough: () => inject(PassthroughDataParser),
+};
+
+/**
  * Resolves data parsers by name.
  *
- * Provided by `provideContentTemplates`. Names not registered in this injector are looked up in the registry of a
- * parent environment injector, if any.
+ * Provided by `provideDataParsers`. Names not registered in this injector are looked up in the registry of a parent
+ * environment injector, if any. A registry without a parent also holds the built-in parsers, so they are available
+ * everywhere unless replaced.
  */
 @Service()
 export class DataParserRegistry extends LazyChainedRegistry<DataParser> {
   /** Collects the factories registered in this injector. */
   constructor() {
-    super(
-      inject(Injector),
-      inject(DataParserRegistry, { optional: true, skipSelf: true }),
-      inject(DATA_PARSERS, { optional: true }),
-    );
+    const parent = inject(DataParserRegistry, { optional: true, skipSelf: true });
+    const parsers = inject(DATA_PARSERS, { optional: true }) ?? [];
+    // Only the root registry holds the built-ins; child registries reach them through the parent.
+    const parsersWithBuiltins = parent ? parsers : [BUILT_IN_DATA_PARSERS, ...parsers];
+
+    super(inject(Injector), parent, parsersWithBuiltins);
   }
 }

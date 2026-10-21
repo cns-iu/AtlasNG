@@ -1,24 +1,24 @@
 import { inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { DATA_PARSERS, DataParserContext, DataParserRegistry } from '../data-parser-registry';
-import { NoopDataParser } from './noop-parser';
+import { PassthroughDataParser } from './passthrough-parser';
 
 const context: DataParserContext = { node: { component: 'test' }, signal: new AbortController().signal };
-const config = { type: 'noop' };
+const config = { type: 'passthrough' };
 
-describe('NoopDataParser', () => {
+describe('PassthroughDataParser', () => {
   it('can be registered', async () => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: DATA_PARSERS, useValue: { noop: () => inject(NoopDataParser) }, multi: true },
+        { provide: DATA_PARSERS, useValue: { passthrough: () => inject(PassthroughDataParser) }, multi: true },
         DataParserRegistry,
       ],
     });
 
-    await expect(TestBed.inject(DataParserRegistry).get('noop')).resolves.toBeInstanceOf(NoopDataParser);
+    await expect(TestBed.inject(DataParserRegistry).get('passthrough')).resolves.toBeInstanceOf(PassthroughDataParser);
   });
 
   it.each([{ a: 1 }, 'text', 42, null, undefined])('returns %j unchanged', (input) => {
-    expect(new NoopDataParser().parse(input, config, context)).toBe(input);
+    expect(new PassthroughDataParser().parse(input, config, context)).toBe(input);
   });
 });

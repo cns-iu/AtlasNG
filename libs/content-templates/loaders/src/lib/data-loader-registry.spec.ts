@@ -2,6 +2,8 @@ import { createEnvironmentInjector, EnvironmentInjector, inject, InjectionToken,
 import { TestBed } from '@angular/core/testing';
 import { Promisable } from 'type-fest';
 import { DATA_LOADERS, DataLoaderRegistry, DataLoader } from './data-loader-registry';
+import { HttpDataLoader } from './http-loader/http-loader';
+import { InlineDataLoader } from './inline-loader/inline-loader';
 
 const VALUE = new InjectionToken<string>('VALUE');
 
@@ -39,6 +41,28 @@ describe('DataLoaderRegistry', () => {
   });
 
   it('falls back to the parent registry', async () => {
+    const loader: DataLoader = { load: () => undefined };
+    setup({ http: () => loader });
+    const child = createEnvironmentInjector(providers(), TestBed.inject(EnvironmentInjector));
+
+    await expect(child.get(DataLoaderRegistry).get('http')).resolves.toBe(loader);
+  });
+
+  it('provides the built-in loaders at the root', async () => {
+    const registry = setup();
+
+    await expect(registry.get('http')).resolves.toBeInstanceOf(HttpDataLoader);
+    await expect(registry.get('inline')).resolves.toBeInstanceOf(InlineDataLoader);
+  });
+
+  it('lets registered loaders replace built-ins', async () => {
+    const loader: DataLoader = { load: () => undefined };
+    const registry = setup({ http: () => loader });
+
+    await expect(registry.get('http')).resolves.toBe(loader);
+  });
+
+  it('does not add the built-ins again in child registries', async () => {
     const loader: DataLoader = { load: () => undefined };
     setup({ http: () => loader });
     const child = createEnvironmentInjector(providers(), TestBed.inject(EnvironmentInjector));
