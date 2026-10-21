@@ -24,7 +24,7 @@ export interface ContentElementNode {
    * Named data, loaded eagerly and validated by the definition's data schemas. An array is inline data used as is,
    * and an object is a {@link ContentDataSource}.
    */
-  data?: Record<string, string | unknown[] | ContentDataSource>;
+  data?: Record<string, string | JsonValue[] | ContentDataSource>;
   /**
    * Projected content. A node or node list targets the definition's default `content` entry. An object without
    * `component` maps content names from the definition's `content` to nodes, so a content name cannot be `component`.
