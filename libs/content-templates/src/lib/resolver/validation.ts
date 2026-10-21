@@ -89,11 +89,6 @@ export async function validateData(
       }
 
       const value = Object.hasOwn(loaded, key) ? await loaded[key] : undefined;
-      if (schema === 'any') {
-        output[key] = value;
-        return;
-      }
-
       const result = await schema['~standard'].validate(value);
       if (result.issues) {
         issues.push(...prefixIssues(result.issues, ['data', key]));
@@ -116,11 +111,11 @@ export async function validateData(
  * @returns The schema, whether a default is declared, and the default value.
  */
 function normalizeDataEntry(entry: DataSchemaEntry): {
-  schema: 'any' | StandardSchemaV1<unknown>;
+  schema: StandardSchemaV1<unknown>;
   hasDefault: boolean;
   defaultValue: unknown;
 } {
-  if (entry === 'any' || isStandardSchema(entry)) {
+  if (isStandardSchema(entry)) {
     return { schema: entry, hasDefault: false, defaultValue: undefined };
   }
   return { schema: entry.schema, hasDefault: 'defaultValue' in entry, defaultValue: entry.defaultValue };
