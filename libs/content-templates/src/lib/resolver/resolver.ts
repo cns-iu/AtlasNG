@@ -140,13 +140,18 @@ export class ContentResolver {
    * @returns The loaded and parsed value.
    */
   async #loadData(
-    value: unknown[] | ContentDataSource,
+    value: string | unknown[] | ContentDataSource,
     key: string,
     path: string,
     context: DataContext,
   ): Promise<unknown> {
     if (Array.isArray(value)) {
       return value;
+    } else if (typeof value === 'string') {
+      // TODO properly handle inline strings
+      throw new ContentValidationError(path, [
+        { message: 'Expected an array or an object with a string `type`.', path: ['data', key] },
+      ]);
     }
     if (!isContentDataSource(value)) {
       throw new ContentValidationError(path, [
