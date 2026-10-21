@@ -115,7 +115,7 @@ type ContentConfigSchema =
 
 type ContentDataSchema = Record<
   string,
-  StandardSchemaV1<unknown> | { schema: StandardSchemaV1<unknown>; defaultValue?: unknown | (() => unknown) }
+  StandardSchemaV1<unknown> | { schema: StandardSchemaV1<unknown>; initialValue?: unknown | (() => unknown) }
 >;
 
 const DEFAULT_CONTENT: unique symbol;
@@ -141,7 +141,7 @@ const tableDefinition: ContentDefinition = {
   config: { caption: optional(string()) },
   data: {
     rows: array(record(string(), unknown())),
-    columns: { schema: array(columnSchema), defaultValue: [] },
+    columns: { schema: array(columnSchema), initialValue: [] },
   },
   placeholderComponent: TablePlaceholder,
 };
@@ -149,7 +149,7 @@ const tableDefinition: ContentDefinition = {
 
 - Config: a single object schema validates the whole config; a per-key record validates each key, and keys without a
   schema are errors.
-- Data: `passthroughSchema()` from `/utils` accepts any value. Missing data uses `defaultValue` if present (a function is called for a fresh value
+- Data: `passthroughSchema()` from `/utils` accepts any value. Missing data uses `initialValue` if present (a function is called for a fresh value
   each time), otherwise `undefined` is validated, so
   the schema decides optionality.
 - `TypeRef` distinguishes a class from a loader with `reflectComponentType`. Only components are lazy,
@@ -286,7 +286,7 @@ mode, unmatched input keys are skipped and content with unknown names is dropped
   `{ type: <defaultLoader>, url: <string> }` sources, along with its dev-mode checks.
 - Definitions for design-system components (removed for now; previously the `design-system-definitions` entry point).
 - Generics on definitions, loaders, and parsers inferred from their schemas, with a `defineContentComponent` helper
-  that rejects, at compile time, a `defaultValue` not matching its schema output.
+  that rejects, at compile time, an `initialValue` not matching its schema output.
 - Helper types such as `InferContentConfig<TDefinition>` and `InferContentData<TData>`.
 - Standard Schema validation of loader and parser config.
 

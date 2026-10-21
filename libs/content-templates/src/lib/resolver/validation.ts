@@ -82,9 +82,9 @@ export async function validateData(
   const output: Record<string, unknown> = {};
   await Promise.all(
     Object.entries(schemas).map(async ([key, entry]) => {
-      const { schema, hasDefault, defaultValue } = normalizeDataEntry(entry);
+      const { schema, hasDefault, initialValue } = normalizeDataEntry(entry);
       if (!Object.hasOwn(loaded, key) && hasDefault) {
-        output[key] = typeof defaultValue === 'function' ? defaultValue() : defaultValue;
+        output[key] = typeof initialValue === 'function' ? initialValue() : initialValue;
         return;
       }
 
@@ -113,12 +113,12 @@ export async function validateData(
 function normalizeDataEntry(entry: DataSchemaEntry): {
   schema: StandardSchemaV1<unknown>;
   hasDefault: boolean;
-  defaultValue: unknown;
+  initialValue: unknown;
 } {
   if (isStandardSchema(entry)) {
-    return { schema: entry, hasDefault: false, defaultValue: undefined };
+    return { schema: entry, hasDefault: false, initialValue: undefined };
   }
-  return { schema: entry.schema, hasDefault: 'defaultValue' in entry, defaultValue: entry.defaultValue };
+  return { schema: entry.schema, hasDefault: 'initialValue' in entry, initialValue: entry.initialValue };
 }
 
 /**
