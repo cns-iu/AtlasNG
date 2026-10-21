@@ -21,7 +21,7 @@ export function checkDefinitionKeys(node: RenderElementNode, definition: Content
     ...checkUnknownContentKeys(node, definition),
   ]);
 
-  for (const key of Reflect.ownKeys(node.content) as RenderNodeKey[]) {
+  for (const key of node.contentKeys) {
     if (!isKnownContentKey(definition, key)) {
       delete node.content[key];
     }

@@ -40,8 +40,8 @@ describe('buildRenderTree', () => {
 
     controller.abort('changed');
 
-    expect(outer.abortController.signal.reason).toBe('changed');
-    expect(inner.abortController.signal.reason).toBe('changed');
+    expect(outer.abortSignal.reason).toBe('changed');
+    expect(inner.abortSignal.reason).toBe('changed');
   });
 
   it('rejects unsupported versions and invalid nodes', () => {
