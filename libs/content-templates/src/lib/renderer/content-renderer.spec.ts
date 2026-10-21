@@ -16,6 +16,7 @@ import {
   DEFAULT_CONTENT,
 } from '@atlasng/content-templates/types';
 import { ContentRenderer } from './content-renderer';
+import { passthroughSchema } from '@atlasng/content-templates/utils';
 
 const string: StandardSchemaV1<string, string> = {
   '~standard': {
@@ -87,11 +88,11 @@ const definitions: ContentDefinition[] = [
   {
     name: 'list',
     component: () => List,
-    data: { rows: 'any' },
+    data: { rows: passthroughSchema() },
     placeholderComponent: Placeholder,
     errorComponent: ErrorView,
   },
-  { name: 'eager-list', component: List, data: { rows: 'any' } },
+  { name: 'eager-list', component: List, data: { rows: passthroughSchema() } },
   { name: 'link', component: Link, host: 'a', content: { content: '*' } },
   { name: 'panel', component: Panel, content: { body: '[panel-body]', [DEFAULT_CONTENT]: 'body' } },
 ];

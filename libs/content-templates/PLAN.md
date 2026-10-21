@@ -115,9 +115,7 @@ type ContentConfigSchema =
 
 type ContentDataSchema = Record<
   string,
-  | 'any'
-  | StandardSchemaV1<unknown>
-  | { schema: 'any' | StandardSchemaV1<unknown>; defaultValue?: unknown | (() => unknown) }
+  StandardSchemaV1<unknown> | { schema: StandardSchemaV1<unknown>; defaultValue?: unknown | (() => unknown) }
 >;
 
 const DEFAULT_CONTENT: unique symbol;
@@ -151,7 +149,7 @@ const tableDefinition: ContentDefinition = {
 
 - Config: a single object schema validates the whole config; a per-key record validates each key, and keys without a
   schema are errors.
-- Data: `'any'` skips validation. Missing data uses `defaultValue` if present (a function is called for a fresh value
+- Data: `passthroughSchema()` from `/utils` accepts any value. Missing data uses `defaultValue` if present (a function is called for a fresh value
   each time), otherwise `undefined` is validated, so
   the schema decides optionality.
 - `TypeRef` distinguishes a class from a loader with `reflectComponentType`. Only components are lazy,
@@ -209,7 +207,7 @@ factory injects it, e.g. `() => inject(HttpDataLoader)`:
   `{ url, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`.
 - `InlineDataLoader`: config `{ value }`, returns `value`.
 - `JsonDataParser`: `JSON.parse` for strings; other input is returned unchanged.
-- `NoopDataParser`: returns its input unchanged.
+- `PassthroughDataParser`: returns its input unchanged.
 
 ## 4. Registration (phase 2)
 

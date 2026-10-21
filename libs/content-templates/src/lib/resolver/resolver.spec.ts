@@ -15,6 +15,7 @@ import { DataParser } from '@atlasng/content-templates/parsers';
 import { ContentValidationError } from './errors';
 import { ResolvedContentElement } from './resolved-content';
 import { ContentResolver } from './resolver';
+import { passthroughSchema } from '@atlasng/content-templates/utils';
 
 @Component({ selector: 'ang-test', template: '' })
 class TestComponent {}
@@ -36,7 +37,11 @@ function setup(...features: ContentTemplatesFeature[]): ContentResolver {
       provideContentTemplates(
         withDefinitions([
           { name: 'text', component: TestComponent, config: { title: string } },
-          { name: 'table', component: async () => ({ default: TestComponent }), data: { rows: 'any', label: 'any' } },
+          {
+            name: 'table',
+            component: async () => ({ default: TestComponent }),
+            data: { rows: passthroughSchema(), label: passthroughSchema() },
+          },
         ]),
         ...features,
       ),

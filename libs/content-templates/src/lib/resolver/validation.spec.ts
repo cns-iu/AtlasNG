@@ -4,6 +4,7 @@ import { JsonObject } from 'type-fest';
 import { ContentDefinition } from '@atlasng/content-templates/types';
 import { ContentValidationError } from './errors';
 import { validateConfig, validateData } from './validation';
+import { passthroughSchema } from '@atlasng/content-templates/utils';
 
 @Component({ selector: 'ang-test', template: '' })
 class TestComponent {}
@@ -100,8 +101,8 @@ describe('validateData', () => {
     const data = {
       title: string,
       columns: { schema: string, defaultValue: 'default' },
-      raw: 'any' as const,
-      loose: { schema: 'any' as const },
+      raw: passthroughSchema(),
+      loose: { schema: passthroughSchema() },
       optional: optionalString,
     };
 
@@ -111,7 +112,7 @@ describe('validateData', () => {
   });
 
   it('calls function defaults for each validation', async () => {
-    const data = { rows: { schema: 'any' as const, defaultValue: () => [] } };
+    const data = { rows: { schema: passthroughSchema(), defaultValue: () => [] } };
 
     const first = await validateData(definition({ data }), {}, 'p');
     const second = await validateData(definition({ data }), {}, 'p');
@@ -136,7 +137,11 @@ describe('validateData', () => {
 
   it('rejects with load errors', async () => {
     await expect(
-      validateData(definition({ data: { rows: 'any' } }), { rows: Promise.reject(new Error('offline')) }, 'p'),
+      validateData(
+        definition({ data: { rows: passthroughSchema() } }),
+        { rows: Promise.reject(new Error('offline')) },
+        'p',
+      ),
     ).rejects.toThrow('offline');
   });
 });
