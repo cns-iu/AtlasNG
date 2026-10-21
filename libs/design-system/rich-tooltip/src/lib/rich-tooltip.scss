@@ -6,7 +6,7 @@
   flex-direction: column;
   box-sizing: border-box;
   max-width: 20rem;
-  padding: 0.75rem 1rem 0.5rem;
+  padding: 0.75rem 1rem;
   border-radius: token-utils.slot(container-shape, $config);
   background-color: token-utils.slot(container-color, $config);
   box-shadow: token-utils.slot(container-elevation, $config);
@@ -36,6 +36,7 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 0.75rem;
+    margin-bottom: -0.5rem;
     // Aligns the text button labels with the tagline and content.
     margin-inline-start: -0.75rem;
   }
