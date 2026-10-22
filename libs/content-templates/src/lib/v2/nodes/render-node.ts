@@ -131,7 +131,6 @@ export class RenderElementNode extends RenderNodeLocation {
   readonly content: RenderNodeContent = {};
   /** Controller behind {@link abortSignal}. */
   readonly #abortController = new AbortController();
-
   /** Backing signal of {@link error}, written by {@link fail}. */
   readonly #error = signal<unknown>(undefined);
   /** First error of the node, from any step or a later data emission. `undefined` while the node has not failed. */
@@ -187,6 +186,16 @@ export class RenderElementNode extends RenderNodeLocation {
   }
 
   /**
+   * Aborts the node and its descendants without failing it, so its pending loads and data streams stop, e.g. when its
+   * boundary already failed. Rejections caused by the abort are not recorded as the node's error.
+   *
+   * @param reason Abort reason.
+   */
+  abort(reason: unknown): void {
+    this.#abortController.abort(reason);
+  }
+
+  /**
    * Marks the node as failed and aborts it, so its pending loads and data streams stop and its children are not
    * released. Only the first error is kept in {@link error}.
    *
@@ -194,7 +203,7 @@ export class RenderElementNode extends RenderNodeLocation {
    */
   fail(error: unknown): void {
     this.#error.update((current) => current ?? error);
-    this.#abortController.abort(error);
+    this.abort(error);
   }
 
   /**
