@@ -14,7 +14,6 @@ import { createRenderContext } from './render-context';
  * `provideContentTemplates`.
  */
 @Directive({
-  // TODO review usage pattern
   selector: 'ang-content-outlet, [angContentOutlet]',
   host: { class: 'ang-content-outlet' },
 })

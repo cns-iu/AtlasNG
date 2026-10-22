@@ -66,6 +66,12 @@ export function createRenderContext(): RenderContext {
   return context;
 }
 
+/**
+ * Creates a loader for the configured text component that loads it once, on first call.
+ *
+ * @param textComponent The configured text component, if any.
+ * @returns The loader. It returns `undefined` without a text component.
+ */
 function createTextComponentLoader(
   textComponent: TypeRef<unknown> | undefined,
 ): () => Promise<Type<unknown>> | undefined {

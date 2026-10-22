@@ -158,7 +158,7 @@ export class RenderElementNode extends RenderNodeLocation {
 
   /** Child nodes in content order, unkeyed content included. Not cached, since prod mode drops unknown content. */
   get children(): RenderNode[] {
-    return this.contentKeys.flatMap((key) => this.content[key] ?? []);
+    return this.contentKeys.flatMap((key) => this.content[key]) as RenderNode[];
   }
 
   /** Element children in content order, i.e. the {@link children} that go through the pipeline. */
