@@ -3,7 +3,7 @@ import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angul
 import { FilterChip, FilterForm } from './filter-form';
 
 const meta: Meta<FilterForm<FilterChip>> = {
-  title: 'Design System/Filter/Filter Form',
+  title: 'Design System/Filter Form',
   component: FilterForm,
   parameters: {
     design: {
