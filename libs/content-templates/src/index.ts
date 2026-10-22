@@ -1,7 +1,11 @@
-export * from './lib/registries/providers';
-export * from './lib/renderer/config';
-export * from './lib/renderer/content-renderer';
-export * from './lib/resolver/errors';
-export * from './lib/resolver/guards';
-export * from './lib/resolver/resolved-content';
-export * from './lib/resolver/resolver';
+export { type ContentTemplatesConfig } from './lib/config';
+export { ContentOutlet } from './lib/outlet/content-outlet';
+export {
+  ContentTemplatesFeatureKind,
+  provideContentTemplates,
+  withDataLoaders,
+  withDataParsers,
+  withDefinitions,
+  type ContentTemplatesFeature,
+} from './lib/providers';
+export { ContentValidationError } from './lib/validation/errors';
