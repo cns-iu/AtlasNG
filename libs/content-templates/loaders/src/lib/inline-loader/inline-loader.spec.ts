@@ -1,9 +1,14 @@
 import { inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { DATA_LOADERS, DataLoaderRegistry, DataLoaderContext } from '../data-loader-registry';
-import { InlineDataLoader } from './inline-loader';
+import { InlineDataLoader, InlineDataLoaderConfig } from './inline-loader';
 
-const context: DataLoaderContext = { node: { component: 'test' }, signal: new AbortController().signal };
+const context: DataLoaderContext = {
+  node: { component: 'test' },
+  path: 'content',
+  key: 'rows',
+  signal: new AbortController().signal,
+};
 
 describe('InlineDataLoader', () => {
   it('can be registered', async () => {
@@ -25,5 +30,11 @@ describe('InlineDataLoader', () => {
 
   it('returns primitive values', () => {
     expect(new InlineDataLoader().load({ value: null }, context)).toBeNull();
+  });
+
+  it('rejects sources without a value', () => {
+    expect(() => new InlineDataLoader().load({} as InlineDataLoaderConfig, context)).toThrow(
+      "Invalid content at 'content': data.rows.value: Expected a `value`.",
+    );
   });
 });

@@ -10,6 +10,10 @@ import { InlineDataLoader } from './inline-loader/inline-loader';
 export interface DataLoaderContext {
   /** Node whose data is being resolved. */
   node: Readonly<ContentElementNode>;
+  /** Path of the node in the document, e.g. `content.@default[0]`. Pass it to `ContentValidationError`. */
+  path: string;
+  /** Data key being resolved, e.g. `rows`. Config issues belong at `['data', key, ...]`. */
+  key: string;
   /** Aborted when the document changes or the renderer is destroyed. */
   signal: AbortSignal;
 }

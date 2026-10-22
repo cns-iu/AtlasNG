@@ -191,11 +191,15 @@ interface DataParser<TConfig = unknown, TInput = unknown, TOutput = unknown> {
 // Separate types so each can grow independently; both start out the same.
 interface DataLoaderContext {
   node: Readonly<ContentElementNode>;
+  path: string; // node path, for ContentValidationError
+  key: string; // data key, config issues go at ['data', key, ...]
   signal: AbortSignal; // aborted on document change / destroy
 }
 
 interface DataParserContext {
   node: Readonly<ContentElementNode>;
+  path: string;
+  key: string;
   signal: AbortSignal;
 }
 ```
@@ -203,7 +207,8 @@ interface DataParserContext {
 - Loaders and parsers carry no name; they are named at registration.
 - A loader's `config` is the source without `parser`, `type` included. A parser's `config` is the source's `parser`
   object as is; the string form is passed as `{ type: <name> }`. Neither type requires `type`, so loaders and parsers
-  declare only the keys they use. Config is not schema-validated for now.
+  declare only the keys they use. Loaders and parsers validate their own config and throw a `ContentValidationError`
+  (from `/utils`) with `context.path` and issues at `['data', context.key, ...]`, which fails the node.
 - `load` and `parse` do not run in an injection context; dependencies are injected when the instance is created (see
   [Registration](#4-registration-phase-2)). Observables may emit many times; each value is parsed and validated, and a
   newer value supersedes one still in progress. A stream error after the first value fails the node.
@@ -213,8 +218,9 @@ registries), registered like any other loader or parser. Each is a `@Service()` 
 factory injects it, e.g. `() => inject(HttpDataLoader)`:
 
 - `HttpDataLoader`: GET through the root `HttpClient`. Config
-  `{ url, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`.
-- `InlineDataLoader`: config `{ value }`, returns `value`.
+  `{ url, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`. Rejects a non-string `url` and
+  unsupported response types.
+- `InlineDataLoader`: config `{ value }`, returns `value`. Rejects a source without `value`.
 - `JsonDataParser`: `JSON.parse` for strings; other input is returned unchanged.
 - `PassthroughDataParser`: returns its input unchanged.
 

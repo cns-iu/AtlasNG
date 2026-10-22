@@ -29,9 +29,12 @@ describe('DataLoaderRegistry', () => {
 
     const loader = await registry.get('test');
 
-    expect(loader?.load({ type: 'test' }, { node: { component: 'x' }, signal: new AbortController().signal })).toBe(
-      'root',
-    );
+    expect(
+      loader?.load(
+        { type: 'test' },
+        { node: { component: 'x' }, path: 'content', key: 'rows', signal: new AbortController().signal },
+      ),
+    ).toBe('root');
   });
 
   it('returns undefined for unknown loaders', () => {

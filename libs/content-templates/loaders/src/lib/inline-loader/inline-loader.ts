@@ -1,4 +1,5 @@
 import { Service } from '@angular/core';
+import { ContentValidationError } from '@atlasng/content-templates/utils';
 import { JsonValue } from 'type-fest';
 import { DataLoader, DataLoaderContext } from '../data-loader-registry';
 
@@ -21,10 +22,17 @@ export class InlineDataLoader implements DataLoader<InlineDataLoaderConfig, Json
    * Returns `config.value` as is.
    *
    * @param config Loader configuration.
-   * @param _context Node being resolved and abort signal. Unused.
+   * @param context Node being resolved and abort signal.
    * @returns The embedded value.
+   * @throws {ContentValidationError} When the source has no `value`.
    */
-  load(config: InlineDataLoaderConfig, _context: DataLoaderContext): JsonValue {
+  load(config: InlineDataLoaderConfig, context: DataLoaderContext): JsonValue {
+    if (config.value === undefined) {
+      throw new ContentValidationError(context.path, [
+        { message: 'Expected a `value`.', path: ['data', context.key, 'value'] },
+      ]);
+    }
+
     return config.value;
   }
 }

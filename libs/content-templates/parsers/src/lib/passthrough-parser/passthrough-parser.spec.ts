@@ -3,7 +3,12 @@ import { TestBed } from '@angular/core/testing';
 import { DATA_PARSERS, DataParserContext, DataParserRegistry } from '../data-parser-registry';
 import { PassthroughDataParser } from './passthrough-parser';
 
-const context: DataParserContext = { node: { component: 'test' }, signal: new AbortController().signal };
+const context: DataParserContext = {
+  node: { component: 'test' },
+  path: 'content',
+  key: 'rows',
+  signal: new AbortController().signal,
+};
 const config = { type: 'passthrough' };
 
 describe('PassthroughDataParser', () => {
