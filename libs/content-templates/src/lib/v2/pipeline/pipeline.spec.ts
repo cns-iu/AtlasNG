@@ -230,6 +230,16 @@ describe('startPipeline', () => {
       await expect(root.resolved).rejects.toThrow("Component 'table' has no input 'subtitle' for config.");
     });
 
+    it('rejects keys used by both config and data in dev mode', async () => {
+      const definition: ContentDefinition = { ...table, data: { title: passthroughSchema() } };
+      const [root] = start(
+        { component: 'table', config: { title: 'x' }, data: { title: ['y'] } },
+        setup({ table: () => definition }),
+      );
+
+      await expect(root.resolved).rejects.toThrow("Component 'table' uses input 'title' for both config and data.");
+    });
+
     it('stops loading data when the node aborts', async () => {
       const values = new Subject<unknown>();
       const controller = new AbortController();

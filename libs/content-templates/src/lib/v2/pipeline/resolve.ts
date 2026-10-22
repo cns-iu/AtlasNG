@@ -5,6 +5,7 @@ import { reportRecoverableIssues } from '../validation/errors';
 import { checkComponentInputs, loadComponent } from './component';
 import { PipelineContext } from './context';
 import { loadData } from './data';
+import { reflectComponentType } from '@angular/core';
 
 /**
  * Loads the component, validates config, and loads data of a checked node, all in parallel, then checks that the
@@ -17,7 +18,8 @@ import { loadData } from './data';
  * @param context Pipeline context.
  * @param onError Called with an error from a later data emission.
  * @returns Everything needed to render the node. Rejects with the first failing step.
- * @throws {ContentValidationError} In dev mode, when the component lacks an input for a key.
+ * @throws {ContentValidationError} In dev mode, when the component lacks an input for a key, or a key is used by both
+ *   config and data.
  */
 export async function resolveElement(
   node: RenderElementNode,
@@ -30,11 +32,14 @@ export async function resolveElement(
     Promise.resolve().then(() => validateConfig(definition.config, node.source.config, node.path)),
     loadData(node, definition.data, context, onError),
   ]);
+  const mirror = reflectComponentType(component);
 
-  reportRecoverableIssues(
-    node.path,
-    checkComponentInputs(definition, component, Object.keys(config), Object.keys(data)),
-  );
+  if (!mirror) {
+    throw new Error(`Component '${definition.name}' is not a component.`);
+  }
 
-  return { definition, component, config, data };
+  const issues = checkComponentInputs(definition, mirror, Object.keys(config), Object.keys(data));
+  reportRecoverableIssues(node.path, issues);
+
+  return { definition, component, mirror, config, data };
 }
