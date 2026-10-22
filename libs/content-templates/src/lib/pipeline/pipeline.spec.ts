@@ -4,14 +4,13 @@ import { DefinitionRegistry, provideDefinitions } from '@atlasng/content-templat
 import { DataLoaderRegistry, provideDataLoaders } from '@atlasng/content-templates/loaders';
 import { DataParserRegistry, provideDataParsers } from '@atlasng/content-templates/parsers';
 import { ContentDefinition, ContentDocument, DEFAULT_CONTENT } from '@atlasng/content-templates/types';
+import { ContentValidationError, passthroughSchema } from '@atlasng/content-templates/utils';
 import { buildRenderTree } from '../nodes/build-tree';
 import { RenderElementNode } from '../nodes/render-node';
-import { passthroughSchema } from '@atlasng/content-templates/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { JsonValue } from 'type-fest';
 import { CONTENT_TEMPLATES_CONFIG } from '../config';
-import { ContentValidationError } from '../validation/errors';
 import { PipelineContext } from './context';
 import { startPipeline } from './pipeline';
 

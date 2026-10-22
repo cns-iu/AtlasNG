@@ -11,11 +11,11 @@ import {
 import { DefinitionRegistry } from '@atlasng/content-templates/definitions';
 import { DataLoaderRegistry } from '@atlasng/content-templates/loaders';
 import { DataParserRegistry } from '@atlasng/content-templates/parsers';
-import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
 import { CONTENT_TEMPLATES_CONFIG } from '../config';
 import { loadComponent } from '../pipeline/component';
 import { PipelineContext } from '../pipeline/context';
 import { TypeRef } from '@atlasng/content-templates/types';
+import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
 
 /** Services and settings shared by every boundary of one outlet. */
 export interface RenderContext extends PipelineContext {

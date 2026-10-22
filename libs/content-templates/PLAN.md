@@ -36,7 +36,9 @@ Async work happens in several places: definition lookup, lazy component imports,
 - **Entry points:** shared types live in `@atlasng/content-templates/types`, the definition registry in
   `@atlasng/content-templates/definitions`, built-in loaders and their registry in
   `@atlasng/content-templates/loaders`, and built-in parsers and their registry in `@atlasng/content-templates/parsers`.
-  Shared runtime helpers, such as the `LazyChainedRegistry` base class, live in `@atlasng/content-templates/utils`. The
+  Shared runtime helpers live in `@atlasng/content-templates/utils`: `ContentValidationError` (so loaders and parsers can
+  throw it), the document guards (`isContentElementNode`, `isContentDataSource`, `isNamedContent`), `passthroughSchema`,
+  and the `LazyChainedRegistry` base class. The
   primary entry point imports these but does not re-export them.
 
 ## 1. JSON document (`document.ts`)

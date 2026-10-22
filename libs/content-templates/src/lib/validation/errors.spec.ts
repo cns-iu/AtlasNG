@@ -1,12 +1,5 @@
-import { checkUnknownKeys, ContentValidationError, reportRecoverableIssues } from './errors';
-
-describe('ContentValidationError', () => {
-  it('formats issues with the node path', () => {
-    const error = new ContentValidationError('content.@default[0]', [{ message: 'Bad.', path: ['data', 'rows', 0] }]);
-
-    expect(error.message).toBe("Invalid content at 'content.@default[0]': data.rows[0]: Bad.");
-  });
-});
+import { ContentValidationError } from '@atlasng/content-templates/utils';
+import { checkUnknownKeys, reportRecoverableIssues } from './errors';
 
 describe('checkUnknownKeys', () => {
   it('reports keys missing from the declared record', () => {

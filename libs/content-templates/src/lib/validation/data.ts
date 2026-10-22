@@ -1,8 +1,9 @@
 import { ContentDefinition } from '@atlasng/content-templates/types';
+import { ContentValidationError } from '@atlasng/content-templates/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { RenderElementNode } from '../nodes/render-node';
 import { prefixIssues } from '../utils/standard-schema';
-import { checkUnknownKeys, ContentValidationError } from './errors';
+import { checkUnknownKeys } from './errors';
 
 /**
  * Finds data keys the definition declares no schema for.

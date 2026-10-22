@@ -1,7 +1,7 @@
 import { DefinitionRegistry } from '@atlasng/content-templates/definitions';
 import { ContentDefinition } from '@atlasng/content-templates/types';
+import { ContentValidationError } from '@atlasng/content-templates/utils';
 import { isRenderElementNode, RenderElementNode, RenderNode } from '../nodes/render-node';
-import { ContentValidationError } from '../validation/errors';
 
 /**
  * Starts loading the definition of every element in the tree at once, so no node waits on a load started by its

@@ -2,6 +2,7 @@ import { signal, Signal } from '@angular/core';
 import { DataLoader, DataLoaderContext } from '@atlasng/content-templates/loaders';
 import { DataParser, DataParserContext } from '@atlasng/content-templates/parsers';
 import { ContentDataSchema, ContentDataSource } from '@atlasng/content-templates/types';
+import { ContentValidationError, isContentDataSource } from '@atlasng/content-templates/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import {
   concat,
@@ -17,10 +18,8 @@ import {
   takeUntil,
 } from 'rxjs';
 import { RenderElementNode } from '../nodes/render-node';
-import { isContentDataSource } from '../utils/guards';
 import { isStandardSchema } from '../utils/standard-schema';
 import { validateDataValue } from '../validation/data';
-import { ContentValidationError } from '../validation/errors';
 import { PipelineContext } from './context';
 
 /** A parser reference in its object form. */
