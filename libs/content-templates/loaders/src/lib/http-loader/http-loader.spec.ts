@@ -4,9 +4,15 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable } from 'rxjs';
 import { DATA_LOADERS, DataLoaderRegistry, DataLoaderContext } from '../data-loader-registry';
+import { ContentValidationError } from '@atlasng/content-templates/utils';
 import { HttpDataLoader, HttpDataLoaderConfig } from './http-loader';
 
-const context: DataLoaderContext = { node: { component: 'test' }, signal: new AbortController().signal };
+const context: DataLoaderContext = {
+  node: { component: 'test' },
+  path: 'content',
+  key: 'rows',
+  signal: new AbortController().signal,
+};
 
 async function setup(): Promise<{ loader: HttpDataLoader; controller: HttpTestingController }> {
   TestBed.configureTestingModule({
@@ -50,6 +56,17 @@ describe('HttpDataLoader', () => {
 
     expect(request.request.responseType).toBe(responseType);
     await expect(result).resolves.toEqual(body);
+  });
+
+  it('rejects configs without a string url or with an unsupported responseType', async () => {
+    const { loader } = await setup();
+    const config = { url: 1, responseType: 'xml' } as unknown as HttpDataLoaderConfig;
+
+    expect(() => loader.load(config, context)).toThrow(
+      "Invalid content at 'content': data.rows.url: Expected a string `url`.; data.rows.responseType: Expected " +
+        "`responseType` to be one of 'json', 'text', 'blob', 'arraybuffer'.",
+    );
+    expect(() => loader.load(config, context)).toThrow(ContentValidationError);
   });
 
   it('cancels the request on unsubscribe', async () => {

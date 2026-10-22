@@ -199,7 +199,7 @@ function loadSource(
   }
 
   const { abortSignal } = node;
-  const dataContext: DataContext = { node: node.source, signal: abortSignal };
+  const dataContext: DataContext = { node: node.source, path: node.path, key, signal: abortSignal };
   const values$ = of(null).pipe(
     withLoader(loaderPromise, loaderConfig, dataContext),
     withParser(parserPromise, parserConfig, dataContext),
