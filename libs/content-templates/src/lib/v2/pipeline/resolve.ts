@@ -5,7 +5,7 @@ import { reportRecoverableIssues } from '../validation/errors';
 import { checkComponentInputs, loadComponent } from './component';
 import { PipelineContext } from './context';
 import { loadData } from './data';
-import { reflectComponentType } from '@angular/core';
+import { ComponentMirror, reflectComponentType } from '@angular/core';
 
 /**
  * Loads the component, validates config, and loads data of a checked node, all in parallel, then checks that the
@@ -32,11 +32,7 @@ export async function resolveElement(
     Promise.resolve().then(() => validateConfig(definition.config, node.source.config, node.path)),
     loadData(node, definition.data, context, onError),
   ]);
-  const mirror = reflectComponentType(component);
-
-  if (!mirror) {
-    throw new Error(`Component '${definition.name}' is not a component.`);
-  }
+  const mirror = reflectComponentType(component) as ComponentMirror<unknown>;
 
   const issues = checkComponentInputs(definition, mirror, Object.keys(config), Object.keys(data));
   reportRecoverableIssues(node.path, issues);

@@ -313,17 +313,13 @@ export class Boundary {
   }
 
   /**
-   * Shows the definition's placeholder component, if any.
+   * Shows the definition's placeholder component.
    *
    * @param node The boundary's node.
    * @param definition The node's definition.
    */
   #renderPlaceholder(node: RenderElementNode, definition: ContentDefinition): void {
-    const { placeholderComponent: component } = definition;
-    if (!component) {
-      return;
-    }
-
+    const component = definition.placeholderComponent as Type<unknown>;
     const scope = new BoundaryScope();
     const bindings = createOptionalBindings(component, { node: node.source, definition });
     const nodes = [scope.createComponent(this.#context, component, bindings)];
@@ -475,7 +471,7 @@ class BoundaryBuilder {
     const projected = this.#getContentSlots(node, definition, selectors);
     await Promise.all(
       projected.map(async ({ key, index }) => {
-        const nodes = await this.buildList(node.content[key] ?? []);
+        const nodes = await this.buildList(node.content[key] as RenderNode[]);
         projectableNodes[index].push(...nodes);
       }),
     );
