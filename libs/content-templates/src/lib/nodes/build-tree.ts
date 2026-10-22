@@ -4,7 +4,7 @@ import {
   ContentNode,
   DEFAULT_CONTENT,
 } from '@atlasng/content-templates/types';
-import { ContentValidationError, isContentElementNode, isNamedContent } from '@atlasng/content-templates/utils';
+import { ContentValidationError, isContentElementNode, isNamedContentRecord } from '@atlasng/content-templates/utils';
 import { Arrayable } from 'type-fest';
 import { RenderElementNode, RenderNode, RenderNodeKey, RenderNodeLocation, RenderTextNode } from './render-node';
 
@@ -81,7 +81,7 @@ function buildNode(
 
   if (content === undefined) {
     return element;
-  } else if (isNamedContent(content)) {
+  } else if (isNamedContentRecord(content)) {
     for (const [name, nodes] of Object.entries(content)) {
       element.content[name] = buildList(element, nodes, name);
     }

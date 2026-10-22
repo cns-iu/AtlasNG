@@ -37,7 +37,7 @@ Async work happens in several places: definition lookup, lazy component imports,
   `@atlasng/content-templates/definitions`, built-in loaders and their registry in
   `@atlasng/content-templates/loaders`, and built-in parsers and their registry in `@atlasng/content-templates/parsers`.
   Shared runtime helpers live in `@atlasng/content-templates/utils`: `ContentValidationError` (so loaders and parsers can
-  throw it), the document guards (`isContentElementNode`, `isContentDataSource`, `isNamedContent`), `passthroughSchema`,
+  throw it), the document guards (`isContentElementNode`, `isContentDataSource`, `isNamedContentRecord`), `passthroughSchema`,
   and the `LazyChainedRegistry` base class. The
   primary entry point imports these but does not re-export them.
 
