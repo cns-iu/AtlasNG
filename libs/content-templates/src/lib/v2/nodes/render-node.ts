@@ -1,4 +1,4 @@
-import { Signal, signal, Type } from '@angular/core';
+import { ComponentMirror, Signal, signal, Type } from '@angular/core';
 import { ContentDefinition, ContentElementNode, DEFAULT_CONTENT } from '@atlasng/content-templates/types';
 
 /** A node of the render tree: plain text, or an element rendered through a content definition. */
@@ -16,6 +16,8 @@ export interface ResolvedElement {
   definition: ContentDefinition;
   /** Component class rendered for the node. */
   component: Type<unknown>;
+  /** Component mirror for the node. */
+  mirror: ComponentMirror<unknown>;
   /** Validated config outputs keyed by config key. */
   config: Record<string, unknown>;
   /** Validated data keyed by data key. Each signal holds the latest valid value. */
