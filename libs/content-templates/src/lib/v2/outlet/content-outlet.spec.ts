@@ -99,6 +99,7 @@ const definitions: ContentDefinition[] = [
   { name: 'link', component: Link, host: 'a', content: { content: '*' } },
   { name: 'panel', component: Panel, content: { body: '[panel-body]', [DEFAULT_CONTENT]: 'body' } },
   { name: 'broken-panel', component: Panel, content: { body: '[missing]' } },
+  { name: 'loose-heading', component: Heading, config: { title: string, subtitle: string } },
 ];
 
 function doc(content: ContentDocument['content']): ContentDocument {
@@ -265,6 +266,56 @@ describe('ContentOutlet', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       "Component 'broken-panel' has no ng-content for selector '[missing]'.",
     );
+  });
+
+  it('does not render the error component after the outlet is destroyed', async () => {
+    let resolve!: (component: typeof ErrorView) => void;
+    const { fixture, errorHandler } = await setup(doc({ component: 'missing' }), {
+      errorComponent: () => new Promise((resolveComponent) => (resolve = resolveComponent)),
+    });
+    await waitFor(() => expect(errorHandler.handleError).toHaveBeenCalledTimes(1));
+
+    fixture.destroy();
+    resolve(ErrorView);
+    await new Promise((resolveTimeout) => setTimeout(resolveTimeout));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  describe('in prod mode', () => {
+    let warn: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      vi.stubGlobal('ngDevMode', false);
+      warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      warn.mockRestore();
+    });
+
+    it('warns about unregistered default names', async () => {
+      await setup(doc(['Rendered']), { defaultParser: 'missing' });
+
+      expect(await screen.findByText('Rendered')).toBeInTheDocument();
+      expect(warn).toHaveBeenCalledWith(
+        "Content templates config names unregistered entries: defaultParser 'missing'.",
+      );
+    });
+
+    it('skips keys without an input and content without a slot', async () => {
+      await setup(
+        doc([
+          { component: 'loose-heading', config: { title: 'Shown', subtitle: 'Skipped' } },
+          { component: 'broken-panel', content: { body: 'Dropped' } },
+        ]),
+      );
+
+      expect(await screen.findByRole('heading', { name: 'Shown' })).toBeInTheDocument();
+      expect(screen.queryByText('Dropped')).not.toBeInTheDocument();
+      expect(warn).toHaveBeenCalledTimes(2);
+    });
   });
 
   it('throws in dev mode when a default name is not registered', async () => {

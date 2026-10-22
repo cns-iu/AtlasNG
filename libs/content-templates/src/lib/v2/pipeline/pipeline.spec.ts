@@ -115,6 +115,33 @@ describe('startPipeline', () => {
     }
   });
 
+  it('does not start nodes of an aborted tree', () => {
+    const controller = new AbortController();
+    controller.abort();
+    const [root] = start({ component: 'leaf' }, setup({ leaf: () => leaf }), controller.signal);
+
+    expect(root.definition).toBeUndefined();
+  });
+
+  it('drops all content of a definition without content in prod mode', async () => {
+    vi.stubGlobal('ngDevMode', false);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    try {
+      const [root] = start(
+        { component: 'leaf', content: ['text', { component: 'leaf' }] },
+        setup({ leaf: () => leaf }),
+      );
+      await root.definition;
+
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("Component 'leaf' does not accept content."));
+      expect(root.children).toEqual([]);
+    } finally {
+      vi.unstubAllGlobals();
+      warn.mockRestore();
+    }
+  });
+
   it('does not release children of aborted nodes', async () => {
     const controller = new AbortController();
     const [root] = start(

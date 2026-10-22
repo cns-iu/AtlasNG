@@ -4,7 +4,7 @@ import { DataParserRegistry } from '@atlasng/content-templates/parsers';
 import { DefinitionRegistry } from '@atlasng/content-templates/definitions';
 import { ContentDataSchema, ContentElementNode } from '@atlasng/content-templates/types';
 import { passthroughSchema } from '@atlasng/content-templates/utils';
-import { Subject } from 'rxjs';
+import { EMPTY, Subject, throwError } from 'rxjs';
 import { CONTENT_TEMPLATES_CONFIG } from '../config';
 import { buildRenderTree } from '../nodes/build-tree';
 import { RenderElementNode } from '../nodes/render-node';
@@ -82,6 +82,48 @@ describe('loadData', () => {
     await expect(loadData(node, { rows: passthroughSchema() }, setup(), () => undefined)).rejects.toThrow(
       'Expected a string, an array, or a data source with a string `type`.',
     );
+  });
+
+  it('uses a non-function initial value for a missing key', async () => {
+    const data = await loadData(
+      element({}),
+      { rows: { schema: passthroughSchema(), initialValue: ['initial'] } },
+      setup(),
+      () => undefined,
+    );
+
+    expect(data['rows']?.()).toEqual(['initial']);
+  });
+
+  it('applies parsers given in object form', async () => {
+    const node = element({ rows: { type: 'inline', value: '[1, 2]', parser: { type: 'json' } } });
+    const data = await loadData(node, { rows: passthroughSchema() }, setup(), () => undefined);
+
+    expect(data['rows']?.()).toEqual([1, 2]);
+  });
+
+  it('validates undefined for a missing key without an initial value', async () => {
+    const schemas: ContentDataSchema = { rows: { schema: passthroughSchema() } };
+    const data = await loadData(element({}), schemas, setup(), () => undefined);
+
+    expect(data['rows']?.()).toBeUndefined();
+  });
+
+  it('rejects with the error of a loader that fails before its first value', async () => {
+    const node = element({ rows: { type: 'failing' } });
+    const context = setup({ failing: () => ({ load: () => throwError(() => new Error('Load failed.')) }) });
+
+    await expect(loadData(node, { rows: passthroughSchema() }, context, () => undefined)).rejects.toThrow(
+      'Load failed.',
+    );
+  });
+
+  it('rejects loaders that complete without a value', async () => {
+    const node = element({ rows: { type: 'empty' } });
+
+    await expect(
+      loadData(node, { rows: passthroughSchema() }, setup({ empty: () => ({ load: () => EMPTY }) }), () => undefined),
+    ).rejects.toThrow("Data 'rows' completed without a value.");
   });
 
   it('rejects unknown data parsers', async () => {
