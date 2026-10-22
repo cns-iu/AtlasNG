@@ -1,4 +1,4 @@
-import { isContentDataSource, isContentElementNode, isNamedContent, isPlainObject } from './guards';
+import { isContentDataSource, isContentElementNode, isNamedContentRecord, isPlainObject } from './guards';
 
 describe('guards', () => {
   it('recognizes plain objects', () => {
@@ -20,9 +20,9 @@ describe('guards', () => {
   });
 
   it('tells named content from nodes and node lists', () => {
-    expect(isNamedContent({ title: 'Sales' })).toBe(true);
-    expect(isNamedContent({ component: 'card' })).toBe(false);
-    expect(isNamedContent(['a'])).toBe(false);
-    expect(isNamedContent('a')).toBe(false);
+    expect(isNamedContentRecord({ title: 'Sales' })).toBe(true);
+    expect(isNamedContentRecord({ component: 'card' })).toBe(false);
+    expect(isNamedContentRecord(['a'])).toBe(false);
+    expect(isNamedContentRecord('a')).toBe(false);
   });
 });

@@ -37,7 +37,7 @@ export function isContentDataSource(value: unknown): value is ContentDataSource 
  * @param content Content of an element node.
  * @returns Whether the content maps content names to nodes.
  */
-export function isNamedContent(
+export function isNamedContentRecord(
   content: NonNullable<ContentElementNode['content']>,
 ): content is Record<string, Arrayable<ContentNode>> {
   return isPlainObject(content) && !isContentElementNode(content);
