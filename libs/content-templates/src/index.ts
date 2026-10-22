@@ -8,4 +8,3 @@ export {
   withDefinitions,
   type ContentTemplatesFeature,
 } from './lib/providers';
-export { ContentValidationError } from './lib/validation/errors';

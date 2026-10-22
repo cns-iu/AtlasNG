@@ -1,29 +1,5 @@
+import { ContentValidationError } from '@atlasng/content-templates/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
-import { formatIssues } from '../utils/standard-schema';
-
-/**
- * Thrown when a node does not match its definition.
- *
- * Issue paths are relative to the node and start with `config`, `data`, or `content`, e.g. `['data', 'rows', 0]`.
- */
-export class ContentValidationError extends Error {
-  /** Error name used in messages and stack traces. */
-  override readonly name = 'ContentValidationError';
-  /** Path of the invalid node in the document, e.g. `content.@default[2].content.title`. */
-  readonly path: string;
-  /** Standard Schema issues describing the failures. */
-  readonly issues: readonly StandardSchemaV1.Issue[];
-
-  /**
-   * @param path Path of the invalid node in the document.
-   * @param issues Standard Schema issues describing the failures.
-   */
-  constructor(path: string, issues: readonly StandardSchemaV1.Issue[]) {
-    super(formatIssues(path, issues));
-    this.path = path;
-    this.issues = issues;
-  }
-}
 
 /**
  * Reports issues that are recoverable, such as unknown keys: throws in dev mode, and warns in prod mode so the caller
@@ -36,12 +12,15 @@ export class ContentValidationError extends Error {
 export function reportRecoverableIssues(path: string, issues: readonly StandardSchemaV1.Issue[]): void {
   if (issues.length === 0) {
     return;
-  } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    throw new ContentValidationError(path, issues);
+  }
+
+  const error = new ContentValidationError(path, issues);
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    throw error;
   }
 
   // eslint-disable-next-line no-console
-  console.warn(formatIssues(path, issues));
+  console.warn(error.message);
 }
 
 /**

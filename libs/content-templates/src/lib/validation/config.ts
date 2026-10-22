@@ -1,9 +1,10 @@
 import { ContentConfigSchema, ContentDefinition, ContentElementNode } from '@atlasng/content-templates/types';
+import { ContentValidationError } from '@atlasng/content-templates/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { JsonValue } from 'type-fest';
 import { RenderElementNode } from '../nodes/render-node';
 import { isStandardSchema, prefixIssues } from '../utils/standard-schema';
-import { checkUnknownKeys, ContentValidationError } from './errors';
+import { checkUnknownKeys } from './errors';
 
 /**
  * Finds config keys the definition declares no schema for. A single schema for the whole config object decides which

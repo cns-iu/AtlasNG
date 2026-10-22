@@ -4,9 +4,8 @@ import {
   ContentNode,
   DEFAULT_CONTENT,
 } from '@atlasng/content-templates/types';
+import { ContentValidationError, isContentElementNode, isNamedContent } from '@atlasng/content-templates/utils';
 import { Arrayable } from 'type-fest';
-import { isContentElementNode, isNamedContent } from '../utils/guards';
-import { ContentValidationError } from '../validation/errors';
 import { RenderElementNode, RenderNode, RenderNodeKey, RenderNodeLocation, RenderTextNode } from './render-node';
 
 /**
