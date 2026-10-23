@@ -33,6 +33,17 @@ export interface ConfigurationToken<TConfig extends object, TDefaults extends Pa
 }
 
 /**
+ * Resolves the configuration type a {@link ConfigurationToken} injects, i.e. its configuration with the defaulted
+ * properties required.
+ *
+ * @example
+ * ```ts
+ * const config: ConfigurationOf<typeof MY_CONFIG> = MY_CONFIG.inject();
+ * ```
+ */
+export type ConfigurationOf<TToken extends ConfigurationToken<object, object>> = ReturnType<TToken['inject']>;
+
+/**
  * Produces a type witness for APIs that need a generic type inferred from a value.
  *
  * The returned value is only intended for type inference and must not be read at runtime.
