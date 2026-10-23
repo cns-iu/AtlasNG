@@ -11,6 +11,13 @@
     },
     "build-compodoc": {},
     "compodoc": {},
+    "build-storybook": {},
+    "serve-static-storybook": {},
+    "storybook": {
+      "options": {
+        "port": 4403
+      }
+    },
     "test": {
       "options": {
         "setupFiles": ["{projectRoot}/src/test-setup.ts"]

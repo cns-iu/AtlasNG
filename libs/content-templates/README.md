@@ -45,3 +45,12 @@ for invalid nodes. Data values are signals: later emissions of a loader re-rende
 declares a `placeholderComponent` show it until their content is ready; failures show the definition's
 `errorComponent`, or the configured one, and are reported to Angular's `ErrorHandler`. See [PLAN.md](PLAN.md) for the
 full design.
+
+## Development
+
+| Task      | Command                              |
+| --------- | ------------------------------------ |
+| Build     | `npx nx build content-templates`     |
+| Test      | `npx nx test content-templates`      |
+| Lint      | `npx nx lint content-templates`      |
+| Storybook | `npx nx storybook content-templates` |
