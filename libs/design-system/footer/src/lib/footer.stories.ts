@@ -36,16 +36,21 @@ const meta: Meta = {
     socials: SOCIALS,
     logoImage: 'assets/logo-placeholder.svg',
     organization: 'Cyberinfrastructure for Network Science Center',
-    organizationLink: 'https://www.example.com',
   },
 };
 
 export default meta;
 type Story = StoryObj;
 
-export const Default: Story = {};
+export const Basic: Story = {};
 
-export const CustomLogo: Story = {
+export const BasicWithoutSocials: Story = {
+  args: {
+    socials: [],
+  },
+};
+
+export const BasicWithCustomLogo: Story = {
   render: (args) => ({
     props: args,
     template: `
@@ -58,7 +63,14 @@ export const CustomLogo: Story = {
   }),
 };
 
-export const CustomActions: Story = {
+export const BasicWithCustomActions: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Layout for custom actions has not been designed yet and may change.',
+      },
+    },
+  },
   render: (args) => ({
     props: args,
     template: `

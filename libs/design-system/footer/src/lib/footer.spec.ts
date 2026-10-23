@@ -67,18 +67,44 @@ describe('Footer', () => {
   it('renders the logo image with the configured source', async () => {
     await setup();
 
-    const logo = screen.getByRole('img', { name: 'Visit Whole Person Physiome' });
+    const logo = screen.getByRole('img', { name: 'Logo' });
     expect(logo).toHaveAttribute('src', '/assets/wpp.svg');
     expect(logo).toHaveClass('ang-footer--logo-image');
   });
 
-  it('uses a generic logo label when no organization is set', async () => {
+  it('links the logo to the organization link', async () => {
+    await setup();
+
+    expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAttribute(
+      'href',
+      'https://www.cns.edu/',
+    );
+  });
+
+  it('links the logo to the homepage when no organization link is set', async () => {
     await render(Footer, {
-      inputs: { logoImage: '/assets/wpp.svg' },
+      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome' },
       providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
     });
 
-    expect(screen.getByRole('img', { name: 'Logo' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAttribute('href', '/');
+  });
+
+  it('describes the logo link with a homepage tooltip', async () => {
+    await setup();
+
+    expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAccessibleDescription('Homepage');
+  });
+
+  it('describes the logo link with a custom tooltip', async () => {
+    await render(Footer, {
+      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome', logoTooltip: 'CNS website' },
+      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    });
+
+    expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAccessibleDescription(
+      'CNS website',
+    );
   });
 
   it('renders social media buttons from the socials input', async () => {
@@ -89,11 +115,35 @@ describe('Footer', () => {
     expect(screen.getByRole('link', { name: 'Instagram' })).toBeInTheDocument();
   });
 
+  it('exposes the social icon count to the styles', async () => {
+    await setup();
+
+    expect(screen.getByRole('group', { name: 'Social media' })).toHaveStyle({ '--ang-footer--social-icon-count': '3' });
+  });
+
+  it.each([undefined, []])('omits the social media group when socials is %j', async (socials) => {
+    await render(Footer, {
+      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome', socials },
+      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    });
+
+    expect(screen.queryByRole('group', { name: 'Social media' })).not.toBeInTheDocument();
+  });
+
   it('renders the privacy action buttons', async () => {
     await setup();
 
     expect(screen.getByRole('button', { name: 'Privacy Policy' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Privacy Preferences' })).toBeInTheDocument();
+  });
+
+  it('lists privacy preferences before the privacy policy', async () => {
+    await setup();
+
+    expect(screen.getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+      'Privacy Preferences',
+      'Privacy Policy',
+    ]);
   });
 
   it('emits privacy action events when the buttons are clicked', async () => {
@@ -107,14 +157,11 @@ describe('Footer', () => {
     expect(fixture.componentInstance.openPrivacyPreferences).toHaveBeenCalledOnce();
   });
 
-  it('renders copyright text with current year and organization link', async () => {
+  it('renders copyright text with the current year and organization', async () => {
     await setup();
 
-    const orgLink = screen.getByRole('link', { name: 'Visit Whole Person Physiome' });
-    expect(orgLink).toHaveAttribute('href', 'https://www.cns.edu/');
-
     const year = new Date().getFullYear();
-    expect(screen.getAllByText(new RegExp(`© ${year}`))).toHaveLength(2);
+    expect(screen.getByText(`© ${year} Copyright Whole Person Physiome. All rights reserved.`)).toBeVisible();
   });
 
   it('renders projected logo and action content when provided', async () => {
