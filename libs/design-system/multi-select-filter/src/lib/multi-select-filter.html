@@ -1,55 +1,75 @@
-<div class="ang-filter-form--row">
-  <div class="ang-filter-form--button-group">
-    @if (info()) {
-      <button
-        class="ang-filter-form--info"
-        matIconButton
-        angTrackClick
-        aria-label="Filter info"
-        [matTooltip]="info()"
-        [angRichTooltipTriggerFor]="tooltip"
-      >
-        <mat-icon fontIcon="info" />
-      </button>
-
-      <ang-rich-tooltip #tooltip>
-        <ang-rich-tooltip-tagline>
-          <ng-content select="[angInfoButtonTagline]">
-            <span>{{ category() }}</span>
-          </ng-content>
-        </ang-rich-tooltip-tagline>
-        <ang-rich-tooltip-content>
-          <ng-content />
-        </ang-rich-tooltip-content>
-        <ang-rich-tooltip-action>
-          <ng-content select="[angInfoButtonActions]" />
-        </ang-rich-tooltip-action>
-      </ang-rich-tooltip>
-    }
-
-    <button class="ang-filter-form--category" matButton angTrackClick (click)="actionClick.emit()">
-      {{ category() }}
+<div class="ang-multi-select-filter--header">
+  @let tooltip = infoTooltip();
+  @if (tooltip) {
+    <button
+      class="ang-multi-select-filter--info"
+      matIconButton
+      angTrackClick
+      [attr.aria-label]="resolvedInfoLabel()"
+      [matTooltip]="infoTooltipText()"
+      [matTooltipDisabled]="infoTrigger.isOpen()"
+      [angRichTooltipTriggerFor]="tooltip"
+      #infoTrigger="angRichTooltipTrigger"
+    >
+      <mat-icon fontIcon="info" />
     </button>
-
-    <span class="ang-filter-form--counter" matTooltip="Number of unique items per filter category">
-      {{ uniqueItemCount() | number }}
-    </span>
-  </div>
-
-  @if (hasChips()) {
-    <mat-chip-set class="ang-filter-form--chips" aria-label="Active filters">
-      @for (chip of chips(); track chip) {
-        <mat-chip disableRipple (removed)="removeChip(chip)">
-          {{ chip.label }}
-          <button matChipRemove [aria-label]="`Remove ${chip.label}`">
-            <mat-icon fontIcon="cancel" />
-          </button>
-        </mat-chip>
-      }
-    </mat-chip-set>
   }
+
+  <button
+    class="ang-multi-select-filter--label"
+    matButton
+    angTrackClick
+    cdkOverlayOrigin
+    aria-haspopup="dialog"
+    [attr.aria-expanded]="expanded()"
+    [attr.aria-controls]="expanded() ? panelId : null"
+    (click)="toggle()"
+    #panelOrigin="cdkOverlayOrigin"
+  >
+    {{ label() }}
+  </button>
+
+  <span class="ang-multi-select-filter--counter" tabindex="0" [matTooltip]="countTooltipText()">
+    {{ displayedCount() | number }}
+  </span>
 </div>
 
-@if (showDivider()) {
-  <mat-divider class="ang-filter-form--divider" />
+@if (selected().length > 0) {
+  <mat-chip-set class="ang-multi-select-filter--chips" role="list" [attr.aria-label]="selectedLabel()">
+    @for (option of selected(); track option) {
+      <mat-chip role="listitem" disableRipple (removed)="removeFilter(option)">
+        {{ option.label }}
+        <button matChipRemove [attr.aria-label]="`${removeLabel()} ${option.label}`">
+          <mat-icon fontIcon="cancel" />
+        </button>
+      </mat-chip>
+    }
+  </mat-chip-set>
 }
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="panelOrigin"
+  [cdkConnectedOverlayOpen]="expanded()"
+  [cdkConnectedOverlayPositions]="panelPositions"
+  (overlayOutsideClick)="close()"
+  (overlayKeydown)="handlePanelKeydown($event)"
+  (detach)="close()"
+>
+  <div
+    class="ang-multi-select-filter--panel"
+    role="dialog"
+    cdkTrapFocus
+    cdkTrapFocusAutoCapture
+    [id]="panelId"
+    [attr.aria-label]="label()"
+  >
+    <ang-search-list
+      class="ang-multi-select-filter--search-list"
+      [options]="options()"
+      [searchDisabled]="searchDisabled()"
+      [(selected)]="selected"
+      [(search)]="search"
+    />
+  </div>
+</ng-template>

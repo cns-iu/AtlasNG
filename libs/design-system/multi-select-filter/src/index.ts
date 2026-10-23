@@ -1,1 +1,1 @@
-export { FilterForm, type FilterChip } from './lib/filter-form';
+export { MultiSelectFilter } from './lib/multi-select-filter';

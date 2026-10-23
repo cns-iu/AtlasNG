@@ -18,7 +18,6 @@
 @forward './tokens/content-section' as content-section-* show content-section-overrides;
 @forward './tokens/cookie-banner' as cookie-banner-* show cookie-banner-overrides;
 @forward './tokens/error-page' as error-page-* show error-page-overrides;
-@forward './tokens/filter-form' as filter-form-* show filter-form-overrides;
 @forward './tokens/footer' as footer-* show footer-overrides;
 @forward './tokens/end-of-results-indicator' as end-of-results-indicator-* show end-of-results-indicator-overrides;
 @forward './tokens/no-results-indicator' as no-results-indicator-* show no-results-indicator-overrides;
@@ -26,6 +25,7 @@
 @forward './tokens/results-indicator' as results-indicator-* show results-indicator-overrides;
 @forward './tokens/link-snippet' as link-snippet-* show link-snippet-overrides;
 @forward './tokens/text-link' as text-link-* show text-link-overrides;
+@forward './tokens/multi-select-filter' as multi-select-filter-* show multi-select-filter-overrides;
 @forward './tokens/rich-tooltip' as rich-tooltip-* show rich-tooltip-overrides;
 @forward './tokens/scroll-area' as scroll-area-* show scroll-area-overrides;
 @forward './tokens/search-list' as search-list-* show search-list-overrides;
