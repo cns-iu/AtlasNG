@@ -1,38 +1,43 @@
 <footer class="ang-footer--container">
   <div class="ang-footer--logo-container">
     <ng-content select="ang-footer-logo, [angFooterLogo]">
-      <a class="ang-footer--logo" target="_blank" [angAnyLink]="organizationLink()">
-        <img
-          class="ang-footer--logo-image"
-          fill
-          [ngSrc]="logoImage()"
-          [attr.alt]="organization() ? `Visit ${organization()}` : 'Logo'"
-        />
+      <a
+        class="ang-footer--logo"
+        [matTooltip]="logoTooltip()"
+        [angAnyLink]="organizationLink()"
+        [attr.aria-label]="`Visit ${organization()}`"
+      >
+        <img class="ang-footer--logo-image" fill alt="Logo" [ngSrc]="logoImage()" />
       </a>
     </ng-content>
-    <ng-container [ngTemplateOutlet]="copyrightTemplate" />
   </div>
 
-  <div class="ang-footer--socials">
-    @for (social of socials(); track $index) {
-      @if (typeof social === 'string') {
-        <ang-social-media-button class="ang-footer--social-icon" [id]="social" />
-      } @else {
-        <ang-social-media-button class="ang-footer--social-icon" [definition]="social" />
+  @let socials = this.socials() || [];
+  @if (socials.length) {
+    <div
+      class="ang-footer--social-icons"
+      role="group"
+      aria-label="Social media"
+      [style.--ang-footer--social-icon-count]="socials.length"
+    >
+      @for (social of socials; track $index) {
+        @if (typeof social === 'string') {
+          <ang-social-media-button class="ang-footer--social-icon" [id]="social" />
+        } @else {
+          <ang-social-media-button class="ang-footer--social-icon" [definition]="social" />
+        }
       }
-    }
-  </div>
+    </div>
+  }
 
   <div class="ang-footer--actions">
     <ng-content select="ang-footer-action, [angFooterAction]">
-      <button matButton class="ang-footer--action" (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
       <button matButton class="ang-footer--action" (click)="openPrivacyPreferences.emit()">Privacy Preferences</button>
+      <button matButton class="ang-footer--action" (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
     </ng-content>
   </div>
 
-  <ng-container [ngTemplateOutlet]="copyrightTemplate" />
+  <span class="ang-footer--copyright">
+    © {{ copyrightYear() }} Copyright {{ organization() }}. All rights reserved.
+  </span>
 </footer>
-
-<ng-template #copyrightTemplate>
-  <span class="ang-footer--copyright"> © {{ copyrightYear() }} {{ organization() }} </span>
-</ng-template>
