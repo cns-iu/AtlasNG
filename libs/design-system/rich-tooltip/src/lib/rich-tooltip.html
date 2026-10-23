@@ -1,0 +1,28 @@
+<ng-template>
+  <div
+    class="ang-rich-tooltip"
+    role="dialog"
+    [id]="id"
+    [attr.aria-labelledby]="customTagline() || tagline() ? taglineId : null"
+  >
+    @if (customTagline() || tagline()) {
+      <div class="ang-rich-tooltip--tagline-container" [id]="taglineId">
+        <ng-content select="ang-rich-tooltip-tagline, [angRichTooltipTagline]">{{ tagline() }}</ng-content>
+      </div>
+    }
+    @if (customContent() || description()) {
+      <div class="ang-rich-tooltip--content-container">
+        <ng-content select="ang-rich-tooltip-content, [angRichTooltipContent]">{{ description() }}</ng-content>
+      </div>
+    }
+    @if (customActions().length || actionText()) {
+      <div class="ang-rich-tooltip--actions">
+        <ng-content select="ang-rich-tooltip-action, [angRichTooltipAction]">
+          <button matButton type="button" class="ang-rich-tooltip--action" (click)="actionClick.emit()">
+            {{ actionText() }}
+          </button>
+        </ng-content>
+      </div>
+    }
+  </div>
+</ng-template>
