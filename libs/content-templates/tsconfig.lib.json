@@ -8,5 +8,5 @@
     "types": []
   },
   "include": ["**/*.ts"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+  "exclude": [".storybook/**/*", "**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "**/*.stories.js"]
 }
