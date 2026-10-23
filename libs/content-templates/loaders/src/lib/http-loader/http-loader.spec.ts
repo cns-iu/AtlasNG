@@ -4,7 +4,6 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable } from 'rxjs';
 import { DATA_LOADERS, DataLoaderRegistry, DataLoaderContext } from '../data-loader-registry';
-import { ContentValidationError } from '@atlasng/content-templates/utils';
 import { HttpDataLoader, HttpDataLoaderConfig } from './http-loader';
 
 const context: DataLoaderContext = {
@@ -30,10 +29,10 @@ async function setup(): Promise<{ loader: HttpDataLoader; controller: HttpTestin
 describe('HttpDataLoader', () => {
   afterEach(() => TestBed.inject(HttpTestingController).verify());
 
-  it('fetches json by default', async () => {
+  it('fetches with a GET request', async () => {
     const { loader, controller } = await setup();
 
-    const result = firstValueFrom(loader.load({ url: '/data.json' }, context));
+    const result = firstValueFrom(loader.load({ url: '/data.json', responseType: 'json' }, context));
     const request = controller.expectOne('/data.json');
     request.flush({ value: 1 });
 
@@ -58,21 +57,28 @@ describe('HttpDataLoader', () => {
     await expect(result).resolves.toEqual(body);
   });
 
-  it('rejects configs without a string url or with an unsupported responseType', async () => {
+  it('validates the config and defaults responseType to json', async () => {
     const { loader } = await setup();
-    const config = { url: 1, responseType: 'xml' } as unknown as HttpDataLoaderConfig;
+    const validate = loader.configSchema['~standard'].validate;
 
-    expect(() => loader.load(config, context)).toThrow(
-      "Invalid content at 'content': data.rows.url: Expected a string `url`.; data.rows.responseType: Expected " +
-        "`responseType` to be one of 'json', 'text', 'blob', 'arraybuffer'.",
-    );
-    expect(() => loader.load(config, context)).toThrow(ContentValidationError);
+    expect(await validate({ url: '/data.json' })).toEqual({ value: { url: '/data.json', responseType: 'json' } });
+    expect(await validate({ url: 1, responseType: 'xml' })).toEqual({
+      issues: [
+        { message: 'Expected a string `url`.', path: ['url'] },
+        {
+          message: "Expected `responseType` to be one of 'json', 'text', 'blob', 'arraybuffer'.",
+          path: ['responseType'],
+        },
+      ],
+    });
   });
 
   it('cancels the request on unsubscribe', async () => {
     const { loader, controller } = await setup();
 
-    const subscription = (loader.load({ url: '/slow' }, context) as Observable<unknown>).subscribe();
+    const subscription = (
+      loader.load({ url: '/slow', responseType: 'json' }, context) as Observable<unknown>
+    ).subscribe();
     const request = controller.expectOne('/slow');
     subscription.unsubscribe();
 

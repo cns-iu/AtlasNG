@@ -8,14 +8,14 @@ Render AtlasNG components dynamically from deserialized JSON content documents.
 
 ## Entry points
 
-| Entry point                              | Contents                                                                              |
-| ---------------------------------------- | ------------------------------------------------------------------------------------- |
-| `@atlasng/content-templates`             | `provideContentTemplates` and its features, `ContentOutlet`                           |
-| `@atlasng/content-templates/types`       | Shared document, definition, and data loader/parser types                             |
-| `@atlasng/content-templates/definitions` | Definition registry and `provideDefinitions`                                          |
-| `@atlasng/content-templates/loaders`     | Built-in data loaders and the data loader registry                                    |
-| `@atlasng/content-templates/parsers`     | Built-in data parsers and the data parser registry                                    |
-| `@atlasng/content-templates/utils`       | `ContentValidationError`, document guards, `passthroughSchema`, `LazyChainedRegistry` |
+| Entry point                              | Contents                                                                                              |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `@atlasng/content-templates`             | `provideContentTemplates` and its features, `ContentOutlet`                                           |
+| `@atlasng/content-templates/types`       | Shared document, definition, and data loader/parser types                                             |
+| `@atlasng/content-templates/definitions` | Definition registry and `provideDefinitions`                                                          |
+| `@atlasng/content-templates/loaders`     | Built-in data loaders and the data loader registry                                                    |
+| `@atlasng/content-templates/parsers`     | Built-in data parsers and the data parser registry                                                    |
+| `@atlasng/content-templates/utils`       | `ContentValidationError`, document guards, `createSchema`, `passthroughSchema`, `LazyChainedRegistry` |
 
 The primary entry point does not re-export the secondary entry points; import shared types from `/types` and built-in
 loaders and parsers from `/loaders` and `/parsers`.
@@ -107,25 +107,35 @@ A node's data values are loaded by data loaders and transformed by data parsers,
 Built-in loaders are `http` (`{ url, responseType? }`, through Angular's `HttpClient`, which requires
 `provideHttpClient()`) and `inline` (`{ value }`). Built-in parsers are `json` and `passthrough`.
 
-A loader receives the source without `parser`, and returns a value, a promise, or an observable. Every value an
-observable emits is parsed, validated, and bound, so loaders can stream updates. A parser receives the loader's value
-and its own config. Both receive a context with the node, its `path`, the data `key`, and an `AbortSignal` that aborts
-when the document changes or the outlet is destroyed. Report invalid config with a `ContentValidationError`:
+A loader receives the source without `type` and `parser`, and returns a value, a promise, or an observable. Every
+value an observable emits is parsed, validated, and bound, so loaders can stream updates. A parser receives the
+loader's value and its `parser` config without `type`. Both receive a context with the node, its `path`, the data
+`key`, and an `AbortSignal` that aborts when the document changes or the outlet is destroyed.
+
+Declare a `configSchema` to validate the config. It runs once, before the first `load` or `parse`, and its output is
+what `load` or `parse` receives, so it can apply defaults. Invalid config fails the node. Any Standard Schema works;
+`createSchema` builds one from a validate function:
 
 ```ts
 import { DataLoader, DataLoaderContext } from '@atlasng/content-templates/loaders';
-import { ContentValidationError } from '@atlasng/content-templates/utils';
+import { createSchema } from '@atlasng/content-templates/utils';
+
+interface CsvLoaderConfig {
+  url: string;
+}
 
 @Service()
-export class CsvLoader implements DataLoader<{ url: string }, string> {
+export class CsvLoader implements DataLoader<CsvLoaderConfig, string> {
+  readonly configSchema = createSchema<CsvLoaderConfig>((value) => {
+    const { url } = value as Partial<CsvLoaderConfig>;
+    return typeof url === 'string'
+      ? { value: { url } }
+      : { issues: [{ message: 'Expected a string.', path: ['url'] }] };
+  });
   readonly #http = inject(HttpClient);
 
-  load(config: { url: string }, { path, key }: DataLoaderContext): Observable<string> {
-    if (typeof config.url !== 'string') {
-      throw new ContentValidationError(path, [{ message: 'Expected a string `url`.', path: ['data', key, 'url'] }]);
-    }
-
-    return this.#http.get(config.url, { responseType: 'text' });
+  load({ url }: CsvLoaderConfig, _context: DataLoaderContext): Observable<string> {
+    return this.#http.get(url, { responseType: 'text' });
   }
 }
 ```

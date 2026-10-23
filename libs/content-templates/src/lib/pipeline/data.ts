@@ -18,12 +18,20 @@ import {
   takeUntil,
 } from 'rxjs';
 import { RenderElementNode } from '../nodes/render-node';
-import { isStandardSchema } from '../utils/standard-schema';
+import { isStandardSchema, prefixIssues } from '../utils/standard-schema';
 import { validateDataValue } from '../validation/data';
 import { PipelineContext } from './context';
 
 /** A parser reference in its object form. */
 type ParserConfig = Exclude<NonNullable<ContentDataSource['parser']>, string>;
+
+/** A loader or parser with its validated config. */
+interface Configured<T> {
+  /** The loader or parser. */
+  instance: T;
+  /** Its config, as output by its `configSchema` when it has one. */
+  config: unknown;
+}
 
 /** Context passed to both the loader and the parser of a data value. */
 type DataContext = DataLoaderContext & DataParserContext;
@@ -171,7 +179,8 @@ function normalizeParser(parser: string | ParserConfig | undefined, { config }: 
  * @param onError Called with an error after the first value was delivered.
  * @returns A signal holding the latest valid value, once the first value is valid. Rejects when the first value fails,
  *   when the loader completes without a value, or with the abort reason.
- * @throws {ContentValidationError} When the source's loader or parser is not registered.
+ * @throws {ContentValidationError} When the source's loader or parser is not registered. Invalid loader or parser
+ *   config, as checked by their `configSchema`, rejects instead.
  */
 function loadSource(
   node: RenderElementNode,
@@ -182,27 +191,32 @@ function loadSource(
   context: PipelineContext,
   onError: (error: unknown) => void,
 ): Promise<Signal<unknown>> {
-  const { parser: parserSource, ...loaderConfig } = source;
-  const loaderPromise = context.loaders.get(source.type);
+  const { type: loaderType, parser: parserSource, ...loaderConfig } = source;
+  const loaderPromise = context.loaders.get(loaderType);
   if (!loaderPromise) {
     throw new ContentValidationError(node.path, [
-      { message: `Unknown data loader '${source.type}'.`, path: ['data', key, 'type'] },
+      { message: `Unknown data loader '${loaderType}'.`, path: ['data', key, 'type'] },
     ]);
   }
 
-  const parserConfig = normalizeParser(parserSource, context);
-  const parserPromise = context.parsers.get(parserConfig.type);
+  const { type: parserType, ...parserConfig } = normalizeParser(parserSource, context);
+  const parserPromise = context.parsers.get(parserType);
   if (!parserPromise) {
     throw new ContentValidationError(node.path, [
-      { message: `Unknown data parser '${parserConfig.type}'.`, path: ['data', key, 'parser'] },
+      { message: `Unknown data parser '${parserType}'.`, path: ['data', key, 'parser'] },
     ]);
   }
+
+  const loader = configure(loaderPromise, loaderConfig, node.path, ['data', key]);
+  const parser = configure(parserPromise, parserConfig, node.path, ['data', key, 'parser']);
+  // The parser is only awaited once the loader emits, so a failure must not surface as an unhandled rejection.
+  parser.catch(() => undefined);
 
   const { abortSignal } = node;
   const dataContext: DataContext = { node: node.source, path: node.path, key, signal: abortSignal };
   const values$ = of(null).pipe(
-    withLoader(loaderPromise, loaderConfig, dataContext),
-    withParser(parserPromise, parserConfig, dataContext),
+    withLoader(loader, dataContext),
+    withParser(parser, dataContext),
     withValidation(schema, key, node.path),
     withInitialValue(initialValue),
     withAbortSignal(abortSignal),
@@ -255,22 +269,47 @@ function toDataSignal(
 }
 
 /**
+ * Awaits a registered loader or parser and validates its config with its `configSchema`, if it has one.
+ *
+ * @param entry The registered loader or parser.
+ * @param config Its config: the source without `type` and `parser`, or the parser config without `type`.
+ * @param path Path of the node, used in errors.
+ * @param prefix Issue path prefix, e.g. `['data', 'rows']` or `['data', 'rows', 'parser']`.
+ * @returns The loader or parser and its validated config. Rejects with a {@link ContentValidationError} when the config
+ *   is invalid.
+ */
+async function configure<T extends DataLoader | DataParser>(
+  entry: Promise<T>,
+  config: object,
+  path: string,
+  prefix: PropertyKey[],
+): Promise<Configured<T>> {
+  const instance = await entry;
+  const schema = instance.configSchema;
+  if (!schema) {
+    return { instance, config };
+  }
+
+  const result = await schema['~standard'].validate(config);
+  if (result.issues) {
+    throw new ContentValidationError(path, prefixIssues(result.issues, prefix));
+  }
+
+  return { instance, config: result.value };
+}
+
+/**
  * Replaces each value with the values of the loader. A loader returning a plain value or a promise emits once.
  *
- * @param loaderPromise The registered loader.
- * @param loaderConfig The source without its `parser`.
+ * @param loader The loader and its validated config.
  * @param context Context passed to the loader.
  * @returns The operator.
  */
-function withLoader(
-  loaderPromise: Promise<DataLoader>,
-  loaderConfig: ContentDataSource,
-  context: DataContext,
-): OperatorFunction<unknown, unknown> {
+function withLoader(loader: Promise<Configured<DataLoader>>, context: DataContext): OperatorFunction<unknown, unknown> {
   return pipe(
-    switchMap(() => loaderPromise),
-    switchMap((loader) => {
-      const result = loader.load(loaderConfig, context);
+    switchMap(() => loader),
+    switchMap(({ instance, config }) => {
+      const result = instance.load(config, context);
       return isObservable(result) ? result : Promise.resolve(result);
     }),
   );
@@ -279,21 +318,15 @@ function withLoader(
 /**
  * Parses each value with the parser. A newer value supersedes one still being parsed.
  *
- * @param parserPromise The registered parser.
- * @param parserConfig The parser config.
+ * @param parser The parser and its validated config.
  * @param context Context passed to the parser.
  * @returns The operator.
  */
-function withParser(
-  parserPromise: Promise<DataParser>,
-  parserConfig: ParserConfig,
-  context: DataContext,
-): OperatorFunction<unknown, unknown> {
+function withParser(parser: Promise<Configured<DataParser>>, context: DataContext): OperatorFunction<unknown, unknown> {
   return pipe(
     switchMap(async (value) => {
-      const parser = await parserPromise;
-      const result = await parser.parse(value, parserConfig, context);
-      return result;
+      const { instance, config } = await parser;
+      return instance.parse(value, config, context);
     }),
   );
 }

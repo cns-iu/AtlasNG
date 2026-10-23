@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { DATA_LOADERS, DataLoaderRegistry, DataLoaderContext } from '../data-loader-registry';
-import { InlineDataLoader, InlineDataLoaderConfig } from './inline-loader';
+import { InlineDataLoader } from './inline-loader';
 
 const context: DataLoaderContext = {
   node: { component: 'test' },
@@ -32,9 +32,10 @@ describe('InlineDataLoader', () => {
     expect(new InlineDataLoader().load({ value: null }, context)).toBeNull();
   });
 
-  it('rejects sources without a value', () => {
-    expect(() => new InlineDataLoader().load({} as InlineDataLoaderConfig, context)).toThrow(
-      "Invalid content at 'content': data.rows.value: Expected a `value`.",
-    );
+  it('requires a value, which may be null', async () => {
+    const { validate } = new InlineDataLoader().configSchema['~standard'];
+
+    expect(await validate({ value: null })).toEqual({ value: { value: null } });
+    expect(await validate({})).toEqual({ issues: [{ message: 'Expected a `value`.', path: ['value'] }] });
   });
 });

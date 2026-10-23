@@ -192,12 +192,8 @@ describe('startPipeline', () => {
       );
 
       const resolved = await root.resolved;
-      expect(load).toHaveBeenCalledWith({ type: 'http', url: '/title.json' }, expect.anything());
-      expect(parse).toHaveBeenCalledWith(
-        { type: 'http', url: '/title.json' },
-        { type: 'passthrough' },
-        expect.anything(),
-      );
+      expect(load).toHaveBeenCalledWith({ url: '/title.json' }, expect.anything());
+      expect(parse).toHaveBeenCalledWith({ url: '/title.json' }, {}, expect.anything());
       expect(resolved?.data['rows']?.()).toEqual(['fallback']);
     });
 
