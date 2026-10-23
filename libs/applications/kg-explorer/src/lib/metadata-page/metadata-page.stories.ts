@@ -91,7 +91,6 @@ const meta: Meta<MetadataPage> = {
     },
     layout: 'fullscreen',
   },
-  globals: { theme: 'WPP Light' },
   argTypes: {
     download: { table: { disable: true } },
   },

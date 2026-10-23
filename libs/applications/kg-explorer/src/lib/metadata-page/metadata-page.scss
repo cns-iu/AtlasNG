@@ -3,6 +3,8 @@
 
 :host {
   --ang-metadata-page--gap: 2.5rem;
+  --ang-metadata-page--padding: 2.5rem;
+  --ang-metadata-page--offset: 0rem;
 
   display: block;
   background: var(--mat-sys-background);
@@ -35,7 +37,7 @@
       'first version'
       'rest version';
     column-gap: 2.5rem;
-    padding: 2.5rem;
+    padding: var(--ang-metadata-page--padding);
   }
 }
 
@@ -48,6 +50,7 @@
 }
 
 .ang-metadata-page--breadcrumbs {
+  --ang-text-link-color: var(--mat-sys-primary);
   margin-bottom: 2rem;
 }
 
@@ -84,6 +87,12 @@
 .ang-metadata-page--version-control {
   grid-area: version;
   align-self: start;
+
+  @include breakpoints.breakpoint(medium) {
+    max-height: calc(100vh - var(--ang-metadata-page--padding) * 2 - var(--ang-metadata-page--offset));
+    position: sticky;
+    top: calc(var(--ang-metadata-page--padding) + var(--ang-metadata-page--offset));
+  }
 }
 
 .ang-metadata-page--sections {
