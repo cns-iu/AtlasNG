@@ -1,0 +1,16 @@
+:host {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 1.25rem;
+  border: 1px dashed var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.ang-kg-explorer-filter-menu-placeholder--label {
+  margin: 0;
+  padding: 2rem 1rem;
+  font: var(--mat-sys-body-medium);
+}

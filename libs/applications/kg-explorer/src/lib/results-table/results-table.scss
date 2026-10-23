@@ -1,0 +1,114 @@
+/// Padding around the search bar area and the table, following the Angular
+/// Material breakpoints.
+///
+/// @param {Boolean} $bottom Whether to pad the bottom edge.
+@mixin breakpoint-padding($bottom: true) {
+  padding: 1rem;
+
+  @media (min-width: 600px) {
+    padding: 1.5rem;
+  }
+
+  @media (min-width: 960px) {
+    padding: 2rem;
+  }
+
+  // Emitted after the media queries so it overrides their bottom padding.
+  @if not $bottom {
+    & {
+      padding-bottom: 0;
+    }
+  }
+}
+
+.ang-kg-explorer-results-table {
+  // Fills its container's height. The search bar stays put while the scroll
+  // area below it scrolls the table, which grows to fit its rows.
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+
+  .ang-kg-explorer-results-table--navigation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    background-color: var(--mat-sys-surface);
+    // The table's top padding separates it from the search bar.
+    @include breakpoint-padding($bottom: false);
+  }
+
+  .ang-kg-explorer-results-table--scroll-area {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .ang-kg-explorer-results-table--search {
+    flex: 1 1 18rem;
+    max-width: 36.25rem;
+  }
+
+  .ang-kg-explorer-results-table--table {
+    // Let the table scroll horizontally instead of widening the page.
+    min-width: 0;
+    @include breakpoint-padding;
+
+    // Span every grid column like ngx-datatable's default empty row.
+    .ang-kg-explorer-results-table--empty {
+      grid-column: 1 / -1;
+      padding-block: 2.5rem;
+    }
+
+    .datatable-header {
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+      background-color: var(--mat-sys-surface);
+    }
+
+    // Keep the divider inside the row height so the virtualized scroller's
+    // computed height matches the rendered rows.
+    .datatable-body-row {
+      box-sizing: border-box;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+      color: var(--mat-sys-on-surface-variant);
+
+      .datatable-body-cell {
+        align-items: flex-start;
+        padding: 0.5rem 1rem;
+        overflow: hidden;
+        white-space: normal;
+
+        .datatable-body-cell-label {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+          overflow: hidden;
+          overflow-wrap: anywhere;
+          text-overflow: clip;
+          white-space: normal;
+        }
+
+        // Inline links let the clamp above truncate long titles.
+        .ang-table--link-cell {
+          display: inline;
+        }
+      }
+
+      // The download icon button sits flush with the row like in the design.
+      .datatable-body-cell:has(.ang-kg-explorer--download-cell) {
+        padding: 0;
+      }
+    }
+  }
+
+  .ang-kg-explorer-results-table--end {
+    padding-bottom: 1.5rem;
+
+    // The last row's border already separates the rows from the indicator.
+    .mat-divider {
+      display: none;
+    }
+  }
+}

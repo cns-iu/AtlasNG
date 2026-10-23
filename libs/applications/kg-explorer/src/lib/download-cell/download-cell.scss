@@ -1,0 +1,28 @@
+.ang-kg-explorer--download-menu {
+  max-width: 20rem;
+
+  .mat-mdc-menu-item {
+    align-items: flex-start;
+    padding-block: 0.75rem;
+
+    .mat-icon {
+      margin-top: 0.125rem;
+    }
+  }
+
+  .ang-kg-explorer--download-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .ang-kg-explorer--download-option-label {
+    font: var(--mat-sys-label-large);
+    color: var(--mat-sys-on-surface);
+  }
+
+  .ang-kg-explorer--download-option-description {
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

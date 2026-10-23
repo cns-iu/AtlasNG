@@ -1,3 +1,26 @@
 :host {
   display: block;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+.ang-kg-explorer--container {
+  // A definite height lets the content, and the results table inside it, fill
+  // the viewport; the table scrolls internally.
+  height: 100dvh;
+  background-color: inherit;
+}
+
+.ang-kg-explorer--sidenav {
+  width: 20rem;
+  max-width: 100%;
+  border-radius: 0;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
+}
+
+// The results table fills the content height and scrolls its own content.
+.ang-kg-explorer--content {
+  min-width: 0;
+  overflow: hidden;
 }
