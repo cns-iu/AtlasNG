@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
+import { booleanAttribute, Component, computed, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -27,7 +27,6 @@ export interface SearchListOption {
   imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ang-search-list',
   },
