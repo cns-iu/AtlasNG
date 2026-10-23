@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { DataLoaderRegistry, provideDataLoaders } from '@atlasng/content-templates/loaders';
-import { DataParserRegistry } from '@atlasng/content-templates/parsers';
+import { DataParserRegistry, provideDataParsers } from '@atlasng/content-templates/parsers';
 import { DefinitionRegistry } from '@atlasng/content-templates/definitions';
 import { ContentDataSchema, ContentElementNode } from '@atlasng/content-templates/types';
-import { passthroughSchema } from '@atlasng/content-templates/utils';
+import { createSchema, passthroughSchema } from '@atlasng/content-templates/utils';
 import { EMPTY, Subject, throwError } from 'rxjs';
 import { CONTENT_TEMPLATES_CONFIG } from '../config';
 import { buildRenderTree } from '../nodes/build-tree';
@@ -13,6 +13,10 @@ import { loadData } from './data';
 
 function setup(loaders: Parameters<typeof provideDataLoaders>[0] = {}): PipelineContext {
   TestBed.configureTestingModule({ providers: [provideDataLoaders(loaders)] });
+  return createContext();
+}
+
+function createContext(): PipelineContext {
   return TestBed.runInInjectionContext(() => ({
     definitions: TestBed.inject(DefinitionRegistry),
     loaders: TestBed.inject(DataLoaderRegistry),
@@ -124,6 +128,57 @@ describe('loadData', () => {
     await expect(
       loadData(node, { rows: passthroughSchema() }, setup({ empty: () => ({ load: () => EMPTY }) }), () => undefined),
     ).rejects.toThrow("Data 'rows' completed without a value.");
+  });
+
+  it('validates loader and parser config with their schemas and passes the output on', async () => {
+    const load = vi.fn((config: { url: string; retries: number }) => config.url);
+    const parse = vi.fn((input: unknown, config: { upper: boolean }) =>
+      config.upper ? String(input).toUpperCase() : input,
+    );
+    const loaderSchema = createSchema<{ url: string; retries: number }>((value) => ({
+      value: { ...(value as { url: string }), retries: 3 },
+    }));
+    const parserSchema = createSchema<{ upper: boolean }>(() => ({ value: { upper: true } }));
+    TestBed.configureTestingModule({
+      providers: [
+        provideDataLoaders({ custom: () => ({ configSchema: loaderSchema, load }) }),
+        provideDataParsers({ custom: () => ({ configSchema: parserSchema, parse }) }),
+      ],
+    });
+    const node = element({ rows: { type: 'custom', url: '/rows', parser: { type: 'custom' } } });
+
+    const data = await loadData(node, { rows: passthroughSchema() }, createContext(), () => undefined);
+
+    expect(data['rows']?.()).toBe('/ROWS');
+    expect(load).toHaveBeenCalledWith({ url: '/rows', retries: 3 }, expect.anything());
+    expect(parse).toHaveBeenCalledWith('/rows', { upper: true }, expect.anything());
+  });
+
+  it('rejects invalid loader and parser config with issues under the data key', async () => {
+    const invalid = createSchema(() => ({ issues: [{ message: 'Bad.', path: ['url'] }] }));
+    TestBed.configureTestingModule({
+      providers: [
+        provideDataLoaders({ strict: () => ({ configSchema: invalid, load: () => 'loaded' }) }),
+        provideDataParsers({ strict: () => ({ configSchema: invalid, parse: (input: unknown) => input }) }),
+      ],
+    });
+
+    await expect(
+      loadData(
+        element({ rows: { type: 'strict', url: 1 } }),
+        { rows: passthroughSchema() },
+        createContext(),
+        () => undefined,
+      ),
+    ).rejects.toThrow("Invalid content at 'content.@default': data.rows.url: Bad.");
+    await expect(
+      loadData(
+        element({ rows: { type: 'inline', value: 1, parser: 'strict' } }),
+        { rows: passthroughSchema() },
+        createContext(),
+        () => undefined,
+      ),
+    ).rejects.toThrow("Invalid content at 'content.@default': data.rows.parser.url: Bad.");
   });
 
   it('rejects unknown data parsers', async () => {

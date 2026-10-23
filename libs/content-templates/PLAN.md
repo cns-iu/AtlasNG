@@ -207,10 +207,12 @@ interface DataParserContext {
 ```
 
 - Loaders and parsers carry no name; they are named at registration.
-- A loader's `config` is the source without `parser`, `type` included. A parser's `config` is the source's `parser`
-  object as is; the string form is passed as `{ type: <name> }`. Neither type requires `type`, so loaders and parsers
-  declare only the keys they use. Loaders and parsers validate their own config and throw a `ContentValidationError`
-  (from `/utils`) with `context.path` and issues at `['data', context.key, ...]`, which fails the node.
+- A loader's `config` is the source without `type` and `parser`. A parser's `config` is the source's `parser` object
+  without `type`; the string form is passed as `{}`.
+- Loaders and parsers may declare a `configSchema` (Standard Schema). The pipeline validates the config with it once,
+  before the first `load` or `parse`, and passes the schema's output on, so schemas can apply defaults. Issues fail the
+  node, at `['data', <key>, ...]` for loaders and `['data', <key>, 'parser', ...]` for parsers. `createSchema` from
+  `/utils` builds a schema from a validate function, so no schema library is needed.
 - `load` and `parse` do not run in an injection context; dependencies are injected when the instance is created (see
   [Registration](#4-registration-phase-2)). Observables may emit many times; each value is parsed and validated, and a
   newer value supersedes one still in progress. A stream error after the first value fails the node.
@@ -220,9 +222,9 @@ registries), registered like any other loader or parser. Each is a `@Service()` 
 factory injects it, e.g. `() => inject(HttpDataLoader)`:
 
 - `HttpDataLoader`: GET through the root `HttpClient`. Config
-  `{ url, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`. Rejects a non-string `url` and
-  unsupported response types.
-- `InlineDataLoader`: config `{ value }`, returns `value`. Rejects a source without `value`.
+  `{ url, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`. Its `configSchema` rejects a non-string `url`
+  and unsupported response types, and applies the default.
+- `InlineDataLoader`: config `{ value }`, returns `value`. Its `configSchema` rejects a source without `value`.
 - `JsonDataParser`: `JSON.parse` for strings; other input is returned unchanged.
 - `PassthroughDataParser`: returns its input unchanged.
 
@@ -302,11 +304,9 @@ rendering and hydration are not supported.
 - Generics on definitions, loaders, and parsers inferred from their schemas, with a `defineContentComponent` helper
   that rejects, at compile time, an `initialValue` not matching its schema output.
 - Helper types such as `InferContentConfig<TDefinition>` and `InferContentData<TData>`.
-- Standard Schema validation of loader and parser config.
 
 ## Open questions
 
 - Compile-time checking of config/data keys against component inputs (input aliases make this unreliable).
 - Re-rendering and diffing when the document changes (nodes currently have no `key`).
-- Whether loaders' `load` should also accept Angular `Resource` or `Signal`.
 - Final library name.

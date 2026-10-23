@@ -1,6 +1,7 @@
 import { inject, InjectionToken, Injector, Service } from '@angular/core';
 import { ContentElementNode } from '@atlasng/content-templates/types';
 import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
+import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Observable } from 'rxjs';
 import { Promisable } from 'type-fest';
 import { HttpDataLoader } from './http-loader/http-loader';
@@ -24,9 +25,15 @@ export interface DataLoaderContext {
  */
 export interface DataLoader<TConfig = unknown, TResult = unknown> {
   /**
+   * Validates the loader's config, i.e. the source without `type` and `parser`, before {@link load} is called. Its
+   * output is what `load` receives, so it can apply defaults. Issues fail the node, with paths under
+   * `['data', <key>]`. Without a schema, the config is passed as is.
+   */
+  readonly configSchema?: StandardSchemaV1<unknown, TConfig>;
+
+  /**
    * Loads the data.
-   * @param config The source without its `parser` key. It still includes `type`, but loaders only need to declare the
-   *   keys they use.
+   * @param config The source without `type` and `parser`, as validated by {@link configSchema} when there is one.
    * @param context Node being resolved and abort signal.
    * @returns The loaded value.
    */

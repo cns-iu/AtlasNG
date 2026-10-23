@@ -1,6 +1,7 @@
 import { inject, InjectionToken, Injector, Service } from '@angular/core';
 import { ContentElementNode } from '@atlasng/content-templates/types';
 import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
+import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Promisable } from 'type-fest';
 import { JsonDataParser } from './json-parser/json-parser';
 import { PassthroughDataParser } from './passthrough-parser/passthrough-parser';
@@ -23,10 +24,17 @@ export interface DataParserContext {
  */
 export interface DataParser<TConfig = unknown, TInput = unknown, TOutput = unknown> {
   /**
+   * Validates the parser's config, i.e. the source's `parser` object without `type` (`{}` for the string form), once
+   * before the first {@link parse}. Its output is what `parse` receives. Issues fail the node, with paths under
+   * `['data', <key>, 'parser']`. Without a schema, the config is passed as is.
+   */
+  readonly configSchema?: StandardSchemaV1<unknown, TConfig>;
+
+  /**
    * Parses the loader's result.
    * @param input Value produced by the loader.
-   * @param config The source's `parser` object as is; `{ type }` for the string form. It still includes `type`, but
-   *   parsers only need to declare the keys they use.
+   * @param config The source's `parser` object without `type`, as validated by {@link configSchema} when there is
+   *   one.
    * @param context Node being resolved and abort signal.
    * @returns The parsed value.
    */
