@@ -52,6 +52,8 @@ export class Footer {
   readonly organizationLink = input<AnyLinkCommand>('/');
   /** Year used for copyright purposes. */
   readonly copyrightYear = input<number>(new Date().getFullYear());
+  /** Tooltip shown on the default logo link. Override it when the link does not lead to the homepage. */
+  readonly logoTooltip = input('Homepage');
   /** An event emitted when the privacy policy link is clicked. */
   readonly openPrivacyPolicy = output();
   /** An event emitted when the privacy preferences link is clicked. */

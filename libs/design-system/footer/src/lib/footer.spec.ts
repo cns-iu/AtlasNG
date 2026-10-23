@@ -96,6 +96,17 @@ describe('Footer', () => {
     expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAccessibleDescription('Homepage');
   });
 
+  it('describes the logo link with a custom tooltip', async () => {
+    await render(Footer, {
+      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome', logoTooltip: 'CNS website' },
+      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    });
+
+    expect(screen.getByRole('link', { name: 'Visit Whole Person Physiome' })).toHaveAccessibleDescription(
+      'CNS website',
+    );
+  });
+
   it('renders social media buttons from the socials input', async () => {
     await setup();
 
@@ -107,8 +118,16 @@ describe('Footer', () => {
   it('exposes the social icon count to the styles', async () => {
     await setup();
 
-    const icons = screen.getByRole('link', { name: 'LinkedIn' }).closest('.ang-footer--social-icons');
-    expect(icons).toHaveStyle({ '--ang-footer--social-icon-count': '3' });
+    expect(screen.getByRole('group', { name: 'Social media' })).toHaveStyle({ '--ang-footer--social-icon-count': '3' });
+  });
+
+  it.each([undefined, []])('omits the social media group when socials is %j', async (socials) => {
+    await render(Footer, {
+      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome', socials },
+      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    });
+
+    expect(screen.queryByRole('group', { name: 'Social media' })).not.toBeInTheDocument();
   });
 
   it('renders the privacy action buttons', async () => {
@@ -116,6 +135,15 @@ describe('Footer', () => {
 
     expect(screen.getByRole('button', { name: 'Privacy Policy' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Privacy Preferences' })).toBeInTheDocument();
+  });
+
+  it('lists privacy preferences before the privacy policy', async () => {
+    await setup();
+
+    expect(screen.getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+      'Privacy Preferences',
+      'Privacy Policy',
+    ]);
   });
 
   it('emits privacy action events when the buttons are clicked', async () => {

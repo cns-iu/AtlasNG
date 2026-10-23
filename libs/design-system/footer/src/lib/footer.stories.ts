@@ -44,6 +44,12 @@ type Story = StoryObj;
 
 export const Basic: Story = {};
 
+export const BasicWithoutSocials: Story = {
+  args: {
+    socials: [],
+  },
+};
+
 export const BasicWithCustomLogo: Story = {
   render: (args) => ({
     props: args,
@@ -58,6 +64,13 @@ export const BasicWithCustomLogo: Story = {
 };
 
 export const BasicWithCustomActions: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Layout for custom actions has not been designed yet and may change.',
+      },
+    },
+  },
   render: (args) => ({
     props: args,
     template: `

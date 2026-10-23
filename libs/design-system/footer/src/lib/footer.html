@@ -3,7 +3,7 @@
     <ng-content select="ang-footer-logo, [angFooterLogo]">
       <a
         class="ang-footer--logo"
-        matTooltip="Homepage"
+        [matTooltip]="logoTooltip()"
         [angAnyLink]="organizationLink()"
         [attr.aria-label]="`Visit ${organization()}`"
       >
@@ -12,15 +12,23 @@
     </ng-content>
   </div>
 
-  <div class="ang-footer--social-icons" [style.--ang-footer--social-icon-count]="socials()?.length ?? 0">
-    @for (social of socials(); track $index) {
-      @if (typeof social === 'string') {
-        <ang-social-media-button class="ang-footer--social-icon" [id]="social" />
-      } @else {
-        <ang-social-media-button class="ang-footer--social-icon" [definition]="social" />
+  @let socials = this.socials() || [];
+  @if (socials.length) {
+    <div
+      class="ang-footer--social-icons"
+      role="group"
+      aria-label="Social media"
+      [style.--ang-footer--social-icon-count]="socials.length"
+    >
+      @for (social of socials; track $index) {
+        @if (typeof social === 'string') {
+          <ang-social-media-button class="ang-footer--social-icon" [id]="social" />
+        } @else {
+          <ang-social-media-button class="ang-footer--social-icon" [definition]="social" />
+        }
       }
-    }
-  </div>
+    </div>
+  }
 
   <div class="ang-footer--actions">
     <ng-content select="ang-footer-action, [angFooterAction]">
