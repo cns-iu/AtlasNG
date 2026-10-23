@@ -1,10 +1,16 @@
+@use 'sass:list';
 @use 'sass:map';
 @use 'sass:meta';
 @use './sass-utils';
+@use './sys-tokens';
 
 // Returns an angular material system token as a CSS variable name, e.g. sys-token(primary) => --mat-sys-primary
+// Unknown token names are a compile-time error.
 @function sys-token($token) {
-  // TODO: Validate token exists in angular material tokens
+  @if not list.index(sys-tokens.$names, $token) {
+    @error "System token '#{$token}' does not exist. Known system tokens are: #{sys-tokens.$names}";
+  }
+
   @return --mat-sys-#{$token};
 }
 
@@ -44,6 +50,8 @@
 
 // Returns a CSS variable for a given token and namespace,
 // e.g. slot(primary, button) => var(--ang-button-primary, var(--mat-sys-primary))
+// A fallback is only allowed when the token's default is a CSS variable name or null; passing one
+// for a token with a complete default value, such as var(...) or a literal, is a compile-time error.
 @function slot($token, $tokens-config, $fallback: null) {
   $tokens: map.get($tokens-config, tokens);
   @if not map.has-key($tokens, $token) {
@@ -55,6 +63,8 @@
     $sys-fallback: sass-utils.create-var($sys-fallback, $fallback);
   } @else if ($sys-fallback == null) {
     $sys-fallback: $fallback;
+  } @else if ($fallback != null) {
+    @error "Token '#{$token}' already has a complete default value (#{$sys-fallback}); the fallback '#{$fallback}' cannot be applied.";
   }
 
   @return sass-utils.create-var(token($token, $tokens-config), $sys-fallback);

@@ -5,32 +5,39 @@
 // Utilities
 @forward './breakpoints' show $breakpoints, $print-breakpoint, breakpoint;
 @forward './ext-colors' show ext-level-colors;
+@forward './internal/token-utils' show sys-token, sys-slot, ext-token, ext-slot, ext-sys-slot;
 
-// Overrides
-@forward './tokens/breadcrumbs' as breadcrumbs-* show breadcrumbs-overrides;
-@forward './tokens/navigation-button' as navigation-button-* show navigation-button-overrides;
-@forward './tokens/navigation-toggle' as navigation-toggle-* show navigation-toggle-overrides;
-@forward './tokens/social-media-button' as social-media-button-* show social-media-button-overrides;
-@forward './tokens/basic-profile-card' as basic-profile-card-* show basic-profile-card-overrides;
-@forward './tokens/brand-profile-card' as brand-profile-card-* show brand-profile-card-overrides;
-@forward './tokens/content-header' as content-header-* show content-header-overrides;
-@forward './tokens/content-paragraph' as content-paragraph-* show content-paragraph-overrides;
-@forward './tokens/content-section' as content-section-* show content-section-overrides;
-@forward './tokens/cookie-banner' as cookie-banner-* show cookie-banner-overrides;
-@forward './tokens/error-page' as error-page-* show error-page-overrides;
-@forward './tokens/footer' as footer-* show footer-overrides;
-@forward './tokens/end-of-results-indicator' as end-of-results-indicator-* show end-of-results-indicator-overrides;
-@forward './tokens/no-results-indicator' as no-results-indicator-* show no-results-indicator-overrides;
-@forward './tokens/notice' as notice-* show notice-overrides;
-@forward './tokens/results-indicator' as results-indicator-* show results-indicator-overrides;
-@forward './tokens/link-snippet' as link-snippet-* show link-snippet-overrides;
-@forward './tokens/text-link' as text-link-* show text-link-overrides;
-@forward './tokens/multi-select-filter' as multi-select-filter-* show multi-select-filter-overrides;
-@forward './tokens/rich-tooltip' as rich-tooltip-* show rich-tooltip-overrides;
-@forward './tokens/scroll-area' as scroll-area-* show scroll-area-overrides;
-@forward './tokens/search-list' as search-list-* show search-list-overrides;
-@forward './tokens/snackbar' as snackbar-* show snackbar-overrides;
-@forward './tokens/table' as table-* show table-overrides;
-@forward './tokens/table-of-contents' as table-of-contents-* show table-of-contents-overrides;
-@forward './tokens/version-control' as version-control-* show version-control-overrides;
-@forward './tokens/youtube-player' as youtube-player-* show youtube-player-overrides;
+// Component token overrides and slots
+@forward './tokens/breadcrumbs' as breadcrumbs-* show breadcrumbs-overrides, breadcrumbs-slot;
+@forward './tokens/navigation-button' as navigation-button-* show navigation-button-overrides, navigation-button-slot;
+@forward './tokens/navigation-toggle' as navigation-toggle-* show navigation-toggle-overrides, navigation-toggle-slot;
+@forward './tokens/social-media-button' as social-media-button-* show social-media-button-overrides,
+  social-media-button-slot;
+@forward './tokens/basic-profile-card' as basic-profile-card-* show basic-profile-card-overrides,
+  basic-profile-card-slot;
+@forward './tokens/brand-profile-card' as brand-profile-card-* show brand-profile-card-overrides,
+  brand-profile-card-slot;
+@forward './tokens/content-header' as content-header-* show content-header-overrides, content-header-slot;
+@forward './tokens/content-paragraph' as content-paragraph-* show content-paragraph-overrides, content-paragraph-slot;
+@forward './tokens/content-section' as content-section-* show content-section-overrides, content-section-slot;
+@forward './tokens/cookie-banner' as cookie-banner-* show cookie-banner-overrides, cookie-banner-slot;
+@forward './tokens/error-page' as error-page-* show error-page-overrides, error-page-slot;
+@forward './tokens/footer' as footer-* show footer-overrides, footer-slot;
+@forward './tokens/end-of-results-indicator' as end-of-results-indicator-* show end-of-results-indicator-overrides,
+  end-of-results-indicator-slot;
+@forward './tokens/no-results-indicator' as no-results-indicator-* show no-results-indicator-overrides,
+  no-results-indicator-slot;
+@forward './tokens/notice' as notice-* show notice-overrides, notice-slot;
+@forward './tokens/results-indicator' as results-indicator-* show results-indicator-overrides, results-indicator-slot;
+@forward './tokens/link-snippet' as link-snippet-* show link-snippet-overrides, link-snippet-slot;
+@forward './tokens/text-link' as text-link-* show text-link-overrides, text-link-slot;
+@forward './tokens/multi-select-filter' as multi-select-filter-* show multi-select-filter-overrides,
+  multi-select-filter-slot;
+@forward './tokens/rich-tooltip' as rich-tooltip-* show rich-tooltip-overrides, rich-tooltip-slot;
+@forward './tokens/scroll-area' as scroll-area-* show scroll-area-overrides, scroll-area-slot;
+@forward './tokens/search-list' as search-list-* show search-list-overrides, search-list-slot;
+@forward './tokens/snackbar' as snackbar-* show snackbar-overrides, snackbar-slot;
+@forward './tokens/table' as table-* show table-overrides, table-slot;
+@forward './tokens/table-of-contents' as table-of-contents-* show table-of-contents-overrides, table-of-contents-slot;
+@forward './tokens/version-control' as version-control-* show version-control-overrides, version-control-slot;
+@forward './tokens/youtube-player' as youtube-player-* show youtube-player-overrides, youtube-player-slot;
