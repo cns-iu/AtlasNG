@@ -7,12 +7,16 @@ describe('Boundary', () => {
   it('throws when started twice', async () => {
     const context = {
       elementInjector: TestBed.inject(Injector),
-      errorHandler: { handleError: vi.fn() },
+      renderer: { setAttribute: vi.fn(), removeAttribute: vi.fn() },
       config: {},
     } as unknown as RenderContext;
-    const boundary = new Boundary(context, document.createElement('div'), { kind: 'root', nodes: () => [] });
+    const boundary = new Boundary(context, document.createElement('div'), {
+      kind: 'root',
+      content: [],
+      nodes: () => [],
+    });
 
-    await boundary.start();
+    await expect(boundary.start()).resolves.toBe('rendered');
 
     await expect(boundary.start()).rejects.toThrow('Boundary already started.');
     boundary.destroy();

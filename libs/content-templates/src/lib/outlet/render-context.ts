@@ -2,7 +2,6 @@ import {
   ApplicationRef,
   assertInInjectionContext,
   EnvironmentInjector,
-  ErrorHandler,
   inject,
   Injector,
   Renderer2,
@@ -11,11 +10,24 @@ import {
 import { DefinitionRegistry } from '@atlasng/content-templates/definitions';
 import { DataLoaderRegistry } from '@atlasng/content-templates/loaders';
 import { DataParserRegistry } from '@atlasng/content-templates/parsers';
+import { ContentDefinition, ContentNode, TypeRef } from '@atlasng/content-templates/types';
+import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
+import { Arrayable } from 'type-fest';
 import { CONTENT_TEMPLATES_CONFIG } from '../config';
 import { loadComponent } from '../pipeline/component';
 import { PipelineContext } from '../pipeline/context';
-import { TypeRef } from '@atlasng/content-templates/types';
-import { LazyChainedRegistry } from '@atlasng/content-templates/utils';
+
+/** A failed boundary, emitted by `ContentOutlet.failed`. */
+export interface RenderFailure {
+  /** Document path of the boundary's content, e.g. `content.@default[1]`, or `content` for the outlet's own boundary. */
+  path: string;
+  /** Content the boundary renders: the boundary's node, or the document's content for the outlet's own boundary. */
+  content: Arrayable<ContentNode>;
+  /** Definition of the boundary's node, or `undefined` for the outlet's own boundary. */
+  definition?: ContentDefinition;
+  /** The thrown value. */
+  error: unknown;
+}
 
 /** Services and settings shared by every boundary of one outlet. */
 export interface RenderContext extends PipelineContext {
@@ -27,14 +39,14 @@ export interface RenderContext extends PipelineContext {
   elementInjector: Injector;
   /** Renderer used for DOM operations. */
   renderer: Renderer2;
-  /** Receives every boundary failure. */
-  errorHandler: ErrorHandler;
   /**
    * Loads the configured text component on first call, so documents without text do not load it.
    *
    * @returns The text component, or `undefined` to render text as DOM text nodes.
    */
   loadTextComponent: () => Promise<Type<unknown>> | undefined;
+  /** Called when a boundary fails, including after rendering, and when its error component fails to load. */
+  onFailure?: (failure: RenderFailure) => void;
 }
 
 /**
@@ -42,10 +54,11 @@ export interface RenderContext extends PipelineContext {
  *
  * Checks that the configured default loader and parser names are registered, without loading them.
  *
+ * @param onFailure Called with every boundary failure.
  * @returns The render context.
  * @throws {Error} In dev mode, when a default name is not registered. In prod mode a warning is logged instead.
  */
-export function createRenderContext(): RenderContext {
+export function createRenderContext(onFailure?: (failure: RenderFailure) => void): RenderContext {
   assertInInjectionContext(createRenderContext);
 
   const config = CONTENT_TEMPLATES_CONFIG.inject();
@@ -58,8 +71,8 @@ export function createRenderContext(): RenderContext {
     environmentInjector: inject(EnvironmentInjector),
     elementInjector: inject(Injector),
     renderer: inject(Renderer2),
-    errorHandler: inject(ErrorHandler),
     loadTextComponent: createTextComponentLoader(config.textComponent),
+    onFailure,
   };
 
   checkDefaultNames(context);

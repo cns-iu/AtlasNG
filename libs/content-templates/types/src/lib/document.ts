@@ -18,6 +18,14 @@ export type ContentNode = string | ContentElementNode;
 export interface ContentElementNode {
   /** Name of the component definition used to render this node, e.g. `content-paragraph`. */
   component: string;
+  /** CSS classes added to the component's host element, as a space separated string or a list. */
+  classes?: string | string[];
+  /**
+   * Inline styles set on the component's host element, keyed by property, e.g. `{ "maxWidth": "40rem" }`,
+   * `{ "max-width": "40rem" }`, or a custom property such as `{ "--gap": "1rem" }`. Numbers are set as is, without a
+   * unit, and a value ending in `!important` is set as important.
+   */
+  styles?: Record<string, string | number>;
   /** Raw configuration, validated by the definition's config schema. */
   config?: Record<string, JsonValue>;
   /**
