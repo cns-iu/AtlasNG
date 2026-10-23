@@ -53,6 +53,8 @@ type ContentNode = string | ContentElementNode; // string -> DOM Text node
 
 interface ContentElementNode {
   component: string; // definition name
+  classes?: string | string[]; // added to the component's host element
+  styles?: Record<string, string | number>; // set on the host; camelCase, dash-case, or --custom properties
   config?: Record<string, JsonValue>;
   data?: Record<string, string | JsonValue[] | ContentDataSource>;
   content?: Arrayable<ContentNode> | Record<string, Arrayable<ContentNode>>;
@@ -290,7 +292,9 @@ environment injector, and `withDefinitions` / `withDataLoaders` / `withDataParse
 Usage: `<ang-content-outlet [document]="document" />` or `<article angContentOutlet [document]="document">`
 (`ContentOutlet`). Changing `document` aborts pending loads and replaces the rendered content; destroying the outlet
 destroys every created component. Created components use the outlet's element and environment injectors and are
-attached to `ApplicationRef` for change detection.
+attached to `ApplicationRef` for change detection. The outlet's `rendered` output emits once the top level content is
+shown, and `failed` emits a `RenderFailure` (`path`, `content`, `definition`, `error`) for every failed boundary. Loading hosts have `aria-busy="true"`. Server-side
+rendering and hydration are not supported.
 
 ## Later
 

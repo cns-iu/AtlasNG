@@ -5,12 +5,14 @@ import {
   createComponent,
   effect,
   EffectRef,
+  RendererStyleFlags2,
   signal,
   Type,
   untracked,
 } from '@angular/core';
-import { ContentDefinition, ContentElementNode, TypeRef } from '@atlasng/content-templates/types';
+import { ContentDefinition, ContentElementNode, ContentNode, TypeRef } from '@atlasng/content-templates/types';
 import { StandardSchemaV1 } from '@standard-schema/spec';
+import { Arrayable } from 'type-fest';
 import {
   isRenderElementNode,
   RenderElementNode,
@@ -23,12 +25,15 @@ import { loadComponent } from '../pipeline/component';
 import { getContentName, getContentSelector, getContentSlot } from '../utils/projection';
 import { reportRecoverableIssues } from '../validation/errors';
 import { createInputBindings, createOptionalBindings } from './bindings';
-import { RenderContext } from './render-context';
+import { RenderContext, RenderFailure } from './render-context';
 
 /** What a boundary renders: the outlet's top level nodes, or a node whose definition declares a placeholder. */
 export type BoundaryTarget =
-  | { kind: 'root'; nodes: () => RenderNode[] }
+  | { kind: 'root'; content: Arrayable<ContentNode>; nodes: () => RenderNode[] }
   | { kind: 'element'; node: RenderElementNode; definition: ContentDefinition };
+
+/** How {@link Boundary.start} settled: content shown, error shown (or nothing without an error component), or destroyed. */
+export type BoundaryOutcome = 'rendered' | 'failed' | 'destroyed';
 
 /** Builds a boundary's DOM nodes once it is ready, creating components in the builder's scope. */
 type BuildFn = (builder: BoundaryBuilder) => Promise<Node[]>;
@@ -39,6 +44,18 @@ interface ContentSlot {
   key: RenderNodeKey;
   /** Index into `projectableNodes`. */
   index: number;
+}
+
+/** Optional settings for {@link BoundaryScope.createComponent}. */
+interface CreateComponentOptions {
+  /** Tag name of the host element to create, if not derived from the selector. */
+  host?: string;
+  /** Classes added to the host element. */
+  classes?: ContentElementNode['classes'];
+  /** Styles set on the host element. */
+  styles?: ContentElementNode['styles'];
+  /** Nodes projected into the component's `ng-content` slots. */
+  projectableNodes?: Node[][];
 }
 
 /** Owns the component refs and nested boundaries created for one rendering of a boundary. */
@@ -54,16 +71,14 @@ class BoundaryScope {
    * @param context Render context.
    * @param type Component class.
    * @param bindings Input bindings.
-   * @param projectableNodes Nodes projected into the component's `ng-content` slots.
-   * @param host Tag name of the host element to create, if not derived from the selector.
+   * @param options Projected nodes, host tag name, and host classes and styles.
    * @returns The component's host element.
    */
   createComponent(
     context: RenderContext,
     type: Type<unknown>,
     bindings: Binding[],
-    projectableNodes?: Node[][],
-    host?: string,
+    { host, classes, styles, projectableNodes }: CreateComponentOptions = {},
   ): Node {
     const ref = createComponent(type, {
       environmentInjector: context.environmentInjector,
@@ -73,10 +88,14 @@ class BoundaryScope {
       projectableNodes,
     });
 
+    const element: Element = ref.location.nativeElement;
+    this.#applyClasses(context, element, classes);
+    this.#applyStyles(context, element, styles);
+
     this.#refs.push(ref);
     context.appRef.attachView(ref.hostView);
     ref.changeDetectorRef.detectChanges();
-    return ref.location.nativeElement;
+    return element;
   }
 
   /**
@@ -95,6 +114,50 @@ class BoundaryScope {
     }
     for (const ref of this.#refs.splice(0)) {
       ref.destroy();
+    }
+  }
+
+  /**
+   * Adds a node's classes to a host element. A string is split on whitespace. Values that are not strings are skipped,
+   * since documents are untrusted JSON.
+   *
+   * @param context Render context.
+   * @param element The host element.
+   * @param classes The node's classes, if any.
+   */
+  #applyClasses(context: RenderContext, element: Element, classes: CreateComponentOptions['classes']): void {
+    const items = Array.isArray(classes) ? classes : [classes];
+    for (const item of items) {
+      if (typeof item !== 'string') {
+        continue;
+      }
+
+      const classNames = item.split(/\s+/).filter(Boolean);
+      for (const name of classNames) {
+        context.renderer.addClass(element, name);
+      }
+    }
+  }
+
+  /**
+   * Sets a node's styles on a host element, as normalized by {@link normalizeStyle}. Values that are neither strings nor
+   * numbers are skipped, since documents are untrusted JSON.
+   *
+   * @param context Render context.
+   * @param element The host element.
+   * @param styles The node's styles, if any.
+   */
+  #applyStyles(context: RenderContext, element: Element, styles: CreateComponentOptions['styles']): void {
+    if (typeof styles !== 'object' || styles === null || Array.isArray(styles)) {
+      return;
+    }
+
+    for (const [property, value] of Object.entries(styles)) {
+      if (typeof value !== 'string' && typeof value !== 'number') {
+        continue;
+      }
+
+      context.renderer.setStyle(element, ...normalizeStyle(property, String(value)));
     }
   }
 }
@@ -152,33 +215,42 @@ export class Boundary {
   }
 
   /**
-   * Shows the placeholder, if any, then renders the content once ready.
+   * Shows the placeholder, if any, then renders the content once ready. The host has `aria-busy="true"` meanwhile.
    *
-   * @returns Settles once the content or the error component is shown, or the boundary is destroyed.
+   * @returns Settles once the content or the error component is shown, or the boundary is destroyed, with how it
+   *   settled. A rendered boundary can still fail later, e.g. on an invalid data emission.
    * @throws {Error} When the boundary was already started.
    */
-  async start(): Promise<void> {
+  async start(): Promise<BoundaryOutcome> {
     if (this.#errorWatcher) {
       throw new Error('Boundary already started.');
     }
 
     this.#initializeErrorWatcher();
+    this.#setBusy(true);
 
     try {
       const buildFn = await this.#whenReady();
-      if (this.#settled) {
-        return;
+      if (!this.#settled) {
+        await this.#render(buildFn);
       }
-
-      await this.#render(buildFn);
     } catch (error) {
       await this.#fail(error);
+    } finally {
+      this.#setBusy(false);
     }
+
+    if (this.#destroyed) {
+      return 'destroyed';
+    }
+
+    return this.#failed ? 'failed' : 'rendered';
   }
 
   /** Destroys the mounted nodes and nested boundaries. Pending work is discarded. */
   destroy(): void {
     this.#destroyed = true;
+    this.#setBusy(false);
     this.#errorWatcher?.destroy();
     this.#unmount();
     this.#scope.destroy();
@@ -195,6 +267,20 @@ export class Boundary {
       },
       { injector: this.#context.elementInjector },
     );
+  }
+
+  /**
+   * Marks the host as busy, i.e. still loading, for assistive technology.
+   *
+   * @param busy Whether the boundary is loading.
+   */
+  #setBusy(busy: boolean): void {
+    const { renderer } = this.#context;
+    if (busy) {
+      renderer.setAttribute(this.host, 'aria-busy', 'true');
+    } else {
+      renderer.removeAttribute(this.host, 'aria-busy');
+    }
   }
 
   /**
@@ -233,12 +319,27 @@ export class Boundary {
 
     this.#failed = true;
     this.#errorWatcher?.destroy();
-    this.#context.errorHandler.handleError(error);
+    this.#reportFailure(error);
     for (const member of untracked(this.#members)) {
       member.abort(error);
     }
 
     await this.#renderError(error);
+  }
+
+  /**
+   * Reports a failure of this boundary to the render context, with the boundary's location in the document.
+   *
+   * @param error The thrown value.
+   */
+  #reportFailure(error: unknown): void {
+    const target = this.#target;
+    const failure: RenderFailure =
+      target.kind === 'root'
+        ? { path: 'content', content: target.content, error }
+        : { path: target.node.path, content: target.node.source, definition: target.definition, error };
+
+    this.#context.onFailure?.(failure);
   }
 
   /**
@@ -378,7 +479,7 @@ export class Boundary {
       const bindings = createOptionalBindings(component, values);
       return [scope.createComponent(this.#context, component, bindings)];
     } catch (error) {
-      this.#context.errorHandler.handleError(error);
+      this.#reportFailure(error);
       return [];
     }
   }
@@ -422,7 +523,7 @@ class BoundaryBuilder {
   }
 
   /**
-   * Builds an element, its content first.
+   * Builds an element, its content first. The node's `classes` and `styles` are applied to the component's host.
    *
    * @param node Ready element.
    * @returns The component's host element.
@@ -432,7 +533,13 @@ class BoundaryBuilder {
     const { component, mirror, definition } = resolved;
     const bindings = createInputBindings(mirror, resolved);
     const projectableNodes = await this.#project(node, definition, mirror.ngContentSelectors);
-    return this.#scope.createComponent(this.#context, component, bindings, projectableNodes, definition.host);
+    const { classes, styles } = node.source;
+    return this.#scope.createComponent(this.#context, component, bindings, {
+      host: definition.host,
+      classes,
+      styles,
+      projectableNodes,
+    });
   }
 
   /**
@@ -580,4 +687,28 @@ function getResolved(node: RenderElementNode): Promise<ResolvedElement> {
 function notStarted(node: RenderElementNode): Promise<never> {
   const { abortSignal } = node;
   return Promise.reject(abortSignal.aborted ? abortSignal.reason : new Error(`Node '${node.path}' was not started.`));
+}
+
+/** Suffix marking a style value as important. */
+const IMPORTANT_SUFFIX = '!important';
+
+/**
+ * Normalizes a style for `Renderer2.setStyle`. The property is converted to dash-case, so camel-case and dash-case keys
+ * behave the same; custom properties are kept as is. A trailing `!important` is removed from the value and set as a
+ * flag. The `DashCase` flag is always set, since `Important` only works with dash-case names.
+ *
+ * @param property Style property, e.g. `maxWidth`, `max-width`, or `--gap`.
+ * @param value Style value, e.g. `40rem` or `40rem !important`.
+ * @returns The property, value, and flags to pass to `setStyle`.
+ */
+function normalizeStyle(property: string, value: string): [string, string, RendererStyleFlags2] {
+  const name = property.startsWith('--') ? property : property.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`);
+  let flags = RendererStyleFlags2.DashCase;
+  let normalizedValue = value;
+  if (normalizedValue.endsWith(IMPORTANT_SUFFIX)) {
+    flags |= RendererStyleFlags2.Important;
+    normalizedValue = normalizedValue.slice(0, -IMPORTANT_SUFFIX.length).trimEnd();
+  }
+
+  return [name, normalizedValue, flags];
 }

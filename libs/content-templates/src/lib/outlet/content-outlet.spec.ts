@@ -5,7 +5,7 @@ import {
   ContentElementNode,
   DEFAULT_CONTENT,
 } from '@atlasng/content-templates/types';
-import { passthroughSchema } from '@atlasng/content-templates/utils';
+import { ContentValidationError, passthroughSchema } from '@atlasng/content-templates/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { render, screen, waitFor } from '@testing-library/angular';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -79,9 +79,14 @@ class Text {
   readonly text = input<string>();
 }
 
-@Component({ imports: [ContentOutlet], template: '<ang-content-outlet [document]="document()" />' })
+@Component({
+  imports: [ContentOutlet],
+  template: '<ang-content-outlet [document]="document()" (rendered)="rendered()" (failed)="failed($event)" />',
+})
 class Host {
   readonly document = input.required<ContentDocument>();
+  readonly rendered = vi.fn();
+  readonly failed = vi.fn();
 }
 
 const definitions: ContentDefinition[] = [
@@ -119,7 +124,7 @@ async function setup(
       provideContentTemplates(config, withDefinitions(definitions), ...features),
     ],
   });
-  return { ...result, errorHandler };
+  return { ...result, errorHandler, host: result.fixture.componentInstance };
 }
 
 describe('ContentOutlet', () => {
@@ -141,6 +146,49 @@ describe('ContentOutlet', () => {
     await setup(doc(['Hello']), { textComponent: Text });
 
     expect((await screen.findByText('Hello')).tagName).toBe('EM');
+  });
+
+  it('applies node classes and styles to the component host', async () => {
+    await setup(
+      doc([
+        {
+          component: 'link',
+          classes: 'primary  wide',
+          styles: { maxWidth: '40rem', 'font-weight': 700, '--gap': '1rem' },
+          content: 'Docs',
+        },
+        { component: 'link', classes: ['a', 1 as never, 'b c'], styles: { color: {} as never }, content: 'More' },
+      ]),
+    );
+
+    const docs = await screen.findByText('Docs');
+    expect(docs).toHaveClass('primary', 'wide');
+    expect(docs).toHaveStyle({ maxWidth: '40rem', fontWeight: '700' });
+    expect(docs.style.getPropertyValue('--gap')).toBe('1rem');
+    expect(screen.getByText('More')).toHaveClass('a', 'b', 'c');
+    expect(screen.getByText('More').getAttribute('style')).toBeNull();
+  });
+
+  it('sets styles ending in !important as important', async () => {
+    await setup(
+      doc({
+        component: 'link',
+        // Not max-width: jsdom drops its priority.
+        styles: { backgroundColor: 'red !important', 'font-weight': '700 !important', '--gap': '1rem!important' },
+        content: 'Docs',
+      }),
+    );
+
+    const { style } = await screen.findByText('Docs');
+    expect([style.getPropertyValue('background-color'), style.getPropertyPriority('background-color')]).toEqual([
+      'red',
+      'important',
+    ]);
+    expect([style.getPropertyValue('font-weight'), style.getPropertyPriority('font-weight')]).toEqual([
+      '700',
+      'important',
+    ]);
+    expect([style.getPropertyValue('--gap'), style.getPropertyPriority('--gap')]).toEqual(['1rem', 'important']);
   });
 
   it('creates the host element named by the definition', async () => {
@@ -199,6 +247,61 @@ describe('ContentOutlet', () => {
     rows.error(new Error('Stream failed.'));
     expect(await screen.findByRole('alert')).toHaveTextContent('list: Stream failed.');
     expect(errorHandler.handleError).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks loading hosts as busy and emits rendered once the top level content is shown', async () => {
+    const eager = new Subject<unknown[]>();
+    const nested = new Subject<unknown[]>();
+    const { container, host } = await setup(
+      doc([
+        { component: 'eager-list', data: { rows: { type: 'eager' } } },
+        { component: 'list', data: { rows: { type: 'nested' } } },
+      ]),
+      {},
+      withDataLoaders({ eager: () => ({ load: () => eager }), nested: () => ({ load: () => nested }) }),
+    );
+    const outlet = container.querySelector('ang-content-outlet');
+    expect(outlet).toHaveAttribute('aria-busy', 'true');
+
+    await waitFor(() => expect(eager.observed).toBe(true));
+    eager.next(['a']);
+    await waitFor(() => expect(host.rendered).toHaveBeenCalledTimes(1));
+    expect(outlet).not.toHaveAttribute('aria-busy');
+    expect(screen.getByText('Loading list').closest('ang-content-boundary')).toHaveAttribute('aria-busy', 'true');
+
+    await waitFor(() => expect(nested.observed).toBe(true));
+    nested.next(['b']);
+    await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(2));
+    expect(container.querySelector('ang-content-boundary')).not.toHaveAttribute('aria-busy');
+    expect(host.rendered).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits failed for nested boundaries without failing the rest', async () => {
+    const { host } = await setup(
+      doc([
+        { component: 'heading', config: { title: 'Still here' } },
+        { component: 'list', data: { rows: { type: 'missing' } } },
+      ]),
+    );
+
+    await waitFor(() => expect(host.failed).toHaveBeenCalledTimes(1));
+    expect(host.failed).toHaveBeenCalledWith({
+      path: 'content.@default[1]',
+      content: { component: 'list', data: { rows: { type: 'missing' } } },
+      definition: expect.objectContaining({ name: 'list' }),
+      error: expect.any(ContentValidationError),
+    });
+    expect(host.rendered).toHaveBeenCalledTimes(1);
+  });
+
+  it("emits failed for the outlet's own boundary without a definition", async () => {
+    const content = [{ component: 'missing' }];
+    const { host, errorHandler } = await setup(doc(content));
+
+    await waitFor(() => expect(host.failed).toHaveBeenCalledTimes(1));
+    expect(host.failed).toHaveBeenCalledWith({ path: 'content', content, error: expect.any(ContentValidationError) });
+    expect(errorHandler.handleError).toHaveBeenCalledWith(host.failed.mock.calls[0]?.[0].error);
+    expect(host.rendered).not.toHaveBeenCalled();
   });
 
   it('shows the definition error component when a boundary fails', async () => {
