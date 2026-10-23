@@ -300,10 +300,16 @@ rendering and hydration are not supported.
 
 ## Later
 
-- Definitions for design-system components (removed for now; previously the `design-system-definitions` entry point).
+- More design-system definitions. `/definitions/design-system` covers content headers, sections, headings,
+  paragraphs, text links, link snippets, and notices; cards, tables, and the YouTube player are not covered yet.
 - Generics on definitions, loaders, and parsers inferred from their schemas, with a `defineContentComponent` helper
   that rejects, at compile time, an `initialValue` not matching its schema output.
 - Helper types such as `InferContentConfig<TDefinition>` and `InferContentData<TData>`.
+- TODO: Host directives on definitions. A `directives` field, e.g.
+  `directives: [{ type: AnyLink, inputs: { href: 'angAnyLink', target: 'target' } }]`, attaches directives to the
+  created component through `createComponent`'s `directives` option and binds config keys to their inputs. The dev-mode
+  input checks would include directive inputs. `TEXT_LINK_DEFINITION` would then render `TextLink` with `AnyLink` on an
+  `a` host, replacing the `ContentTextLink` wrapper in `/definitions/design-system`.
 
 ## Open questions
 
