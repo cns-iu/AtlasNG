@@ -71,6 +71,7 @@ const meta: Meta<VersionControl> = {
   render: (args) => ({
     props: args,
     template: `<ang-version-control ${argsToTemplate(args)} />`,
+    styles: [`ang-version-control { max-height: 40rem; }`],
   }),
 };
 
