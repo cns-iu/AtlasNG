@@ -19,6 +19,13 @@
   background-color: var(--mat-sys-surface-container-low);
 }
 
+.ang-kg-explorer--filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 1.25rem;
+}
+
 // The results table fills the content height and scrolls its own content.
 .ang-kg-explorer--content {
   min-width: 0;

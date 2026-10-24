@@ -2,7 +2,7 @@
 
 White-label knowledge graph explorer in table view. It combines a filter menu with a searchable, sortable results table and per-row downloads, built from AtlasNG design-system components and Angular Material.
 
-The library is in early development; its public API may still change. The header and footer shells are not included, and the filter menu is a placeholder until the filter form component is available.
+The library is in early development; its public API may still change. The header and footer shells are not included.
 
 ## Usage
 
@@ -48,7 +48,7 @@ Give the explorer a height (for example, fill the page below your header) and ap
 
 | Area          | Behavior                                                                                                                                                                                                                                                               |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Filter menu   | A placeholder for now. Docked on the left from the Angular Material large breakpoint (1280px) up; below that it is a drawer opened and closed through `[(filtersOpen)]`.                                                                                               |
+| Filter menu   | Shows an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from the Angular Material large breakpoint (1280px) up; below that it is a drawer opened and closed through `[(filtersOpen)]`.                                                      |
 | Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`. Below the search bar, an `ang-scroll-area` scrolls the table, the end-of-results indicator that follows it, and any table end content. The no-results indicator replaces empty rows. |
 | Padding       | Around the search bar and the table: 16px below 600px, 24px below 960px, and 32px above.                                                                                                                                                                               |
 
@@ -57,6 +57,8 @@ Give the explorer a height (for example, fill the page below your header) and ap
 - `items` takes any row type, and `columns` (required) sets which properties the table shows. There are no built-in default columns.
 - Build columns with the generic helpers, which apply the Figma column widths and cell types: `kgExplorerLinkColumn(name, prop, { labelProp | labelFn | label })`, `kgExplorerTextColumn`, `kgExplorerListColumn` (comma-separated arrays, unsortable), `kgExplorerNumberColumn`, and `kgExplorerDateColumn`. Each takes optional `TableColumn` overrides as its last argument, and you can mix in plain `TableColumn` objects. Create the array once and reuse it, because the table caches cell templates by column identity.
 - `KG_EXPLORER_SAMPLE_ITEMS` and `KG_EXPLORER_SAMPLE_COLUMNS` (with the `KgExplorerSampleItem` row type) are white-label demo data used by the stories.
+- `filters` takes `KgExplorerFilter` definitions (`id`, `label`, `options`, and optional `searchDisabled` and `count`). `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections before `(clearFilters)` emits.
+- The explorer does not filter `items` itself: pass only the rows that match `filterSelections`. `KG_EXPLORER_SAMPLE_FILTERS` defines Type and Organ filters for the sample data.
 - `searchFn` decides which rows match the search term (defaults to matching any string, number, or array value). `searchLabelFn` provides autocomplete suggestions (defaults to the row `title`).
 - `downloadFormats` sets the file formats in the per-row download menu (defaults to `FILE_FORMATS` from `@atlasng/design-system/version-control`). Picking a format emits `download` with `{ item, format }`. `DownloadCellDefinition` can also be used on its own in any `ang-table` column.
 

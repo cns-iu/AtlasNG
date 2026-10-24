@@ -1,3 +1,5 @@
+import type { SearchListOption } from '@atlasng/design-system/search-list';
+import type { KgExplorerFilter } from './models';
 import type { Row, TableColumn } from '@atlasng/design-system/table';
 import {
   kgExplorerDateColumn,
@@ -72,4 +74,34 @@ export const KG_EXPLORER_SAMPLE_COLUMNS: TableColumn<KgExplorerSampleItem>[] = [
   kgExplorerNumberColumn('#Cell types', 'cellTypeCount'),
   kgExplorerNumberColumn('#Biomarkers', 'biomarkerCount'),
   kgExplorerDateColumn('Last modified', 'lastModified'),
+];
+
+/**
+ * Builds filter options from the values of the sample rows, counting the rows that have each value.
+ *
+ * @param values Values of each row.
+ * @returns One option per distinct value, in order of first appearance.
+ */
+function sampleFilterOptions(values: string[][]): SearchListOption[] {
+  const counts = new Map<string, number>();
+  for (const value of values.flat()) {
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  return Array.from(counts, ([label, count]) => ({ label, count }));
+}
+
+/** Filter options for the digital object types of the sample rows. */
+export const KG_EXPLORER_SAMPLE_TYPE_OPTIONS: SearchListOption[] = sampleFilterOptions(
+  KG_EXPLORER_SAMPLE_ITEMS.map((item) => [item.type]),
+);
+
+/** Filter options for the organ tags of the sample rows. */
+export const KG_EXPLORER_SAMPLE_ORGAN_OPTIONS: SearchListOption[] = sampleFilterOptions(
+  KG_EXPLORER_SAMPLE_ITEMS.map((item) => item.tags),
+);
+
+/** Type and Organ filters for the sample rows. */
+export const KG_EXPLORER_SAMPLE_FILTERS: KgExplorerFilter[] = [
+  { id: 'type', label: 'Type', options: KG_EXPLORER_SAMPLE_TYPE_OPTIONS, searchDisabled: true },
+  { id: 'organ', label: 'Organ', options: KG_EXPLORER_SAMPLE_ORGAN_OPTIONS },
 ];

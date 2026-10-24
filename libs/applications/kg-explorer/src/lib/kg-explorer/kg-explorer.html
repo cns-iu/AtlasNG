@@ -8,7 +8,18 @@
     [opened]="filtersOpen()"
     (openedChange)="this.filtersOpen.set($event)"
   >
-    <ang-kg-explorer-filter-menu-placeholder />
+    <div class="ang-kg-explorer--filters">
+      @for (filter of filters(); track filter.id) {
+        <ang-multi-select-filter
+          [label]="filter.label"
+          [options]="filter.options"
+          [count]="filter.count"
+          [searchDisabled]="filter.searchDisabled ?? false"
+          [selected]="selectionOf(filter)"
+          (selectedChange)="select(filter, $event)"
+        />
+      }
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="ang-kg-explorer--content">
@@ -24,7 +35,7 @@
       [tableEndTemplate]="tableEndSlot()?.template"
       [(search)]="search"
       [(sorts)]="sorts"
-      (clearResults)="clearFilters.emit()"
+      (clearResults)="clearAllFilters()"
     />
   </mat-sidenav-content>
 </mat-sidenav-container>

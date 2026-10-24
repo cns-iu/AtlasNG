@@ -1,10 +1,16 @@
 import { BreakpointObserver, type BreakpointState } from '@angular/cdk/layout';
 import { Component } from '@angular/core';
 import { CSV_FILE_FORMAT } from '@atlasng/design-system/version-control';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { BehaviorSubject } from 'rxjs';
-import { KG_EXPLORER_SAMPLE_COLUMNS, KG_EXPLORER_SAMPLE_ITEMS, type KgExplorerSampleItem } from '../sample-data';
+import {
+  KG_EXPLORER_SAMPLE_COLUMNS,
+  KG_EXPLORER_SAMPLE_ITEMS,
+  KG_EXPLORER_SAMPLE_FILTERS,
+  KG_EXPLORER_SAMPLE_TYPE_OPTIONS,
+  type KgExplorerSampleItem,
+} from '../sample-data';
 import { KgExplorerTableEndSlot } from '../slots';
 import { KgExplorer } from './kg-explorer';
 
@@ -32,6 +38,7 @@ describe('KgExplorer', () => {
         items: KG_EXPLORER_SAMPLE_ITEMS.slice(0, 3),
         columns: KG_EXPLORER_SAMPLE_COLUMNS,
         downloadFormats: [CSV_FILE_FORMAT],
+        filters: KG_EXPLORER_SAMPLE_FILTERS,
         ...inputs,
       },
       on: { download, clearFilters },
@@ -44,7 +51,6 @@ describe('KgExplorer', () => {
   it('renders the filter menu and the results table', async () => {
     await setup();
 
-    expect(screen.getByText('Filter menu placeholder')).toBeInTheDocument();
     expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: KG_EXPLORER_SAMPLE_ITEMS[0].title })).toHaveAttribute(
       'href',
@@ -68,13 +74,50 @@ describe('KgExplorer', () => {
     expect(screen.queryByRole('button', { name: 'Choose download format' })).not.toBeInTheDocument();
   });
 
+  it('renders a multi-select filter for each filter', async () => {
+    await setup();
+
+    expect(await screen.findByRole('button', { name: 'Type' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Organ' })).toBeVisible();
+  });
+
+  it('shows the selected options of each filter as chips', async () => {
+    const [dataset] = KG_EXPLORER_SAMPLE_TYPE_OPTIONS;
+    await setup({ filterSelections: { type: [dataset] } });
+
+    const chips = await screen.findByRole('list', { name: 'Active filters' });
+    expect(within(chips).getByText(dataset.label)).toBeInTheDocument();
+  });
+
+  it('updates the filter selections when a chip is removed', async () => {
+    const [dataset] = KG_EXPLORER_SAMPLE_TYPE_OPTIONS;
+    const { user, fixture } = await setup({ filterSelections: { type: [dataset] } });
+
+    await user.click(await screen.findByRole('button', { name: `Remove ${dataset.label}` }));
+
+    expect(fixture.componentInstance.filterSelections()).toEqual({ type: [] });
+  });
+
+  it('resets the filter selections when the results are cleared', async () => {
+    const [dataset] = KG_EXPLORER_SAMPLE_TYPE_OPTIONS;
+    const { user, fixture, clearFilters } = await setup({
+      items: [],
+      filterSelections: { type: [dataset] },
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Clear filters' }));
+
+    expect(fixture.componentInstance.filterSelections()).toEqual({});
+    expect(clearFilters).toHaveBeenCalledOnce();
+  });
+
   it('opens the filter drawer through the filtersOpen model below the large breakpoint', async () => {
     const { rerender, fixture } = await setup({}, false);
     expect(fixture.componentInstance.filtersOpen()).toBe(false);
 
     await rerender({ inputs: { filtersOpen: true }, partialUpdate: true });
 
-    expect(await screen.findByText('Filter menu placeholder')).toBeVisible();
+    expect(await screen.findByRole('button', { name: 'Type' })).toBeVisible();
   });
 
   it('syncs filtersOpen with the docked state when the breakpoint changes', async () => {

@@ -13,18 +13,22 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
+import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
+import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import { map } from 'rxjs';
 import { DownloadCellDefinition, type DownloadCellConfig } from '../download-cell/download-cell';
-import { KgExplorerFilterMenuPlaceholder } from '../filter-menu-placeholder/filter-menu-placeholder';
-import type { KgExplorerDownload } from '../models';
+import type { KgExplorerDownload, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import {
   defaultKgExplorerSearch,
   KG_EXPLORER_ROW_HEIGHT,
   KgExplorerResultsTable,
 } from '../results-table/results-table';
 import { KgExplorerTableEndSlot } from '../slots';
+
+/** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
+const NO_SELECTION: SearchListOption[] = [];
 
 /** Media query matching the Angular Material large and extra-large breakpoints. */
 export const KG_EXPLORER_SIDE_MENU_QUERY = '(min-width: 1280px)';
@@ -44,21 +48,17 @@ function defaultSearchLabel(row: Row): string {
  * White-label knowledge graph explorer in table view with a filter menu, a
  * searchable and sortable results table, and per-row downloads.
  *
- * The filter menu is a placeholder until the filter form component is
- * available. It is docked from the Angular Material large breakpoint up and
- * becomes a drawer controlled by {@link filtersOpen} on smaller screens.
+ * The filter menu shows a multi-select filter for each of {@link filters}. The
+ * explorer does not filter {@link items} itself: read {@link filterSelections}
+ * and pass the matching rows. The menu is docked from the Angular Material
+ * large breakpoint up and becomes a drawer controlled by {@link filtersOpen}
+ * on smaller screens.
  * Project an `<ng-template angKgExplorerTableEnd>` to add content such as a
  * footer at the end of the table.
  */
 @Component({
   selector: 'ang-kg-explorer',
-  imports: [
-    KgExplorerFilterMenuPlaceholder,
-    KgExplorerResultsTable,
-    MatSidenav,
-    MatSidenavContainer,
-    MatSidenavContent,
-  ],
+  imports: [KgExplorerResultsTable, MatSidenav, MatSidenavContainer, MatSidenavContent, MultiSelectFilter],
   templateUrl: './kg-explorer.html',
   styleUrl: './kg-explorer.scss',
   host: {
@@ -80,6 +80,12 @@ export class KgExplorer<TRow extends Row = Row> {
 
   /** Height of each table row in pixels. */
   readonly rowHeight = input(KG_EXPLORER_ROW_HEIGHT);
+
+  /** Filters displayed in the filter menu, in display order. */
+  readonly filters = input<readonly KgExplorerFilter[]>([]);
+
+  /** Selected options of each filter, keyed by filter id. Reset when the user clears the results. */
+  readonly filterSelections = model<KgExplorerFilterSelections>({});
 
   /** Current search term. */
   readonly search = model('');
@@ -114,7 +120,7 @@ export class KgExplorer<TRow extends Row = Row> {
   /** Emits when a user picks a download format for a row. */
   readonly download = output<KgExplorerDownload<TRow>>();
 
-  /** Emits when the user clears the results from the no-results indicator. */
+  /** Emits when the user clears the results from the no-results indicator, after the filter selections are reset. */
   readonly clearFilters = output<void>();
 
   /** Projected template rendered at the end of the table. */
@@ -162,6 +168,32 @@ export class KgExplorer<TRow extends Row = Row> {
   protected readonly resolvedColumns = computed(() =>
     this.showDownload() ? [this.downloadColumn(), ...this.columns()] : this.columns(),
   );
+
+  /**
+   * Looks up the selected options of a filter.
+   *
+   * @param filter Filter to look up.
+   * @returns The selected options, or an empty selection when the filter has none.
+   */
+  protected selectionOf(filter: KgExplorerFilter): SearchListOption[] {
+    return this.filterSelections()[filter.id] ?? NO_SELECTION;
+  }
+
+  /**
+   * Updates the selected options of a filter.
+   *
+   * @param filter Filter whose selection changed.
+   * @param selected New selected options.
+   */
+  protected select(filter: KgExplorerFilter, selected: SearchListOption[]): void {
+    this.filterSelections.update((selections) => ({ ...selections, [filter.id]: selected }));
+  }
+
+  /** Resets the filter selections and notifies the consumer. */
+  protected clearAllFilters(): void {
+    this.filterSelections.set({});
+    this.clearFilters.emit();
+  }
 
   // /**
   //  * Keeps {@link filtersOpen} in sync with the drawer while it is not docked.
