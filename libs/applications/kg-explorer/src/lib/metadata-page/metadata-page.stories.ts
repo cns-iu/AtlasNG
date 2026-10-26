@@ -57,13 +57,7 @@ const SECTIONS: MetadataSection[] = [
       },
     ],
   },
-  {
-    title: 'Creator(s)',
-    content: [
-      paragraph(link('Jacob C. Scherba', 'https://www.example.com')),
-      paragraph(link('Jacob C. Scherba', 'https://www.example.com')),
-    ],
-  },
+  { title: 'Creator(s)', content: [paragraph(link('Jacob C. Scherba', 'https://www.example.com'))] },
   { title: 'Project lead(s)', content: paragraph(link('Katy Börner', 'https://www.example.com')) },
   { title: 'Internal reviewer(s)', content: paragraph(link('Rajan Jain', 'https://www.example.com')) },
   { title: 'Date published', content: paragraph('2026-08-11') },
