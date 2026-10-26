@@ -13,7 +13,7 @@
     "serve-static-storybook": {},
     "storybook": {
       "options": {
-        "port": 4403
+        "port": 4404
       }
     },
     "test": {
