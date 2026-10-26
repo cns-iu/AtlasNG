@@ -40,7 +40,7 @@ const baseConfig = [
               onlyDependOnLibsWithTags: ['layer:cdk', 'layer:analytics', 'layer:common', 'layer:core'],
             },
             {
-              sourceTag: 'layer:content-templates',
+              sourceTag: 'layer:content-blocks',
               onlyDependOnLibsWithTags: [
                 'layer:design-system',
                 'layer:analytics',
@@ -52,7 +52,7 @@ const baseConfig = [
             {
               sourceTag: 'layer:labs',
               onlyDependOnLibsWithTags: [
-                'layer:content-templates',
+                'layer:content-blocks',
                 'layer:design-system',
                 'layer:analytics',
                 'layer:cdk',

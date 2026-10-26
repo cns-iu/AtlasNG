@@ -20,7 +20,7 @@
     "cdk",
     "commitlint-config",
     "common",
-    "content-templates",
+    "content-blocks",
     "core",
     "design-system",
     "eslint-plugin",

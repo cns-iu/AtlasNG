@@ -56,9 +56,9 @@ const LIBRARIES = [
     expanded: false,
   },
   {
-    id: 'content-templates',
-    title: 'Content Templates',
-    sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/content-templates',
+    id: 'content-blocks',
+    title: 'Content Blocks',
+    sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/content-blocks',
     port: 4403,
     expanded: false,
   },

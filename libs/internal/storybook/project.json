@@ -9,7 +9,7 @@
     "build-storybook": {
       "dependsOn": [
         {
-          "projects": ["design-system", "labs", "content-templates", "kg-explorer"],
+          "projects": ["design-system", "labs", "content-blocks", "kg-explorer"],
           "target": "build-storybook"
         }
       ]
@@ -17,7 +17,7 @@
     "storybook": {
       "dependsOn": [
         {
-          "projects": ["design-system", "labs", "content-templates", "kg-explorer"],
+          "projects": ["design-system", "labs", "content-blocks", "kg-explorer"],
           "target": "storybook"
         }
       ]

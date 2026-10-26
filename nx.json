@@ -257,7 +257,7 @@
   "release": {
     "groups": {
       "libraries": {
-        "projects": ["analytics", "cdk", "common", "content-templates", "core", "design-system", "labs"],
+        "projects": ["analytics", "cdk", "common", "content-blocks", "core", "design-system", "labs"],
         "projectsRelationship": "fixed",
         "releaseTag": {
           "pattern": "v{version}"
