@@ -84,3 +84,11 @@ export class Greeter {
 ```
 
 The `defaults` factory runs in an injection context, so it may call `inject()`. `GREETER_CONFIG.inject()` must also be called in an injection context, for example in a field initializer or constructor.
+
+Use `ConfigurationOf` to name the injected type, for example to pass the configuration around:
+
+```ts
+function greet(config: ConfigurationOf<typeof GREETER_CONFIG>): string {
+  return `${config.greeting}, ${config.name ?? 'world'}!`;
+}
+```

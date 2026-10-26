@@ -15,6 +15,7 @@ export {
   type,
   type ConfigurationToken,
   type ConfigurationTokenOptions,
+  type ConfigurationOf,
   type ConfigurationWithDefaults,
 } from './lib/configuration-token';
 export { SafeStorage } from './lib/utils/storage';
