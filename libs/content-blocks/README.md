@@ -44,8 +44,7 @@ Render a document with `ContentBlock`, as an element or on an element of your ch
 Definitions load first. A node's component, config, and data load once its definition is known, so nothing is fetched
 for invalid nodes. Data values are signals: later emissions of a loader re-render the component. Nodes whose definition
 declares a `placeholderComponent` show it until their content is ready; failures show the definition's
-`errorComponent`, or the configured one, and are reported to Angular's `ErrorHandler`. See [PLAN.md](PLAN.md) for the
-full design.
+`errorComponent`, or the configured one, and are reported to Angular's `ErrorHandler`.
 
 ## Writing definitions
 
