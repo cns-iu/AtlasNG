@@ -310,6 +310,11 @@ rendering and hydration are not supported.
   created component through `createComponent`'s `directives` option and binds config keys to their inputs. The dev-mode
   input checks would include directive inputs. `TEXT_LINK_DEFINITION` would then render `TextLink` with `AnyLink` on an
   `a` host, replacing the `ContentTextLink` wrapper in `/definitions/design-system`.
+- TODO: Run the stories' `play` functions. They only document expectations today, since the workspace has no
+  `test-storybook` target; this needs a workspace-wide setup, e.g. the Storybook Vitest addon or the test runner.
+- TODO: Performance for very large documents. Each boundary rebuilds its `#members` array for every node it adds, and
+  its error watcher scans every member's `error` signal on each change. Fine for typical documents; revisit for
+  documents with thousands of nodes, e.g. by tracking failures instead of scanning members.
 
 ## Open questions
 
