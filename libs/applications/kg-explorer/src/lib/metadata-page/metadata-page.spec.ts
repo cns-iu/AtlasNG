@@ -18,7 +18,7 @@ describe('MetadataPage', () => {
           type: 'text',
           content: [
             'Creative Commons Attribution 4.0 International (',
-            { text: 'CC BY 4.0', link: 'https://creativecommons.org/licenses/by/4.0/', external: true },
+            { text: 'CC BY 4.0', link: 'https://creativecommons.org/licenses/by/4.0/' },
             ')',
           ],
         },
@@ -95,13 +95,20 @@ describe('MetadataPage', () => {
     await setup();
 
     expect(screen.getByText(/Creative Commons Attribution 4.0 International/)).toBeVisible();
-    const external = screen.getByRole('link', { name: 'CC BY 4.0' });
-    expect(external).toHaveAttribute('href', 'https://creativecommons.org/licenses/by/4.0/');
-    expect(external).toHaveAttribute('target', '_blank');
-    expect(external).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(screen.getByRole('link', { name: 'CC BY 4.0' })).toHaveAttribute(
+      'href',
+      'https://creativecommons.org/licenses/by/4.0/',
+    );
+  });
 
-    const internal = screen.getByRole('link', { name: 'Publisher Inc.' });
-    expect(internal).not.toHaveAttribute('target');
+  it('opens inline links in a new tab', async () => {
+    await setup();
+
+    for (const name of ['CC BY 4.0', 'Publisher Inc.']) {
+      const link = screen.getByRole('link', { name });
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    }
   });
 
   it('renders images', async () => {
@@ -112,13 +119,21 @@ describe('MetadataPage', () => {
     expect(screen.getByRole('img', { name: 'Figure of the entry' })).toHaveAttribute('src', 'figure.png');
   });
 
-  it('renders chips as a list', async () => {
+  it('renders chip labels in order', async () => {
     await setup();
 
-    const chipList = screen.getAllByRole('list').find((list) => within(list).queryByText('Heart'));
-    expect(chipList).toBeDefined();
-    const chips = within(chipList as HTMLElement).getAllByRole('listitem');
-    expect(chips.map((chip) => chip.textContent?.trim())).toEqual(['Heart', 'Kidney']);
+    const heart = screen.getByText('Heart');
+    const kidney = screen.getByText('Kidney');
+
+    expect(heart).toBeVisible();
+    expect(kidney).toBeVisible();
+    expect(heart.compareDocumentPosition(kidney)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
+  it('renders chips as non-interactive', async () => {
+    await setup();
+
+    expect(screen.queryByRole('button', { name: 'Heart' })).not.toBeInTheDocument();
   });
 
   it('hides parts that are turned off', async () => {

@@ -9,7 +9,8 @@ import {
   VersionControlFileFormat,
   VersionControlItem,
 } from '@atlasng/design-system/version-control';
-import { argsToTemplate, Meta, StoryObj } from '@storybook/angular';
+import { HeaderShell, HeaderShellNavigationItem, NavigationContainer } from '@atlasng/labs/header-shell';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { expect } from 'storybook/test';
 import { MetadataPage, MetadataSection } from './metadata-page';
 
@@ -34,17 +35,15 @@ const SECTIONS: MetadataSection[] = [
   },
   {
     title: 'Creator(s)',
-    blocks: [
-      { type: 'text', content: [{ text: 'Jacob C. Scherba', link: 'https://www.example.com', external: true }] },
-    ],
+    blocks: [{ type: 'text', content: [{ text: 'Jacob C. Scherba', link: 'https://www.example.com' }] }],
   },
   {
     title: 'Project lead(s)',
-    blocks: [{ type: 'text', content: [{ text: 'Katy Börner', link: 'https://www.example.com', external: true }] }],
+    blocks: [{ type: 'text', content: [{ text: 'Katy Börner', link: 'https://www.example.com' }] }],
   },
   {
     title: 'Internal reviewer(s)',
-    blocks: [{ type: 'text', content: [{ text: 'Rajan Jain', link: 'https://www.example.com', external: true }] }],
+    blocks: [{ type: 'text', content: [{ text: 'Rajan Jain', link: 'https://www.example.com' }] }],
   },
   { title: 'Date published', blocks: [{ type: 'text', content: '2026-08-11' }] },
   { title: 'Date last processed', blocks: [{ type: 'text', content: '2026-08-11' }] },
@@ -57,7 +56,7 @@ const SECTIONS: MetadataSection[] = [
         type: 'text',
         content: [
           'Creative Commons Attribution 4.0 International (',
-          { text: 'CC BY 4.0', link: 'https://creativecommons.org/licenses/by/4.0/', external: true },
+          { text: 'CC BY 4.0', link: 'https://creativecommons.org/licenses/by/4.0/' },
           ')',
         ],
       },
@@ -135,4 +134,41 @@ export const Default: Story = {
     ).toBeVisible();
     await expect(canvas.getByText('Digital object version')).toBeVisible();
   },
+};
+
+const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
+  { id: 'kg-explorer', label: 'Knowledge Graph Explorer' },
+  { id: 'about', label: 'About' },
+];
+
+/** Metadata page displayed below the application header. */
+export const WithHeader: Story = {
+  decorators: [moduleMetadata({ imports: [HeaderShell, NavigationContainer] })],
+  render: (args) => ({
+    props: { ...args, navigationItems: NAVIGATION_ITEMS },
+    template: `
+      <ang-header-shell
+        logoUrl="assets/illustration-placeholder.svg"
+        hasLocalNavigation="true"
+        [navigationItems]="navigationItems"
+        [localNavigationExpanded]="navigation.leftMenuOpen()"
+        (localNavigationToggle)="navigation.localNavigationToggle()"
+        (appsMenuToggle)="navigation.appsMenuToggle()"
+      >
+      </ang-header-shell>
+
+      <ang-navigation-container
+        [navigationItems]="navigationItems"
+        [navRight]="navRight"
+        [email]="email"
+        [socialMediaIds]="socialMediaIds"
+        #navigation
+      >
+        <main id="main-content">
+          <ang-metadata-page ${argsToTemplate(args, { exclude: ['download'] })} />
+        </main>
+      </ang-navigation-container>
+    `,
+    styles: [`ang-header-shell {img{height: 100%;}}`],
+  }),
 };

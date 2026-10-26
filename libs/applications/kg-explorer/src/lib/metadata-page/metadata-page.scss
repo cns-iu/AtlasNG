@@ -4,15 +4,10 @@
 :host {
   --ang-metadata-page--gap: 2.5rem;
   --ang-metadata-page--padding: 2.5rem;
-  --ang-metadata-page--offset: 0rem;
 
   display: block;
   background: var(--mat-sys-background);
   color: var(--mat-sys-on-background);
-
-  @include breakpoints.breakpoint(medium) {
-    --ang-metadata-page--gap: 3rem;
-  }
 }
 
 .ang-metadata-page--layout {
@@ -89,9 +84,9 @@
   align-self: start;
 
   @include breakpoints.breakpoint(medium) {
-    max-height: calc(100vh - var(--ang-metadata-page--padding) * 2 - var(--ang-metadata-page--offset));
+    max-height: calc(100vh - var(--ang-metadata-page--padding) * 2);
     position: sticky;
-    top: calc(var(--ang-metadata-page--padding) + var(--ang-metadata-page--offset));
+    top: var(--ang-metadata-page--padding);
   }
 }
 
@@ -109,31 +104,17 @@
   height: auto;
 }
 
-// Stateless chips are display-only: no state layers and selectable text.
 .ang-metadata-page--chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-
   @include mat.chips-overrides(
     (
-      container-height: 1.938rem,
-      container-shape-radius: var(--mat-sys-corner-small),
       outline-width: 0,
       elevated-container-color: var(--mat-sys-tertiary-container),
       label-text-color: var(--mat-sys-tertiary),
-      label-text-font: var(--mat-sys-label-large-font),
-      label-text-size: var(--mat-sys-label-large-size),
-      label-text-weight: var(--mat-sys-label-large-weight),
-      label-text-line-height: var(--mat-sys-label-large-line-height),
-      label-text-tracking: var(--mat-sys-label-large-tracking),
       hover-state-layer-opacity: 0,
-      focus-state-layer-opacity: 0,
     )
   );
 }
 
-.ang-metadata-page--chip {
-  cursor: auto;
+::ng-deep .ang-metadata-page--chip span {
   user-select: text;
 }

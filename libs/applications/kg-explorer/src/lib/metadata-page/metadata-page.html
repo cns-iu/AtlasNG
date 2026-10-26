@@ -6,7 +6,7 @@
     @if (showIcons() && icons().length > 0) {
       <div class="ang-metadata-page--icons">
         @for (icon of icons(); track $index) {
-          <img class="ang-metadata-page--icon" [src]="icon.src" [alt]="icon.alt" />
+          <img class="ang-metadata-page--icon" [attr.src]="icon.src" [attr.alt]="icon.alt" />
         }
       </div>
     }
@@ -46,34 +46,30 @@
     [level]="sectionHeadingLevel()"
     [underlined]="underlinedSections()"
   >
-    @for (block of asSection(section).blocks; track $index) {
+    @for (block of section.blocks; track $index) {
       @switch (block.type) {
         @case ('text') {
           <ang-content-paragraph class="ang-metadata-page--text">
             @for (inline of toInlines(block.content); track $index) {
-              @if (asLink(inline); as link) {
-                <a
-                  angTextLink
-                  [angAnyLink]="link.link"
-                  [target]="link.external ? '_blank' : undefined"
-                  [rel]="link.external ? 'noopener noreferrer' : undefined"
-                  >{{ link.text }}</a
-                >
+              @if (typeof inline === 'string') {
+                <span>{{ inline }}</span>
               } @else {
-                {{ inline }}
+                <a angTextLink target="_blank" rel="noopener noreferrer" [angAnyLink]="inline.link">
+                  <span>{{ inline.text }}</span>
+                </a>
               }
             }
           </ang-content-paragraph>
         }
         @case ('image') {
-          <img class="ang-metadata-page--image" [src]="block.src" [alt]="block.alt" />
+          <img class="ang-metadata-page--image" [attr.src]="block.src" [attr.alt]="block.alt" />
         }
         @case ('chips') {
-          <div class="ang-metadata-page--chips" role="list">
+          <mat-chip-set class="ang-metadata-page--chips">
             @for (label of block.labels; track $index) {
-              <mat-chip class="ang-metadata-page--chip" role="listitem" disableRipple>{{ label }}</mat-chip>
+              <mat-chip class="ang-metadata-page--chip" disableRipple>{{ label }}</mat-chip>
             }
-          </div>
+          </mat-chip-set>
         }
       }
     }

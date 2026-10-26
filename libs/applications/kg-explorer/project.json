@@ -9,11 +9,20 @@
     "build": {
       "executor": "@nx/angular:package"
     },
-    "build-storybook": {},
+    "build-storybook": {
+      "options": {
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/labs/src/sass", "libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
+        }
+      }
+    },
     "serve-static-storybook": {},
     "storybook": {
       "options": {
-        "port": 4403
+        "port": 4403,
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/labs/src/sass", "libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
+        }
       }
     },
     "test": {

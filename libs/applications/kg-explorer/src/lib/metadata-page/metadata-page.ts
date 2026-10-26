@@ -142,16 +142,6 @@ export class MetadataPage<T extends VersionControlFileFormat = VersionControlFil
   protected readonly remainingSections = computed(() => this.sections().slice(1));
 
   /**
-   * Types a section passed through the untyped section template context.
-   *
-   * @param section - Section from the template context.
-   * @returns The same section, typed.
-   */
-  protected asSection(section: MetadataSection): MetadataSection {
-    return section;
-  }
-
-  /**
    * Normalizes text block content into a list of inline items.
    *
    * @param content - Text block content.
@@ -159,15 +149,5 @@ export class MetadataPage<T extends VersionControlFileFormat = VersionControlFil
    */
   protected toInlines(content: string | MetadataInline[]): MetadataInline[] {
     return typeof content === 'string' ? [content] : content;
-  }
-
-  /**
-   * Narrows an inline item to a link.
-   *
-   * @param inline - Inline item to check.
-   * @returns The link, or `undefined` when the item is plain text.
-   */
-  protected asLink(inline: MetadataInline): MetadataLink | undefined {
-    return typeof inline === 'string' ? undefined : inline;
   }
 }
