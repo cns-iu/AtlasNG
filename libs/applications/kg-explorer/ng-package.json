@@ -3,6 +3,6 @@
   "dest": "../../../dist/libs/applications/kg-explorer",
   "lib": {
     "entryFile": "src/index.ts",
-    "styleIncludePaths": ["../../design-system/src/sass"]
+    "styleIncludePaths": ["../../labs/src/sass", "../../design-system/src/sass"]
   }
 }

@@ -1,3 +1,4 @@
+import { ContentNode } from '@atlasng/content-blocks/types';
 import {
   CSV_FILE_FORMAT,
   JSON_FILE_FORMAT,
@@ -21,48 +22,63 @@ const DESCRIPTION =
   'pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est ' +
   'laborum.';
 
+/**
+ * Creates a paragraph node.
+ *
+ * @param content Paragraph content.
+ * @returns The paragraph node.
+ */
+function paragraph(content: ContentNode | ContentNode[]): ContentNode {
+  return { component: 'ContentParagraph', content };
+}
+
+/**
+ * Creates a link node.
+ *
+ * @param text Link text.
+ * @param href Link destination.
+ * @returns The link node.
+ */
+function link(text: string, href: string): ContentNode {
+  return { component: 'TextLink', config: { href }, content: text };
+}
+
 const SECTIONS: MetadataSection[] = [
   {
     title: 'Description',
-    blocks: [
-      { type: 'text', content: DESCRIPTION },
+    content: [
+      paragraph(DESCRIPTION),
       {
-        type: 'image',
-        src: 'assets/illustration-placeholder.svg',
-        alt: 'Placeholder illustration of the cardiovascular system',
+        component: 'MetadataImage',
+        config: {
+          src: 'assets/illustration-placeholder.svg',
+          alt: 'Placeholder illustration of the cardiovascular system',
+        },
       },
     ],
   },
   {
     title: 'Creator(s)',
-    blocks: [{ type: 'text', content: [{ text: 'Jacob C. Scherba', link: 'https://www.example.com' }] }],
-  },
-  {
-    title: 'Project lead(s)',
-    blocks: [{ type: 'text', content: [{ text: 'Katy Börner', link: 'https://www.example.com' }] }],
-  },
-  {
-    title: 'Internal reviewer(s)',
-    blocks: [{ type: 'text', content: [{ text: 'Rajan Jain', link: 'https://www.example.com' }] }],
-  },
-  { title: 'Date published', blocks: [{ type: 'text', content: '2026-08-11' }] },
-  { title: 'Date last processed', blocks: [{ type: 'text', content: '2026-08-11' }] },
-  { title: 'Publisher', blocks: [{ type: 'text', content: 'Whole Person Physiome' }] },
-  { title: 'Funder', blocks: [{ type: 'text', content: 'National Institutes of Health (Award number U24AT013504)' }] },
-  {
-    title: 'License',
-    blocks: [
-      {
-        type: 'text',
-        content: [
-          'Creative Commons Attribution 4.0 International (',
-          { text: 'CC BY 4.0', link: 'https://creativecommons.org/licenses/by/4.0/' },
-          ')',
-        ],
-      },
+    content: [
+      paragraph(link('Jacob C. Scherba', 'https://www.example.com')),
+      paragraph(link('Jacob C. Scherba', 'https://www.example.com')),
     ],
   },
-  { title: 'Tags', blocks: [{ type: 'chips', labels: ['WPP table', 'Heart', 'Kidney'] }] },
+  { title: 'Project lead(s)', content: paragraph(link('Katy Börner', 'https://www.example.com')) },
+  { title: 'Internal reviewer(s)', content: paragraph(link('Rajan Jain', 'https://www.example.com')) },
+  { title: 'Date published', content: paragraph('2026-08-11') },
+  { title: 'Date last processed', content: paragraph('2026-08-11') },
+  { title: 'Publisher', content: paragraph('Whole Person Physiome') },
+  { title: 'Funder', content: paragraph('National Institutes of Health (Award number U24AT013504)') },
+  {
+    title: 'License',
+    content: paragraph([
+      'Creative Commons Attribution 4.0 International (',
+      link('CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/'),
+      ')',
+    ]),
+  },
+  { title: 'Tags', content: { component: 'MetadataChips', config: { labels: ['WPP table', 'Heart', 'Kidney'] } } },
 ];
 
 const VERSIONS: VersionControlItem<VersionControlFileFormat>[] = [
@@ -133,6 +149,7 @@ export const Default: Story = {
       }),
     ).toBeVisible();
     await expect(canvas.getByText('Digital object version')).toBeVisible();
+    await expect(await canvas.findByRole('link', { name: 'CC BY 4.0' })).toBeVisible();
   },
 };
 

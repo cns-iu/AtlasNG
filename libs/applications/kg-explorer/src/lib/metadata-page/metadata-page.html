@@ -32,7 +32,7 @@
 
   @if (remainingSections().length > 0) {
     <div class="ang-metadata-page--sections">
-      @for (section of remainingSections(); track $index) {
+      @for (section of remainingSections(); track section) {
         <ng-container *ngTemplateOutlet="sectionTemplate; context: { $implicit: section }" />
       }
     </div>
@@ -46,32 +46,6 @@
     [level]="sectionHeadingLevel()"
     [underlined]="underlinedSections()"
   >
-    @for (block of section.blocks; track $index) {
-      @switch (block.type) {
-        @case ('text') {
-          <ang-content-paragraph class="ang-metadata-page--text">
-            @for (inline of toInlines(block.content); track $index) {
-              @if (typeof inline === 'string') {
-                <span>{{ inline }}</span>
-              } @else {
-                <a angTextLink target="_blank" rel="noopener noreferrer" [angAnyLink]="inline.link">
-                  <span>{{ inline.text }}</span>
-                </a>
-              }
-            }
-          </ang-content-paragraph>
-        }
-        @case ('image') {
-          <img class="ang-metadata-page--image" [attr.src]="block.src" [attr.alt]="block.alt" />
-        }
-        @case ('chips') {
-          <mat-chip-set class="ang-metadata-page--chips">
-            @for (label of block.labels; track $index) {
-              <mat-chip class="ang-metadata-page--chip" disableRipple>{{ label }}</mat-chip>
-            }
-          </mat-chip-set>
-        }
-      }
-    }
+    <ang-content-block class="ang-metadata-page--section-content" [document]="section.document" />
   </ang-content-section>
 </ng-template>

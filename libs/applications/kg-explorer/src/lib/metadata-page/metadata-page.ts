@@ -1,68 +1,40 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
-import { MatChipsModule } from '@angular/material/chips';
-import { AnyLink, AnyLinkCommand } from '@atlasng/common';
+import { ContentBlock } from '@atlasng/content-blocks';
+import { provideDefinitions } from '@atlasng/content-blocks/definitions';
+import { provideDesignSystemDefinitions } from '@atlasng/content-blocks/definitions/design-system';
+import { CONTENT_DOCUMENT_VERSION, ContentDocument } from '@atlasng/content-blocks/types';
 import { BreadcrumbItem, Breadcrumbs } from '@atlasng/design-system/buttons/breadcrumbs';
-import { ContentParagraph } from '@atlasng/design-system/content/content-paragraph';
 import { ContentSection } from '@atlasng/design-system/content/content-section';
 import { Heading } from '@atlasng/design-system/content/heading';
 import { LinkSnippet } from '@atlasng/design-system/links/link-snippet';
-import { TextLink } from '@atlasng/design-system/links/text-link';
 import {
   VersionControl,
   VersionControlFileFormat,
   VersionControlItem,
   VersionDownload,
 } from '@atlasng/design-system/version-control';
+import { METADATA_PAGE_DEFINITIONS } from './content/definitions';
 
-/** A link displayed inline within a text block. */
-export interface MetadataLink {
-  /** Displayed link text. */
-  text: string;
-  /** Link destination. */
-  link: AnyLinkCommand;
-  /** Whether the link opens in a new tab. */
-  external?: boolean;
-}
-
-/** Inline content of a text block: plain text or a link. */
-export type MetadataInline = string | MetadataLink;
-
-/** A paragraph of text with optional inline links. */
-export interface MetadataTextBlock {
-  /** Block discriminator. */
-  type: 'text';
-  /** Paragraph content. A string is rendered as plain text. */
-  content: string | MetadataInline[];
-}
-
-/** An image displayed within a section. */
-export interface MetadataImageBlock {
-  /** Block discriminator. */
-  type: 'image';
-  /** Image source URL. */
-  src: string;
-  /** Alternative text describing the image. Use an empty string for decorative images. */
-  alt: string;
-}
-
-/** A group of non-interactive chips, for example tags. */
-export interface MetadataChipsBlock {
-  /** Block discriminator. */
-  type: 'chips';
-  /** Chip labels, in display order. */
-  labels: string[];
-}
-
-/** A piece of content displayed within a metadata section. */
-export type MetadataBlock = MetadataTextBlock | MetadataImageBlock | MetadataChipsBlock;
-
-/** A titled section of the metadata page. */
+/**
+ * A titled section of the metadata page.
+ *
+ * The content is rendered with content blocks. Besides the design-system definitions, e.g. `ContentParagraph`, it can
+ * use the {@link METADATA_PAGE_DEFINITIONS}: `MetadataImage` and `MetadataChips`.
+ */
 export interface MetadataSection {
   /** Section heading. */
   title: string;
-  /** Section content, in display order. */
-  blocks: MetadataBlock[];
+  /** Section content nodes, in display order. */
+  content: ContentDocument['content'];
+}
+
+/** A section prepared for rendering, with its content wrapped in a content document. */
+interface MetadataSectionView {
+  /** Section heading. */
+  title: string;
+  /** Content document rendered in the section body. */
+  document: ContentDocument;
 }
 
 /** An icon displayed above the page title, for example a product or organ icon. */
@@ -77,6 +49,7 @@ export interface MetadataIcon {
  * Page layout template that displays the metadata of a single data entry, such as a knowledge graph digital object.
  *
  * The page shows breadcrumbs, icons, a title, a copyable URL, a list of sections and an always-visible version control panel.
+ * Section content is rendered with content blocks; the page registers the design-system and metadata page definitions.
  * On narrow screens the version control panel follows the first section; from the medium breakpoint up it is
  * displayed in a column beside the sections.
  *
@@ -85,20 +58,10 @@ export interface MetadataIcon {
  */
 @Component({
   selector: 'ang-metadata-page',
-  imports: [
-    AnyLink,
-    Breadcrumbs,
-    ContentParagraph,
-    ContentSection,
-    Heading,
-    LinkSnippet,
-    MatChipsModule,
-    NgTemplateOutlet,
-    TextLink,
-    VersionControl,
-  ],
+  imports: [Breadcrumbs, ContentBlock, ContentSection, Heading, LinkSnippet, NgTemplateOutlet, VersionControl],
   templateUrl: './metadata-page.html',
   styleUrl: './metadata-page.scss',
+  providers: [provideDesignSystemDefinitions(), provideDefinitions(METADATA_PAGE_DEFINITIONS)],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ang-metadata-page',
@@ -136,18 +99,15 @@ export class MetadataPage<T extends VersionControlFileFormat = VersionControlFil
   /** Emits the version and file format whenever a download option is chosen. */
   readonly download = output<VersionDownload<T>>();
 
+  /** Sections with their content wrapped in content documents, created once per sections change. */
+  protected readonly sectionViews = computed(() =>
+    this.sections().map((section): MetadataSectionView => ({
+      title: section.title,
+      document: { version: CONTENT_DOCUMENT_VERSION, content: section.content },
+    })),
+  );
   /** First section, displayed before the version control panel on narrow screens. */
-  protected readonly firstSection = computed(() => this.sections()[0]);
+  protected readonly firstSection = computed(() => this.sectionViews()[0]);
   /** Sections displayed after the version control panel on narrow screens. */
-  protected readonly remainingSections = computed(() => this.sections().slice(1));
-
-  /**
-   * Normalizes text block content into a list of inline items.
-   *
-   * @param content - Text block content.
-   * @returns The inline items to render.
-   */
-  protected toInlines(content: string | MetadataInline[]): MetadataInline[] {
-    return typeof content === 'string' ? [content] : content;
-  }
+  protected readonly remainingSections = computed(() => this.sectionViews().slice(1));
 }

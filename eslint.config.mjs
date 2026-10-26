@@ -64,6 +64,7 @@ const baseConfig = [
               sourceTag: 'layer:app-library',
               onlyDependOnLibsWithTags: [
                 'layer:labs',
+                'layer:content-blocks',
                 'layer:design-system',
                 'layer:analytics',
                 'layer:cdk',

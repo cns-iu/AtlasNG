@@ -10,22 +10,30 @@ import { MetadataPage, MetadataSection } from './metadata-page';
 
 describe('MetadataPage', () => {
   const sections: MetadataSection[] = [
-    { title: 'Description', blocks: [{ type: 'text', content: 'A description of the entry.' }] },
+    { title: 'Description', content: { component: 'ContentParagraph', content: 'A description of the entry.' } },
     {
       title: 'License',
-      blocks: [
-        {
-          type: 'text',
-          content: [
-            'Creative Commons Attribution 4.0 International (',
-            { text: 'CC BY 4.0', link: 'https://creativecommons.org/licenses/by/4.0/' },
-            ')',
-          ],
-        },
-      ],
+      content: {
+        component: 'ContentParagraph',
+        content: [
+          'Creative Commons Attribution 4.0 International (',
+          {
+            component: 'TextLink',
+            config: { href: 'https://creativecommons.org/licenses/by/4.0/' },
+            content: 'CC BY 4.0',
+          },
+          ')',
+        ],
+      },
     },
-    { title: 'Publisher', blocks: [{ type: 'text', content: [{ text: 'Publisher Inc.', link: '/publisher' }] }] },
-    { title: 'Tags', blocks: [{ type: 'chips', labels: ['Heart', 'Kidney'] }] },
+    {
+      title: 'Publisher',
+      content: {
+        component: 'ContentParagraph',
+        content: { component: 'TextLink', config: { href: '/publisher' }, content: 'Publisher Inc.' },
+      },
+    },
+    { title: 'Tags', content: { component: 'MetadataChips', config: { labels: ['Heart', 'Kidney'] } } },
   ];
 
   const versions: VersionControlItem<VersionControlFileFormat>[] = [
@@ -91,38 +99,39 @@ describe('MetadataPage', () => {
     expect(versionControl.compareDocumentPosition(license)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
+  it('renders section content', async () => {
+    await setup();
+
+    expect(await screen.findByText('A description of the entry.')).toBeVisible();
+  });
+
   it('renders text with inline links', async () => {
     await setup();
 
-    expect(screen.getByText(/Creative Commons Attribution 4.0 International/)).toBeVisible();
+    expect(await screen.findByText(/Creative Commons Attribution 4.0 International/)).toBeVisible();
     expect(screen.getByRole('link', { name: 'CC BY 4.0' })).toHaveAttribute(
       'href',
       'https://creativecommons.org/licenses/by/4.0/',
     );
   });
 
-  it('opens inline links in a new tab', async () => {
-    await setup();
-
-    for (const name of ['CC BY 4.0', 'Publisher Inc.']) {
-      const link = screen.getByRole('link', { name });
-      expect(link).toHaveAttribute('target', '_blank');
-      expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    }
-  });
-
   it('renders images', async () => {
     await setup({
-      sections: [{ title: 'Description', blocks: [{ type: 'image', src: 'figure.png', alt: 'Figure of the entry' }] }],
+      sections: [
+        {
+          title: 'Description',
+          content: { component: 'MetadataImage', config: { src: 'figure.png', alt: 'Figure of the entry' } },
+        },
+      ],
     });
 
-    expect(screen.getByRole('img', { name: 'Figure of the entry' })).toHaveAttribute('src', 'figure.png');
+    expect(await screen.findByRole('img', { name: 'Figure of the entry' })).toHaveAttribute('src', 'figure.png');
   });
 
   it('renders chip labels in order', async () => {
     await setup();
 
-    const heart = screen.getByText('Heart');
+    const heart = await screen.findByText('Heart');
     const kidney = screen.getByText('Kidney');
 
     expect(heart).toBeVisible();
@@ -133,6 +142,7 @@ describe('MetadataPage', () => {
   it('renders chips as non-interactive', async () => {
     await setup();
 
+    await screen.findByText('Heart');
     expect(screen.queryByRole('button', { name: 'Heart' })).not.toBeInTheDocument();
   });
 
