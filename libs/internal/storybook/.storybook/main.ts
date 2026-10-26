@@ -56,10 +56,18 @@ const LIBRARIES = [
     expanded: false,
   },
   {
+    id: 'content-blocks',
+    title: 'Content Blocks',
+    sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/content-blocks',
+    port: 4403,
+    expanded: false,
+  },
+  {
     id: 'kg-explorer',
     title: 'KG Explorer',
     sourceUrl: 'https://github.com/cns-iu/AtlasNG/tree/main/libs/applications/kg-explorer',
-    port: 4403,
+    port: 4404,
+    expanded: false,
   },
 ];
 
