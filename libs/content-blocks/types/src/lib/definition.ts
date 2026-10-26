@@ -5,11 +5,11 @@ import { ContentProjectionSchema } from './projection-schema';
 import { TypeRef } from './type-ref';
 
 /**
- * Describes how a `ContentElementNode` is rendered. Validated config and data outputs are bound to component inputs by
+ * Describes how a `ContentBlockNode` is rendered. Validated config and data outputs are bound to component inputs by
  * template name.
  */
 export interface ContentDefinition<TComponent = unknown> {
-  /** Unique name, matched against `ContentElementNode.component`. */
+  /** Unique name, matched against `ContentBlockNode.component`. */
   name: string;
 
   /** Component rendered for the node, or a lazy loader for it. */

@@ -1,23 +1,23 @@
-import { ContentOutlet, provideContentBlocks, withDefinitions } from '@atlasng/content-blocks';
+import { ContentBlock, provideContentBlocks, withDefinitions } from '@atlasng/content-blocks';
 import { applicationConfig, Meta, StoryObj } from '@storybook/angular';
 import { expect } from 'storybook/test';
 import { DESIGN_SYSTEM_DEFINITIONS } from './definitions';
 
-const meta: Meta<ContentOutlet> = {
-  component: ContentOutlet,
+const meta: Meta<ContentBlock> = {
+  component: ContentBlock,
   title: 'Content Blocks/Design System Definitions',
   decorators: [
     applicationConfig({ providers: [provideContentBlocks({}, withDefinitions(DESIGN_SYSTEM_DEFINITIONS))] }),
   ],
   render: (args) => ({
     props: args,
-    template: '<ang-content-outlet [document]="document" />',
+    template: '<ang-content-block [document]="document" />',
   }),
 };
 
 export default meta;
 
-type Story = StoryObj<ContentOutlet>;
+type Story = StoryObj<ContentBlock>;
 
 /** A page built only from the design-system definitions: header, section, heading, paragraph, link, notice, snippet. */
 export const Page: Story = {

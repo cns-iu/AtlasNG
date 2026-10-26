@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { DataLoader } from '@atlasng/content-blocks/loaders';
-import { ContentDefinition, ContentElementNode } from '@atlasng/content-blocks/types';
+import { ContentDefinition, ContentBlockNode } from '@atlasng/content-blocks/types';
 import { passthroughSchema } from '@atlasng/content-blocks/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { applicationConfig, Meta, StoryObj } from '@storybook/angular';
@@ -9,7 +9,7 @@ import { interval, map, startWith, switchMap, throwError, timer } from 'rxjs';
 import { expect, waitFor } from 'storybook/test';
 import { JsonValue } from 'type-fest';
 import { provideContentBlocks, withDataLoaders, withDefinitions } from '../providers';
-import { ContentOutlet } from './content-outlet';
+import { ContentBlock } from './content-block';
 
 /** Schema accepting string config values. */
 const stringSchema: StandardSchemaV1<JsonValue | undefined, string> = {
@@ -66,7 +66,7 @@ class StoryList {
 })
 class StoryPlaceholder {
   /** The node being loaded. */
-  readonly node = input.required<ContentElementNode>();
+  readonly node = input.required<ContentBlockNode>();
 }
 
 /** Error component shown when a `list` node fails. */
@@ -162,9 +162,9 @@ const failingLoader: DataLoader<{ message: string; delay?: number }> = {
   load: ({ message, delay = 3000 }) => timer(delay).pipe(switchMap(() => throwError(() => new Error(message)))),
 };
 
-const meta: Meta<ContentOutlet> = {
-  component: ContentOutlet,
-  title: 'Content Blocks/Content Outlet',
+const meta: Meta<ContentBlock> = {
+  component: ContentBlock,
+  title: 'Content Blocks/Content Block',
   decorators: [
     applicationConfig({
       providers: [
@@ -179,13 +179,13 @@ const meta: Meta<ContentOutlet> = {
   ],
   render: (args) => ({
     props: args,
-    template: '<ang-content-outlet [document]="document" />',
+    template: '<ang-content-block [document]="document" />',
   }),
 };
 
 export default meta;
 
-type Story = StoryObj<ContentOutlet>;
+type Story = StoryObj<ContentBlock>;
 
 /** Text and components with config, rendered from a JSON document. */
 export const Default: Story = {

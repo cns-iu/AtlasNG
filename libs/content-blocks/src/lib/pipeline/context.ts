@@ -4,7 +4,7 @@ import { DataParserRegistry } from '@atlasng/content-blocks/parsers';
 import { ConfigurationOf } from '@atlasng/core';
 import { CONTENT_BLOCKS_CONFIG } from '../config';
 
-/** Registries and configuration the pipeline runs with. Created by the outlet for each render. */
+/** Registries and configuration the pipeline runs with. Created by the content block for each render. */
 export interface PipelineContext {
   /** Registry to load definitions from. */
   definitions: DefinitionRegistry;

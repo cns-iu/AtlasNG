@@ -1,5 +1,5 @@
 import { inject, InjectionToken, Injector, Service } from '@angular/core';
-import { ContentElementNode } from '@atlasng/content-blocks/types';
+import { ContentBlockNode } from '@atlasng/content-blocks/types';
 import { LazyChainedRegistry } from '@atlasng/content-blocks/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Promisable } from 'type-fest';
@@ -9,7 +9,7 @@ import { PassthroughDataParser } from './passthrough-parser/passthrough-parser';
 /** Context passed to {@link DataParser.parse}. */
 export interface DataParserContext {
   /** Node whose data is being resolved. */
-  node: Readonly<ContentElementNode>;
+  node: Readonly<ContentBlockNode>;
   /** Path of the node in the document, e.g. `content.@default[0]`. Pass it to `ContentValidationError`. */
   path: string;
   /** Data key being resolved, e.g. `rows`. Config issues belong at `['data', key, ...]`. */
@@ -48,8 +48,8 @@ export interface DataParser<TConfig = unknown, TInput = unknown, TOutput = unkno
 export const DATA_PARSERS = new InjectionToken<Record<string, () => Promisable<DataParser>>[]>('DATA_PARSERS');
 
 /**
- * Parsers available in every application: `json` ({@link JsonDataParser}) and `passthrough` ({@link PassthroughDataParser}).
- * Registering a parser under the same name replaces the built-in.
+ * Parsers available in every application: `json` ({@link JsonDataParser}) and `passthrough`
+ * ({@link PassthroughDataParser}). Registering a parser under the same name replaces the built-in.
  */
 const BUILT_IN_DATA_PARSERS: Record<string, () => Promisable<DataParser>> = {
   json: () => inject(JsonDataParser),

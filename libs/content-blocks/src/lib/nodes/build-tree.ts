@@ -1,5 +1,5 @@
 import { CONTENT_DOCUMENT_VERSION, ContentDocument, ContentNode, DEFAULT_CONTENT } from '@atlasng/content-blocks/types';
-import { ContentValidationError, isContentElementNode, isNamedContentRecord } from '@atlasng/content-blocks/utils';
+import { ContentValidationError, isContentBlockNode, isNamedContentRecord } from '@atlasng/content-blocks/utils';
 import { Arrayable } from 'type-fest';
 import { RenderElementNode, RenderNode, RenderNodeKey, RenderNodeLocation, RenderTextNode } from './render-node';
 
@@ -64,7 +64,7 @@ function buildNode(
   if (typeof node === 'string') {
     return new RenderTextNode(parent, key, index, node);
   }
-  if (!isContentElementNode(node)) {
+  if (!isContentBlockNode(node)) {
     const location = new RenderNodeLocation(parent, key, index);
     throw new ContentValidationError(location.path, [
       { message: 'Expected a string or an object with a string `component`.' },

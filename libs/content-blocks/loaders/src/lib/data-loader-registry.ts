@@ -1,5 +1,5 @@
 import { inject, InjectionToken, Injector, Service } from '@angular/core';
-import { ContentElementNode } from '@atlasng/content-blocks/types';
+import { ContentBlockNode } from '@atlasng/content-blocks/types';
 import { LazyChainedRegistry } from '@atlasng/content-blocks/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Observable } from 'rxjs';
@@ -10,7 +10,7 @@ import { InlineDataLoader } from './inline-loader/inline-loader';
 /** Context passed to {@link DataLoader.load}. */
 export interface DataLoaderContext {
   /** Node whose data is being resolved. */
-  node: Readonly<ContentElementNode>;
+  node: Readonly<ContentBlockNode>;
   /** Path of the node in the document, e.g. `content.@default[0]`. Pass it to `ContentValidationError`. */
   path: string;
   /** Data key being resolved, e.g. `rows`. Config issues belong at `['data', key, ...]`. */

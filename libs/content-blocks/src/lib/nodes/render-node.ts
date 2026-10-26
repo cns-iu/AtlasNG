@@ -1,5 +1,5 @@
 import { ComponentMirror, Signal, signal, Type } from '@angular/core';
-import { ContentDefinition, ContentElementNode, DEFAULT_CONTENT } from '@atlasng/content-blocks/types';
+import { ContentDefinition, ContentBlockNode, DEFAULT_CONTENT } from '@atlasng/content-blocks/types';
 
 /** A node of the render tree: plain text, or an element rendered through a content definition. */
 export type RenderNode = RenderTextNode | RenderElementNode;
@@ -126,7 +126,7 @@ export class RenderElementNode extends RenderNodeLocation {
   /** Node discriminator. */
   readonly kind = 'element';
   /** The document node. */
-  readonly source: ContentElementNode;
+  readonly source: ContentBlockNode;
   /** Child nodes keyed by content name. */
   readonly content: RenderNodeContent = {};
   /** Controller behind {@link abortSignal}. */
@@ -177,7 +177,7 @@ export class RenderElementNode extends RenderNodeLocation {
     parent: RenderElementNode | null,
     key: RenderNodeKey,
     index: number | undefined,
-    source: ContentElementNode,
+    source: ContentBlockNode,
     abortSignal = parent?.abortSignal,
   ) {
     super(parent, key, index);

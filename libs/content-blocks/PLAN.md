@@ -10,7 +10,7 @@ Async work happens in several places: definition lookup, lazy component imports,
 | 1. JSON document and definition contracts      | Done (`types/`)                               |
 | 2. Registry providers (`provideContentBlocks`) | Done (`src/lib/providers.ts`)                 |
 | 3. Render tree, pipeline, and validation       | Done (`src/lib/{nodes,pipeline,validation}/`) |
-| 4. Outlet, boundaries, errors                  | Done (`src/lib/outlet/`)                      |
+| 4. Renderer, boundaries, errors                | Done (`src/lib/renderer/`)                    |
 | 5. Built-in loaders/parsers                    | Done (`loaders/`, `parsers/`)                 |
 
 ## Decisions
@@ -34,12 +34,11 @@ Async work happens in several places: definition lookup, lazy component imports,
 - **Types stay simple for now:** definitions, loaders, and parsers are loosely typed. Schema-driven generics and
   inference helpers are deferred (see [Later](#later)).
 - **Entry points:** shared types live in `@atlasng/content-blocks/types`, the definition registry in
-  `@atlasng/content-blocks/definitions`, built-in loaders and their registry in
-  `@atlasng/content-blocks/loaders`, and built-in parsers and their registry in `@atlasng/content-blocks/parsers`.
-  Shared runtime helpers live in `@atlasng/content-blocks/utils`: `ContentValidationError` (so loaders and parsers can
-  throw it), the document guards (`isContentElementNode`, `isContentDataSource`, `isNamedContentRecord`), `passthroughSchema`,
-  and the `LazyChainedRegistry` base class. The
-  primary entry point imports these but does not re-export them.
+  `@atlasng/content-blocks/definitions`, built-in loaders and their registry in `@atlasng/content-blocks/loaders`, and
+  built-in parsers and their registry in `@atlasng/content-blocks/parsers`. Shared runtime helpers live in
+  `@atlasng/content-blocks/utils`: `ContentValidationError` (so loaders and parsers can throw it), the document guards
+  (`isContentBlockNode`, `isContentDataSource`, `isNamedContentRecord`), `passthroughSchema`, and the
+  `LazyChainedRegistry` base class. The primary entry point imports these but does not re-export them.
 
 ## 1. JSON document (`document.ts`)
 
@@ -49,9 +48,9 @@ interface ContentDocument {
   content: Arrayable<ContentNode>;
 }
 
-type ContentNode = string | ContentElementNode; // string -> DOM Text node
+type ContentNode = string | ContentBlockNode; // string -> DOM Text node
 
-interface ContentElementNode {
+interface ContentBlockNode {
   component: string; // definition name
   classes?: string | string[]; // added to the component's host element
   styles?: Record<string, string | number>; // set on the host; camelCase, dash-case, or --custom properties
@@ -67,15 +66,15 @@ interface ContentDataSource {
 }
 ```
 
-Discrimination rules (`isContentElementNode`, `isContentDataSource`):
+Discrimination rules (`isContentBlockNode`, `isContentDataSource`):
 
 - `content`: string -> text node; array -> node list; object **with** `component` -> single node (all three target
   the default entry); object **without** `component` -> record keyed by content name. A content name therefore cannot
   be `component`.
-- `data`: string -> `{ type: <defaultLoader>, url: <string> }`; array -> `{ type: <defaultInlineLoader>, value: <array> }`;
-  object -> `ContentDataSource`. Inline objects use the built-in `inline` loader: `{ "type": "inline", "value": { ... } }`.
-  Sources without `parser` get `defaultParser`. The defaults are `http`, `inline`, and `passthrough`, set through
-  `provideContentBlocks({ defaultLoader, defaultInlineLoader, defaultParser })`.
+- `data`: string -> `{ type: <defaultLoader>, url: <string> }`; array -> `{ type: <defaultInlineLoader>, value: <array>
+}`; object -> `ContentDataSource`. Inline objects use the built-in `inline` loader: `{ "type": "inline", "value": {
+... } }`. Sources without `parser` get `defaultParser`. The defaults are `http`, `inline`, and `passthrough`, set
+  through `provideContentBlocks({ defaultLoader, defaultInlineLoader, defaultParser })`.
 - A source names its loader in `type` and is itself the loader config: the loader receives the source without
   `parser`, `type` included, so loader configs cannot use a `parser` key.
 - `parser`: a string names a registered parser; an object names it in `type` and is itself the config (passed as is,
@@ -130,7 +129,7 @@ const DEFAULT_CONTENT: unique symbol;
 type ContentProjectionSchema = Record<string, string> & { [DEFAULT_CONTENT]?: string };
 
 interface ContentDefinition<TComponent = unknown> {
-  name: string; // matches ContentElementNode.component
+  name: string; // matches ContentBlockNode.component
 
   component: TypeRef<TComponent>;
   placeholderComponent?: Type<unknown>; // sync; makes the node an async boundary
@@ -174,9 +173,9 @@ const tableDefinition: ContentDefinition = {
   `DEFAULT_CONTENT`, else to the entry whose selector is `*`. Unknown content names, selectors missing from the
   component, and unkeyed content without a default entry are dev-mode errors.
 - **Placeholder and error components:** inputs are bound only if reflection shows them. A placeholder receives the
-  boundary's `ContentElementNode` in a `node` input and its `ContentDefinition` in a `definition` input. An
+  boundary's `ContentBlockNode` in a `node` input and its `ContentDefinition` in a `definition` input. An
   error component (the definition's or the configured `errorComponent`) receives the same, plus the thrown value in an
-  `error` input. Both are `undefined` for the outlet's root boundary. Missing inputs are skipped silently.
+  `error` input. Both are `undefined` for the content block's root boundary. Missing inputs are skipped silently.
 - **Text:** rendered as a DOM text node, or with the configured `textComponent`, which receives a `text` input.
 
 ## 3. Data loaders and parsers (`data-loader-registry.ts`, `data-parser-registry.ts`)
@@ -192,14 +191,14 @@ interface DataParser<TConfig = unknown, TInput = unknown, TOutput = unknown> {
 
 // Separate types so each can grow independently; both start out the same.
 interface DataLoaderContext {
-  node: Readonly<ContentElementNode>;
+  node: Readonly<ContentBlockNode>;
   path: string; // node path, for ContentValidationError
   key: string; // data key, config issues go at ['data', key, ...]
   signal: AbortSignal; // aborted on document change / destroy
 }
 
 interface DataParserContext {
-  node: Readonly<ContentElementNode>;
+  node: Readonly<ContentBlockNode>;
   path: string;
   key: string;
   signal: AbortSignal;
@@ -221,9 +220,9 @@ Built-ins (`@atlasng/content-blocks/loaders` and `@atlasng/content-blocks/parser
 registries), registered like any other loader or parser. Each is a `@Service()` provided in the root injector, so its
 factory injects it, e.g. `() => inject(HttpDataLoader)`:
 
-- `HttpDataLoader`: GET through the root `HttpClient`. Config
-  `{ url, responseType?: 'json' | 'text' | 'blob' | 'arraybuffer' }`, default `'json'`. Its `configSchema` rejects a non-string `url`
-  and unsupported response types, and applies the default.
+- `HttpDataLoader`: GET through the root `HttpClient`. Config `{ url, responseType?: 'json' | 'text' | 'blob' |
+'arraybuffer' }`, default `'json'`. Its `configSchema` rejects a non-string `url` and unsupported response types, and
+  applies the default.
 - `InlineDataLoader`: config `{ value }`, returns `value`. Its `configSchema` rejects a source without `value`.
 - `JsonDataParser`: `JSON.parse` for strings; other input is returned unchanged.
 - `PassthroughDataParser`: returns its input unchanged.
@@ -256,14 +255,14 @@ environment injector, and `withDefinitions` / `withDataLoaders` / `withDataParse
 (from `/utils`), whose `get(name): Promise<T>` runs the factory once and caches the result, including rejections.
 `reset(name)` and `clear()` drop cached results so the next `get` runs the factory again:
 
-- `DefinitionRegistry` (from `/definitions`): the registered key acts as an alias and may differ from the definition's `name`.
+- `DefinitionRegistry` (from `/definitions`): the registered key acts as an alias and may differ from the definition's
+  `name`.
 - `DataLoaderRegistry` / `DataParserRegistry`.
 - Unknown names are delegated to the same registry in a parent environment injector, so route providers add to the
   application's registrations; the parent's result is cached on the child too. Without one, `get` returns `undefined`
-  (misses are not cached); the pipeline turns this into an `Unknown <kind> '<name>'.` error, e.g.
-  `Unknown data loader 'csv'.`, and surfaces it at the nearest boundary. `has(name)` checks registration without
-  running the factory; the outlet uses it to check the configured default loader and parser names (dev-mode error,
-  prod warning).
+  (misses are not cached); the pipeline turns this into an `Unknown <kind> '<name>'.` error, e.g. `Unknown data loader
+'csv'.`, and surfaces it at the nearest boundary. `has(name)` checks registration without running the factory; the
+  content block uses it to check the configured default loader and parser names (dev-mode error, prod warning).
 - Within one injector, a later registration of a name replaces an earlier one.
 
 `provideContentBlocks(config?, ...features)` also provides `CONTENT_BLOCKS_CONFIG` (`defaultLoader`,
@@ -283,20 +282,20 @@ environment injector, and `withDefinitions` / `withDataLoaders` / `withDataParse
    parallel, then checks that every key has a component input. Results are stored on the node as `definition` and
    `resolved` promises, and the first failure, including later data emissions, as the node's `error` signal. Failures
    caused by an ancestor's abort are not recorded.
-4. **Boundaries (`outlet/`):** the outlet's root and every node with a `placeholderComponent` are boundaries. A boundary
-   waits for its nodes and their descendants up to nested boundaries, then builds them bottom-up: text -> text node or
-   `textComponent`; element -> `createComponent(type, { bindings, projectableNodes, elementInjector })`; nested
+4. **Boundaries (`renderer/`):** the content block's root and every node with a `placeholderComponent` are boundaries. A
+   boundary waits for its nodes and their descendants up to nested boundaries, then builds them bottom-up: text -> text
+   node or `textComponent`; element -> `createComponent(type, { bindings, projectableNodes, elementInjector })`; nested
    boundary -> an `ang-content-boundary` host (`display: contents`) showing the placeholder until it is ready.
 5. **Errors:** a boundary watches the `error` signals of its nodes. The first error is passed to Angular's
    `ErrorHandler`, the boundary's nodes are aborted, and the content is replaced with the error component, or nothing
    without one. Schema failures are `ContentValidationError`s carrying the node path and Standard Schema issues.
 
-Usage: `<ang-content-outlet [document]="document" />` or `<article angContentOutlet [document]="document">`
-(`ContentOutlet`). Changing `document` aborts pending loads and replaces the rendered content; destroying the outlet
-destroys every created component. Created components use the outlet's element and environment injectors and are
-attached to `ApplicationRef` for change detection. The outlet's `rendered` output emits once the top level content is
-shown, and `failed` emits a `RenderFailure` (`path`, `content`, `definition`, `error`) for every failed boundary. Loading hosts have `aria-busy="true"`. Server-side
-rendering and hydration are not supported.
+Usage: `<ang-content-block [document]="document" />` or `<article angContentBlock [document]="document">`
+(`ContentBlock`). Changing `document` aborts pending loads and replaces the rendered content; destroying the content
+block destroys every created component. Created components use the content block's element and environment injectors and
+are attached to `ApplicationRef` for change detection. The content block's `rendered` output emits once the top level
+content is shown, and `failed` emits a `ContentRenderFailure` (`path`, `content`, `definition`, `error`) for every
+failed boundary. Loading hosts have `aria-busy="true"`. Server-side rendering and hydration are not supported.
 
 ## Later
 

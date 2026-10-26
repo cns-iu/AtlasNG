@@ -1,4 +1,4 @@
-import { isContentDataSource, isContentElementNode, isNamedContentRecord, isPlainObject } from './guards';
+import { isContentDataSource, isContentBlockNode, isNamedContentRecord, isPlainObject } from './guards';
 
 describe('guards', () => {
   it('recognizes plain objects', () => {
@@ -8,9 +8,9 @@ describe('guards', () => {
   });
 
   it('recognizes element nodes by a string component', () => {
-    expect(isContentElementNode({ component: 'card' })).toBe(true);
-    expect(isContentElementNode({ component: 1 })).toBe(false);
-    expect(isContentElementNode('card')).toBe(false);
+    expect(isContentBlockNode({ component: 'card' })).toBe(true);
+    expect(isContentBlockNode({ component: 1 })).toBe(false);
+    expect(isContentBlockNode('card')).toBe(false);
   });
 
   it('recognizes data sources by a string type', () => {

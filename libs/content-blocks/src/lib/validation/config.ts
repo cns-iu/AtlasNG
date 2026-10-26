@@ -1,4 +1,4 @@
-import { ContentConfigSchema, ContentDefinition, ContentElementNode } from '@atlasng/content-blocks/types';
+import { ContentConfigSchema, ContentDefinition, ContentBlockNode } from '@atlasng/content-blocks/types';
 import { ContentValidationError } from '@atlasng/content-blocks/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { JsonValue } from 'type-fest';
@@ -38,7 +38,7 @@ export function checkUnknownConfigKeys(
  */
 export async function validateConfig(
   schema: ContentConfigSchema | undefined,
-  config: ContentElementNode['config'] = {},
+  config: ContentBlockNode['config'] = {},
   path: string,
 ): Promise<Record<string, unknown>> {
   if (schema === undefined) {
@@ -70,7 +70,7 @@ export async function validateConfig(
  */
 async function validateConfigPerKey(
   schemas: Record<string, StandardSchemaV1<JsonValue | undefined, unknown>>,
-  config: ContentElementNode['config'],
+  config: ContentBlockNode['config'],
 ): Promise<StandardSchemaV1.Result<Record<string, unknown>>> {
   const issues: StandardSchemaV1.Issue[] = [];
   const output: Record<string, unknown> = {};

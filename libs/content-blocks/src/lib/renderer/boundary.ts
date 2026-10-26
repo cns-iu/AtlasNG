@@ -10,7 +10,7 @@ import {
   Type,
   untracked,
 } from '@angular/core';
-import { ContentDefinition, ContentElementNode, ContentNode, TypeRef } from '@atlasng/content-blocks/types';
+import { ContentDefinition, ContentBlockNode, ContentNode, TypeRef } from '@atlasng/content-blocks/types';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Arrayable } from 'type-fest';
 import {
@@ -25,14 +25,17 @@ import { loadComponent } from '../pipeline/component';
 import { getContentName, getContentSelector, getContentSlot } from '../utils/projection';
 import { reportRecoverableIssues } from '../validation/errors';
 import { createInputBindings, createOptionalBindings } from './bindings';
-import { RenderContext, RenderFailure } from './render-context';
+import { RenderContext, ContentRenderFailure } from './render-context';
 
-/** What a boundary renders: the outlet's top level nodes, or a node whose definition declares a placeholder. */
+/** What a boundary renders: the content block's top level nodes, or a node whose definition declares a placeholder. */
 export type BoundaryTarget =
   | { kind: 'root'; content: Arrayable<ContentNode>; nodes: () => RenderNode[] }
   | { kind: 'element'; node: RenderElementNode; definition: ContentDefinition };
 
-/** How {@link Boundary.start} settled: content shown, error shown (or nothing without an error component), or destroyed. */
+/**
+ * How {@link Boundary.start} settled: content shown, error shown (or nothing without an error component), or
+ * destroyed.
+ */
 export type BoundaryOutcome = 'rendered' | 'failed' | 'destroyed';
 
 /** Builds a boundary's DOM nodes once it is ready, creating components in the builder's scope. */
@@ -51,9 +54,9 @@ interface CreateComponentOptions {
   /** Tag name of the host element to create, if not derived from the selector. */
   host?: string;
   /** Classes added to the host element. */
-  classes?: ContentElementNode['classes'];
+  classes?: ContentBlockNode['classes'];
   /** Styles set on the host element. */
-  styles?: ContentElementNode['styles'];
+  styles?: ContentBlockNode['styles'];
   /** Nodes projected into the component's `ng-content` slots. */
   projectableNodes?: Node[][];
 }
@@ -140,8 +143,8 @@ class BoundaryScope {
   }
 
   /**
-   * Sets a node's styles on a host element, as normalized by {@link normalizeStyle}. Values that are neither strings nor
-   * numbers are skipped, since documents are untrusted JSON.
+   * Sets a node's styles on a host element, as normalized by {@link normalizeStyle}. Values that are neither strings
+   * nor numbers are skipped, since documents are untrusted JSON.
    *
    * @param context Render context.
    * @param element The host element.
@@ -334,7 +337,7 @@ export class Boundary {
    */
   #reportFailure(error: unknown): void {
     const target = this.#target;
-    const failure: RenderFailure =
+    const failure: ContentRenderFailure =
       target.kind === 'root'
         ? { path: 'content', content: target.content, error }
         : { path: target.node.path, content: target.node.source, definition: target.definition, error };
@@ -435,7 +438,7 @@ export class Boundary {
    */
   async #renderError(error: unknown): Promise<void> {
     const target = this.#target;
-    let node: ContentElementNode | undefined;
+    let node: ContentBlockNode | undefined;
     let definition: ContentDefinition | undefined;
     if (target.kind === 'element') {
       node = target.node.source;

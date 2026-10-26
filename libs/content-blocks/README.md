@@ -2,7 +2,7 @@
 
 Render AtlasNG components dynamically from deserialized JSON content documents.
 
-- `ContentDocument` and `ContentElementNode` describe the JSON input.
+- `ContentDocument` and `ContentBlockNode` describe the JSON input.
 - `ContentDefinition` describes how a node's component is loaded
   and how its config and data are validated with [Standard Schema](https://standardschema.dev/).
 
@@ -10,7 +10,7 @@ Render AtlasNG components dynamically from deserialized JSON content documents.
 
 | Entry point                                         | Contents                                                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `@atlasng/content-blocks`                           | `provideContentBlocks` and its features, `ContentOutlet`                                              |
+| `@atlasng/content-blocks`                           | `provideContentBlocks` and its features, `ContentBlock`                                               |
 | `@atlasng/content-blocks/types`                     | Shared document, definition, and data loader/parser types                                             |
 | `@atlasng/content-blocks/definitions`               | Definition registry and `provideDefinitions`                                                          |
 | `@atlasng/content-blocks/definitions/design-system` | Definitions for design-system components and `provideDesignSystemDefinitions`                         |
@@ -34,11 +34,11 @@ provideContentBlocks(
 );
 ```
 
-Render a document with `ContentOutlet`, as an element or on an element of your choice:
+Render a document with `ContentBlock`, as an element or on an element of your choice:
 
 ```html
-<ang-content-outlet [document]="document" />
-<article angContentOutlet [document]="document"></article>
+<ang-content-block [document]="document" />
+<article angContentBlock [document]="document"></article>
 ```
 
 Definitions load first. A node's component, config, and data load once its definition is known, so nothing is fetched
@@ -111,7 +111,7 @@ Built-in loaders are `http` (`{ url, responseType? }`, through Angular's `HttpCl
 A loader receives the source without `type` and `parser`, and returns a value, a promise, or an observable. Every
 value an observable emits is parsed, validated, and bound, so loaders can stream updates. A parser receives the
 loader's value and its `parser` config without `type`. Both receive a context with the node, its `path`, the data
-`key`, and an `AbortSignal` that aborts when the document changes or the outlet is destroyed.
+`key`, and an `AbortSignal` that aborts when the document changes or the content block is destroyed.
 
 Declare a `configSchema` to validate the config. It runs once, before the first `load` or `parse`, and its output is
 what `load` or `parse` receives, so it can apply defaults. Invalid config fails the node. Any Standard Schema works;
@@ -157,18 +157,19 @@ register more with their own `provideContentBlocks`, `provideDefinitions`, `prov
 | `textComponent`       | none            | Renders text nodes, receiving the text through a `text` input. Defaults to DOM text.     |
 | `errorComponent`      | none            | Error component for definitions that declare none. Without one, failures render nothing. |
 
-The default names must be registered: in dev mode the outlet throws when one is not, in prod mode it warns.
+The default names must be registered: in dev mode the content block throws when one is not, in prod mode it warns.
 
-## Outlet
+## Content block
 
-`ContentOutlet` renders its `document` input and replaces the content when the document changes.
+`ContentBlock` renders its `document` input and replaces the content when the document changes.
 
 - `rendered` emits once the top level content is shown, for each document. Nested boundaries may still be loading.
-- `failed` emits a `RenderFailure` for every failed boundary, including failures after rendering, such as an invalid
-  data emission. It has the boundary's document `path` (`content` for the outlet's own boundary), its `content`, the
-  node's `definition` (none for the outlet's own boundary), and the `error`, which is also passed to Angular's
-  `ErrorHandler`.
-- The outlet's host and each nested boundary's `ang-content-boundary` host have `aria-busy="true"` while they load.
+- `failed` emits a `ContentRenderFailure` for every failed boundary, including failures after rendering, such as an
+  invalid data emission. It has the boundary's document `path` (`content` for the content block's own boundary), its
+  `content`, the node's `definition` (none for the content block's own boundary), and the `error`, which is also passed
+  to Angular's `ErrorHandler`.
+- The content block's host and each nested boundary's `ang-content-boundary` host have `aria-busy="true"` while they
+  load.
 - Server-side rendering and hydration are not supported.
 
 ## Development

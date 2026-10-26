@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { DataLoaderRegistry, provideDataLoaders } from '@atlasng/content-blocks/loaders';
 import { DataParserRegistry, provideDataParsers } from '@atlasng/content-blocks/parsers';
 import { DefinitionRegistry } from '@atlasng/content-blocks/definitions';
-import { ContentDataSchema, ContentElementNode } from '@atlasng/content-blocks/types';
+import { ContentDataSchema, ContentBlockNode } from '@atlasng/content-blocks/types';
 import { createSchema, passthroughSchema } from '@atlasng/content-blocks/utils';
 import { EMPTY, Subject, throwError } from 'rxjs';
 import { CONTENT_BLOCKS_CONFIG } from '../config';
@@ -25,7 +25,7 @@ function createContext(): PipelineContext {
   }));
 }
 
-function element(data: ContentElementNode['data'], signal?: AbortSignal): RenderElementNode {
+function element(data: ContentBlockNode['data'], signal?: AbortSignal): RenderElementNode {
   return buildRenderTree({ version: 1, content: { component: 'table', data } }, signal)[0] as RenderElementNode;
 }
 

@@ -1,5 +1,5 @@
 import { Component, ErrorHandler, input, OnDestroy } from '@angular/core';
-import { ContentDefinition, ContentDocument, ContentElementNode, DEFAULT_CONTENT } from '@atlasng/content-blocks/types';
+import { ContentDefinition, ContentDocument, ContentBlockNode, DEFAULT_CONTENT } from '@atlasng/content-blocks/types';
 import { ContentValidationError, passthroughSchema } from '@atlasng/content-blocks/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { render, screen, waitFor } from '@testing-library/angular';
@@ -7,7 +7,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { JsonValue } from 'type-fest';
 import { ContentBlocksConfig } from '../config';
 import { ContentBlocksFeature, provideContentBlocks, withDataLoaders, withDefinitions } from '../providers';
-import { ContentOutlet } from './content-outlet';
+import { ContentBlock } from './content-block';
 
 const string: StandardSchemaV1<JsonValue | undefined, string> = {
   '~standard': {
@@ -53,7 +53,7 @@ class List {
 
 @Component({ selector: 'ang-test-placeholder', template: '<span>Loading {{ node().component }}</span>' })
 class Placeholder {
-  readonly node = input.required<ContentElementNode>();
+  readonly node = input.required<ContentBlockNode>();
 }
 
 @Component({
@@ -75,8 +75,8 @@ class Text {
 }
 
 @Component({
-  imports: [ContentOutlet],
-  template: '<ang-content-outlet [document]="document()" (rendered)="rendered()" (failed)="failed($event)" />',
+  imports: [ContentBlock],
+  template: '<ang-content-block [document]="document()" (rendered)="rendered()" (failed)="failed($event)" />',
 })
 class Host {
   readonly document = input.required<ContentDocument>();
@@ -118,7 +118,7 @@ async function setup(document: ContentDocument, config: ContentBlocksConfig = {}
   return { ...result, errorHandler, host: result.fixture.componentInstance };
 }
 
-describe('ContentOutlet', () => {
+describe('ContentBlock', () => {
   it('renders text and components with config and projected content', async () => {
     await setup(
       doc([
@@ -251,13 +251,13 @@ describe('ContentOutlet', () => {
       {},
       withDataLoaders({ eager: () => ({ load: () => eager }), nested: () => ({ load: () => nested }) }),
     );
-    const outlet = container.querySelector('ang-content-outlet');
-    expect(outlet).toHaveAttribute('aria-busy', 'true');
+    const root = container.querySelector('ang-content-block');
+    expect(root).toHaveAttribute('aria-busy', 'true');
 
     await waitFor(() => expect(eager.observed).toBe(true));
     eager.next(['a']);
     await waitFor(() => expect(host.rendered).toHaveBeenCalledTimes(1));
-    expect(outlet).not.toHaveAttribute('aria-busy');
+    expect(root).not.toHaveAttribute('aria-busy');
     expect(screen.getByText('Loading list').closest('ang-content-boundary')).toHaveAttribute('aria-busy', 'true');
 
     await waitFor(() => expect(nested.observed).toBe(true));
@@ -285,7 +285,7 @@ describe('ContentOutlet', () => {
     expect(host.rendered).toHaveBeenCalledTimes(1);
   });
 
-  it("emits failed for the outlet's own boundary without a definition", async () => {
+  it("emits failed for the content block's own boundary without a definition", async () => {
     const content = [{ component: 'missing' }];
     const { host, errorHandler } = await setup(doc(content));
 
@@ -343,7 +343,7 @@ describe('ContentOutlet', () => {
     const { container, errorHandler } = await setup(doc({ component: 'missing' }));
 
     await waitFor(() => expect(errorHandler.handleError).toHaveBeenCalledTimes(1));
-    expect(container.querySelector('ang-content-outlet')).toBeEmptyDOMElement();
+    expect(container.querySelector('ang-content-block')).toBeEmptyDOMElement();
   });
 
   it('reports errors of a failing error component', async () => {
@@ -362,7 +362,7 @@ describe('ContentOutlet', () => {
     );
   });
 
-  it('does not render the error component after the outlet is destroyed', async () => {
+  it('does not render the error component after the content block is destroyed', async () => {
     let resolve!: (component: typeof ErrorView) => void;
     const { fixture, errorHandler } = await setup(doc({ component: 'missing' }), {
       errorComponent: () => new Promise((resolveComponent) => (resolve = resolveComponent)),
@@ -432,7 +432,7 @@ describe('ContentOutlet', () => {
     expect(rows.observed).toBe(false);
   });
 
-  it('destroys created components with the outlet', async () => {
+  it('destroys created components with the content block', async () => {
     const { fixture } = await setup(
       doc({ component: 'paragraph', content: { component: 'heading', config: { title: 'a' } } }),
     );

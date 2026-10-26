@@ -5,7 +5,7 @@ export {
   CONTENT_DOCUMENT_VERSION,
   type ContentDataSource,
   type ContentDocument,
-  type ContentElementNode,
+  type ContentBlockNode,
   type ContentNode,
 } from './lib/document';
 export { DEFAULT_CONTENT, type ContentProjectionSchema } from './lib/projection-schema';

@@ -1,4 +1,4 @@
-import { ContentDefinition, ContentElementNode } from '@atlasng/content-blocks/types';
+import { ContentDefinition, ContentBlockNode } from '@atlasng/content-blocks/types';
 import { buildRenderTree } from '../nodes/build-tree';
 import { RenderElementNode } from '../nodes/render-node';
 import { checkUnknownContentKeys } from './content';
@@ -9,7 +9,7 @@ const definition: ContentDefinition = {
   content: { body: '*', actions: '[actions]' },
 };
 
-function element(content: ContentElementNode['content']): RenderElementNode {
+function element(content: ContentBlockNode['content']): RenderElementNode {
   return buildRenderTree({ version: 1, content: { component: 'card', content } })[0] as RenderElementNode;
 }
 

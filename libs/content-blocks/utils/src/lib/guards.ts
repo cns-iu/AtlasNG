@@ -1,4 +1,4 @@
-import { ContentDataSource, ContentElementNode, ContentNode } from '@atlasng/content-blocks/types';
+import { ContentDataSource, ContentBlockNode, ContentNode } from '@atlasng/content-blocks/types';
 import { Arrayable } from 'type-fest';
 
 /**
@@ -12,12 +12,12 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
 }
 
 /**
- * Checks whether a value is a {@link ContentElementNode}, i.e. an object with a string `component`.
+ * Checks whether a value is a {@link ContentBlockNode}, i.e. an object with a string `component`.
  *
  * @param value Value to check.
  * @returns Whether the value is an element node.
  */
-export function isContentElementNode(value: unknown): value is ContentElementNode {
+export function isContentBlockNode(value: unknown): value is ContentBlockNode {
   return isPlainObject(value) && typeof value['component'] === 'string';
 }
 
@@ -38,7 +38,7 @@ export function isContentDataSource(value: unknown): value is ContentDataSource 
  * @returns Whether the content maps content names to nodes.
  */
 export function isNamedContentRecord(
-  content: NonNullable<ContentElementNode['content']>,
+  content: NonNullable<ContentBlockNode['content']>,
 ): content is Record<string, Arrayable<ContentNode>> {
-  return isPlainObject(content) && !isContentElementNode(content);
+  return isPlainObject(content) && !isContentBlockNode(content);
 }

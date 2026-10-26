@@ -12,10 +12,10 @@ export interface ContentDocument {
 }
 
 /** A node in a content document. A plain string is rendered as a text node. */
-export type ContentNode = string | ContentElementNode;
+export type ContentNode = string | ContentBlockNode;
 
 /** A node rendered as a registered component. */
-export interface ContentElementNode {
+export interface ContentBlockNode {
   /** Name of the component definition used to render this node, e.g. `content-paragraph`. */
   component: string;
   /** CSS classes added to the component's host element, as a space separated string or a list. */

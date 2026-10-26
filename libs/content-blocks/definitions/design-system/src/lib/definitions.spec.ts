@@ -1,12 +1,12 @@
 import { Component, ErrorHandler, input } from '@angular/core';
-import { ContentOutlet, provideContentBlocks, withDefinitions } from '@atlasng/content-blocks';
+import { ContentBlock, provideContentBlocks, withDefinitions } from '@atlasng/content-blocks';
 import { ContentDocument } from '@atlasng/content-blocks/types';
 import { render, screen, waitFor } from '@testing-library/angular';
 import { DESIGN_SYSTEM_DEFINITIONS } from './definitions';
 
 @Component({
-  imports: [ContentOutlet],
-  template: '<ang-content-outlet [document]="document()" (rendered)="rendered()" />',
+  imports: [ContentBlock],
+  template: '<ang-content-block [document]="document()" (rendered)="rendered()" />',
 })
 class Host {
   readonly document = input.required<ContentDocument>();

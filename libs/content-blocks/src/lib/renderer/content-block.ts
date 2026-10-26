@@ -3,7 +3,7 @@ import { ContentDocument } from '@atlasng/content-blocks/types';
 import { buildRenderTree } from '../nodes/build-tree';
 import { startPipeline } from '../pipeline/pipeline';
 import { Boundary } from './boundary';
-import { createRenderContext, RenderFailure } from './render-context';
+import { createRenderContext, ContentRenderFailure } from './render-context';
 
 /**
  * Renders a {@link ContentDocument} into its host element.
@@ -17,10 +17,10 @@ import { createRenderContext, RenderFailure } from './render-context';
  * supported.
  */
 @Directive({
-  selector: 'ang-content-outlet, [angContentOutlet]',
-  host: { class: 'ang-content-outlet' },
+  selector: 'ang-content-block, [angContentBlock]',
+  host: { class: 'ang-content-block' },
 })
-export class ContentOutlet {
+export class ContentBlock {
   /** Document to render. */
   readonly document = input.required<ContentDocument>();
   /**
@@ -29,10 +29,10 @@ export class ContentOutlet {
    */
   readonly rendered = output<void>();
   /**
-   * Emits every failed boundary, the outlet's own and nested ones, including failures after rendering and failures
-   * to load an error component. The error is also passed to Angular's `ErrorHandler`.
+   * Emits every failed boundary, the content block's own and nested ones, including failures after rendering and
+   * failures to load an error component. The error is also passed to Angular's `ErrorHandler`.
    */
-  readonly failed = output<RenderFailure>();
+  readonly failed = output<ContentRenderFailure>();
 
   /** Host element the content is rendered into. */
   readonly #host = inject<ElementRef<Element>>(ElementRef);

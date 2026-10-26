@@ -17,19 +17,25 @@ import { CONTENT_BLOCKS_CONFIG } from '../config';
 import { loadComponent } from '../pipeline/component';
 import { PipelineContext } from '../pipeline/context';
 
-/** A failed boundary, emitted by `ContentOutlet.failed`. */
-export interface RenderFailure {
-  /** Document path of the boundary's content, e.g. `content.@default[1]`, or `content` for the outlet's own boundary. */
+/** A failed boundary, emitted by `ContentBlock.failed`. */
+export interface ContentRenderFailure {
+  /**
+   * Document path of the boundary's content, e.g. `content.@default[1]`, or `content` for the content block's own
+   * boundary.
+   */
   path: string;
-  /** Content the boundary renders: the boundary's node, or the document's content for the outlet's own boundary. */
+  /**
+   * Content the boundary renders: the boundary's node, or the document's content for the content block's own
+   * boundary.
+   */
   content: Arrayable<ContentNode>;
-  /** Definition of the boundary's node, or `undefined` for the outlet's own boundary. */
+  /** Definition of the boundary's node, or `undefined` for the content block's own boundary. */
   definition?: ContentDefinition;
   /** The thrown value. */
   error: unknown;
 }
 
-/** Services and settings shared by every boundary of one outlet. */
+/** Services and settings shared by every boundary of one content block. */
 export interface RenderContext extends PipelineContext {
   /** Application the created views are attached to for change detection. */
   appRef: ApplicationRef;
@@ -46,11 +52,11 @@ export interface RenderContext extends PipelineContext {
    */
   loadTextComponent: () => Promise<Type<unknown>> | undefined;
   /** Called when a boundary fails, including after rendering, and when its error component fails to load. */
-  onFailure?: (failure: RenderFailure) => void;
+  onFailure?: (failure: ContentRenderFailure) => void;
 }
 
 /**
- * Creates the render context of an outlet. Must run in the outlet's injection context.
+ * Creates the render context of a content block. Must run in the content block's injection context.
  *
  * Checks that the configured default loader and parser names are registered, without loading them.
  *
@@ -58,7 +64,7 @@ export interface RenderContext extends PipelineContext {
  * @returns The render context.
  * @throws {Error} In dev mode, when a default name is not registered. In prod mode a warning is logged instead.
  */
-export function createRenderContext(onFailure?: (failure: RenderFailure) => void): RenderContext {
+export function createRenderContext(onFailure?: (failure: ContentRenderFailure) => void): RenderContext {
   assertInInjectionContext(createRenderContext);
 
   const config = CONTENT_BLOCKS_CONFIG.inject();
