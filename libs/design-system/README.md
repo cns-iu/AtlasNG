@@ -98,6 +98,25 @@ Each component exposes an `<component>-overrides` mixin that sets its `--ang-<co
 
 The available tokens for each component are listed in its [token file](src/sass/tokens).
 
+### Token functions
+
+Functions ending in `-token` return a CSS variable name, which you use to declare or override a variable. Functions ending in `-slot` return a `var(...)` reference, which you use to read one. Every `-slot` function accepts an optional fallback as its last argument.
+
+- `sys-token($name)` and `sys-slot($name)` reference Angular Material system tokens (`--mat-sys-*`). Unknown names are a compile-time error.
+- `ext-token($name)` and `ext-slot($name)` reference extended tokens (`--ang-ext-*`, see [Extended level colors](#extended-level-colors)). `ext-sys-slot($ext-name, $sys-name)` reads an extended token and falls back to a system token.
+- `<component>-slot($name)` reads a component token, falling back to its default value. Unknown names are a compile-time error, and so is passing a fallback for a token whose default is already a complete value, such as an `ext-sys-slot(...)` chain or a literal.
+
+```scss
+@use '@atlasng/design-system' as ds;
+
+.my-panel {
+  color: ds.sys-slot(on-surface); // var(--mat-sys-on-surface)
+  border-color: ds.ext-sys-slot(info, outline); // var(--ang-ext-info, var(--mat-sys-outline))
+  background: ds.footer-slot(background-color); // var(--ang-footer-background-color, var(--mat-sys-surface-variant))
+  #{ds.sys-token(primary)}: #6750a4; // --mat-sys-primary: #6750a4
+}
+```
+
 ### Material defaults
 
 Some AtlasNG components pair with Angular Material components that use different default tokens. Include `ds.mat-all-defaults()` once in your theme to apply them, or include `ds.mat-button-defaults()` or `ds.mat-form-field-defaults()` individually.
