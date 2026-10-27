@@ -134,6 +134,8 @@ npx nx run @atlasng/monorepo:bootstrap-npm-packages
 
 The [`bootstrap-npm-packages` executor](libs/tooling/nx-plugin/README.md#bootstrap-npm-packages) only touches packages that are not on npm yet. If `npm publish` succeeds but `npm trust` fails, a rerun skips that package, so run `npm trust github` for it manually.
 
+npm expires a new trusted publishing configuration unless the package is published from CI within 48 hours, so release each bootstrapped package right away.
+
 ## Contributing
 
 Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) with a project name as the scope (for example `feat(design-system): add notice component`). The allowed scopes are listed in [commitlint.config.mjs](commitlint.config.mjs). See [AGENTS.md](AGENTS.md) for the full workspace conventions.
