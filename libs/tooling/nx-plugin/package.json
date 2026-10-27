@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cns-iu/AtlasNG",
+    "url": "git+https://github.com/cns-iu/AtlasNG.git",
     "directory": "libs/tooling/nx-plugin"
   },
   "homepage": "https://github.com/cns-iu/AtlasNG/tree/main/libs/tooling/nx-plugin",
