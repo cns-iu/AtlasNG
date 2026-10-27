@@ -1,3 +1,20 @@
+## 0.0.9 (2026-10-27)
+
+### 🚀 Features
+
+- **nx-plugin:** add sync generator for shared workspace files ([#166](https://github.com/cns-iu/AtlasNG/pull/166))
+- **nx-plugin:** add Nx plugin with inferred targets, executors and init ([#165](https://github.com/cns-iu/AtlasNG/pull/165))
+
+### 🩹 Fixes
+
+- add cookie-modal overrides mixin and remove doubled token prefix ([#170](https://github.com/cns-iu/AtlasNG/pull/170))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- Edward Lu @edlu77
+
 ## 0.0.8 (2026-10-06)
 
 ### 🩹 Fixes

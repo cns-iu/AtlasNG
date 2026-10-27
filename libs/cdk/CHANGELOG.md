@@ -1,3 +1,14 @@
+## 0.0.9 (2026-10-27)
+
+### 🚀 Features
+
+- **nx-plugin:** add Nx plugin with inferred targets, executors and init ([#165](https://github.com/cns-iu/AtlasNG/pull/165))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
 ## 0.0.8 (2026-10-06)
 
 This was a version bump only for cdk to align it with other projects, there were no code changes.
