@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/prettier-config",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Shared Prettier configuration for AtlasNG and related Nx workspaces",
   "license": "MIT",
   "repository": {

@@ -1,3 +1,12 @@
+## 0.0.2 (2026-10-27)
+
+### 🧱 Updated Dependencies
+
+- Updated commitlint-config to 0.0.1
+- Updated prettier-config to 0.0.1
+- Updated eslint-plugin to 0.0.1
+- Updated tsconfig to 0.0.1
+
 ## 0.0.1 (2026-10-27)
 
 ### 🚀 Features

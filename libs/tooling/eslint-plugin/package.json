@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/eslint-plugin",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Shared ESLint flat configurations for AtlasNG and related Nx Angular workspaces",
   "license": "MIT",
   "repository": {
