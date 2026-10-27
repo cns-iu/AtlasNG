@@ -52,6 +52,8 @@ export function createStorybookPreview({ docJson }: StorybookPreviewOptions): Pr
           'CNS Dark': 'cns-dark-theme',
           'HRA Light': 'hra-light-theme',
           'HRA Dark': 'hra-dark-theme',
+          'Multiscale Human Light': 'mhu-light-theme',
+          'Multiscale Human Dark': 'mhu-dark-theme',
           'WPP Light': 'wpp-light-theme',
           'WPP Dark': 'wpp-dark-theme',
         },

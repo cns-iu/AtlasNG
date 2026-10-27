@@ -4,11 +4,12 @@
 @use '@angular/material' as mat;
 @use 'cns/theme' as cns-theme;
 @use 'hra/theme' as hra-theme;
+@use 'mhu/theme' as mhu-theme;
 @use 'wpp/theme' as wpp-theme;
 @use 'fonts';
 @use '../../../../design-system/src/sass/index' as ds;
 
-$themes: (cns, hra, wpp);
+$themes: (cns, hra, mhu, wpp);
 
 // Emits the extended level colors from the theme's optional `$ext-palettes` map.
 @mixin level-colors($variables, $theme-type) {
