@@ -6,6 +6,38 @@
 /// Rendered width of a single social media icon.
 $_social-icon-size: 2.5rem;
 
+/// Margin around each social media icon from the medium breakpoint up.
+$_social-icon-margin: 0.25rem;
+
+/// Lays the action groups out in a wrapping row with at most `$max-columns` groups per row. Each group takes
+/// an equal share of the row and does not grow, so groups in a partly filled row stay aligned with the columns
+/// above. A group never shrinks below its widest link, so the groups wrap onto another row once they no
+/// longer fit.
+///
+/// @param {Number} $max-columns - Maximum number of groups per row.
+/// @param {Number} $column-gap - Gap between groups.
+@mixin _wrapping-action-groups($max-columns, $column-gap) {
+  column-gap: $column-gap;
+
+  .ang-footer--action-group {
+    flex: 0 1 calc((100% - ($max-columns - 1) * $column-gap) / $max-columns);
+  }
+}
+
+/// Lays the social media icons out in a single row while it fits and wraps them into rows of four
+/// once it is wider than the available space. The clamp() is 0 while the row fits and jumps to the
+/// width of the extra icons as soon as the row overflows.
+///
+/// @param {Number} $cell-size - Width taken up by a single icon, including its margins.
+@mixin _wrapping-social-icons($cell-size) {
+  $count: var(--ang-footer--social-icon-count, 0);
+  $row-width: calc($count * $cell-size);
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, $cell-size);
+  width: calc($row-width - clamp(0px, ($row-width - 100%) * 10000, ($count - 4) * $cell-size));
+}
+
 .ang-footer {
   display: block;
   min-width: 20rem;
@@ -39,19 +71,11 @@ $_social-icon-size: 2.5rem;
   }
 
   .ang-footer--social-icons {
-    $count: var(--ang-footer--social-icon-count, 0);
-    $row-width: calc($count * $_social-icon-size);
-
     display: flex;
     justify-content: center;
 
-    // On narrow screens, keep a single row while it fits and wrap into rows of four
-    // once it is wider than the footer. The clamp() is 0 while the row fits and
-    // jumps to the width of the extra icons as soon as the row overflows.
     @include breakpoints.breakpoint(small down) {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, $_social-icon-size);
-      width: calc($row-width - clamp(0px, ($row-width - 100%) * 10000, ($count - 4) * $_social-icon-size));
+      @include _wrapping-social-icons($_social-icon-size);
     }
   }
 
@@ -114,11 +138,113 @@ $_social-icon-size: 2.5rem;
     }
 
     .ang-footer--social-icon {
-      margin: 0.25rem;
+      margin: $_social-icon-margin;
     }
 
     .ang-footer--copyright {
       text-wrap: nowrap;
+    }
+  }
+
+  // Custom actions variant: link groups in columns under category headings.
+  &.ang-footer--custom-actions {
+    .ang-footer--container {
+      align-items: flex-start;
+    }
+
+    .ang-footer--action-groups {
+      @include _wrapping-action-groups(2, 1.5rem);
+
+      display: flex;
+      flex-wrap: wrap;
+      row-gap: 2rem;
+      width: 100%;
+    }
+
+    .ang-footer--action-group-heading {
+      margin: 0;
+      color: token-utils.slot(group-heading-color, $config);
+      font-family: token-utils.slot(group-heading-font, $config);
+      font-size: token-utils.slot(group-heading-size, $config);
+      font-weight: token-utils.slot(group-heading-weight, $config);
+      line-height: token-utils.slot(group-heading-line-height, $config);
+      letter-spacing: token-utils.slot(group-heading-tracking, $config);
+    }
+
+    .ang-footer--action-group-links {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    // Shared by the link anchors and the privacy buttons, so buttons need their native styling reset.
+    .ang-footer--action-group-link {
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      text-align: start;
+      text-decoration: none;
+      text-wrap: nowrap;
+      color: token-utils.slot(group-link-color, $config);
+      font-family: token-utils.slot(group-link-font, $config);
+      font-size: token-utils.slot(group-link-size, $config);
+      font-weight: token-utils.slot(group-link-weight, $config);
+      line-height: token-utils.slot(group-link-line-height, $config);
+      letter-spacing: token-utils.slot(group-link-tracking, $config);
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:focus-visible {
+        outline: solid 2px token-utils.slot(group-link-color, $config);
+        outline-offset: 2px;
+      }
+    }
+
+    .ang-footer--copyright {
+      text-align: start;
+    }
+
+    @include breakpoints.breakpoint(medium) {
+      // The left column fits five social icons, so up to five share a row and more wrap into rows of four.
+      .ang-footer--container {
+        display: grid;
+        grid-template-columns: calc(5 * ($_social-icon-size + 2 * $_social-icon-margin)) minmax(0, 1fr);
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
+          'logo groups'
+          'socials groups'
+          'copyright copyright';
+        gap: 1.5rem 2.5rem;
+      }
+
+      .ang-footer--logo-container {
+        grid-area: logo;
+      }
+
+      .ang-footer--social-icons {
+        @include _wrapping-social-icons($_social-icon-size + 2 * $_social-icon-margin);
+
+        grid-area: socials;
+        align-self: start;
+        margin-inline-start: -$_social-icon-margin;
+      }
+
+      .ang-footer--action-groups {
+        @include _wrapping-action-groups(4, 2.5rem);
+
+        grid-area: groups;
+        row-gap: 3rem;
+      }
+
+      .ang-footer--copyright {
+        grid-area: copyright;
+        text-wrap: wrap;
+      }
     }
   }
 }

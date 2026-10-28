@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { FakeMatIconRegistry } from '@angular/material/icon/testing';
 import { AnyLink } from '@atlasng/common';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { Footer, FooterAction, FooterLogo } from './footer';
+import { Footer, FooterAction, FooterActionGroup, FooterActionGroupLink, FooterLogo } from './footer';
 
 const SOCIALS = ['linkedin', 'youtube', 'instagram'];
 
@@ -49,6 +49,32 @@ class FooterProjectionHost {
   readonly socials = SOCIALS;
   readonly organization = 'Whole Person Physiome';
   readonly organizationLink = 'https://www.cns.edu';
+}
+
+@Component({
+  imports: [AnyLink, Footer, FooterActionGroup, FooterActionGroupLink],
+  template: `
+    <ang-footer
+      [logoImage]="logoImage"
+      [organization]="organization"
+      (openPrivacyPolicy)="openPrivacyPolicy()"
+      (openPrivacyPreferences)="openPrivacyPreferences()"
+    >
+      <ang-footer-action-group category="Resources">
+        <a angFooterActionGroupLink href="https://example.com/docs">Documentation</a>
+        <a angFooterActionGroupLink angAnyLink="/about">About</a>
+      </ang-footer-action-group>
+      <ang-footer-action-group category="Community">
+        <a angFooterActionGroupLink angAnyLink="/events">Events</a>
+      </ang-footer-action-group>
+    </ang-footer>
+  `,
+})
+class FooterCustomActionsHost {
+  readonly logoImage = '/assets/wpp.svg';
+  readonly organization = 'Whole Person Physiome';
+  readonly openPrivacyPolicy = vi.fn();
+  readonly openPrivacyPreferences = vi.fn();
 }
 
 describe('Footer', () => {
@@ -171,5 +197,76 @@ describe('Footer', () => {
 
     expect(screen.getByRole('link', { name: 'Projected logo' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Projected privacy policy' })).toBeInTheDocument();
+  });
+
+  it('does not render the custom actions variant without action groups', async () => {
+    const { container } = await setup();
+
+    expect(container.querySelector('ang-footer')).not.toHaveClass('ang-footer--custom-actions');
+    expect(screen.queryByRole('navigation', { name: 'Footer' })).not.toBeInTheDocument();
+  });
+
+  describe('custom actions', () => {
+    function setupCustomActions() {
+      return render(FooterCustomActionsHost, {
+        providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+      });
+    }
+
+    it('marks the host with the custom actions class', async () => {
+      const { container } = await setupCustomActions();
+
+      expect(container.querySelector('ang-footer')).toHaveClass('ang-footer--custom-actions');
+    });
+
+    it('renders each group named by its category heading', async () => {
+      await setupCustomActions();
+
+      const navigation = screen.getByRole('navigation', { name: 'Footer' });
+      expect(within(navigation).getByRole('heading', { name: 'Resources' })).toBeInTheDocument();
+      expect(within(navigation).getByRole('group', { name: 'Resources' })).toBeInTheDocument();
+      expect(within(navigation).getByRole('group', { name: 'Community' })).toBeInTheDocument();
+    });
+
+    it('renders the group links', async () => {
+      await setupCustomActions();
+
+      const resources = screen.getByRole('group', { name: 'Resources' });
+      expect(within(resources).getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
+      expect(
+        within(screen.getByRole('group', { name: 'Community' })).getByRole('link', { name: 'Events' }),
+      ).toHaveAttribute('href', '/events');
+    });
+
+    it('applies the footer link styling to projected links', async () => {
+      await setupCustomActions();
+
+      expect(screen.getByRole('link', { name: 'Documentation' })).toHaveClass('ang-footer--action-group-link');
+    });
+
+    it('renders the privacy group last', async () => {
+      await setupCustomActions();
+
+      const groups = screen.getAllByRole('group');
+      expect(groups.at(-1)).toHaveAccessibleName('Privacy');
+    });
+
+    it('emits privacy action events from the privacy group', async () => {
+      const user = userEvent.setup();
+      const { fixture } = await setupCustomActions();
+
+      const privacy = screen.getByRole('group', { name: 'Privacy' });
+      await user.click(within(privacy).getByRole('button', { name: 'Privacy Policy' }));
+      await user.click(within(privacy).getByRole('button', { name: 'Privacy Preferences' }));
+
+      expect(fixture.componentInstance.openPrivacyPolicy).toHaveBeenCalledOnce();
+      expect(fixture.componentInstance.openPrivacyPreferences).toHaveBeenCalledOnce();
+    });
+
+    it('replaces the basic privacy actions', async () => {
+      await setupCustomActions();
+
+      expect(screen.getAllByRole('button', { name: 'Privacy Policy' })).toHaveLength(1);
+    });
   });
 });

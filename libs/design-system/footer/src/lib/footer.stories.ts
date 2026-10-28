@@ -1,6 +1,6 @@
 import { MatButton } from '@angular/material/button';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Footer, FooterAction, FooterLogo } from './footer';
+import { Footer, FooterAction, FooterActionGroup, FooterActionGroupLink, FooterLogo } from './footer';
 import { SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 
 const SOCIALS: (string | SocialMediaButtonDefinition)[] = [
@@ -14,11 +14,27 @@ const SOCIALS: (string | SocialMediaButtonDefinition)[] = [
   { id: 'mail', label: 'Email', url: 'mailto:example@gmail.com', fontIcon: 'mail' },
 ];
 
+/**
+ * Builds the template of a placeholder link group like the ones in the Figma spec.
+ *
+ * @param linkCount - Number of links in the group.
+ * @returns Group markup with alternating "Webpage Title" and "Webpage Label" links.
+ */
+function placeholderGroup(linkCount: number): string {
+  const links = Array.from(
+    { length: linkCount },
+    (_, index) => `<a angFooterActionGroupLink href="#">${index % 2 === 0 ? 'Webpage Title' : 'Webpage Label'}</a>`,
+  );
+  return `<ang-footer-action-group category="Website Category">${links.join('')}</ang-footer-action-group>`;
+}
+
 const meta: Meta = {
   title: 'Design System/Footer',
   component: Footer,
   subcomponents: {
     FooterAction,
+    FooterActionGroup,
+    FooterActionGroupLink,
     FooterLogo,
   },
   parameters: {
@@ -29,7 +45,7 @@ const meta: Meta = {
   },
   decorators: [
     moduleMetadata({
-      imports: [FooterAction, MatButton],
+      imports: [FooterAction, FooterActionGroup, FooterActionGroupLink, MatButton],
     }),
   ],
   args: {
@@ -81,6 +97,28 @@ export const BasicWithCustomActions: Story = {
         <a angFooterAction matButton>Help</a>
         <a angFooterAction matButton>Feedback</a>
         <a angFooterAction matButton>Careers</a>
+      </ang-footer>
+    `,
+  }),
+};
+
+export const CustomActions: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <ang-footer ${argsToTemplate(args)}>
+        ${[4, 5, 3].map(placeholderGroup).join('')}
+      </ang-footer>
+    `,
+  }),
+};
+
+export const CustomActionsWithManyGroups: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <ang-footer ${argsToTemplate(args)}>
+        ${[4, 5, 5, 3, 5, 5].map(placeholderGroup).join('')}
       </ang-footer>
     `,
   }),
