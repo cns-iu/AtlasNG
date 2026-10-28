@@ -15,7 +15,11 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/core": "^22.1.5"
+    "@angular/common": "^22.1.5",
+    "@angular/core": "^22.1.5",
+    "@angular/material": "^22.1.5",
+    "@atlasng/content-blocks": "^0.0.8",
+    "@atlasng/design-system": "^0.0.8"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",

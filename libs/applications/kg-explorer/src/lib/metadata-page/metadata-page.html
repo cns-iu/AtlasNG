@@ -1,0 +1,51 @@
+<div class="ang-metadata-page--layout">
+  <header class="ang-metadata-page--header">
+    @if (showBreadcrumbs() && breadcrumbs().length > 0) {
+      <ang-breadcrumbs class="ang-metadata-page--breadcrumbs" [items]="breadcrumbs()" />
+    }
+    @if (showIcons() && icons().length > 0) {
+      <div class="ang-metadata-page--icons">
+        @for (icon of icons(); track $index) {
+          <img class="ang-metadata-page--icon" [attr.src]="icon.src" [attr.alt]="icon.alt" />
+        }
+      </div>
+    }
+    <ang-heading class="ang-metadata-page--title" level="1">{{ title() }}</ang-heading>
+    @if (showUrl() && url(); as url) {
+      <ang-link-snippet class="ang-metadata-page--url" [url]="url" />
+    }
+  </header>
+
+  @if (firstSection(); as section) {
+    <div class="ang-metadata-page--first-section">
+      <ng-container *ngTemplateOutlet="sectionTemplate; context: { $implicit: section }" />
+    </div>
+  }
+
+  <ang-version-control
+    class="ang-metadata-page--version-control"
+    [tagline]="versionControlTagline()"
+    [versions]="versions()"
+    [(selectedVersion)]="selectedVersion"
+    (download)="download.emit($event)"
+  />
+
+  @if (remainingSections().length > 0) {
+    <div class="ang-metadata-page--sections">
+      @for (section of remainingSections(); track section) {
+        <ng-container *ngTemplateOutlet="sectionTemplate; context: { $implicit: section }" />
+      }
+    </div>
+  }
+</div>
+
+<ng-template let-section #sectionTemplate>
+  <ang-content-section
+    class="ang-metadata-page--section"
+    [title]="section.title"
+    [level]="sectionHeadingLevel()"
+    [underlined]="underlinedSections()"
+  >
+    <ang-content-block class="ang-metadata-page--section-content" [document]="section.document" />
+  </ang-content-section>
+</ng-template>
