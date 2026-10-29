@@ -25,6 +25,7 @@
     "@angular/core": "^22.1.5",
     "@angular/forms": "^22.1.5",
     "@angular/material": "^22.1.5",
+    "@angular/platform-browser": "^22.1.5",
     "@angular/youtube-player": "^22.1.5",
     "@atlasng/analytics": "^0.0.10",
     "@atlasng/common": "^0.0.10",
