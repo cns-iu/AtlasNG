@@ -1,8 +1,22 @@
-import { Component, computed, Directive, inject, input, output, Provider, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  Directive,
+  ElementRef,
+  inject,
+  input,
+  output,
+  Provider,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 import { YouTubePlayer as NgYouTubePlayer, YOUTUBE_PLAYER_CONFIG, YouTubePlayerConfig } from '@angular/youtube-player';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
+import { RESIZE_OBSERVER } from '@atlasng/core';
 import { EMPTY, Observable, switchMap } from 'rxjs';
 import { ConditionalKeys } from 'type-fest';
 import { YouTubePlayerPlaceholder } from './placeholder/youtube-player-placeholder';
@@ -55,6 +69,9 @@ export class YouTubePlayerEnableRequest {}
  * enable-request area beneath it. Consumers can replace that area with content marked by
  * {@link YouTubePlayerEnableRequest}.
  *
+ * `width` and `height` set the largest size and the aspect ratio. In containers narrower than
+ * `width`, the player and placeholder shrink to the container's width and keep the aspect ratio.
+ *
  * The current Angular player instance is exposed through {@link YouTubePlayer.ngPlayer}. Once the
  * player has been rendered, use `ngPlayer()` to access APIs such as `playVideo()`, `pauseVideo()`,
  * `seekTo()`, and the other methods provided by Angular's `YouTubePlayer` component.
@@ -72,10 +89,10 @@ export class YouTubePlayer {
   /** YouTube video ID to load or link to. */
   readonly videoId = input.required<string>();
 
-  /** Player and placeholder width in pixels. */
+  /** Largest player and placeholder width in pixels. Also sets the aspect ratio with {@link height}. */
   readonly width = input(DEFAULT_PLAYER_WIDTH);
 
-  /** Player and placeholder height in pixels. */
+  /** Largest player and placeholder height in pixels. Also sets the aspect ratio with {@link width}. */
   readonly height = input(DEFAULT_PLAYER_HEIGHT);
 
   /** Time, in seconds, at which playback should begin. */
@@ -144,6 +161,30 @@ export class YouTubePlayer {
     ...this.playerVars(),
   }));
 
+  /** Frame that holds the player or placeholder and is capped at the container's width. */
+  private readonly frame = viewChild.required<ElementRef<HTMLElement>>('frame');
+
+  /** Most recently measured frame width in pixels, or `undefined` before the first measurement. */
+  readonly #measuredWidth = signal<number | undefined>(undefined);
+
+  /**
+   * Player and placeholder size in pixels.
+   *
+   * Falls back to `width` × `height` before the frame is measured, for example during server-side
+   * rendering. Otherwise uses the measured frame width, capped at `width`, with the height derived
+   * from the `width` / `height` aspect ratio.
+   */
+  protected readonly size = computed(() => {
+    const maxWidth = this.width();
+    const maxHeight = this.height();
+    const width = Math.min(this.#measuredWidth() ?? maxWidth, maxWidth);
+    if (width === maxWidth) {
+      return { width: maxWidth, height: maxHeight };
+    }
+
+    return { width: Math.floor(width), height: Math.floor((width * maxHeight) / maxWidth) };
+  });
+
   /** Permission manager used to determine whether the embedded player may be rendered. */
   readonly #permissionsManager = inject(AnalyticsPermissionsManager);
 
@@ -152,6 +193,23 @@ export class YouTubePlayer {
     const permissions = this.#permissionsManager.permissions();
     return permissions.isCategoryEnabled(AnalyticsEventCategory.Marketing);
   });
+
+  /** Starts measuring the frame once it has rendered. */
+  constructor() {
+    const ResizeObserver = inject(RESIZE_OBSERVER);
+    const destroyRef = inject(DestroyRef);
+
+    if (ResizeObserver) {
+      afterNextRender(() => {
+        const resizeObserver = new ResizeObserver((entries) => {
+          this.#measuredWidth.set(entries[0].contentBoxSize[0].inlineSize);
+        });
+
+        resizeObserver.observe(this.frame().nativeElement);
+        destroyRef.onDestroy(() => resizeObserver.disconnect());
+      });
+    }
+  }
 
   /**
    * Forwards an output from whichever underlying player instance is currently rendered.
