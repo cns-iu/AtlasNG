@@ -8,9 +8,8 @@ import { CellTemplateContext, HeaderCellTemplateContext, SummaryCellTemplateCont
 import {
   CellDefinition,
   HeaderCellDefinition,
+  provideTableTemplateDefinition,
   SummaryCellDefinition,
-  TABLE,
-  TABLE_TEMPLATE_DEFINITION_CONFIG,
 } from './template-definition';
 
 interface TestRow extends Row {
@@ -102,11 +101,7 @@ describe('template definitions', () => {
     return render(component, {
       ...options,
       inputs,
-      providers: [
-        { provide: TABLE, useValue: table },
-        { provide: TABLE_TEMPLATE_DEFINITION_CONFIG, useValue: config },
-        ...(options.providers ?? []),
-      ],
+      providers: [...provideTableTemplateDefinition(config, table), ...(options.providers ?? [])],
     });
   }
 

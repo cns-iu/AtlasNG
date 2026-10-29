@@ -1,9 +1,15 @@
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import { Component, input, type EnvironmentProviders, type Provider, type Type } from '@angular/core';
-import type { CellContext, HeaderCellContext, Row, TableTemplateDefinition } from '@atlasng/design-system/table';
+import {
+  provideTableTemplateDefinition,
+  type CellContext,
+  type HeaderCellContext,
+  type Row,
+  type Table,
+  type TableTemplateDefinition,
+} from '@atlasng/design-system/table';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { TABLE, TABLE_TEMPLATE_DEFINITION_CONFIG } from '../../../../src/lib/definitions/template-definition';
 
 /** Row shape shared by column definition specs. */
 export interface TestRow extends Row {
@@ -89,11 +95,7 @@ export async function renderDefinition<TContext>(
   const user = userEvent.setup();
   const result = await render(DefinitionHost, {
     inputs: { definition: definition as Type<TableTemplateDefinition<unknown, unknown>>, context },
-    providers: [
-      { provide: TABLE, useValue: table },
-      { provide: TABLE_TEMPLATE_DEFINITION_CONFIG, useValue: config },
-      ...providers,
-    ],
+    providers: [...provideTableTemplateDefinition(config, table as Table), ...providers],
   });
   await result.rerender({ inputs: { renderTemplate: true }, partialUpdate: true });
 

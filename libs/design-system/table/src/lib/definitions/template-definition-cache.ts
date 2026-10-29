@@ -9,7 +9,7 @@ import {
   TemplateRef,
   Type,
 } from '@angular/core';
-import { TABLE_TEMPLATE_DEFINITION_CONFIG, TableTemplateDefinition } from './template-definition';
+import { provideTableTemplateDefinition, TableTemplateDefinition } from './template-definition';
 
 /**
  * Owns dynamically created table-template definitions for one template kind.
@@ -100,7 +100,7 @@ export class TemplateDefinitionCache<TContext, TConfig> {
   ): ComponentRef<TableTemplateDefinition<TContext, TConfig>> {
     const injector = Injector.create({
       parent: this.#injector,
-      providers: [{ provide: TABLE_TEMPLATE_DEFINITION_CONFIG, useValue: config }],
+      providers: provideTableTemplateDefinition(config),
     });
     const ref = createComponent(type, {
       environmentInjector: this.#environmentInjector,
