@@ -121,6 +121,10 @@ Functions ending in `-token` return a CSS variable name, which you use to declar
 
 Some AtlasNG components pair with Angular Material components that use different default tokens. Include `ds.mat-all-defaults()` once in your theme to apply them, or include `ds.mat-button-defaults()` or `ds.mat-form-field-defaults()` individually.
 
+### Text selection
+
+Include `ds.text-selection-styles()` once at your app root to color selected text with the theme. It defaults to the `tertiary-container` and `on-tertiary-container` pair; override both together with `ds.text-selection-overrides((background-color: ..., text-color: ...))`. Forced colors mode keeps the system highlight colors.
+
 ### Breakpoints
 
 The `breakpoint` mixin and function generate media queries from named widths (`x-small` 0, `small` 600px, `medium` 960px, `large` 1280px, `x-large` 1920px). Add `only` or `down` to change the range; the default range is that width and up.

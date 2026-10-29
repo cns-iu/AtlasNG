@@ -1,0 +1,50 @@
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'text-selection',
+  tokens: (
+    background-color: token-utils.sys-token(tertiary-container),
+    text-color: token-utils.sys-token(on-tertiary-container),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
+
+// Returns a CSS variable for one of this component's tokens that falls back to its default value,
+// e.g. slot(primary) => var(--ang-<component>-primary, var(--mat-sys-primary))
+@function slot($token, $fallback: null) {
+  @return token-utils.slot($token, $config, $fallback);
+}
+
+/// Styles text selection (`::selection`) with the text selection tokens. Include it once at the
+/// application root, or inside a selector to scope it to that element and its descendants.
+/// The text and background colors are always set together so selected text stays readable.
+/// In forced colors mode the system `Highlight` and `HighlightText` colors are used instead.
+///
+/// @example scss
+///   @include ds.text-selection-styles;
+@mixin styles {
+  @if & {
+    &::selection,
+    & ::selection {
+      @include _selection-colors;
+    }
+  } @else {
+    ::selection {
+      @include _selection-colors;
+    }
+  }
+}
+
+// Sets the selection text and background colors, deferring to system colors in forced colors mode.
+@mixin _selection-colors {
+  color: slot(text-color);
+  background-color: slot(background-color);
+
+  @media (forced-colors: active) {
+    color: HighlightText;
+    background-color: Highlight;
+  }
+}
