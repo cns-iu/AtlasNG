@@ -2,6 +2,9 @@
 // in cases where we use different tokens than the Material defaults.
 @forward './mat-defaults' as mat-*;
 
+// Applies all AtlasNG defaults, optionally filtered by feature
+@forward './defaults' show defaults;
+
 // Utilities
 @forward './breakpoints' show $breakpoints, $print-breakpoint, breakpoint;
 @forward './ext-colors' show ext-level-colors;

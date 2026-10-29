@@ -47,5 +47,4 @@ $themes: (cns, hra, mhu, wpp);
   }
 }
 
-@include ds.mat-all-defaults;
-@include ds.text-selection-styles;
+@include ds.defaults;

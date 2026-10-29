@@ -117,13 +117,23 @@ Functions ending in `-token` return a CSS variable name, which you use to declar
 }
 ```
 
-### Material defaults
+### Defaults
 
-Some AtlasNG components pair with Angular Material components that use different default tokens. Include `ds.mat-all-defaults()` once in your theme to apply them, or include `ds.mat-button-defaults()` or `ds.mat-form-field-defaults()` individually.
+Include `ds.defaults()` once at your app root to apply every AtlasNG default style. New defaults are added to it, so apps pick them up without changes. Pass `$include` or `$exclude` with feature names to pick which ones apply:
 
-### Text selection
+| Feature          | Applies                                                                          |
+| ---------------- | -------------------------------------------------------------------------------- |
+| `mat-button`     | AtlasNG tokens for Angular Material buttons (`ds.mat-button-defaults()`)         |
+| `mat-form-field` | AtlasNG tokens for Angular Material form fields (`ds.mat-form-field-defaults()`) |
+| `text-selection` | Theme colors for selected text (`ds.text-selection-styles()`)                    |
 
-Include `ds.text-selection-styles()` once at your app root to color selected text with the theme. It defaults to the `tertiary-container` and `on-tertiary-container` pair; override both together with `ds.text-selection-overrides((background-color: ..., text-color: ...))`. Forced colors mode keeps the system highlight colors.
+```scss
+@include ds.defaults($exclude: text-selection);
+```
+
+Each feature's mixin can also be included on its own. `ds.mat-all-defaults()` applies both Material features.
+
+Text selection defaults to the `tertiary-container` and `on-tertiary-container` pair; override both together with `ds.text-selection-overrides((background-color: ..., text-color: ...))`. Forced colors mode keeps the system highlight colors.
 
 ### Breakpoints
 

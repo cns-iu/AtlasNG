@@ -1,0 +1,41 @@
+@use 'sass:list';
+@use './mat-defaults';
+@use './tokens/text-selection';
+
+// Names of the defaults applied by the `defaults` mixin
+$features: (mat-button, mat-form-field, text-selection);
+
+/// Applies every AtlasNG default style in one place. Include it once at the application root.
+/// New defaults are added here, so apps that include it pick them up automatically.
+///
+/// @param {List} $include [null] - Features to apply; all features when null.
+/// @param {List} $exclude [()] - Features to skip.
+/// @throws Unknown feature names in `$include` or `$exclude`.
+///
+/// @example scss
+///   @include ds.defaults;
+///   @include ds.defaults($exclude: text-selection);
+///   @include ds.defaults($include: (mat-button, mat-form-field));
+@mixin defaults($include: null, $exclude: ()) {
+  @if $include == null {
+    $include: $features;
+  }
+
+  @each $feature in list.join($include, $exclude) {
+    @if not list.index($features, $feature) {
+      @error 'Unknown default "#{$feature}". Expected one of: #{$features}.';
+    }
+  }
+
+  @each $feature in $include {
+    @if not list.index($exclude, $feature) {
+      @if $feature == mat-button {
+        @include mat-defaults.button-defaults;
+      } @else if $feature == mat-form-field {
+        @include mat-defaults.form-field-defaults;
+      } @else if $feature == text-selection {
+        @include text-selection.styles;
+      }
+    }
+  }
+}
