@@ -139,13 +139,11 @@
     },
     "@nx/angular:component": {
       "style": "scss",
-      "changeDetection": "OnPush",
       "displayBlock": true
     },
     "@nx/angular:library": {
       "linter": "eslint",
       "unitTestRunner": "vitest-angular",
-      "changeDetection": "OnPush",
       "displayBlock": true,
       "publishable": true,
       "style": "scss"

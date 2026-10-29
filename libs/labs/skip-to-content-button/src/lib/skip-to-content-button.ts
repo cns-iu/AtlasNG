@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AnyLink } from '@atlasng/common';
@@ -14,7 +14,6 @@ import { AnyLink } from '@atlasng/common';
   imports: [MatButtonModule, MatIconModule, AnyLink],
   templateUrl: './skip-to-content-button.html',
   styleUrl: './skip-to-content-button.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkipToContentButton {
   /** The ID of the anchor element to skip to. */

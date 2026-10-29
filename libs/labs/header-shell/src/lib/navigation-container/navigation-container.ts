@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
+import { Component, input, model } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderShellNavigationItem } from '../header-shell';
 import { NavigationMenu } from '../navigation-menu/navigation-menu';
@@ -11,7 +11,6 @@ import { NavigationMenu } from '../navigation-menu/navigation-menu';
   imports: [MatSidenavModule, NavigationMenu],
   templateUrl: './navigation-container.html',
   styleUrl: './navigation-container.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationContainer {
   /** Navigation items for the left menu. */

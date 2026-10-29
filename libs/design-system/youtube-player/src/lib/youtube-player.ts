@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  Directive,
-  inject,
-  input,
-  output,
-  Provider,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, Directive, inject, input, output, Provider, viewChild } from '@angular/core';
 import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 import { YouTubePlayer as NgYouTubePlayer, YOUTUBE_PLAYER_CONFIG, YouTubePlayerConfig } from '@angular/youtube-player';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
@@ -76,7 +66,6 @@ export class YouTubePlayerEnableRequest {}
   imports: [NgYouTubePlayer, YouTubePlayerPlaceholder],
   templateUrl: './youtube-player.html',
   styleUrl: './youtube-player.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ang-youtube-player' },
 })
 export class YouTubePlayer {

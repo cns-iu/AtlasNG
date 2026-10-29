@@ -1,5 +1,5 @@
 import { CdkAccordionItem } from '@angular/cdk/accordion';
-import { ChangeDetectionStrategy, Component, computed, inject, input, model } from '@angular/core';
+import { Component, computed, inject, input, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -41,7 +41,6 @@ export interface CookiePermissionInfo {
   imports: [MatButtonModule, MatIconModule, MatSlideToggleModule, ProviderList, EventScope, TrackClick],
   templateUrl: './cookie-permission-item.html',
   styleUrl: './cookie-permission-item.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ang-cookie-permission-item',
     '[class.ang-cookie-permission-item--expanded]': 'expanded',

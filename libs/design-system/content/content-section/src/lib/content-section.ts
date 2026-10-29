@@ -1,4 +1,4 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { booleanAttribute, Component, input } from '@angular/core';
 import { ContentHeader } from '@atlasng/design-system/content/content-header';
 
 /**
@@ -9,7 +9,6 @@ import { ContentHeader } from '@atlasng/design-system/content/content-header';
   imports: [ContentHeader],
   templateUrl: './content-section.html',
   styleUrl: './content-section.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ang-content-section',
     '[attr.id]': 'null',
