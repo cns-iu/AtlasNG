@@ -1,0 +1,62 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use './mat-defaults';
+@use './tokens/text-selection';
+
+// Defaults applied by the `defaults` mixin, as name => (module, mixin, args...).
+// The module is the namespace of a module loaded with @use above.
+$features: (
+  mat-button: (
+    mat-defaults,
+    button-defaults,
+  ),
+  mat-form-field: (
+    mat-defaults,
+    form-field-defaults,
+  ),
+  text-selection: (
+    text-selection,
+    styles,
+  ),
+);
+
+/// Applies every AtlasNG default style in one place. Include it once at the application root.
+/// New defaults are added here, so apps that include it pick them up automatically.
+///
+/// @param {List} $include [null] - Features to apply; all features when null.
+/// @param {List} $exclude [()] - Features to skip.
+/// @throws Unknown feature names in `$include` or `$exclude`.
+///
+/// @example scss
+///   @include ds.defaults;
+///   @include ds.defaults($exclude: text-selection);
+///   @include ds.defaults($include: (mat-button, mat-form-field));
+@mixin defaults($include: null, $exclude: ()) {
+  @if $include == null {
+    $include: map.keys($features);
+  }
+
+  @each $feature in list.join($include, $exclude) {
+    @if not map.has-key($features, $feature) {
+      @error 'Unknown default "#{$feature}". Expected one of: #{map.keys($features)}.';
+    }
+  }
+
+  @each $feature in $include {
+    @if not list.index($exclude, $feature) {
+      @include _apply-feature(map.get($features, $feature));
+    }
+  }
+}
+
+// Includes the mixin described by a (module, mixin, args...) entry of $features
+@mixin _apply-feature($entry) {
+  $args: ();
+  @for $i from 3 to list.length($entry) + 1 {
+    $args: list.append($args, list.nth($entry, $i), $separator: comma);
+  }
+
+  $mixin: meta.get-mixin(list.nth($entry, 2), list.nth($entry, 1));
+  @include meta.apply($mixin, $args...);
+}
