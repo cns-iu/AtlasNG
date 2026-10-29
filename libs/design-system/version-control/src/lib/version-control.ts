@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
+import { Component, input, model, output } from '@angular/core';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -46,7 +46,6 @@ export interface VersionDownload<T extends VersionControlFileFormat> {
   imports: [MatActionList, MatFormField, MatIcon, MatLabel, MatListModule, MatOption, MatSelect, ScrollArea],
   templateUrl: './version-control.html',
   styleUrl: './version-control.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VersionControl<T extends VersionControlFileFormat = VersionControlFileFormat> {
   /** Heading displayed beside the version selector. */

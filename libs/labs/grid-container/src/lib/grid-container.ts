@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 /**
  * Layout component that allows for grid arrangement of child elements.
@@ -8,7 +8,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   imports: [],
   template: '<ng-content />',
   styleUrl: './grid-container.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[style.--ang-grid-container-item-min-width]': 'itemMinWidth()',
   },

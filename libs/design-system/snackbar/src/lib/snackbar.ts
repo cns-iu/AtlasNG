@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import {
@@ -62,7 +62,6 @@ export function createSnackBarConfig(message: string, config: SnackBarConfig = {
   imports: [MatButton, MatIcon, MatIconButton, MatSnackBarAction, MatSnackBarActions, MatSnackBarLabel],
   templateUrl: './snackbar.html',
   styleUrl: './snackbar.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-snackbar',
