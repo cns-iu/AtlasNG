@@ -39,6 +39,13 @@ on:
         type: string
         required: false
         default: .nvmrc
+      playwright-browsers:
+        description: >-
+          Space-separated Playwright browsers to install (with caching) on the runner when task
+          distribution is disabled. With distribution, install them in the Nx Agents launch template.
+        type: string
+        required: false
+        default: ''
       commitlint:
         description: Validate commit messages with commitlint on branches other than the default branch
         type: boolean
@@ -105,6 +112,26 @@ jobs:
         with:
           node-version-file: ${{ inputs.node-version-file }}
           set-shas: 'true'
+
+      - name: Resolve Playwright version
+        id: playwright
+        if: inputs.distribute-on == '' && inputs.playwright-browsers != ''
+        run: echo "version=$(node -p 'require("playwright/package.json").version')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Playwright browser cache
+        if: steps.playwright.outcome == 'success'
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-${{ inputs.playwright-browsers }}
+
+      # System dependencies are not cached; `--with-deps` installs them on every run.
+      - name: Install Playwright browsers
+        if: steps.playwright.outcome == 'success'
+        env:
+          BROWSERS: ${{ inputs.playwright-browsers }}
+        # BROWSERS is intentionally unquoted so each space-separated browser becomes its own argument.
+        run: npx playwright install --with-deps $BROWSERS
 
       - name: Validate commit message format
         if: inputs.commitlint && github.ref != format('refs/heads/{0}', github.event.repository.default_branch)

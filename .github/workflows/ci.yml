@@ -21,7 +21,10 @@ jobs:
   ci:
     uses: ./.github/workflows/nx-ci.yml
     with:
-      targets: lint test build check-sass build-compodoc build-storybook
+      targets: lint test build check-sass build-compodoc build-storybook test-storybook
+      # Only used when task distribution is disabled; Nx Agents install Chromium through the
+      # linux-medium-js-playwright launch template in .nx/workflows/agents.yaml.
+      playwright-browsers: chromium
       deploy-preview: true
       netlify-filter: AtlasNG
     secrets:

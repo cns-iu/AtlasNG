@@ -192,6 +192,22 @@
         }
       }
     },
+    "test-storybook": {
+      "cache": true,
+      "dependsOn": ["build-storybook"],
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/tools/scripts/test-storybook.mjs",
+        {
+          "externalDependencies": ["storybook", "@storybook/angular", "@storybook/test-runner", "playwright"]
+        }
+      ],
+      "options": {
+        "command": "node tools/scripts/test-storybook.mjs dist/storybook/{projectName} --config-dir {projectRoot}/.storybook",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "test": {
       "executor": "@nx/angular:unit-test",
       "cache": true,

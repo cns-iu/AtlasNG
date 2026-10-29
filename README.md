@@ -63,7 +63,12 @@ npx nx storybook internal-storybook
 
 # A single library
 npx nx storybook design-system
+
+# Run story play functions and render checks against a static build (needs `npx playwright install chromium` once)
+npx nx test-storybook design-system
 ```
+
+`test-storybook` uses [`@storybook/test-runner`](https://github.com/storybookjs/test-runner) because the Vitest addon requires a Vite-based framework and these Storybooks use the webpack-based `@storybook/angular`. Storybook no longer officially supports the test runner, so switching to `@storybook/angular-vite` and `@storybook/addon-vitest` is the planned replacement. In CI, the target runs on the `linux-medium-js-playwright` Nx Agent defined in [.nx/workflows/agents.yaml](.nx/workflows/agents.yaml).
 
 See [libs/internal/storybook](libs/internal/storybook/README.md) for local ports.
 
