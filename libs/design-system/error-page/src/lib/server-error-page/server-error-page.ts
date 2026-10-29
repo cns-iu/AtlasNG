@@ -10,6 +10,7 @@ import { ErrorPage, ErrorPageAction, ErrorPageDescription, ErrorPageTitle } from
   selector: 'ang-server-error-page',
   imports: [ErrorPage, ErrorPageTitle, ErrorPageDescription, ErrorPageAction, MatButtonModule, AnyLink],
   templateUrl: './server-error-page.html',
+  styleUrl: './server-error-page.scss',
 })
 export class ServerErrorPage {
   /** Link for the report issue CTA */
