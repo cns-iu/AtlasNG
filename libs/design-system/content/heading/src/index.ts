@@ -1,1 +1,1 @@
-export { Heading, type HeadingLevel } from './lib/heading';
+export { Heading, headingLevelAttribute, type HeadingLevel } from './lib/heading';

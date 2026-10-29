@@ -41,13 +41,13 @@ export class SocialMediaButton {
     return FALLBACK_SOCIAL_MEDIA_BUTTON_DEFINITION;
   });
 
-  /** Optional custom definitions provided via dependency injection. */
-  readonly #definitions = inject(SOCIAL_MEDIA_BUTTON_DEFINITIONS, { optional: true });
+  /** Optional groups of custom definitions provided via dependency injection. */
+  readonly #definitionGroups = inject(SOCIAL_MEDIA_BUTTON_DEFINITIONS, { optional: true }) ?? [];
 
   /**
    * Yields candidate definitions in precedence order:
    * 1) explicit `definition` input
-   * 2) injected definition matching `id`
+   * 2) last injected definition matching `id`
    * 3) built-in definition matching `id`
    *
    * In dev mode, missing inputs or unresolved `id` will throw.
@@ -66,7 +66,9 @@ export class SocialMediaButton {
       return;
     }
 
-    yield this.#definitions?.find((definition) => definition.id === id);
+    for (let index = this.#definitionGroups.length - 1; index >= 0; index--) {
+      yield this.#definitionGroups[index].findLast((definition) => definition.id === id);
+    }
     yield DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS.find((definition) => definition.id === id);
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {

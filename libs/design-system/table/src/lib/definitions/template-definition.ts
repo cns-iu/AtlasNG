@@ -1,4 +1,4 @@
-import { computed, Directive, inject, InjectionToken, TemplateRef, viewChild } from '@angular/core';
+import { computed, Directive, inject, InjectionToken, TemplateRef, viewChild, type Provider } from '@angular/core';
 import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
 import type { Table } from '../table';
 import { CellTemplateContext, HeaderCellTemplateContext, SummaryCellTemplateContext } from './template-context';
@@ -8,6 +8,26 @@ export const TABLE = new InjectionToken<Table>('ANG_TABLE');
 
 /** Configuration supplied to the active table template definition. */
 export const TABLE_TEMPLATE_DEFINITION_CONFIG = new InjectionToken<unknown>('TABLE_TEMPLATE_DEFINITION_CONFIG');
+
+/**
+ * Provides the dependencies injected by a {@link TableTemplateDefinition}.
+ *
+ * Useful for creating a definition outside a {@link Table}, such as when testing a custom
+ * cell definition in isolation.
+ *
+ * @param config Configuration exposed as the definition's `config`.
+ * @param table Table exposed as the definition's `table`. When omitted, the table is
+ * resolved from a parent injector.
+ * @returns Providers for the definition's element injector.
+ */
+export function provideTableTemplateDefinition<TConfig>(config: TConfig, table?: Table): Provider[] {
+  const providers: Provider[] = [{ provide: TABLE_TEMPLATE_DEFINITION_CONFIG, useValue: config }];
+  if (table !== undefined) {
+    providers.push({ provide: TABLE, useValue: table });
+  }
+
+  return providers;
+}
 
 /**
  * Base class for injectable components that provide table templates.
