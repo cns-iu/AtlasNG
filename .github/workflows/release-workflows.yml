@@ -1,0 +1,101 @@
+# Releases the reusable workflows (.github/workflows/nx-*.yml) and composite actions
+# (.github/actions/*) together: tags the default branch head as workflows/v<version>, moves the
+# workflows/v<major> tag to it, and creates a GitHub Release whose notes list the commits that
+# touched those files since the previous workflows release.
+name: Release workflows
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release (X.Y.Z); bump the major version for breaking changes
+        type: string
+        required: true
+      dry-run:
+        description: Print the tags and release notes without pushing anything
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release workflows
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          filter: tree:0
+
+      - name: Create tags and GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          set -euo pipefail
+          paths=(':(glob).github/workflows/nx-*.yml' .github/actions)
+
+          if [[ ! "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::version must be X.Y.Z, got '$VERSION'"
+            exit 1
+          fi
+          major="${BASH_REMATCH[1]}"
+          tag="workflows/v$VERSION"
+          major_tag="workflows/v$major"
+
+          previous_tag=$(git tag --list 'workflows/v*.*.*' --sort=-v:refname | head -n 1)
+          previous_version="${previous_tag#workflows/v}"
+          if [[ -n "$previous_tag" ]]; then
+            if [[ "$(printf '%s\n' "$previous_version" "$VERSION" | sort -V | tail -n 1)" != "$VERSION" \
+              || "$previous_version" == "$VERSION" ]]; then
+              echo "::error::$VERSION must be greater than the latest release $previous_version"
+              exit 1
+            fi
+
+            commits=$(git log --format='- %s (%h)' "$previous_tag..HEAD" -- "${paths[@]}")
+            if [[ -z "$commits" ]]; then
+              echo "::error::No workflow or action changes since $previous_tag"
+              exit 1
+            fi
+
+            # Conventional Commits mark breaking changes with `!` or a BREAKING CHANGE footer.
+            breaking=$(git log --format='%s%n%b' "$previous_tag..HEAD" -- "${paths[@]}" \
+              | grep -E '^[a-z]+(\([^)]*\))?!:|^BREAKING[ -]CHANGE:' || true)
+            if [[ -n "$breaking" && "$major" != "0" && "$major" == "${previous_version%%.*}" ]]; then
+              echo "::error::Breaking changes since $previous_tag require a major version bump:"
+              echo "$breaking"
+              exit 1
+            fi
+
+            notes="## Changes since $previous_tag"$'\n\n'"$commits"
+          else
+            notes="Initial versioned release of the reusable workflows and composite actions."
+          fi
+
+          notes+=$'\n\n'"Pin \`cns-iu/AtlasNG/.github/workflows/<workflow>.yml@$major_tag\` to receive compatible updates, or \`@$tag\` for this exact release."
+          echo "$notes" > release-notes.md
+
+          echo "Tags: $tag, $major_tag -> $(git rev-parse --short HEAD)"
+          cat release-notes.md
+          if [[ "$DRY_RUN" == "true" ]]; then
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag --annotate "$tag" --message "$tag"
+          git tag --force "$major_tag"
+          git push origin "refs/tags/$tag"
+          git push --force origin "refs/tags/$major_tag"
+          gh release create "$tag" --title "$tag" --notes-file release-notes.md --verify-tag --latest=false

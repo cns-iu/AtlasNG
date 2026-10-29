@@ -90,14 +90,25 @@ Each file documents its inputs and secrets. A caller owns the triggers, `concurr
 ```yaml
 jobs:
   ci:
-    uses: cns-iu/AtlasNG/.github/workflows/nx-ci.yml@<ref>
+    uses: cns-iu/AtlasNG/.github/workflows/nx-ci.yml@workflows/v1
     with:
       targets: lint test build
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 ```
 
-Where the workflows are hosted long term and how other repos pin versions is still to be decided. Until then the workflows reference their actions with local `./.github/actions/...` paths, which resolve against the calling repository, so they only work outside AtlasNG once those references are fully qualified.
+The workflows still reference their actions with local `./.github/actions/...` paths, which resolve against the calling repository, so callers outside AtlasNG need their own copies of those actions for now.
+
+### Versions
+
+The reusable workflows and composite actions are released together, independently of the npm packages, with two tags:
+
+- `workflows/v<major>` (for example `workflows/v1`) moves to every release with that major version. Pin it to get fixes and new inputs without breaking changes.
+- `workflows/v<major>.<minor>.<patch>` (for example `workflows/v1.2.0`) never moves. Pin it, or its commit SHA, for fully reproducible runs.
+
+Pin actions the same way, for example `uses: cns-iu/AtlasNG/.github/actions/setup-nx-workspace@workflows/v1`. Each release has a [GitHub Release](https://github.com/cns-iu/AtlasNG/releases) listing the commits that touched the workflows and actions since the previous one; a major version bump marks breaking changes such as removed or renamed inputs and secrets.
+
+To cut a release, run the [Release workflows](.github/workflows/release-workflows.yml) workflow on `main` with the new version (enable `dry-run` to preview the notes first). It tags `main`, moves the major tag, and creates the GitHub Release. It refuses versions that are not greater than the latest release, releases without workflow or action changes, and breaking changes (`type!:` or a `BREAKING CHANGE` footer) without a major version bump from 1.0.0 on.
 
 ## Releasing
 
