@@ -277,10 +277,17 @@
         "releaseTag": {
           "pattern": "{projectName}@{version}"
         }
+      },
+      "resources": {
+        "projects": ["libs/resources/*"],
+        "projectsRelationship": "independent",
+        "releaseTag": {
+          "pattern": "{projectName}@{version}"
+        }
       }
     },
     "version": {
-      "preVersionCommand": "npx nx run-many -t build --projects=tag:library,tag:tooling",
+      "preVersionCommand": "npx nx run-many -t build --projects=tag:library,tag:tooling,tag:resources",
       "manifestRootsToUpdate": [
         "{projectRoot}",
         {

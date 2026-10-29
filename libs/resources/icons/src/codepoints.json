@@ -1,0 +1,11 @@
+{
+  "codepoints": {
+    "atlas": "e000",
+    "download": "e001",
+    "ftu": "e002",
+    "heart": "e003",
+    "info": "e004",
+    "kidney": "e005"
+  },
+  "retired": {}
+}

@@ -21,6 +21,7 @@ Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasN
 | [`@atlasng/commitlint-config`](libs/tooling/commitlint-config/README.md) | Shared commitlint configuration with Nx project scopes                        |
 | [`@atlasng/prettier-config`](libs/tooling/prettier-config/README.md)     | Shared Prettier configuration                                                 |
 | [`@atlasng/tsconfig`](libs/tooling/tsconfig/README.md)                   | Shared TypeScript configurations                                              |
+| [`@atlasng/icons`](libs/resources/icons/README.md)                       | Framework-free icon assets: SVGs, icon font, sprite, and JS SVG literals      |
 
 ## Development
 
@@ -102,13 +103,14 @@ Where the workflows are hosted long term and how other repos pin versions is sti
 
 ## Releasing
 
-Packages are released with [Nx Release](https://nx.dev/docs/guides/nx-release) in three release groups configured in [nx.json](nx.json):
+Packages are released with [Nx Release](https://nx.dev/docs/guides/nx-release) in four release groups configured in [nx.json](nx.json):
 
 | Group          | Projects                                                                        | Versioning                 | Git tag               |
 | -------------- | ------------------------------------------------------------------------------- | -------------------------- | --------------------- |
 | `libraries`    | `core`, `common`, `cdk`, `analytics`, `content-blocks`, `design-system`, `labs` | Fixed (one shared version) | `v<version>`          |
 | `applications` | `libs/applications/*` (for example `kg-explorer`)                               | Independent                | `<project>@<version>` |
 | `tooling`      | `libs/tooling/*` (for example `nx-plugin`)                                      | Independent                | `<project>@<version>` |
+| `resources`    | `libs/resources/*` (for example `icons`)                                        | Independent                | `<project>@<version>` |
 
 Until 1.0.0, every release is a patch release:
 
@@ -121,7 +123,7 @@ npx nx release patch --skip-publish --groups=libraries
 npx nx release patch --skip-publish --projects=kg-explorer
 ```
 
-This bumps versions, prepends to each project's `CHANGELOG.md`, commits, and tags. Push the release commit and tags yourself (`git push origin main <tags>`); releases that include an application or tooling library push automatically, because Nx needs the tag on GitHub to create GitHub Releases for independently versioned projects (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml) (a caller of [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group, with notes from `npx nx run @atlasng/monorepo:release-notes --tag=v<version> --output=<file>`. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
+This bumps versions, prepends to each project's `CHANGELOG.md`, commits, and tags. Push the release commit and tags yourself (`git push origin main <tags>`); releases that include an application, tooling, or resource library push automatically, because Nx needs the tag on GitHub to create GitHub Releases for independently versioned projects (requires `GITHUB_TOKEN`, `GH_TOKEN`, or a `gh auth login` session). Each pushed tag triggers the [publish workflow](.github/workflows/publish.yml) (a caller of [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)), which publishes the tagged group or project to npm with trusted publishing; for `v<version>` tags it also creates one combined GitHub Release for the `libraries` group, with notes from `npx nx run @atlasng/monorepo:release-notes --tag=v<version> --output=<file>`. If more than three tags are pushed at once, GitHub does not trigger tag workflows; run the publish workflow manually on each tag instead.
 
 ### New packages
 

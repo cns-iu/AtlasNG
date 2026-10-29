@@ -32,6 +32,10 @@ const baseConfig = [
               onlyDependOnLibsWithTags: ['layer:common', 'layer:core'],
             },
             {
+              sourceTag: 'layer:resources',
+              onlyDependOnLibsWithTags: [],
+            },
+            {
               sourceTag: 'layer:analytics',
               onlyDependOnLibsWithTags: ['layer:core'],
             },

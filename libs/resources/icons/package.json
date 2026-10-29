@@ -1,0 +1,69 @@
+{
+  "name": "@atlasng/icons",
+  "version": "0.0.0",
+  "description": "AtlasNG organ, product, and miscellaneous icons as an icon font, SVG sprite, SVG files, and SVG string literals",
+  "keywords": [
+    "atlasng",
+    "icons",
+    "icon font",
+    "svg",
+    "sprite",
+    "css",
+    "sass",
+    "angular",
+    "mat-icon"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cns-iu/AtlasNG.git",
+    "directory": "libs/resources/icons"
+  },
+  "homepage": "https://github.com/cns-iu/AtlasNG/tree/main/libs/resources/icons",
+  "bugs": {
+    "url": "https://github.com/cns-iu/AtlasNG/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "index.css",
+  "style": "index.css",
+  "types": "index.d.css.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.css.ts",
+      "sass": "./index.css",
+      "style": "./index.css",
+      "default": "./index.css"
+    },
+    "./*.css": {
+      "sass": "./*.css",
+      "style": "./*.css",
+      "default": "./*.css"
+    },
+    "./files/*": "./files/*",
+    "./svg/*": "./svg/*",
+    "./sprite.svg": "./sprite.svg",
+    "./literals": {
+      "types": "./literals/index.d.ts",
+      "default": "./literals/index.js"
+    },
+    "./literals/*": {
+      "types": "./literals/*.d.ts",
+      "default": "./literals/*.js"
+    },
+    "./manifest": {
+      "types": "./manifest.d.ts",
+      "default": "./manifest.js"
+    },
+    "./manifest.json": "./manifest.json",
+    "./scss": {
+      "sass": "./scss/_index.scss"
+    },
+    "./package.json": "./package.json"
+  }
+}
