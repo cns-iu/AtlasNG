@@ -32,7 +32,7 @@ describe('design-system definitions', () => {
       { component: 'ContentHeader', config: { tagline: 'Overview', level: 2, id: 'overview' } },
       {
         component: 'ContentSection',
-        config: { title: 'Getting started', level: 2, underlined: false },
+        config: { tagline: 'Getting started', level: 2, underlined: false },
         content: {
           content: [
             { component: 'Heading', config: { level: 3 }, content: 'Install' },

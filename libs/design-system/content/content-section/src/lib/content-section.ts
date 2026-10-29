@@ -16,8 +16,8 @@ import { ContentHeader } from '@atlasng/design-system/content/content-header';
   },
 })
 export class ContentSection {
-  /** The text displayed in the section heading. */
-  readonly title = input.required<string>();
+  /** The text displayed in the section heading. Named `tagline` rather than `title` so it does not set a native tooltip. */
+  readonly tagline = input.required<string>();
 
   /** The heading level to use for the section. */
   readonly level = input.required<number | string>();

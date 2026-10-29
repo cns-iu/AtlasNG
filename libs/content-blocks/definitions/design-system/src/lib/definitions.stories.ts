@@ -36,7 +36,7 @@ export const Page: Story = {
         },
         {
           component: 'ContentSection',
-          config: { title: 'Getting started', level: 2, id: 'getting-started' },
+          config: { tagline: 'Getting started', level: 2, id: 'getting-started' },
           content: [
             { component: 'Heading', config: { level: 3 }, content: 'Install' },
             { component: 'ContentParagraph', content: 'Add the library and register the definitions.' },

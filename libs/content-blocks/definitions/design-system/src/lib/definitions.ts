@@ -29,14 +29,14 @@ export const CONTENT_PARAGRAPH_DEFINITION = {
 /**
  * `ContentSection`: `ContentSection`, a titled section of projected content.
  *
- * Config: `title` and `level` (1-6), and optional `id` and `underlined`. Content: unkeyed content is the section body,
+ * Config: `tagline` and `level` (1-6), and optional `id` and `underlined`. Content: unkeyed content is the section body,
  * and `header` is shown next to the title.
  */
 export const CONTENT_SECTION_DEFINITION = {
   name: 'ContentSection',
   component: () => import('@atlasng/design-system/content/content-section').then((m) => m.ContentSection),
   config: {
-    title: string(),
+    tagline: string(),
     level: headingLevel(),
     id: optional(string()),
     underlined: optional(boolean()),
