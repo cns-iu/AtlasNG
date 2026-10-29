@@ -1,5 +1,54 @@
 import { ContentDefinition } from '@atlasng/content-blocks/types';
-import { boolean, headingLevel, oneOf, optional, string } from './schemas';
+import {
+  arrayable,
+  arrayOf,
+  boolean,
+  headingLevel,
+  link,
+  number,
+  oneOf,
+  optional,
+  string,
+  tableColumn,
+  tableRows,
+  youTubePlayerVars,
+} from './schemas';
+
+/**
+ * `BasicProfileCard`: `BasicProfileCard`, a profile picture, name, and description(s).
+ *
+ * Config: `image` URL, `name`, `description` (a string or a list of paragraphs), and an optional `link` for the name,
+ * e.g. `"/people/ada"`, `["/people", 42]`, or `{ "command": "https://example.com", "fragment": "bio" }`.
+ */
+export const BASIC_PROFILE_CARD_DEFINITION = {
+  name: 'BasicProfileCard',
+  component: () => import('@atlasng/design-system/cards/basic-profile-card').then((m) => m.BasicProfileCard),
+  config: {
+    image: string(),
+    name: string(),
+    description: arrayable(string()),
+    link: optional(link()),
+  },
+} satisfies ContentDefinition;
+
+/**
+ * `BrandProfileCard`: `BrandProfileCard`, a branded profile picture, name, description, and actions.
+ *
+ * Config: `image` URL, `name`, `description`, and optional `centered`. Content: `actions`, e.g. `TextLink` nodes.
+ */
+export const BRAND_PROFILE_CARD_DEFINITION = {
+  name: 'BrandProfileCard',
+  component: () => import('@atlasng/design-system/cards/brand-profile-card').then((m) => m.BrandProfileCard),
+  config: {
+    image: string(),
+    name: string(),
+    description: string(),
+    centered: optional(boolean()),
+  },
+  content: {
+    actions: 'ang-brand-profile-card-action, [angBrandProfileCardAction]',
+  },
+} satisfies ContentDefinition;
 
 /**
  * `ContentHeader`: `ContentHeader`, a section header without content.
@@ -96,6 +145,28 @@ export const NOTICE_DEFINITION = {
 } satisfies ContentDefinition;
 
 /**
+ * `Table`: a design-system `Table` with JSON column descriptions.
+ *
+ * Config: `columns`, each with a row key `prop`, and optional header `name`, cell `type` (`text`, `number`, `code`,
+ * `chip`, or `link`), `align`, `sortable`, `minWidth`, `flexGrow`, and, for links, `label` or `labelProp`; and optional
+ * `appearance` (`striped`, `grid`, `vertical-rules`, or `none`) and `rowHeight`. Data: `rows`, an array of objects
+ * keyed by column `prop`, inline or loaded, e.g. from a CSV file; empty until loaded. The table is virtualized, so give
+ * long tables a `maxHeight` style.
+ */
+export const TABLE_DEFINITION = {
+  name: 'Table',
+  component: () => import('./wrappers/content-table').then((m) => m.ContentTable),
+  config: {
+    columns: arrayOf(tableColumn()),
+    appearance: optional(oneOf(['striped', 'grid', 'vertical-rules', 'none'])),
+    rowHeight: optional(number()),
+  },
+  data: {
+    rows: { schema: tableRows(), initialValue: () => [] },
+  },
+} satisfies ContentDefinition;
+
+/**
  * `TextLink`: a design-system `TextLink` whose content is the link text.
  *
  * Config: `href`.
@@ -111,13 +182,46 @@ export const TEXT_LINK_DEFINITION = {
   },
 } satisfies ContentDefinition;
 
+/**
+ * `YouTubePlayer`: `YouTubePlayer`, an embedded video shown once marketing cookies are allowed, and a placeholder
+ * linking to YouTube until then.
+ *
+ * Config: `videoId`, and optional `width` and `height` (largest size in pixels, and aspect ratio), `startSeconds`,
+ * `endSeconds`, `suggestedQuality`, `playerVars` (a subset of `YT.PlayerVars`, e.g. `{ "autoplay": 1, "mute": 1 }`),
+ * `disablePlaceholder`, `placeholderButtonLabel`, and `placeholderImageQuality` (`high`, `standard`, or `low`).
+ * Content: `enableRequest` replaces the default request to enable cookies.
+ */
+export const YOUTUBE_PLAYER_DEFINITION = {
+  name: 'YouTubePlayer',
+  component: () => import('@atlasng/design-system/youtube-player').then((m) => m.YouTubePlayer),
+  config: {
+    videoId: string(),
+    width: optional(number()),
+    height: optional(number()),
+    startSeconds: optional(number()),
+    endSeconds: optional(number()),
+    suggestedQuality: optional(oneOf(['default', 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'])),
+    playerVars: optional(youTubePlayerVars()),
+    disablePlaceholder: optional(boolean()),
+    placeholderButtonLabel: optional(string()),
+    placeholderImageQuality: optional(oneOf(['high', 'standard', 'low'])),
+  },
+  content: {
+    enableRequest: '[angYouTubePlayerEnableRequest]',
+  },
+} satisfies ContentDefinition;
+
 /** Every definition in this entry point, e.g. for `withDefinitions(DESIGN_SYSTEM_DEFINITIONS)`. */
 export const DESIGN_SYSTEM_DEFINITIONS: ContentDefinition[] = [
+  BASIC_PROFILE_CARD_DEFINITION,
+  BRAND_PROFILE_CARD_DEFINITION,
   CONTENT_HEADER_DEFINITION,
   CONTENT_PARAGRAPH_DEFINITION,
   CONTENT_SECTION_DEFINITION,
   HEADING_DEFINITION,
   LINK_SNIPPET_DEFINITION,
   NOTICE_DEFINITION,
+  TABLE_DEFINITION,
   TEXT_LINK_DEFINITION,
+  YOUTUBE_PLAYER_DEFINITION,
 ];
