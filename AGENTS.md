@@ -54,6 +54,7 @@
 - Design-system Storybook:
   - Dev: `npx nx storybook design-system`
   - Static build: `npx nx build-storybook design-system`
+  - Play-function tests: `npx nx test-storybook design-system` (static build + `@storybook/test-runner`; needs Playwright Chromium)
 - Compodoc for libraries:
   - Build docs: `npx nx build-compodoc <project>`
   - Live docs: `npx nx compodoc <project>`
