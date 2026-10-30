@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/nx-plugin",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Nx plugin with shared generators, executors, inferred targets and presets for AtlasNG and related Nx workspaces",
   "license": "MIT",
   "repository": {

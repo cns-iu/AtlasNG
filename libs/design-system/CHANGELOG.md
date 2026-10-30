@@ -1,3 +1,26 @@
+## 0.0.10 (2026-10-30)
+
+### 🚀 Features
+
+- **design-system:** add text selection tokens ([#223](https://github.com/cns-iu/AtlasNG/pull/223))
+- **design-system:** add stepper stories ([#221](https://github.com/cns-iu/AtlasNG/pull/221))
+- **design-system:** export missing public APIs ([#216](https://github.com/cns-iu/AtlasNG/pull/216))
+
+### 🩹 Fixes
+
+- **design-system:** shrink youtube player to fit narrow containers ([#219](https://github.com/cns-iu/AtlasNG/pull/219), [#214](https://github.com/cns-iu/AtlasNG/issues/214))
+- **design-system:** make error pages fill the viewport as route components ([#218](https://github.com/cns-iu/AtlasNG/pull/218), [#212](https://github.com/cns-iu/AtlasNG/issues/212))
+- ⚠️  **design-system:** rename content section title input to tagline ([#217](https://github.com/cns-iu/AtlasNG/pull/217))
+
+### ⚠️  Breaking Changes
+
+- **design-system:** rename content section title input to tagline  ([#217](https://github.com/cns-iu/AtlasNG/pull/217))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
 ## 0.0.9 (2026-10-27)
 
 ### 🚀 Features
