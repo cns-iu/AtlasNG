@@ -13,6 +13,7 @@ Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasN
 | [`@atlasng/cdk`](libs/cdk/README.md)                                     | Low-level infrastructure for component authors                                |
 | [`@atlasng/analytics`](libs/analytics/README.md)                         | Consent-aware event tracking and permission management                        |
 | [`@atlasng/design-system`](libs/design-system/README.md)                 | Angular Material–based components and Sass theming utilities                  |
+| [`@atlasng/content-blocks`](libs/content-blocks/README.md)               | Render AtlasNG components from JSON content documents                         |
 | [`@atlasng/labs`](libs/labs/README.md)                                   | Experimental components without a stable API                                  |
 | [`@atlasng/kg-explorer`](libs/applications/kg-explorer/README.md)        | Knowledge graph explorer application library                                  |
 | [`@atlasng/nx-plugin`](libs/tooling/nx-plugin/README.md)                 | Nx plugin with shared generators, executors, inferred targets, and presets    |
@@ -103,11 +104,11 @@ Where the workflows are hosted long term and how other repos pin versions is sti
 
 Packages are released with [Nx Release](https://nx.dev/docs/guides/nx-release) in three release groups configured in [nx.json](nx.json):
 
-| Group          | Projects                                                      | Versioning                 | Git tag               |
-| -------------- | ------------------------------------------------------------- | -------------------------- | --------------------- |
-| `libraries`    | `core`, `common`, `cdk`, `analytics`, `design-system`, `labs` | Fixed (one shared version) | `v<version>`          |
-| `applications` | `libs/applications/*` (for example `kg-explorer`)             | Independent                | `<project>@<version>` |
-| `tooling`      | `libs/tooling/*` (for example `nx-plugin`)                    | Independent                | `<project>@<version>` |
+| Group          | Projects                                                                        | Versioning                 | Git tag               |
+| -------------- | ------------------------------------------------------------------------------- | -------------------------- | --------------------- |
+| `libraries`    | `core`, `common`, `cdk`, `analytics`, `content-blocks`, `design-system`, `labs` | Fixed (one shared version) | `v<version>`          |
+| `applications` | `libs/applications/*` (for example `kg-explorer`)                               | Independent                | `<project>@<version>` |
+| `tooling`      | `libs/tooling/*` (for example `nx-plugin`)                                      | Independent                | `<project>@<version>` |
 
 Until 1.0.0, every release is a patch release:
 
