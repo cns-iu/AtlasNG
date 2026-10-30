@@ -1,0 +1,2 @@
+/** SVG markup of the "schema" icon (products). */
+export const angIconSchema = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="m22.634 11.5-2.637-1.113.368.87h-2.771l.058.486h2.713l-.368.862zM1 11.5l2.63-1.113-.37.87h2.772l-.05.486H3.261l.368.862zM15.29 8H8.359C7.47 8 6.75 8.72 6.75 9.607v3.785c0 .888.72 1.607 1.608 1.607h6.933c.887 0 1.607-.72 1.607-1.607V9.607c0-.887-.72-1.607-1.607-1.607"/></svg>';
