@@ -303,23 +303,23 @@ describe('main', () => {
   it('fails the build when codepoints are out of date', async () => {
     const dir = await copyProject('stale');
     await cp(path.join(svgDir, 'organs/heart.svg'), path.join(dir, 'src/svg/organs/new-icon.svg'));
-    await rm(path.join(dir, 'src/svg/organs/kidney.svg'));
+    await rm(path.join(dir, 'src/svg/organs/kidneys.svg'));
 
     await expect(main(['--out', path.join(dir, 'out')], dir)).rejects.toThrow(
-      /SVG without codepoint: new-icon[\s\S]*codepoint without SVG: kidney[\s\S]*icons:codepoints/,
+      /SVG without codepoint: new-icon[\s\S]*codepoint without SVG: kidneys[\s\S]*icons:codepoints/,
     );
   });
 
   it('writes codepoints and then builds', async () => {
     const dir = await copyProject('write');
     await cp(path.join(svgDir, 'organs/heart.svg'), path.join(dir, 'src/svg/organs/new-icon.svg'));
-    await rm(path.join(dir, 'src/svg/organs/kidney.svg'));
+    await rm(path.join(dir, 'src/svg/organs/kidneys.svg'));
     const before = await readCodepoints(path.join(dir, 'src/codepoints.json'));
 
     await expect(main(['--write-codepoints'], dir)).resolves.toMatch(/^Wrote \d+ codepoints/);
 
     const after = await readCodepoints(path.join(dir, 'src/codepoints.json'));
-    expect(after.retired.kidney).toBe(before.codepoints.kidney);
+    expect(after.retired.kidneys).toBe(before.codepoints.kidneys);
     expect(after.codepoints['new-icon']).toBeDefined();
     await expect(main(['--out', path.join(dir, 'out')], dir)).resolves.toMatch(/^Built \d+ icons/);
   });

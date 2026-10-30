@@ -2,8 +2,6 @@
 
 Organ, product, and miscellaneous AtlasNG icons, packaged as an icon font with ligatures, an SVG sprite, SVG files, and SVG string literals.
 
-> The icons currently shipped are simple geometric placeholders until the final artwork is exported from Figma.
-
 ## Installation
 
 ```bash
@@ -72,7 +70,7 @@ registry.addSvgIconLiteralInNamespace('ang', 'heart', sanitizer.bypassSecurityTr
 
 ## Adding icons
 
-1. Export from Figma as SVG from a 24x24 frame, with strokes outlined, a single colour, and no images.
+1. Export the 24x24 frame from Figma as SVG, with the artwork inside the frame, **Clip content** off, strokes outlined, a black fill, and no images. Union and flatten the artwork first; overlapping shapes cut holes in the font glyph.
 2. Save it as `src/svg/<category>/<name>.svg`, where the category is `organs`, `products`, or `misc` and the name is kebab-case and unique across categories.
 3. Run `npx nx run icons:codepoints` and commit `src/codepoints.json`. Codepoints are never reused; removed icons move to `retired`.
 4. Run `npx nx build icons` and `npx nx test icons`.
