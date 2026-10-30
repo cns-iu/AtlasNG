@@ -1,3 +1,14 @@
+## 0.0.11 (2026-10-30)
+
+### 🚀 Features
+
+- **design-system:** add provideAngIcons and icon gallery ([#227](https://github.com/cns-iu/AtlasNG/pull/227))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
 ## 0.0.10 (2026-10-30)
 
 ### 🚀 Features

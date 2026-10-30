@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/content-blocks",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Render AtlasNG components from JSON content documents",
   "license": "MIT",
   "repository": {
@@ -18,8 +18,8 @@
     "@angular/common": "^22.1.5",
     "@angular/core": "^22.1.5",
     "rxjs": "^7.8.2",
-    "@atlasng/core": "^0.0.10",
-    "@atlasng/design-system": "^0.0.10"
+    "@atlasng/core": "^0.0.11",
+    "@atlasng/design-system": "^0.0.11"
   },
   "dependencies": {
     "@standard-schema/spec": "^1.1.0",

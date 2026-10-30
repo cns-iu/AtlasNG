@@ -1,3 +1,7 @@
+## 0.0.11 (2026-10-30)
+
+This was a version bump only for core to align it with other projects, there were no code changes.
+
 ## 0.0.10 (2026-10-30)
 
 This was a version bump only for core to align it with other projects, there were no code changes.
