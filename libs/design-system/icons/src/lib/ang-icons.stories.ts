@@ -206,7 +206,7 @@ export const Usage: Story = {
     docs: {
       description: {
         story: `
-- Font ligature: \`<mat-icon fontSet="ang-icons">name</mat-icon>\` (needs the \`@atlasng/icons\` CSS)
+- Font ligature: \`<mat-icon fontSet="ang-icons" fontIcon="name" />\` or \`<mat-icon fontSet="ang-icons">name</mat-icon>\` (needs the \`@atlasng/icons\` CSS)
 - SVG sprite: \`<mat-icon svgIcon="ang:name" />\` with \`provideAngIcons({ spriteUrl })\`
 - SVG literal: \`<mat-icon svgIcon="ang:name" />\` with \`provideAngIcons({ literals })\`
         `,

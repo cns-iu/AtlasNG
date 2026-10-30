@@ -29,7 +29,7 @@ function setup(options?: AngIconsOptions) {
 describe('provideAngIcons', () => {
   it('registers the font set alias', () => {
     const { registry } = setup();
-    expect(registry.classNameForFontAlias(ANG_ICONS_FONT_SET)).toBe(ANG_ICONS_FONT_CLASS);
+    expect(registry.classNameForFontAlias(ANG_ICONS_FONT_SET)).toBe(`${ANG_ICONS_FONT_CLASS} mat-ligature-font`);
   });
 
   it('renders font ligature icons with the font class', async () => {
@@ -38,6 +38,17 @@ describe('provideAngIcons', () => {
       providers: [provideAngIcons()],
     });
     expect(screen.getByText('heart')).toHaveClass(ANG_ICONS_FONT_CLASS);
+  });
+
+  it('renders fontIcon icons as ligatures', async () => {
+    await render(`<mat-icon fontSet="ang-icons" fontIcon="heart" data-testid="icon" />`, {
+      imports: [MatIcon],
+      providers: [provideAngIcons()],
+    });
+    const icon = screen.getByTestId('icon');
+    expect(icon).toHaveClass(ANG_ICONS_FONT_CLASS, 'mat-ligature-font');
+    expect(icon).not.toHaveClass('heart');
+    expect(icon).toHaveAttribute('fontIcon', 'heart');
   });
 
   it('registers the sprite in the default namespace', async () => {

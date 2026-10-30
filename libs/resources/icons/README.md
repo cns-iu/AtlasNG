@@ -41,7 +41,7 @@ Register the icons with `provideAngIcons` from `@atlasng/design-system/icons`:
 import { provideAngIcons } from '@atlasng/design-system/icons';
 import * as literals from '@atlasng/icons/literals';
 
-provideAngIcons(); // font ligatures only: <mat-icon fontSet="ang-icons">heart</mat-icon>
+provideAngIcons(); // font ligatures only: <mat-icon fontSet="ang-icons" fontIcon="heart" /> or <mat-icon fontSet="ang-icons">heart</mat-icon>
 provideAngIcons({ spriteUrl: 'assets/ang-icons/sprite.svg' }); // SVG sprite: <mat-icon svgIcon="ang:heart" />
 provideAngIcons({ literals }); // SVG literals bundled with the app: <mat-icon svgIcon="ang:heart" />
 ```

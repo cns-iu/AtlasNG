@@ -63,7 +63,7 @@ export function toAngIconName(key: string): string {
  * The icon assets come from `@atlasng/icons`: import its CSS (`@atlasng/icons` or `@atlasng/icons/font-face.css`)
  * for the font, copy its `sprite.svg` into the application's assets for `spriteUrl`, and import
  * `@atlasng/icons/literals` for `literals`. The font set alias is always registered, so
- * `<mat-icon fontSet="ang-icons">heart</mat-icon>` works once the CSS is loaded.
+ * `<mat-icon fontSet="ang-icons">heart</mat-icon>` and `<mat-icon fontSet="ang-icons" fontIcon="heart" />` work once the CSS is loaded.
  *
  * May be provided several times, for example with different namespaces.
  *
@@ -78,7 +78,8 @@ export function provideAngIcons(options: AngIconsOptions = {}): EnvironmentProvi
       const registry = inject(MatIconRegistry);
       const sanitizer = inject(DomSanitizer);
 
-      registry.registerFontClassAlias(ANG_ICONS_FONT_SET, ANG_ICONS_FONT_CLASS);
+      // `mat-ligature-font` makes `fontIcon="<name>"` render the name as ligature text instead of adding it as a class.
+      registry.registerFontClassAlias(ANG_ICONS_FONT_SET, `${ANG_ICONS_FONT_CLASS} mat-ligature-font`);
 
       if (spriteUrl) {
         registry.addSvgIconSetInNamespace(namespace, sanitizer.bypassSecurityTrustResourceUrl(spriteUrl));
