@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/icons",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "AtlasNG organ, product, and miscellaneous icons as an icon font, SVG sprite, SVG files, and SVG string literals",
   "keywords": [
     "atlasng",
