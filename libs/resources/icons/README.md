@@ -37,45 +37,31 @@ Colour is lost in the font; glyphs render in the current text colour. The sprite
 
 ## Angular Material `mat-icon`
 
-### Font ligatures
+Register the icons with `provideAngIcons` from `@atlasng/design-system/icons`:
 
 ```ts
-inject(MatIconRegistry).registerFontClassAlias('ang-icons', 'ang-icon');
+import { provideAngIcons } from '@atlasng/design-system/icons';
+import * as literals from '@atlasng/icons/literals';
+
+provideAngIcons(); // font ligatures only: <mat-icon fontSet="ang-icons">heart</mat-icon>
+provideAngIcons({ spriteUrl: 'assets/ang-icons/sprite.svg' }); // SVG sprite: <mat-icon svgIcon="ang:heart" />
+provideAngIcons({ literals }); // SVG literals bundled with the app: <mat-icon svgIcon="ang:heart" />
 ```
 
-```html
-<mat-icon fontSet="ang-icons" fontIcon="heart" />
-```
-
-### SVG sprite
-
-Copy the package files into the application's assets in `angular.json` (or `project.json`):
+For the sprite, copy it into the application's assets in `angular.json` (or `project.json`):
 
 ```json
 { "glob": "sprite.svg", "input": "node_modules/@atlasng/icons", "output": "assets/ang-icons" }
 ```
 
-```ts
-inject(MatIconRegistry).addSvgIconSetInNamespace(
-  'ang',
-  inject(DomSanitizer).bypassSecurityTrustResourceUrl('assets/ang-icons/sprite.svg'),
-);
-```
-
-```html
-<mat-icon svgIcon="ang:heart" />
-```
-
-### SVG literals
+Without the design system, register the icons with `MatIconRegistry` directly:
 
 ```ts
-import { angIconHeart } from '@atlasng/icons/literals'; // or '@atlasng/icons/literals/heart'
-
-inject(MatIconRegistry).addSvgIconLiteralInNamespace(
-  'ang',
-  'heart',
-  inject(DomSanitizer).bypassSecurityTrustHtml(angIconHeart),
-);
+const registry = inject(MatIconRegistry);
+const sanitizer = inject(DomSanitizer);
+registry.registerFontClassAlias('ang-icons', 'ang-icon');
+registry.addSvgIconSetInNamespace('ang', sanitizer.bypassSecurityTrustResourceUrl('assets/ang-icons/sprite.svg'));
+registry.addSvgIconLiteralInNamespace('ang', 'heart', sanitizer.bypassSecurityTrustHtml(angIconHeart));
 ```
 
 ## Other files

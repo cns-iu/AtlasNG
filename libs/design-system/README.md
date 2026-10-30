@@ -10,7 +10,7 @@ Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasN
 npm install @atlasng/design-system
 ```
 
-The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@angular/forms`, `rxjs`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player` and `@swimlane/ngx-datatable` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
+The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@angular/forms`, `@angular/platform-browser`, `rxjs`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player` and `@swimlane/ngx-datatable` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
 
 ## Setup
 
@@ -38,6 +38,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/cookie-banner`                       | `CookieBanner`, `CookieBannerContainer`, and its content directives       |
 | `@atlasng/design-system/error-page`                          | `ErrorPage` and its content directives, `NotFoundPage`, `ServerErrorPage` |
 | `@atlasng/design-system/footer`                              | `Footer`, `FooterLogo`, `FooterAction`                                    |
+| `@atlasng/design-system/icons`                               | `provideAngIcons`, `AngIconsOptions`                                      |
 | `@atlasng/design-system/indicators/end-of-results-indicator` | `EndOfResultsIndicator`                                                   |
 | `@atlasng/design-system/indicators/no-results-indicator`     | `NoResultsIndicator`                                                      |
 | `@atlasng/design-system/indicators/notice`                   | `Notice`                                                                  |
@@ -67,6 +68,29 @@ A few components with notable options:
 
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
+
+## Icons
+
+`provideAngIcons` from `@atlasng/design-system/icons` registers the [`@atlasng/icons`](../resources/icons/README.md) icon font, SVG sprite, and SVG literals with `MatIconRegistry`. Install `@atlasng/icons` separately; the design system does not depend on it.
+
+```ts
+import { provideAngIcons } from '@atlasng/design-system/icons';
+import * as literals from '@atlasng/icons/literals';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAngIcons({ spriteUrl: 'assets/ang-icons/sprite.svg' }), // or { literals }
+  ],
+};
+```
+
+```html
+<mat-icon fontSet="ang-icons">heart</mat-icon>
+<!-- needs the @atlasng/icons CSS -->
+<mat-icon svgIcon="ang:heart" />
+```
+
+The font set alias `ang-icons` is always registered. `spriteUrl` and `literals` register SVG icons in the `ang` namespace (change it with `namespace`). `literals` accepts icon names (`{ heart: angIconHeart }`) or the `@atlasng/icons/literals` module namespace; export names are converted to icon names with `toAngIconName`.
 
 ## Sass API
 
