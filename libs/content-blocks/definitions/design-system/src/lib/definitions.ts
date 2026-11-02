@@ -169,7 +169,8 @@ export const TABLE_DEFINITION = {
 /**
  * `TextLink`: a design-system `TextLink` whose content is the link text.
  *
- * Config: `href`.
+ * Config: `href`. The link inherits the surrounding font weight; set the node's `styles`, e.g.
+ * `{ "fontWeight": 600 }`, to emphasize it.
  */
 export const TEXT_LINK_DEFINITION = {
   name: 'TextLink',
