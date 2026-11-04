@@ -19,7 +19,7 @@
     "@angular/common": "^22.1.5",
     "@angular/core": "^22.1.5",
     "@angular/material": "^22.1.5",
-    "@atlasng/design-system": "^0.0.8",
+    "@atlasng/design-system": "^0.0.11",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
