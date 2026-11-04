@@ -58,7 +58,7 @@ export class PageLastModifiedDates {
 
 /**
  * Lets `ang-page-last-modified` look up the current route's date in a JSON file that maps routes to dates,
- * for example `{ "/dataset/heart": "2026-06-16" }`. Requires `provideHttpClient()`.
+ * for example `{ "/dataset/heart": "2026-06-16" }`.
  *
  * @param options Location of the dates file.
  * @returns Providers to include in the application providers.

@@ -101,7 +101,7 @@ The font set alias `ang-icons` is always registered. `spriteUrl` and `literals` 
 import { providePageLastModified } from '@atlasng/design-system/content/page-last-modified';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHttpClient(), providePageLastModified({ url: 'page-last-modified.json' })],
+  providers: [providePageLastModified({ url: 'page-last-modified.json' })],
 };
 ```
 
