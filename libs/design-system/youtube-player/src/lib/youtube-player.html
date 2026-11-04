@@ -1,27 +1,36 @@
-@if (enabled()) {
-  <youtube-player
-    disableCookies
-    loadApi
-    [videoId]="videoId()"
-    [width]="width()"
-    [height]="height()"
-    [startSeconds]="startSeconds()"
-    [endSeconds]="endSeconds()"
-    [suggestedQuality]="suggestedQuality()"
-    [playerVars]="playerVarsWithDefaults()"
-    [disablePlaceholder]="disablePlaceholder()"
-    [placeholderButtonLabel]="placeholderButtonLabel()"
-    [placeholderImageQuality]="placeholderImageQuality()"
-  />
-} @else {
-  <ang-youtube-player-placeholder
-    [videoId]="videoId()"
-    [width]="width()"
-    [height]="height()"
-    [buttonLabel]="placeholderButtonLabel()"
-    [quality]="placeholderImageQuality()"
-  />
+<div
+  class="ang-youtube-player--frame"
+  [style.width.px]="width()"
+  [style.aspect-ratio]="`${width()} / ${height()}`"
+  #frame
+>
+  @if (enabled()) {
+    <youtube-player
+      disableCookies
+      loadApi
+      [videoId]="videoId()"
+      [width]="size().width"
+      [height]="size().height"
+      [startSeconds]="startSeconds()"
+      [endSeconds]="endSeconds()"
+      [suggestedQuality]="suggestedQuality()"
+      [playerVars]="playerVarsWithDefaults()"
+      [disablePlaceholder]="disablePlaceholder()"
+      [placeholderButtonLabel]="placeholderButtonLabel()"
+      [placeholderImageQuality]="placeholderImageQuality()"
+    />
+  } @else {
+    <ang-youtube-player-placeholder
+      [videoId]="videoId()"
+      [width]="size().width"
+      [height]="size().height"
+      [buttonLabel]="placeholderButtonLabel()"
+      [quality]="placeholderImageQuality()"
+    />
+  }
+</div>
 
+@if (!enabled()) {
   <ng-content select="[angYouTubePlayerEnableRequest]">
     <div class="ang-youtube-player--enable-request">
       <button class="ang-youtube-player--enable-request-button" (click)="enableRequest.emit()">Enable cookies</button>

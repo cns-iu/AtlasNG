@@ -1,5 +1,5 @@
 import { CdkAccordionModule } from '@angular/cdk/accordion';
-import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
+import { Component, input, model } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { EventScope } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
@@ -48,7 +48,6 @@ const DEFAULT_INFO: CookiePermissionInfo[] = [
   imports: [CdkAccordionModule, MatDividerModule, CookiePermissionItem, EventScope],
   templateUrl: './cookie-permissions.html',
   styleUrl: './cookie-permissions.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ang-cookie-permissions',
   },

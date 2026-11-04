@@ -27,37 +27,28 @@ type Story = StoryObj;
 export const CustomContent: Story = {
   render: () => ({
     template: `
-      <div class="container">
-        <ang-error-page>
-          <ang-error-page-title>Custom title</ang-error-page-title>
-          <ang-error-page-description>Custom description</ang-error-page-description>
-          <a angErrorPageAction matButton="filled">Custom action 1</a>
-          <a angErrorPageAction matButton>Custom action 2</a>
-        </ang-error-page>
-      </div>
+      <ang-error-page>
+        <ang-error-page-title>Custom title</ang-error-page-title>
+        <ang-error-page-description>Custom description</ang-error-page-description>
+        <a angErrorPageAction matButton="filled">Custom action 1</a>
+        <a angErrorPageAction matButton>Custom action 2</a>
+      </ang-error-page>
     `,
-    styles: [`.container { height: 100vh; }`],
   }),
 };
 
 export const NotFound: Story = {
   render: () => ({
     template: `
-      <div class="container">
-        <ang-not-found-page />
-      </div>
+      <ang-not-found-page />
     `,
-    styles: [`.container { height: 100vh; }`],
   }),
 };
 
 export const ServerError: Story = {
   render: () => ({
     template: `
-      <div class="container">
-        <ang-server-error-page reportIssueLink="https://example.com/report-issue" />
-      </div>
+      <ang-server-error-page reportIssueLink="https://example.com/report-issue" />
     `,
-    styles: [`.container { height: 100vh; }`],
   }),
 };

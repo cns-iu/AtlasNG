@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, ViewEncapsulation } from '@angular/core';
+import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
@@ -62,7 +62,6 @@ export type CookieModalResult = AnalyticsPermissions | undefined;
   templateUrl: './cookie-modal.html',
   styleUrl: './cookie-modal.scss',
   providers: [provideEventScope('cookie-modal')],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-cookie-modal',

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
+import { Component, input, model, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -53,7 +53,6 @@ const DESKTOP_BREAKPOINT = 960;
   templateUrl: './header-shell.html',
   styleUrl: './header-shell.scss',
   providers: [provideEventScope('header-shell')],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:resize)': 'closeLocalNavigationOnDesktop()',
   },

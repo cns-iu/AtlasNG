@@ -47,6 +47,7 @@
       "@atlasng/design-system/error-page": ["./libs/design-system/error-page/src/index.ts"],
       "@atlasng/design-system/multi-select-filter": ["./libs/design-system/multi-select-filter/src/index.ts"],
       "@atlasng/design-system/footer": ["./libs/design-system/footer/src/index.ts"],
+      "@atlasng/design-system/icons": ["./libs/design-system/icons/src/index.ts"],
       "@atlasng/design-system/indicators": ["./libs/design-system/indicators/src/index.ts"],
       "@atlasng/design-system/indicators/end-of-results-indicator": [
         "./libs/design-system/indicators/end-of-results-indicator/src/index.ts"

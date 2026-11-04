@@ -49,8 +49,15 @@ export interface SocialMediaButtonClassIconDefinition extends SocialMediaButtonD
 export type SocialMediaButtonDefinition =
   SocialMediaButtonSvgIconDefinition | SocialMediaButtonFontIconDefinition | SocialMediaButtonClassIconDefinition;
 
-/** DI token for optional application-specific button definitions. */
-export const SOCIAL_MEDIA_BUTTON_DEFINITIONS = new InjectionToken<SocialMediaButtonDefinition[]>(
+/**
+ * Multi-provider DI token for optional application-specific button definitions.
+ *
+ * Each registration contributes one array of definitions. When several definitions share
+ * an `id`, the last registered definition takes precedence.
+ *
+ * @see {@link provideSocialMediaButtons}
+ */
+export const SOCIAL_MEDIA_BUTTON_DEFINITIONS = new InjectionToken<SocialMediaButtonDefinition[][]>(
   'SOCIAL_MEDIA_BUTTON_DEFINITIONS',
 );
 
@@ -112,9 +119,12 @@ export const FALLBACK_SOCIAL_MEDIA_BUTTON_DEFINITION: SocialMediaButtonDefinitio
 /**
  * Registers custom button definitions for `id`-based resolution.
  *
+ * May be called multiple times in the same injector; definitions registered later take
+ * precedence over earlier ones with the same `id`.
+ *
  * @param definitions Button definitions to register.
  * @returns Provider to include in application or component providers.
  */
 export function provideSocialMediaButtons(definitions: SocialMediaButtonDefinition[]): Provider {
-  return { provide: SOCIAL_MEDIA_BUTTON_DEFINITIONS, useValue: definitions };
+  return { provide: SOCIAL_MEDIA_BUTTON_DEFINITIONS, useValue: definitions, multi: true };
 }

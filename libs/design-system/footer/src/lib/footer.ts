@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Directive, input, output, ViewEncapsulation } from '@angular/core';
+import { Component, Directive, input, output, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -35,7 +35,6 @@ export class FooterAction {}
   imports: [MatButtonModule, MatIconModule, MatTooltipModule, SocialMediaButton, AnyLink, NgOptimizedImage],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-footer',

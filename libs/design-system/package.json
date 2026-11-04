@@ -1,11 +1,11 @@
 {
   "name": "@atlasng/design-system",
-  "version": "0.0.8",
+  "version": "0.0.11",
   "description": "Design System library for AtlasNG",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cns-iu/AtlasNG"
+    "url": "git+https://github.com/cns-iu/AtlasNG.git"
   },
   "homepage": "https://github.com/cns-iu/AtlasNG",
   "bugs": {
@@ -25,10 +25,11 @@
     "@angular/core": "^22.1.5",
     "@angular/forms": "^22.1.5",
     "@angular/material": "^22.1.5",
+    "@angular/platform-browser": "^22.1.5",
     "@angular/youtube-player": "^22.1.5",
-    "@atlasng/analytics": "^0.0.8",
-    "@atlasng/common": "^0.0.8",
-    "@atlasng/core": "^0.0.8",
+    "@atlasng/analytics": "^0.0.11",
+    "@atlasng/common": "^0.0.11",
+    "@atlasng/core": "^0.0.11",
     "@swimlane/ngx-datatable": "^25.1.0",
     "ngx-scrollbar": "^19.1.5",
     "rxjs": "^7.8.2"

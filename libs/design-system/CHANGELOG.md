@@ -1,3 +1,65 @@
+## 0.0.11 (2026-10-30)
+
+### 🚀 Features
+
+- **design-system:** add provideAngIcons and icon gallery ([#227](https://github.com/cns-iu/AtlasNG/pull/227))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
+## 0.0.10 (2026-10-30)
+
+### 🚀 Features
+
+- **design-system:** add text selection tokens ([#223](https://github.com/cns-iu/AtlasNG/pull/223))
+- **design-system:** add stepper stories ([#221](https://github.com/cns-iu/AtlasNG/pull/221))
+- **design-system:** export missing public APIs ([#216](https://github.com/cns-iu/AtlasNG/pull/216))
+
+### 🩹 Fixes
+
+- **design-system:** shrink youtube player to fit narrow containers ([#219](https://github.com/cns-iu/AtlasNG/pull/219), [#214](https://github.com/cns-iu/AtlasNG/issues/214))
+- **design-system:** make error pages fill the viewport as route components ([#218](https://github.com/cns-iu/AtlasNG/pull/218), [#212](https://github.com/cns-iu/AtlasNG/issues/212))
+- ⚠️  **design-system:** rename content section title input to tagline ([#217](https://github.com/cns-iu/AtlasNG/pull/217))
+
+### ⚠️  Breaking Changes
+
+- **design-system:** rename content section title input to tagline  ([#217](https://github.com/cns-iu/AtlasNG/pull/217))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
+## 0.0.9 (2026-10-27)
+
+### 🚀 Features
+
+- **design-system:** expose token utilities in public sass api ([#191](https://github.com/cns-iu/AtlasNG/pull/191))
+- **design-system:** add multi-select filter ([#132](https://github.com/cns-iu/AtlasNG/pull/132))
+- **design-system:** add rich tooltip ([#188](https://github.com/cns-iu/AtlasNG/pull/188))
+- **design-system:** add table chip cell ([#186](https://github.com/cns-iu/AtlasNG/pull/186))
+- **design-system:** add scroll area ([#173](https://github.com/cns-iu/AtlasNG/pull/173))
+- **design-system:** add angular material menu stories ([#172](https://github.com/cns-iu/AtlasNG/pull/172))
+- **design-system:** add search list ([#136](https://github.com/cns-iu/AtlasNG/pull/136))
+- **nx-plugin:** add sync generator for shared workspace files ([#166](https://github.com/cns-iu/AtlasNG/pull/166))
+- **nx-plugin:** add Nx plugin with inferred targets, executors and init ([#165](https://github.com/cns-iu/AtlasNG/pull/165))
+
+### 🩹 Fixes
+
+- **design-system:** move footer copyright to its own row and size actions to content ([#171](https://github.com/cns-iu/AtlasNG/pull/171))
+- **design-system:** fix audit findings for selection, state and accessibility ([#179](https://github.com/cns-iu/AtlasNG/pull/179))
+- add cookie-modal overrides mixin and remove doubled token prefix ([#170](https://github.com/cns-iu/AtlasNG/pull/170))
+- **design-system:** draw table dividers and backgrounds for frozen columns ([#159](https://github.com/cns-iu/AtlasNG/pull/159))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- edlu77
+- Edward Lu @edlu77
+
 ## 0.0.8 (2026-10-06)
 
 ### 🚀 Features

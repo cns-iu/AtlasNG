@@ -21,7 +21,7 @@ jobs:
       id-token: write # needed for provenance data generation
     uses: ./.github/workflows/nx-release-publish.yml
     with:
-      build-projects: tag:library,tag:tooling
+      build-projects: tag:library,tag:tooling,tag:resources
       fixed-group: libraries
       # Nx task output goes to stderr; only the notes file reaches stdout.
       release-notes-command: >-

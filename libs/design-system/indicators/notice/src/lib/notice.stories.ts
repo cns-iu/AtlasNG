@@ -152,7 +152,7 @@ export const InContentSection: Story = {
   render: ({ content, ...args }) => ({
     props: { ...args, content },
     template: `
-      <ang-content-section [title]="'Install the design system'" [level]="2" id="install">
+      <ang-content-section tagline="Install the design system" [level]="2" id="install">
         <ang-content-paragraph>
           Add the AtlasNG design system to an Angular application to use its themed components, design tokens,
           and layout utilities.

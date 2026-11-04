@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { EventScope } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
@@ -33,7 +33,6 @@ export type CookiePermissionProvidersByCategory = Partial<Record<AnalyticsEventC
   imports: [MatIconModule, AnyLink, TextLink, EventScope],
   templateUrl: './provider-list.html',
   styleUrl: './provider-list.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ang-provider-list',
     '[class.ang-provider-list--empty]': 'providers().length === 0',

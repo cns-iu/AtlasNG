@@ -3,6 +3,7 @@
 $config: (
   namespace: 'error-page',
   tokens: (
+    min-height: 100dvh,
     background: token-utils.sys-token(background),
     title-font: token-utils.sys-token(headline-large),
     title-letter-spacing: token-utils.sys-token(headline-large-tracking),

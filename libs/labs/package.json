@@ -1,11 +1,11 @@
 {
   "name": "@atlasng/labs",
-  "version": "0.0.8",
+  "version": "0.0.11",
   "description": "Labs library for AtlasNG",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cns-iu/AtlasNG"
+    "url": "git+https://github.com/cns-iu/AtlasNG.git"
   },
   "homepage": "https://github.com/cns-iu/AtlasNG",
   "bugs": {
@@ -23,9 +23,9 @@
     "@angular/cdk": "^22.1.5",
     "@angular/core": "^22.1.5",
     "@angular/material": "^22.1.5",
-    "@atlasng/analytics": "^0.0.8",
-    "@atlasng/common": "^0.0.8",
-    "@atlasng/design-system": "^0.0.8"
+    "@atlasng/analytics": "^0.0.11",
+    "@atlasng/common": "^0.0.11",
+    "@atlasng/design-system": "^0.0.11"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",

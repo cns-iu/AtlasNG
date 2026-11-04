@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { TextLink } from '@atlasng/design-system/links/text-link';
 
 /**
@@ -10,7 +10,6 @@ import { TextLink } from '@atlasng/design-system/links/text-link';
   selector: 'ang-content-text-link',
   imports: [TextLink],
   template: '<a angTextLink [href]="href()"><ng-content /></a>',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ang-content-text-link' },
 })
 export class ContentTextLink {

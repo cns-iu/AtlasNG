@@ -24,6 +24,7 @@
     "core",
     "design-system",
     "eslint-plugin",
+    "icons",
     "internal-storybook",
     "kg-explorer",
     "labs",

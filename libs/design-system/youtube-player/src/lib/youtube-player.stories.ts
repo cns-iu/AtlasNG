@@ -87,12 +87,12 @@ const meta: Meta<YouTubePlayer> = {
     },
     width: {
       control: { type: 'number', min: 1 },
-      description: 'Player and placeholder width in pixels.',
+      description: 'Largest player and placeholder width in pixels. Also sets the aspect ratio with height.',
       table: { category: 'Inputs' },
     },
     height: {
       control: { type: 'number', min: 1 },
-      description: 'Player and placeholder height in pixels.',
+      description: 'Largest player and placeholder height in pixels. Also sets the aspect ratio with width.',
       table: { category: 'Inputs' },
     },
     startSeconds: {
@@ -211,4 +211,15 @@ export const PermissionToggle: Story = {
     props: args,
     template: `<ang-youtube-player-permission-story ${argsToTemplate(args)} />`,
   }),
+};
+
+export const NarrowViewport: Story = {
+  globals: {
+    viewport: { value: 'mobile1', isRotated: false },
+  },
+  decorators: [
+    applicationConfig({
+      providers: [provideInitialAnalyticsPermissions(AnalyticsPermissions.DEFAULT)],
+    }),
+  ],
 };

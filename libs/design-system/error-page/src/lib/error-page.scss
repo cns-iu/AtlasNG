@@ -5,7 +5,7 @@
 .ang-error-page {
   background: token-utils.slot(background, $config);
   display: flex;
-  height: 100%;
+  min-height: token-utils.slot(min-height, $config);
   flex-direction: column;
   justify-content: center;
   align-items: center;
