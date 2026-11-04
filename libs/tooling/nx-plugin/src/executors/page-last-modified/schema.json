@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Page last modified executor",
+  "description": "Writes a JSON file that maps page routes to the date of the last Git commit that changed each page's source file.",
+  "type": "object",
+  "properties": {
+    "pages": {
+      "type": "array",
+      "description": "Pages to date, each a route and the source file or files the page is generated from.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "route": {
+            "type": "string",
+            "description": "Route of the page, for example /about. A route with one :param segment, for example /dataset/:datasetId, creates one route per source file, named after the file without its extension."
+          },
+          "source": {
+            "type": "string",
+            "description": "Source file or glob relative to the workspace root, for example apps/portal/public/assets/datasets/*.json. Only files tracked by Git are used. When a route without a :param matches several files, it gets the latest date."
+          }
+        },
+        "required": ["route", "source"],
+        "additionalProperties": false
+      }
+    },
+    "outputFile": {
+      "type": "string",
+      "description": "JSON file to write, relative to the workspace root, for example apps/portal/public/page-last-modified.json."
+    }
+  },
+  "required": ["pages", "outputFile"]
+}

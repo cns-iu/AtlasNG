@@ -168,6 +168,42 @@ npx nx run @atlasng/monorepo:bootstrap-npm-packages --dryRun
 npx nx run @atlasng/monorepo:bootstrap-npm-packages
 ```
 
+### `page-last-modified`
+
+Writes a JSON file that maps page routes to the date (`YYYY-MM-DD`) of the last Git commit that changed each page's source file, for `ang-page-last-modified` from [`@atlasng/design-system`](../../design-system/README.md#page-last-modified). Layout, style, and component changes don't affect the dates.
+
+- A route with one `:param` segment, such as `/dataset/:datasetId`, gets one entry per file matched by its `source` glob, named after the file without its extension.
+- A route without a `:param` that matches several files gets the latest date.
+- Only files tracked by Git are used. Uncommitted new files are left out with a warning.
+- The executor warns in a shallow clone, where every file would get the date of the latest commit. In GitHub Actions, check out the full history with `fetch-depth: 0`.
+
+| Option       | Default    | Description                                                                        |
+| ------------ | ---------- | ---------------------------------------------------------------------------------- |
+| `pages`      | (required) | Routes and their source file or glob, relative to the workspace root               |
+| `outputFile` | (required) | JSON file to write, relative to the workspace root, usually in the app's `public/` |
+
+```json
+{
+  "targets": {
+    "page-last-modified": {
+      "executor": "@atlasng/nx-plugin:page-last-modified",
+      "cache": false,
+      "options": {
+        "outputFile": "apps/portal/public/page-last-modified.json",
+        "pages": [
+          { "route": "/dataset/:datasetId", "source": "apps/portal/public/assets/datasets/*.json" },
+          { "route": "/about", "source": "apps/portal/content/about.yaml" }
+        ]
+      }
+    },
+    "build": { "dependsOn": ["page-last-modified", "^build"] },
+    "serve": { "dependsOn": ["page-last-modified"] }
+  }
+}
+```
+
+Add the output file to `.gitignore`, since it is regenerated on every build.
+
 ## Nx preset
 
 `presets/nx.json` holds the shared `namedInputs`, `targetDefaults` and `generators` defaults (without a selector prefix). It is **not** meant to be used through `nx.json` `"extends"`.
