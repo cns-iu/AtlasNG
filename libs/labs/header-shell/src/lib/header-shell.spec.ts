@@ -1,32 +1,44 @@
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { MatMenuModule } from '@angular/material/menu';
 import { render, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { BehaviorSubject } from 'rxjs';
 import { HeaderShell } from './header-shell';
 
 describe('HeaderShell', () => {
-  it('closes local navigation when the viewport grows beyond 960px', async () => {
-    const originalWidth = window.innerWidth;
-    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: 959 });
+  it('observes the desktop breakpoint starting at exactly 960px', async () => {
+    const observe = vi.fn(() => new BehaviorSubject<BreakpointState>({ matches: false, breakpoints: {} }));
+    await render(HeaderShell, { providers: [{ provide: BreakpointObserver, useValue: { observe } }] });
 
-    try {
-      await render(HeaderShell, {
-        inputs: {
-          hasLocalNavigation: true,
-          localNavigationExpanded: true,
-        },
-      });
+    expect(observe).toHaveBeenCalledWith('(min-width: 960px)');
+  });
 
-      expect(screen.getByRole('button', { name: 'Collapse local navigation' })).toBeInTheDocument();
+  it('closes local navigation when the viewport enters the desktop breakpoint', async () => {
+    const state$ = new BehaviorSubject<BreakpointState>({ matches: false, breakpoints: {} });
+    await render(HeaderShell, {
+      inputs: { hasLocalNavigation: true, localNavigationExpanded: true },
+      providers: [{ provide: BreakpointObserver, useValue: { observe: () => state$ } }],
+    });
 
-      Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: 961 });
-      window.dispatchEvent(new Event('resize'));
+    expect(screen.getByRole('button', { name: 'Collapse local navigation' })).toBeInTheDocument();
 
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Expand local navigation' })).toBeInTheDocument();
-      });
-    } finally {
-      Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: originalWidth });
-    }
+    state$.next({ matches: true, breakpoints: {} });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Expand local navigation' })).toBeInTheDocument();
+    });
+  });
+
+  it('keeps local navigation expanded below the desktop breakpoint', async () => {
+    const state$ = new BehaviorSubject<BreakpointState>({ matches: false, breakpoints: {} });
+    await render(HeaderShell, {
+      inputs: { hasLocalNavigation: true, localNavigationExpanded: true },
+      providers: [{ provide: BreakpointObserver, useValue: { observe: () => state$ } }],
+    });
+
+    state$.next({ matches: false, breakpoints: {} });
+
+    expect(screen.getByRole('button', { name: 'Collapse local navigation' })).toBeInTheDocument();
   });
 
   it('does not render local navigation when disabled', async () => {
@@ -35,7 +47,6 @@ describe('HeaderShell', () => {
         hasLocalNavigation: false,
       },
     });
-    window.dispatchEvent(new Event('resize'));
 
     expect(screen.queryByRole('button', { name: 'Expand local navigation' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Collapse local navigation' })).not.toBeInTheDocument();

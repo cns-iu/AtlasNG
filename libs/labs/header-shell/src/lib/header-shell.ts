@@ -1,4 +1,6 @@
-import { Component, input, model, output } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Component, inject, input, model, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,9 +32,6 @@ export interface HeaderShellNavigationItem {
   divider?: boolean;
 }
 
-/** Screen size breakpoint to disable desktop navigation (px). */
-const DESKTOP_BREAKPOINT = 960;
-
 /**
  * Sticky page header shell with responsive desktop/mobile navigation and dynamic icon action overflow.
  */
@@ -55,9 +54,6 @@ const DESKTOP_BREAKPOINT = 960;
   templateUrl: './header-shell.html',
   styleUrl: './header-shell.scss',
   providers: [provideEventScope('header-shell')],
-  host: {
-    '(window:resize)': 'closeLocalNavigationOnDesktop()',
-  },
 })
 export class HeaderShell {
   /** Homepage destination used by the logo button. */
@@ -87,14 +83,15 @@ export class HeaderShell {
   /** Emits each time the apps menu toggle button is pressed. */
   readonly appsMenuToggle = output();
 
-  /**
-   * Closes the local navigation menu if the window is resized above the desktop breakpoint
-   * @returns local navigation on desktop
-   */
-  protected closeLocalNavigationOnDesktop(): void {
-    if (!this.hasLocalNavigation() || window.innerWidth <= DESKTOP_BREAKPOINT) {
-      return;
-    }
-    this.localNavigationExpanded.set(false);
+  /** Closes the local navigation whenever the viewport enters the desktop breakpoint. */
+  constructor() {
+    inject(BreakpointObserver)
+      .observe('(min-width: 960px)')
+      .pipe(takeUntilDestroyed())
+      .subscribe((state) => {
+        if (state.matches && this.hasLocalNavigation()) {
+          this.localNavigationExpanded.set(false);
+        }
+      });
   }
 }
