@@ -1,11 +1,11 @@
 {
   "name": "@atlasng/eslint-plugin",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Shared ESLint flat configurations for AtlasNG and related Nx Angular workspaces",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cns-iu/AtlasNG",
+    "url": "git+https://github.com/cns-iu/AtlasNG.git",
     "directory": "libs/tooling/eslint-plugin"
   },
   "homepage": "https://github.com/cns-iu/AtlasNG/tree/main/libs/tooling/eslint-plugin",

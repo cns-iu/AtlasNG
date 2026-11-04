@@ -2,7 +2,7 @@
   <div class="ang-content-section--header">
     <ng-content select="[angContentSectionHeader]" />
   </div>
-  <ang-content-header [tagline]="title()" [level]="level()" [id]="id()" [underlined]="underlined()" />
+  <ang-content-header [tagline]="tagline()" [level]="level()" [id]="id()" [underlined]="underlined()" />
   <div [class]="`ang-content-section--content ang-content-section--level-${level()}`">
     <ng-content />
   </div>

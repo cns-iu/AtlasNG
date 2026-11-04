@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, model } from '@angular/core';
+import { Component, inject, input, model } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { AnyLink, IdGenerator } from '@atlasng/common';
 
@@ -24,7 +24,6 @@ export interface TableOfContentsItem {
   imports: [AnyLink, MatListModule],
   templateUrl: './table-of-contents.html',
   styleUrl: './table-of-contents.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ang-table-of-contents' },
 })
 export class TableOfContents {

@@ -101,6 +101,12 @@ jobs:
           FIXED_GROUP: ${{ inputs.fixed-group }}
           NPM_CONFIG_PROVENANCE: true
 
+      # npm logs why trusted publishing (OIDC) failed only at verbose level, which Nx does not
+      # print. The debug log files keep every level.
+      - name: Show npm trusted publishing diagnostics
+        if: failure()
+        run: grep -hE 'oidc|/-/npm/v1/oidc|ENEEDAUTH|E40[0-9]' ~/.npm/_logs/*-debug-*.log || true
+
   # Nx creates GitHub Releases for independently versioned projects. The fixed group shares one
   # tag, so its release notes come from the caller's release-notes command.
   fixed-group-release:

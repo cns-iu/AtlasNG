@@ -106,7 +106,7 @@ export const Default: Story = {
     template: `
       @for (level of [1, 2, 3, 4, 5, 6]; track level) {
         <ang-content-section
-          [title]="'Section title h' + level"
+          [tagline]="'Section title h' + level"
           [id]="'section-title-' + level"
           [underlined]="underlined"
           [level]="level"
@@ -123,7 +123,7 @@ export const WithContent: Story = {
   render: (args) => ({
     props: { ...args, rows: ROWS, columns: COLUMNS },
     template: `
-      <ang-content-section title="People" id="people" level="2">
+      <ang-content-section tagline="People" id="people" level="2">
         <span>${SAMPLE_TEXT}</span>
         <span>${SAMPLE_TEXT}</span>
         <ang-table [rows]="rows" [columns]="columns" />

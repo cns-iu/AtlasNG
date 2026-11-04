@@ -6,7 +6,7 @@
   align-items: center;
   color: token-utils.slot(color, tokens.$config);
   text-decoration: underline;
-  font-weight: 600;
+  font-weight: inherit;
 
   &:focus-visible {
     outline: solid 2px token-utils.slot(color, tokens.$config);

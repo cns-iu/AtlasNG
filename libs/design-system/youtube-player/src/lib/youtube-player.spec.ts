@@ -7,6 +7,7 @@ import {
   provideAnalyticsPermissionsManagerConfig,
   provideInitialAnalyticsPermissions,
 } from '@atlasng/analytics/permissions';
+import { RESIZE_OBSERVER } from '@atlasng/core';
 import { ComponentInput, render, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { provideYouTubePlayerConfig, YouTubePlayer, YouTubePlayerEnableRequest } from './youtube-player';
@@ -23,9 +24,24 @@ describe('YouTubePlayer', () => {
       enabled?: boolean;
       inputs?: ComponentInput<YouTubePlayer>;
       onEnableRequest?: () => void;
+      resizeObserver?: boolean;
     } = {},
   ) {
-    const { enabled = false, inputs = {}, onEnableRequest } = options;
+    const { enabled = false, inputs = {}, onEnableRequest, resizeObserver: withResizeObserver = true } = options;
+    let resizeObserverCallback: ResizeObserverCallback | undefined;
+    const resizeObserver = {
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    };
+    class ResizeObserverMock {
+      constructor(callback: ResizeObserverCallback) {
+        resizeObserverCallback = callback;
+        // eslint-disable-next-line no-constructor-return
+        return resizeObserver;
+      }
+    }
+
     const result = await render(YouTubePlayer, {
       inputs: {
         videoId: 'pzUFmDhQEO8',
@@ -35,6 +51,7 @@ describe('YouTubePlayer', () => {
       providers: [
         provideInitialAnalyticsPermissions(enabled ? AnalyticsPermissions.FULL : AnalyticsPermissions.DEFAULT),
         permissionsConfig,
+        { provide: RESIZE_OBSERVER, useValue: withResizeObserver ? ResizeObserverMock : undefined },
       ],
     });
 
@@ -42,7 +59,24 @@ describe('YouTubePlayer', () => {
       ...result,
       permissionsManager: result.fixture.debugElement.injector.get(AnalyticsPermissionsManager),
       user: userEvent.setup(),
+      resizeObserver,
+      async emitResize(inlineSize: number): Promise<void> {
+        resizeObserverCallback?.(
+          [{ contentBoxSize: [{ inlineSize }] } as unknown as ResizeObserverEntry],
+          resizeObserver as unknown as ResizeObserver,
+        );
+        result.fixture.detectChanges();
+        await result.fixture.whenStable();
+      },
     };
+  }
+
+  function getFrame(): HTMLElement {
+    return screen.getByRole('link', { name: 'Play video' }).closest('.ang-youtube-player--frame') as HTMLElement;
+  }
+
+  function getPlaceholder(): HTMLElement {
+    return screen.getByRole('link', { name: 'Play video' }).closest('.ang-youtube-player-placeholder') as HTMLElement;
   }
 
   function getNgPlayer(fixture: Awaited<ReturnType<typeof setup>>['fixture']): NgYouTubePlayer {
@@ -179,5 +213,66 @@ describe('YouTubePlayer', () => {
     (ngPlayer.ready as EventEmitter<YT.PlayerEvent>).emit(event);
 
     await waitFor(() => expect(ready).toHaveBeenCalledWith(event));
+  });
+
+  describe('sizing', () => {
+    it('sizes the frame from width and height and keeps the enable request outside it', async () => {
+      await setup({ inputs: { width: 800, height: 450 } });
+      const frame = getFrame();
+
+      expect(frame).toHaveStyle({ width: '800px', aspectRatio: '800 / 450' });
+      expect(frame).not.toContainElement(screen.getByRole('button', { name: 'Enable cookies' }));
+    });
+
+    it('uses width and height before the frame is measured', async () => {
+      const { resizeObserver } = await setup();
+
+      expect(resizeObserver.observe).toHaveBeenCalledWith(getFrame());
+      expect(getPlaceholder()).toHaveStyle({ width: '640px', height: '390px' });
+    });
+
+    it('uses width and height when ResizeObserver is unavailable', async () => {
+      await setup({ resizeObserver: false });
+
+      expect(getPlaceholder()).toHaveStyle({ width: '640px', height: '390px' });
+    });
+
+    it('shrinks the placeholder to a container narrower than width', async () => {
+      const { emitResize } = await setup();
+
+      await emitResize(321);
+
+      expect(getPlaceholder()).toHaveStyle({ width: '321px', height: '195px' });
+    });
+
+    it('does not grow the placeholder past width in a wider container', async () => {
+      const { emitResize } = await setup();
+
+      await emitResize(1000);
+
+      expect(getPlaceholder()).toHaveStyle({ width: '640px', height: '390px' });
+    });
+
+    it('passes the measured size to the underlying player', async () => {
+      const { emitResize, fixture } = await setup({ enabled: true });
+
+      await emitResize(320);
+
+      expect(getNgPlayer(fixture).width).toBe(320);
+      expect(getNgPlayer(fixture).height).toBe(195);
+
+      await emitResize(1000);
+
+      expect(getNgPlayer(fixture).width).toBe(640);
+      expect(getNgPlayer(fixture).height).toBe(390);
+    });
+
+    it('stops measuring when destroyed', async () => {
+      const { fixture, resizeObserver } = await setup();
+
+      fixture.destroy();
+
+      expect(resizeObserver.disconnect).toHaveBeenCalledOnce();
+    });
   });
 });

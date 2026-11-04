@@ -1,5 +1,6 @@
 @use '../internal/sass-utils';
 @use '../internal/token-utils';
+@use 'text-link';
 
 $config: (
   namespace: 'cookie-banner',
@@ -19,7 +20,11 @@ $config: (
     description-size: token-utils.sys-token(body-large-size),
     description-tracking: token-utils.sys-token(body-large-tracking),
     description-weight: token-utils.sys-token(body-large-weight),
-    privacy-policy-color: token-utils.sys-token(on-surface),
+    // Follows the app's text link color, but falls back to primary instead of the text link's on-surface
+    privacy-policy-color: sass-utils.create-var(
+        token-utils.token(color, text-link.$config),
+        token-utils.sys-slot(primary)
+      ),
     privacy-policy-font: token-utils.sys-token(body-large-font),
     privacy-policy-line-height: token-utils.sys-token(body-large-line-height),
     privacy-policy-size: token-utils.sys-token(body-large-size),
@@ -30,4 +35,10 @@ $config: (
 
 @mixin overrides($overrides) {
   @include token-utils.apply-overrides($overrides, $config);
+}
+
+// Returns a CSS variable for one of this component's tokens that falls back to its default value,
+// e.g. slot(primary) => var(--ang-<component>-primary, var(--mat-sys-primary))
+@function slot($token, $fallback: null) {
+  @return token-utils.slot($token, $config, $fallback);
 }

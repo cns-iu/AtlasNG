@@ -7,6 +7,7 @@ $config: (
     container-color: token-utils.sys-token(surface-bright),
     container-elevation-shadow: 0px 12px 32px 24px sass-utils.color-with-opacity(token-utils.sys-token(tertiary), 24%),
     container-shape: token-utils.sys-token(corner-small),
+    logo-height: 40px,
     divider-color: token-utils.sys-token(outline-variant),
     border-color: token-utils.sys-token(outline-variant),
     border-radius: token-utils.sys-token(corner-medium),
