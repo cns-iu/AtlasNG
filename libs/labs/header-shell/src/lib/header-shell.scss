@@ -11,18 +11,6 @@
   background-color: token-utils.slot(container-color, $config);
   backdrop-filter: blur(10rem);
 
-  @include mat.icon-overrides(
-    (
-      color: token-utils.slot(icon-color, $config),
-    )
-  );
-
-  @include mat.divider-overrides(
-    (
-      color: token-utils.slot(divider-color, $config),
-    )
-  );
-
   .ang-header-shell {
     display: flex;
     min-height: 3.5rem;
@@ -48,6 +36,10 @@
     border-radius: token-utils.slot(outline-radius, $config);
     background-color: token-utils.slot(logo-background-color, $config);
     color: token-utils.slot(logo-color, $config);
+
+    img {
+      height: 100%;
+    }
   }
 
   .ang-header-shell-divider {

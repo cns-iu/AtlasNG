@@ -12,6 +12,7 @@ const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
 const APP_MENU_ITEMS: HeaderShellNavigationItem[] = [
   { id: 'app-link-1', label: 'App Link 1', link: 'http://www.example.com', external: true },
   { id: 'app-link-2', label: 'App Link 2', link: 'http://www.example.com', external: true },
+  { id: 'contact', label: 'Contact Us', link: 'mailto:info@example.com', external: true, divider: true },
 ];
 
 const SOCIAL_MEDIA_IDS = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x'];
@@ -73,7 +74,7 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
         </div>
       </ang-navigation-container>
     `,
-    styles: [`.content { padding: 1rem; background: #f6f7f8; }`],
+    styles: [`.content { padding: 1rem; }`],
   }),
 };
 

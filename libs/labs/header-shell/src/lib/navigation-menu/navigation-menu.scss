@@ -18,10 +18,9 @@
     )
   );
 
-  @include mat.icon-button-overrides(
+  @include mat.divider-overrides(
     (
-      icon-color: token-utils.slot(icon-color, $config),
-      state-layer-color: token-utils.slot(icon-color, $config),
+      color: token-utils.slot(menu-divider-color, $config),
     )
   );
 
@@ -57,6 +56,10 @@
     }
   }
 
+  .ang-navigation-menu--divider {
+    margin: 0.5rem 0;
+  }
+
   .ang-navigation-menu-icon {
     height: 1.5rem;
     width: 1.5rem;
@@ -64,6 +67,8 @@
   }
 
   .ang-navigation-menu-social {
+    --ang-social-media-button-color: #${token-utils.slot(icon-color, $config)};
+
     display: flex;
     align-items: center;
     justify-content: center;

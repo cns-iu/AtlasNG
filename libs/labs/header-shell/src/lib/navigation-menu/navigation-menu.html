@@ -1,6 +1,9 @@
 <div class="ang-navigation-menu">
   <mat-accordion displayMode="flat" class="ang-navigation-menu-links">
     @for (item of navigationItems(); track item.id) {
+      @if (item.divider) {
+        <mat-divider class="ang-navigation-menu--divider" />
+      }
       <a
         matButton
         class="ang-navigation-menu-link"

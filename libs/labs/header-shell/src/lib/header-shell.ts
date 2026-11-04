@@ -26,6 +26,8 @@ export interface HeaderShellNavigationItem {
   icon?: string;
   /** Whether the link is external. */
   external?: boolean;
+  /** Whether to render a divider above this item, separating it from the preceding items. */
+  divider?: boolean;
 }
 
 /** Screen size breakpoint to disable desktop navigation (px). */

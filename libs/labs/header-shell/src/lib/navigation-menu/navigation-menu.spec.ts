@@ -1,4 +1,4 @@
-import { render } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
 import { NavigationMenu } from './navigation-menu';
 
 describe('NavigationMenu', () => {
@@ -35,6 +35,34 @@ describe('NavigationMenu', () => {
 
     const icons = container.querySelectorAll('.ang-navigation-menu-icon');
     expect(icons.length).toBe(1);
+  });
+
+  it('does not render dividers by default', async () => {
+    await render(NavigationMenu, {
+      inputs: {
+        navigationItems: [
+          { id: 'home', label: 'Home', link: '/home' },
+          { id: 'about', label: 'About', link: '/about' },
+        ],
+      },
+    });
+
+    expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+  });
+
+  it('renders a divider before items with divider enabled', async () => {
+    await render(NavigationMenu, {
+      inputs: {
+        navigationItems: [
+          { id: 'home', label: 'Home', link: '/home' },
+          { id: 'contact', label: 'Contact Us', link: '/contact', divider: true },
+        ],
+      },
+    });
+
+    const separators = screen.getAllByRole('separator');
+    expect(separators).toHaveLength(1);
+    expect(separators[0].nextElementSibling).toBe(screen.getByRole('link', { name: 'Contact Us' }));
   });
 
   it('renders default social buttons and adds email button when email is provided', async () => {
