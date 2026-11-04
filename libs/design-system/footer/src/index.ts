@@ -1,1 +1,1 @@
-export { Footer, FooterAction, FooterLogo } from './lib/footer';
+export { Footer, FooterAction, FooterActionGroup, FooterActionGroupLink, FooterLogo } from './lib/footer';
