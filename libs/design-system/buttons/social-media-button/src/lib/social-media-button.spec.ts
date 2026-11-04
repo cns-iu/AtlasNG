@@ -8,7 +8,7 @@ describe('SocialMediaButton', () => {
   type SetupOptions = {
     detectChangesOnRender?: boolean;
     inputs?: ComponentInput<SocialMediaButton>;
-    definitions?: SocialMediaButtonDefinition[];
+    definitions?: SocialMediaButtonDefinition[][];
   };
 
   function setup({ detectChangesOnRender = true, inputs = {}, definitions }: SetupOptions = {}) {
@@ -17,7 +17,7 @@ describe('SocialMediaButton', () => {
       inputs,
       providers: [
         { provide: MatIconRegistry, useClass: FakeMatIconRegistry },
-        ...(definitions ? [provideSocialMediaButtons(definitions)] : []),
+        ...(definitions ?? []).map((group) => provideSocialMediaButtons(group)),
       ],
     });
   }
@@ -73,17 +73,37 @@ describe('SocialMediaButton', () => {
         id: 'linkedin',
       },
       definitions: [
-        {
-          id: 'linkedin',
-          label: 'Injected LinkedIn',
-          url: 'https://example.com/injected-linkedin',
-          classes: 'injected-linkedin',
-        },
+        [
+          {
+            id: 'linkedin',
+            label: 'Injected LinkedIn',
+            url: 'https://example.com/injected-linkedin',
+            classes: 'injected-linkedin',
+          },
+        ],
       ],
     });
 
     const link = screen.getByRole('link', { name: 'Injected LinkedIn' });
     expect(link).toHaveAttribute('href', 'https://example.com/injected-linkedin');
+  });
+
+  it('combines multiple registrations and prefers the last matching definition', async () => {
+    await setup({
+      inputs: {
+        id: 'mastodon',
+      },
+      definitions: [
+        [
+          { id: 'mastodon', label: 'First Mastodon', url: 'https://example.com/first', fontIcon: 'public' },
+          { id: 'threads', label: 'Threads', url: 'https://example.com/threads', fontIcon: 'forum' },
+        ],
+        [{ id: 'mastodon', label: 'Second Mastodon', url: 'https://example.com/second', fontIcon: 'public' }],
+      ],
+    });
+
+    const link = screen.getByRole('link', { name: 'Second Mastodon' });
+    expect(link).toHaveAttribute('href', 'https://example.com/second');
   });
 
   describe('in production mode', () => {

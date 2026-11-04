@@ -28,10 +28,11 @@
 - Use `npx nx` for local commands in this repo (matches existing README examples and avoids global CLI drift).
 - Primary projects:
   - `AtlasNG` (application)
-  - `analytics`, `cdk`, `common`, `core`, `design-system`, `labs`, `kg-explorer` (publishable libraries)
+  - `analytics`, `cdk`, `common`, `content-blocks`, `core`, `design-system`, `labs`, `kg-explorer` (publishable libraries)
   - `internal-storybook` (internal Storybook configuration and composition)
   - `nx-plugin`, `eslint-plugin`, `commitlint-config`, `prettier-config`, `tsconfig` (publishable tooling packages in `libs/tooling/`)
-- Release groups (see "Releasing" in [README.md](README.md)): libraries are listed by name in the fixed `libraries` group in `nx.json`; application libraries live in `libs/applications/` and tooling packages in `libs/tooling/`, and both are versioned independently. Add new publishable libraries to the `libraries` group explicitly.
+  - `icons` (publishable resource packages in `libs/resources/`)
+- Release groups (see "Releasing" in [README.md](README.md)): libraries are listed by name in the fixed `libraries` group in `nx.json`; application libraries live in `libs/applications/`, tooling packages in `libs/tooling/`, and resource packages in `libs/resources/`, and all three are versioned independently. Add new publishable libraries to the `libraries` group explicitly.
 
 ## AI Customizations
 
@@ -78,6 +79,7 @@
   - [libs/analytics/README.md](libs/analytics/README.md)
   - [libs/cdk/README.md](libs/cdk/README.md)
   - [libs/common/README.md](libs/common/README.md)
+  - [libs/content-blocks/README.md](libs/content-blocks/README.md)
   - [libs/core/README.md](libs/core/README.md)
   - [libs/design-system/README.md](libs/design-system/README.md)
   - [libs/labs/README.md](libs/labs/README.md)
@@ -89,6 +91,8 @@
   - [libs/tooling/commitlint-config/README.md](libs/tooling/commitlint-config/README.md)
   - [libs/tooling/prettier-config/README.md](libs/tooling/prettier-config/README.md)
   - [libs/tooling/tsconfig/README.md](libs/tooling/tsconfig/README.md)
+- Resource docs:
+  - [libs/resources/icons/README.md](libs/resources/icons/README.md)
 
 <!-- atlasng configuration start -->
 <!-- Leave the start & end comments to automatically receive updates. -->

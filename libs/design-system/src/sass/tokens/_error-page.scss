@@ -3,6 +3,7 @@
 $config: (
   namespace: 'error-page',
   tokens: (
+    min-height: 100dvh,
     background: token-utils.sys-token(background),
     title-font: token-utils.sys-token(headline-large),
     title-letter-spacing: token-utils.sys-token(headline-large-tracking),
@@ -15,4 +16,10 @@ $config: (
 
 @mixin overrides($overrides) {
   @include token-utils.apply-overrides($overrides, $config);
+}
+
+// Returns a CSS variable for one of this component's tokens that falls back to its default value,
+// e.g. slot(primary) => var(--ang-<component>-primary, var(--mat-sys-primary))
+@function slot($token, $fallback: null) {
+  @return token-utils.slot($token, $config, $fallback);
 }

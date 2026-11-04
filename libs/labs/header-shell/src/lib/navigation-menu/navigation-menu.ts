@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +18,6 @@ const SOCIAL_MEDIA_IDS = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram
   imports: [MatIconModule, MatSidenavModule, MatButtonModule, MatExpansionModule, AnyLink, SocialMediaButton],
   templateUrl: './navigation-menu.html',
   styleUrl: './navigation-menu.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationMenu {
   /** Navigation items rendered in the desktop rail and mobile fallback. */

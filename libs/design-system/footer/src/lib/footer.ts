@@ -99,7 +99,6 @@ export class FooterActionGroup {
   ],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-footer',

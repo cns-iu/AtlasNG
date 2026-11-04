@@ -32,6 +32,10 @@ const baseConfig = [
               onlyDependOnLibsWithTags: ['layer:common', 'layer:core'],
             },
             {
+              sourceTag: 'layer:resources',
+              onlyDependOnLibsWithTags: [],
+            },
+            {
               sourceTag: 'layer:analytics',
               onlyDependOnLibsWithTags: ['layer:core'],
             },
@@ -40,8 +44,19 @@ const baseConfig = [
               onlyDependOnLibsWithTags: ['layer:cdk', 'layer:analytics', 'layer:common', 'layer:core'],
             },
             {
+              sourceTag: 'layer:content-blocks',
+              onlyDependOnLibsWithTags: [
+                'layer:design-system',
+                'layer:analytics',
+                'layer:cdk',
+                'layer:common',
+                'layer:core',
+              ],
+            },
+            {
               sourceTag: 'layer:labs',
               onlyDependOnLibsWithTags: [
+                'layer:content-blocks',
                 'layer:design-system',
                 'layer:analytics',
                 'layer:cdk',

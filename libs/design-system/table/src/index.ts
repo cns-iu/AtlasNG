@@ -16,6 +16,7 @@ export {
 export {
   CellDefinition,
   HeaderCellDefinition,
+  provideTableTemplateDefinition,
   SummaryCellDefinition,
   TableTemplateDefinition,
 } from './lib/definitions/template-definition';
