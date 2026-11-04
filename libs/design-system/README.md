@@ -35,6 +35,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/content/content-paragraph`           | `ContentParagraph`                                                        |
 | `@atlasng/design-system/content/content-section`             | `ContentSection`                                                          |
 | `@atlasng/design-system/content/heading`                     | `Heading`                                                                 |
+| `@atlasng/design-system/content/page-last-modified`          | `PageLastModified`, `providePageLastModified`                             |
 | `@atlasng/design-system/cookie-banner`                       | `CookieBanner`, `CookieBannerContainer`, and its content directives       |
 | `@atlasng/design-system/error-page`                          | `ErrorPage` and its content directives, `NotFoundPage`, `ServerErrorPage` |
 | `@atlasng/design-system/footer`                              | `Footer`, `FooterLogo`, `FooterAction`                                    |
@@ -91,6 +92,24 @@ export const appConfig: ApplicationConfig = {
 ```
 
 The font set alias `ang-icons` is always registered. `spriteUrl` and `literals` register SVG icons in the `ang` namespace (change it with `namespace`). `literals` accepts icon names (`{ heart: angIconHeart }`) or the `@atlasng/icons/literals` module namespace; export names are converted to icon names with `toAngIconName`.
+
+## Page last modified
+
+`ang-page-last-modified` shows "Last updated on June 16, 2026" and hides itself when it has no valid date. Pass a date with `lastModified`, or let it look up the current route in a JSON file of route dates:
+
+```ts
+import { providePageLastModified } from '@atlasng/design-system/content/page-last-modified';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideHttpClient(), providePageLastModified({ url: 'page-last-modified.json' })],
+};
+```
+
+```html
+<ang-page-last-modified />
+```
+
+The [`@atlasng/nx-plugin:page-last-modified`](../tooling/nx-plugin/README.md#page-last-modified) executor generates the file from Git history, so each page shows the date of the last commit that changed its source file.
 
 ## Sass API
 
