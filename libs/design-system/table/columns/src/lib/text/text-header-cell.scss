@@ -21,18 +21,13 @@
   &.ang-table--text-header-align-end {
     justify-content: flex-end;
 
-    .datatable-header-cell:not(.sortable):has(&) {
+    .ang-table--header-cell:not(.ang-table--sortable):has(&) {
       padding-right: 24px;
     }
   }
 }
 
-.datatable-header-cell.sortable:has(.ang-table--text-header) {
-  // Disable builtin sort indicator
-  .sort-btn {
-    display: none;
-  }
-
+.ang-table--header-cell.ang-table--sortable:has(.ang-table--text-header) {
   &:hover {
     background-color: sass-utils.color-with-opacity(
       token-utils.slot('header-state-layer-color', $config),
@@ -59,7 +54,7 @@
     }
   }
 
-  &:not(.sort-active) {
+  &:not(.ang-table--sort-active) {
     .ang-table--sort-indicator {
       opacity: 0;
     }
@@ -69,12 +64,12 @@
     }
   }
 
-  &.sort-active {
+  &.ang-table--sort-active {
     .ang-table--sort-indicator {
       opacity: 1;
     }
 
-    &.sort-desc .ang-table--sort-indicator {
+    &.ang-table--sort-desc .ang-table--sort-indicator {
       transform: rotate(180deg);
     }
   }

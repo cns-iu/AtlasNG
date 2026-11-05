@@ -1,4 +1,4 @@
-import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
+import type { CellContext, HeaderCellContext, Row } from '../table-types';
 import { expectTypeOf } from 'vitest';
 import { CellTemplateContext, HeaderCellTemplateContext, SummaryCellTemplateContext } from './template-context';
 

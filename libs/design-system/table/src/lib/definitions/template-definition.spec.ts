@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, input, viewChild, type Type } from '@angular/core';
-import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
+import type { CellContext, HeaderCellContext, Row } from '../table-types';
 import { render, screen, type ComponentInput, type RenderComponentOptions } from '@testing-library/angular';
 import { expectTypeOf } from 'vitest';
 import type { Table } from '../table';

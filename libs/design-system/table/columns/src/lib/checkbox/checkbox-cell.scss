@@ -7,6 +7,6 @@
   min-height: 48px;
 }
 
-.datatable-body-cell:has(.ang-table--checkbox-cell):not(#raiseStylePriority) {
+.ang-table--cell:has(.ang-table--checkbox-cell):not(#raiseStylePriority) {
   padding: 0;
 }

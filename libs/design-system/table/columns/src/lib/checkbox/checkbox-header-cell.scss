@@ -7,6 +7,6 @@
   min-height: 48px;
 }
 
-.datatable-header-cell-label:has(.ang-table--checkbox-header):not(#raiseStylePriority) {
+.ang-table--header-cell:has(.ang-table--checkbox-header):not(#raiseStylePriority) {
   padding: 0 8px;
 }

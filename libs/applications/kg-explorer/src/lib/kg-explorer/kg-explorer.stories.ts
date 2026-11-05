@@ -182,3 +182,17 @@ export const WithFooter: Story = {
     await expect(footer).toBeVisible();
   },
 };
+
+/** Thousands of rows with varying title lengths, virtualized with measured row heights. */
+export const ManyResults: Story = {
+  args: {
+    items: Array.from({ length: 2000 }, (_, index) => {
+      const item = KG_EXPLORER_SAMPLE_ITEMS[index % KG_EXPLORER_SAMPLE_ITEMS.length];
+      return {
+        ...item,
+        id: `${item.id}-${index}`,
+        title: `${item.title} ${index + 1}`.repeat((index % 4) + 1),
+      };
+    }),
+  },
+};

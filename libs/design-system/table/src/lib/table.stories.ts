@@ -172,15 +172,12 @@ export const WithManyRows: Story = {
   },
 };
 
-/** Frozen left and right columns that stay in place while the center columns scroll horizontally. */
-export const WithFrozenColumns: Story = {
+/** Rows whose heights vary with wrapped content, measured while virtualized. */
+export const WithDynamicRowHeights: Story = {
   args: {
-    rows: MANY_ROWS,
-    columns: COLUMNS.map((column, index, columns) => ({
-      ...column,
-      frozenLeft: index === 0,
-      frozenRight: index === columns.length - 1,
-      minWidth: 320,
+    rows: MANY_ROWS.map((row, index) => ({
+      ...row,
+      role: `${row.role} `.repeat((index % 5) * 6 + 1).trim(),
     })),
   },
   render: (args) => ({

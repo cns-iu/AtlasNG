@@ -1,5 +1,5 @@
 import { computed, Directive, inject, InjectionToken, TemplateRef, viewChild, type Provider } from '@angular/core';
-import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
+import type { CellContext, HeaderCellContext, Row } from '../table-types';
 import type { Table } from '../table';
 import { CellTemplateContext, HeaderCellTemplateContext, SummaryCellTemplateContext } from './template-context';
 
@@ -39,7 +39,7 @@ export abstract class TableTemplateDefinition<TContext, TConfig = void> {
   /** Cell or header configuration supplied by the owning column. */
   readonly config = inject<TConfig>(TABLE_TEMPLATE_DEFINITION_CONFIG);
 
-  /** Template rendered by ngx-datatable. */
+  /** Template rendered by the table. */
   abstract readonly template: () => TemplateRef<TContext>;
 }
 
@@ -51,7 +51,7 @@ export abstract class CellDefinition<TRow extends Row = Row, TConfig = void> ext
   CellContext<TRow>,
   TConfig
 > {
-  /** Template rendered by ngx-datatable. */
+  /** Template rendered by the table. */
   override readonly template = computed(() => this.contextDir().template);
 
   /** Type-only value bound to {@link CellTemplateContext.rowType} for row inference. */
@@ -66,7 +66,7 @@ export abstract class CellDefinition<TRow extends Row = Row, TConfig = void> ext
  */
 @Directive()
 export abstract class HeaderCellDefinition<TConfig = void> extends TableTemplateDefinition<HeaderCellContext, TConfig> {
-  /** Template rendered by ngx-datatable. */
+  /** Template rendered by the table. */
   override readonly template = computed(() => this.contextDir().template);
 
   /** Header-cell context directive declared in the component template. */
@@ -76,13 +76,13 @@ export abstract class HeaderCellDefinition<TConfig = void> extends TableTemplate
 /**
  * Base class for injectable components that provide summary-cell templates.
  *
- * Note that ngx-datatable does not run a column's `summaryFunc` when the column
+ * Note that the table does not run a column's `summaryFunc` when the column
  * also has a summary template, so the template's `value` is undefined. Compute
  * aggregates from {@link TableTemplateDefinition.table} rows instead.
  */
 @Directive()
 export abstract class SummaryCellDefinition<TConfig = void> extends TableTemplateDefinition<CellContext, TConfig> {
-  /** Template rendered by ngx-datatable. */
+  /** Template rendered by the table. */
   override readonly template = computed(() => this.contextDir().template);
 
   /** Summary-cell context directive declared in the component template. */

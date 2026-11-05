@@ -1,43 +1,39 @@
 @use 'internal/token-utils';
 @use 'tokens/table' as *;
 
-/// Draws vertical dividers between columns. ngx-datatable wraps the cells of
-/// each pin group (frozen left, center, frozen right) in a separate
-/// `.datatable-row-group`, so dividers are resolved per group: the last frozen
-/// left cell keeps its right border, and the first frozen right cell draws a
-/// left border because the last center cell scrolls underneath it.
+/// Draws vertical dividers between columns.
 @mixin column-dividers {
-  $divider: 1px solid token-utils.slot('border-color', $config);
-
-  .datatable-row-group > :not(:last-child),
-  .datatable-row-left:not(:last-child) > :last-child {
-    border-right: $divider;
-  }
-
-  .datatable-row-center + .datatable-row-right > :first-child {
-    border-left: $divider;
+  .ang-table--row > :not(:last-child) {
+    border-right: 1px solid token-utils.slot('border-color', $config);
   }
 }
 
 .ang-table {
   display: block;
-  overflow: hidden;
+  // `clip` keeps rounded borders without creating a scroll container, so the
+  // sticky header still sticks to a scrolling ancestor.
+  overflow: clip;
 
-  .ang-table--datatable,
-  .datatable-wrapper,
-  .datatable-grid {
+  .ang-table--viewport {
     max-height: inherit;
   }
 
-  .datatable-grid {
-    flex-basis: auto !important;
+  &.ang-table--self-scroll .ang-table--viewport {
+    height: 100%;
+    overflow: auto;
   }
 
-  .datatable-header-cell.sortable {
-    cursor: pointer;
+  .ang-table--row {
+    display: grid;
+    grid-template-columns: var(--ang-table-columns);
+    box-sizing: border-box;
+    min-width: min-content;
   }
 
-  .datatable-header {
+  .ang-table--header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     background-color: token-utils.slot('header-background-color', $config);
     color: token-utils.slot('header-text-color', $config);
     font-family: token-utils.slot('header-text-font', $config);
@@ -45,25 +41,28 @@
     font-weight: token-utils.slot('header-text-weight', $config);
     line-height: token-utils.slot('header-text-line-height', $config);
     letter-spacing: token-utils.slot('header-text-tracking', $config);
+  }
 
-    // Frozen groups are sticky and must cover the cells scrolling beneath them.
-    .datatable-header-inner,
-    .datatable-row-group {
-      background-color: inherit;
-    }
+  .ang-table--header-cell {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 16px;
 
-    .datatable-header-cell {
-      box-sizing: border-box;
-      height: 100%;
-      padding: 0 16px;
-
-      &.sortable {
-        padding-right: 0;
-      }
+    &.ang-table--sortable {
+      cursor: pointer;
+      outline: none;
     }
   }
 
-  .datatable-body-row {
+  .ang-table--body {
+    position: relative;
+  }
+
+  .ang-table--body-row,
+  .ang-table--summary-row {
     background-color: token-utils.slot('cell-background-color', $config);
     color: token-utils.slot('cell-text-color', $config);
     font-family: token-utils.slot('cell-text-font', $config);
@@ -71,26 +70,38 @@
     font-weight: token-utils.slot('cell-text-weight', $config);
     line-height: token-utils.slot('cell-text-line-height', $config);
     letter-spacing: token-utils.slot('cell-text-tracking', $config);
+  }
 
-    .datatable-row-group {
-      background-color: inherit;
-    }
+  .ang-table--body-row {
+    min-height: var(--ang-table-row-height);
+  }
 
-    .datatable-body-cell {
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      height: 100%;
-      padding: 0 16px;
+  .ang-table--summary-row {
+    min-height: var(--ang-table-summary-height);
+    font-weight: token-utils.slot('header-text-weight', $config);
+  }
 
-      .datatable-body-cell-label {
-        flex-grow: 1;
-      }
+  .ang-table--footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .ang-table--cell {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 0 16px;
+    overflow-wrap: anywhere;
+
+    .ang-table--cell-label {
+      flex-grow: 1;
     }
   }
 
-  .datatable-summary-row .datatable-body-row {
-    font-weight: token-utils.slot('header-text-weight', $config);
+  .ang-table--empty-cell {
+    padding: 0 16px;
   }
 
   &.ang-table--appearance-vertical-rules {
@@ -102,25 +113,23 @@
     border: 1px solid token-utils.slot('border-color', $config);
     border-radius: token-utils.slot('border-radius', $config);
 
-    .datatable-header-cell,
-    .datatable-row-wrapper:not(:last-child) .datatable-body-cell {
+    .ang-table--header-row,
+    .ang-table--body-row {
       border-bottom: 1px solid token-utils.slot('border-color', $config);
     }
 
     @include column-dividers;
 
-    &.ang-table--summary-top .datatable-summary-row .datatable-body-cell {
+    &.ang-table--summary-top .ang-table--summary-row {
       border-bottom: 1px solid token-utils.slot('border-color', $config);
     }
 
-    &.ang-table--summary-bottom .datatable-summary-row .datatable-body-cell {
+    &.ang-table--summary-bottom .ang-table--summary-row {
       border-top: 1px solid token-utils.slot('border-color', $config);
     }
   }
 
-  &.ang-table--appearance-striped {
-    .datatable-row-wrapper:nth-child(even) .datatable-body-row {
-      background-color: token-utils.slot('striped-row-background-color', $config);
-    }
+  &.ang-table--appearance-striped .ang-table--row-even {
+    background-color: token-utils.slot('striped-row-background-color', $config);
   }
 }

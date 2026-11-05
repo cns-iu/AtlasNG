@@ -5,8 +5,7 @@ import { HeaderCellDefinition, HeaderCellTemplateContext } from '@atlasng/design
 /**
  * Reusable Material checkbox header-cell definition.
  *
- * Configure it as a column's `headerTemplate`; do not also enable
- * `headerCheckboxable`, which renders ngx-datatable's native checkbox.
+ * Configure it as a column's `headerTemplate` to select or clear all rows.
  */
 @Component({
   selector: 'ang-table-checkbox-header-cell-definition',

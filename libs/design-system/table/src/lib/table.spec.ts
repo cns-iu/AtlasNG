@@ -18,12 +18,12 @@ import {
   TextCellDefinition,
   TextHeaderCellDefinition,
 } from '@atlasng/design-system/table/columns';
-import type { Row, SelectionType, SortPropDir } from '@swimlane/ngx-datatable';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { SummaryCellTemplateContext } from './definitions/template-context';
 import { SummaryCellDefinition } from './definitions/template-definition';
 import { Table, type TableAppearance, type TableColumn, type TableSummaryPosition } from './table';
+import type { Row, SelectionType, SortPropDir } from './table-types';
 
 interface TestRow extends Row {
   name: string;
@@ -173,17 +173,60 @@ describe('Table', () => {
     expect(icon).toHaveClass('mat-icon');
     expect(icon).toHaveAttribute('fonticon', 'arrow_upward_alt');
 
-    expect(headerCell).not.toHaveClass('sort-active', 'sort-asc', 'sort-desc');
+    expect(headerCell).not.toHaveClass('ang-table--sort-active', 'ang-table--sort-asc', 'ang-table--sort-desc');
 
     sorts.set([{ prop: 'score', dir: 'asc' }]);
     fixture.detectChanges();
-    expect(headerCell).toHaveClass('sort-active', 'sort-asc');
-    expect(headerCell).not.toHaveClass('sort-desc');
+    expect(headerCell).toHaveClass('ang-table--sort-active', 'ang-table--sort-asc');
+    expect(headerCell).not.toHaveClass('ang-table--sort-desc');
 
     sorts.set([{ prop: 'score', dir: 'desc' }]);
     fixture.detectChanges();
-    expect(headerCell).toHaveClass('sort-active', 'sort-desc');
-    expect(headerCell).not.toHaveClass('sort-asc');
+    expect(headerCell).toHaveClass('ang-table--sort-active', 'ang-table--sort-desc');
+    expect(headerCell).not.toHaveClass('ang-table--sort-asc');
+  });
+
+  it('sorts from the header cell with the pointer, Enter, and Space', async () => {
+    const { fixture, sorts, sortsChange, user } = await setup([{ name: 'Score', prop: 'score', ...textHeader('end') }]);
+    const header = screen.getByRole('columnheader', { name: 'Score' });
+    const apply = (value: SortPropDir[]) => {
+      sorts.set(value);
+      fixture.detectChanges();
+    };
+
+    expect(header).toHaveAttribute('aria-sort', 'none');
+
+    await user.click(header);
+    expect(sortsChange).toHaveBeenLastCalledWith([{ prop: 'score', dir: 'asc' }]);
+    apply([{ prop: 'score', dir: 'asc' }]);
+    expect(header).toHaveAttribute('aria-sort', 'ascending');
+
+    await user.keyboard('{Enter}');
+    expect(sortsChange).toHaveBeenLastCalledWith([{ prop: 'score', dir: 'desc' }]);
+    apply([{ prop: 'score', dir: 'desc' }]);
+
+    await user.keyboard(' ');
+    expect(sortsChange).toHaveBeenLastCalledWith([]);
+  });
+
+  it('renders rows in sorted order', async () => {
+    const rows: TestRow[] = ['Ben', 'ada', 'Cy'].map((name) => ({ ...ROWS[0], name }));
+    const sorts = signal<SortPropDir[]>([]);
+    const { fixture } = await render(`<ang-table [rows]="rows" [columns]="columns" [sorts]="sorts()" />`, {
+      imports: [Table],
+      componentProperties: { rows, columns: [{ name: 'Name', prop: 'name' }], sorts },
+    });
+    const names = () => screen.getAllByRole('cell').map((cell) => cell.textContent?.trim());
+
+    expect(names()).toEqual(['Ben', 'ada', 'Cy']);
+
+    sorts.set([{ prop: 'name', dir: 'asc' }]);
+    fixture.detectChanges();
+    expect(names()).toEqual(['ada', 'Ben', 'Cy']);
+
+    sorts.set([{ prop: 'name', dir: 'desc' }]);
+    fixture.detectChanges();
+    expect(names()).toEqual(['Cy', 'Ben', 'ada']);
   });
 
   it('formats number cells with the active locale', async () => {
@@ -332,7 +375,7 @@ describe('Table', () => {
 
   describe('summary row', () => {
     function summaryRowElement(container: Element): HTMLElement | null {
-      return container.querySelector('datatable-summary-row');
+      return container.querySelector('.ang-table--summary-row');
     }
 
     it('is hidden by default', async () => {
@@ -393,21 +436,20 @@ describe('Table', () => {
         summaryPosition: 'bottom',
       });
       const table = fixture.nativeElement.querySelector('ang-table') as HTMLElement;
-      const row = summaryRowElement(container)?.querySelector('.datatable-body-row');
-
+      expect(summaryRowElement(container)).toBeInTheDocument();
       expect(table).toHaveClass('ang-table--summary-bottom');
       expect(table).not.toHaveClass('ang-table--summary-top');
-      expect(row).toHaveStyle({ height: '48px' });
+      expect(table.style.getPropertyValue('--ang-table-summary-height')).toBe('48px');
     });
 
     it('uses an explicit summary height', async () => {
-      const { container } = await setup([{ name: 'Score', prop: 'score' }], {
+      const { fixture } = await setup([{ name: 'Score', prop: 'score' }], {
         summaryRow: true,
         summaryHeight: 32,
       });
-      const row = summaryRowElement(container)?.querySelector('.datatable-body-row');
+      const table = fixture.nativeElement.querySelector('ang-table') as HTMLElement;
 
-      expect(row).toHaveStyle({ height: '32px' });
+      expect(table.style.getPropertyValue('--ang-table-summary-height')).toBe('32px');
     });
 
     it('renders reusable number summaries in the summary row', async () => {

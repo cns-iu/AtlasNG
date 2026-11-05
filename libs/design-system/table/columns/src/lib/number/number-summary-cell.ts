@@ -29,7 +29,7 @@ export interface NumberSummaryCellConfig {
 /**
  * Computes a column summary from the table rows.
  *
- * ngx-datatable skips `summaryFunc` for columns with a summary template, so this
+ * The table skips `summaryFunc` for columns with a summary template, so this
  * pipe applies it instead, falling back to a numeric sum when none is configured,
  * and formats the result for the active locale.
  */

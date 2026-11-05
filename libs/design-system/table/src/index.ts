@@ -1,12 +1,3 @@
-export type {
-  CellContext,
-  HeaderCellContext,
-  Row,
-  SelectionType,
-  SortPropDir,
-  SortType,
-  TableColumnProp,
-} from '@swimlane/ngx-datatable';
 export { HeaderSortTrigger } from './lib/behaviors/header-sort-trigger';
 export {
   CellTemplateContext,
@@ -27,3 +18,15 @@ export {
   type TableColumn,
   type TableSummaryPosition,
 } from './lib/table';
+export type {
+  CellContext,
+  HeaderCellContext,
+  ResolvedTableColumn,
+  Row,
+  SelectionType,
+  SortDirection,
+  SortPropDir,
+  SortType,
+  TableColumnProp,
+  TableComparator,
+} from './lib/table-types';

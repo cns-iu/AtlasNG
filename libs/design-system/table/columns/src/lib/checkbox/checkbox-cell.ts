@@ -21,8 +21,7 @@ export type CheckboxCellConfig<TRow extends Row = Row> = Simplify<
 /**
  * Reusable Material checkbox body-cell definition.
  *
- * Configure it as a column's `cellTemplate`; do not also enable ngx-datatable's
- * `checkboxable` flag because that flag renders a second native checkbox.
+ * Configure it as a column's `cellTemplate` with `selectionType` set on the table.
  *
  * Each checkbox is named from the optional {@link CheckboxCellConfig}, or by its
  * one-based row number ("Select row 3") so screen-reader users can tell rows apart.

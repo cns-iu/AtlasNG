@@ -1,8 +1,8 @@
 import { Directive, inject, input, TemplateRef } from '@angular/core';
-import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
+import type { CellContext, HeaderCellContext, Row } from '../table-types';
 
 /**
- * Narrows an annotated template to the body-cell context provided by ngx-datatable.
+ * Narrows an annotated template to the body-cell context provided by the table.
  */
 @Directive({
   selector: 'ng-template[angCellTemplateContext]',
@@ -29,7 +29,7 @@ export class CellTemplateContext<TRow extends Row = Row> {
   }
 }
 
-/** Narrows an annotated template to the header-cell context provided by ngx-datatable. */
+/** Narrows an annotated template to the header-cell context provided by the table. */
 @Directive({
   selector: 'ng-template[angHeaderCellTemplateContext]',
 })
@@ -53,7 +53,7 @@ export class HeaderCellTemplateContext {
 }
 
 /**
- * Narrows an annotated template to the summary-cell context provided by ngx-datatable.
+ * Narrows an annotated template to the summary-cell context provided by the table.
  *
  * Summary cells render through the body-row pipeline, so the context is a
  * {@link CellContext} whose `row` holds the computed summary values keyed by column prop.

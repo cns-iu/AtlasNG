@@ -23,7 +23,7 @@ import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
 import { KgExplorerTableEndSlot } from '../slots';
 
-/** Default height of the spacious explorer table rows in pixels. */
+/** Default minimum (and estimated) height of the spacious explorer table rows in pixels. */
 export const KG_EXPLORER_ROW_HEIGHT = 96;
 
 /** Maximum number of autocomplete suggestions shown below the search field. */
@@ -88,7 +88,7 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Column definitions displayed by the table. Reuse the array between changes. */
   readonly columns = input.required<TableColumn<TRow>[]>();
 
-  /** Height of each table row in pixels. */
+  /** Minimum height of each table row in pixels; rows grow to fit their content. */
   readonly rowHeight = input(KG_EXPLORER_ROW_HEIGHT, { transform: numberAttribute });
 
   /** Current search term. */

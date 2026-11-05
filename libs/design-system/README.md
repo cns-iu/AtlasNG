@@ -10,7 +10,7 @@ Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasN
 npm install @atlasng/design-system
 ```
 
-The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@angular/forms`, `@angular/platform-browser`, `rxjs`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player` and `@swimlane/ngx-datatable` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
+The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@angular/forms`, `@angular/platform-browser`, `rxjs`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player`, `@tanstack/angular-table`, and `@tanstack/angular-virtual` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
 
 ## Setup
 
@@ -66,7 +66,7 @@ export class Maintenance {}
 
 A few components with notable options:
 
-- **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
+- **Table:** `Table` is built on TanStack Table (sorting) and TanStack Virtual (row virtualization with measured, content-sized row heights). It virtualizes against the closest scrolling ancestor, such as an `ang-scroll-area`, or scrolls itself when its height is constrained. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
 
 ## Icons

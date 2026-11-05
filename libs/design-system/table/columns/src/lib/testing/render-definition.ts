@@ -27,7 +27,7 @@ export const ROW: TestRow = { name: 'Ada', url: '/ada' };
  * @returns Body-cell context.
  */
 export function cellContext(overrides: Partial<CellContext<TestRow>> = {}): CellContext {
-  return { row: ROW, value: ROW.name, ...overrides } as CellContext;
+  return { row: ROW, value: ROW.name, ...overrides } as unknown as CellContext;
 }
 
 /**

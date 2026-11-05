@@ -55,49 +55,28 @@
     min-width: 0;
     @include breakpoint-padding;
 
-    // Span every grid column like ngx-datatable's default empty row.
     .ang-kg-explorer-results-table--empty {
-      grid-column: 1 / -1;
       padding-block: 2.5rem;
     }
 
-    .datatable-header {
+    .ang-table--header {
       border-bottom: 1px solid var(--mat-sys-outline-variant);
       background-color: var(--mat-sys-surface);
     }
 
-    // Keep the divider inside the row height so the virtualized scroller's
-    // computed height matches the rendered rows.
-    .datatable-body-row {
-      box-sizing: border-box;
+    // Rows grow to fit wrapped content; the virtualizer measures each row.
+    .ang-table--body-row {
       border-bottom: 1px solid var(--mat-sys-outline-variant);
       color: var(--mat-sys-on-surface-variant);
 
-      .datatable-body-cell {
+      .ang-table--cell {
         align-items: flex-start;
         padding: 0.5rem 1rem;
-        overflow: hidden;
         white-space: normal;
-
-        .datatable-body-cell-label {
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 3;
-          line-clamp: 3;
-          overflow: hidden;
-          overflow-wrap: anywhere;
-          text-overflow: clip;
-          white-space: normal;
-        }
-
-        // Inline links let the clamp above truncate long titles.
-        .ang-table--link-cell {
-          display: inline;
-        }
       }
 
       // The download icon button sits flush with the row like in the design.
-      .datatable-body-cell:has(.ang-kg-explorer--download-cell) {
+      .ang-table--cell:has(.ang-kg-explorer--download-cell) {
         padding: 0;
       }
     }

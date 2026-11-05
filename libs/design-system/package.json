@@ -30,7 +30,8 @@
     "@atlasng/analytics": "^0.0.11",
     "@atlasng/common": "^0.0.11",
     "@atlasng/core": "^0.0.11",
-    "@swimlane/ngx-datatable": "^25.1.0",
+    "@tanstack/angular-table": "^9.3.1",
+    "@tanstack/angular-virtual": "^6.1.12",
     "ngx-scrollbar": "^19.1.5",
     "rxjs": "^7.8.2"
   },
@@ -38,7 +39,10 @@
     "@angular/youtube-player": {
       "optional": true
     },
-    "@swimlane/ngx-datatable": {
+    "@tanstack/angular-table": {
+      "optional": true
+    },
+    "@tanstack/angular-virtual": {
       "optional": true
     }
   },

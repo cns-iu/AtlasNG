@@ -1,27 +1,104 @@
-<ngx-datatable
-  class="ang-table--datatable"
-  checkRowListChanges="false"
-  checkRowPropertyChanges="false"
-  columnMode="flex"
-  enableClearingSortState="true"
-  headerHeight="auto"
-  reorderable="false"
-  scrollbarV="true"
-  scrollbarVDynamic="true"
-  virtualization="true"
-  [columns]="resolvedColumns()"
-  [rows]="rows()"
-  [rowHeight]="rowHeight()"
-  [scrollbarH]="scrollbarH()"
-  [selectionType]="selectionType()"
-  [sortType]="sortType()"
-  [summaryRow]="summaryRow()"
-  [summaryHeight]="resolvedSummaryHeight()"
-  [summaryPosition]="summaryPosition()"
-  [(selected)]="selected"
-  [(sorts)]="sorts"
->
-  <ng-content select="[empty-content]" ngProjectAs="[empty-content]">
-    <!-- TODO default empty state -->
-  </ng-content>
-</ngx-datatable>
+<ng-template #summary>
+  <div class="ang-table--row ang-table--summary-row" role="row">
+    @for (cell of summaryCells(); track $index) {
+      <div class="ang-table--cell" role="cell" [class]="cell.column.cellClass">
+        @if (cell.column.summaryTemplate; as template) {
+          <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="cell" />
+        } @else {
+          <span class="ang-table--cell-label">{{ cell.value }}</span>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
+
+<div class="ang-table--viewport" #viewport>
+  <div class="ang-table--header" role="rowgroup">
+    <div class="ang-table--row ang-table--header-row" role="row" aria-rowindex="1">
+      @for (header of headerCells(); track header.id) {
+        @if (header.sortable) {
+          <div
+            class="ang-table--header-cell ang-table--sortable"
+            role="columnheader"
+            tabindex="0"
+            cdkMonitorElementFocus
+            [class]="header.column.headerClass"
+            [class.ang-table--sort-active]="header.sortDir"
+            [class.ang-table--sort-asc]="header.sortDir === 'asc'"
+            [class.ang-table--sort-desc]="header.sortDir === 'desc'"
+            [attr.aria-sort]="
+              header.sortDir === 'asc' ? 'ascending' : header.sortDir === 'desc' ? 'descending' : 'none'
+            "
+            (click)="header.context.sortFn()"
+            (keydown.enter)="header.context.sortFn()"
+            (keydown.space)="$event.preventDefault(); header.context.sortFn()"
+          >
+            <ng-container [ngTemplateOutlet]="headerContent" [ngTemplateOutletContext]="{ $implicit: header }" />
+          </div>
+        } @else {
+          <div class="ang-table--header-cell" role="columnheader" [class]="header.column.headerClass">
+            <ng-container [ngTemplateOutlet]="headerContent" [ngTemplateOutletContext]="{ $implicit: header }" />
+          </div>
+        }
+      }
+    </div>
+
+    @if (summaryRow() && summaryPosition() === 'top') {
+      <ng-container [ngTemplateOutlet]="summary" />
+    }
+  </div>
+
+  <div
+    class="ang-table--body"
+    role="rowgroup"
+    [style.height.px]="sortedRows().length > 0 ? virtualizer.getTotalSize() : null"
+    #body
+  >
+    @if (sortedRows().length > 0) {
+      <div class="ang-table--body-window" [style.transform]="`translateY(${bodyOffset()}px)`">
+        @for (item of renderRows(); track item.key) {
+          <div
+            class="ang-table--row ang-table--body-row"
+            role="row"
+            [class.ang-table--row-even]="item.index % 2 === 1"
+            [class.ang-table--row-selected]="item.selected"
+            [attr.data-index]="item.index"
+            [attr.aria-rowindex]="item.index + 2"
+            [attr.aria-selected]="selectionType() ? item.selected : null"
+            #rowEl
+          >
+            @for (cell of item.cells; track $index) {
+              <div class="ang-table--cell" role="cell" [class]="cell.column.cellClass">
+                @if (cell.column.cellTemplate; as template) {
+                  <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="cell" />
+                } @else {
+                  <span class="ang-table--cell-label">{{ cell.value }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="ang-table--empty" role="row">
+        <div class="ang-table--empty-cell" role="cell">
+          <ng-content select="[empty-content]" />
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (summaryRow() && summaryPosition() === 'bottom') {
+    <div class="ang-table--footer" role="rowgroup">
+      <ng-container [ngTemplateOutlet]="summary" />
+    </div>
+  }
+</div>
+
+<ng-template let-header #headerContent>
+  @if (header.column.headerTemplate; as template) {
+    <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="header.context" />
+  } @else {
+    <span class="ang-table--header-label">{{ header.column.name }}</span>
+  }
+</ng-template>

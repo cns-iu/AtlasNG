@@ -9,7 +9,7 @@ import {
   type TemplateRef,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import type { HeaderCellContext } from '@swimlane/ngx-datatable';
+import type { HeaderCellContext } from '../table-types';
 import type { Table } from '../table';
 import { HeaderCellTemplateContext } from './template-context';
 import { HeaderCellDefinition, TABLE } from './template-definition';
