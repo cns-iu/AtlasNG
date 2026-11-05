@@ -4,7 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, parse, resolve } from 'node:path';
 
 /** A page and the source file or files it is generated from. */
-export interface PageLastModifiedSource {
+export interface LastModifiedPage {
   /**
    * Route of the page, for example `/about`. A route with one `:param` segment, for example
    * `/dataset/:datasetId`, creates one route per source file, named after the file without its extension.
@@ -17,34 +17,34 @@ export interface PageLastModifiedSource {
   source: string;
 }
 
-/** Options for the `page-last-modified` executor. */
-export interface PageLastModifiedExecutorOptions {
+/** Options for the `last-modified-dates` executor. */
+export interface LastModifiedDatesExecutorOptions {
   /** Pages to date. */
-  pages: PageLastModifiedSource[];
+  pages: LastModifiedPage[];
   /** JSON file to write, relative to the workspace root. */
   outputFile: string;
 }
 
-/** Map of page routes to `YYYY-MM-DD` dates. */
-export type PageLastModifiedDates = Record<string, string>;
+/** Map of page routes to commit timestamps in milliseconds since the Unix epoch. */
+export type RouteTimestamps = Record<string, number>;
 
 /** Matches a `:param` route segment. */
 const ROUTE_PARAM_PATTERN = /:[^/]+/g;
 
 /**
- * Writes a JSON file that maps page routes to the date of the last Git commit that changed each page's
+ * Writes a JSON file that maps page routes to the timestamp of the last Git commit that changed each page's
  * source file. Layout, style, and component changes don't affect the dates.
  *
  * @param options The executor options.
  * @param context The Nx executor context.
  * @returns Whether the file was written.
  */
-export default async function pageLastModifiedExecutor(
-  options: PageLastModifiedExecutorOptions,
+export default async function lastModifiedDatesExecutor(
+  options: LastModifiedDatesExecutorOptions,
   context: ExecutorContext,
 ): Promise<{ success: boolean }> {
   try {
-    const dates = collectPageLastModifiedDates(options.pages, context.root);
+    const dates = collectLastModifiedDates(options.pages, context.root);
     const outputPath = resolve(context.root, options.outputFile);
     await mkdir(dirname(outputPath), { recursive: true });
     await writeFile(outputPath, `${JSON.stringify(dates, null, 2)}\n`, 'utf8');
@@ -61,10 +61,10 @@ export default async function pageLastModifiedExecutor(
  *
  * @param pages The pages to date.
  * @param root The workspace root, which must be inside a Git repository.
- * @returns The dates keyed by route, sorted by route.
+ * @returns The commit timestamps keyed by route, sorted by route.
  * @throws When a route has more than one `:param` segment, or a `:param` route's source isn't a glob.
  */
-export function collectPageLastModifiedDates(pages: PageLastModifiedSource[], root: string): PageLastModifiedDates {
+export function collectLastModifiedDates(pages: LastModifiedPage[], root: string): RouteTimestamps {
   if (git(root, ['rev-parse', '--is-shallow-repository']) === 'true') {
     logger.warn(
       'The Git repository is a shallow clone, so last modified dates may be wrong. ' +
@@ -72,7 +72,7 @@ export function collectPageLastModifiedDates(pages: PageLastModifiedSource[], ro
     );
   }
 
-  const dates: PageLastModifiedDates = {};
+  const dates: RouteTimestamps = {};
   for (const { route, source } of pages) {
     const files = listTrackedFiles(root, source);
     if (files.length === 0) {
@@ -83,7 +83,7 @@ export function collectPageLastModifiedDates(pages: PageLastModifiedSource[], ro
       if (pageRoute in dates) {
         logger.warn(`Route ${pageRoute} is configured more than once; using its latest date.`);
       }
-      dates[pageRoute] = latest(dates[pageRoute], date);
+      dates[pageRoute] = Math.max(dates[pageRoute] ?? date, date);
     }
   }
 
@@ -97,10 +97,10 @@ export function collectPageLastModifiedDates(pages: PageLastModifiedSource[], ro
  * @param route The configured route, possibly with a `:param` segment.
  * @param source The configured source, used in error messages.
  * @param files The tracked files matching the source.
- * @returns Route and date pairs. Files without a commit are left out.
+ * @returns Route and timestamp pairs. Files without a commit are left out.
  * @throws When the route has more than one `:param` segment, or has one and the source isn't a glob.
  */
-function datePages(root: string, route: string, source: string, files: string[]): [string, string][] {
+function datePages(root: string, route: string, source: string, files: string[]): [string, number][] {
   const params = route.match(ROUTE_PARAM_PATTERN) ?? [];
   if (params.length > 1) {
     throw new Error(`Route ${route} has more than one :param segment; only one is supported.`);
@@ -109,10 +109,10 @@ function datePages(root: string, route: string, source: string, files: string[])
     throw new Error(`Route ${route} has a :param segment, so its source must be a glob, but got ${source}.`);
   }
 
-  const pairs: [string, string][] = [];
+  const pairs: [string, number][] = [];
   for (const file of files) {
-    const date = lastCommitDate(root, file);
-    if (!date) {
+    const date = lastCommitTimestamp(root, file);
+    if (date === undefined) {
       logger.warn(`${file} has no commits yet; it is left out.`);
       continue;
     }
@@ -121,7 +121,7 @@ function datePages(root: string, route: string, source: string, files: string[])
   }
 
   if (params.length === 0 && pairs.length > 1) {
-    return [[pairs[0][0], pairs.map(([, date]) => date).reduce(latest)]];
+    return [[pairs[0][0], Math.max(...pairs.map(([, date]) => date))]];
   }
   return pairs;
 }
@@ -140,14 +140,15 @@ function listTrackedFiles(root: string, source: string): string[] {
 }
 
 /**
- * Reads the committer date of the last commit that changed a file.
+ * Reads the committer timestamp of the last commit that changed a file.
  *
  * @param root The workspace root.
  * @param file A file path relative to the workspace root.
- * @returns The date as `YYYY-MM-DD`, or an empty string when the file has no commits.
+ * @returns The timestamp in milliseconds since the Unix epoch, or `undefined` when the file has no commits.
  */
-function lastCommitDate(root: string, file: string): string {
-  return git(root, ['log', '-1', '--format=%cs', '--', file]);
+function lastCommitTimestamp(root: string, file: string): number | undefined {
+  const seconds = git(root, ['log', '-1', '--format=%ct', '--', file]);
+  return seconds ? Number(seconds) * 1000 : undefined;
 }
 
 /**
@@ -170,15 +171,4 @@ function git(root: string, args: string[]): string {
 function normalizeRoute(route: string): string {
   const trimmed = route.replace(/^\/+|\/+$/g, '');
   return `/${trimmed}`;
-}
-
-/**
- * Picks the later of two `YYYY-MM-DD` dates.
- *
- * @param a The first date, if any.
- * @param b The second date.
- * @returns The later date.
- */
-function latest(a: string | undefined, b: string): string {
-  return a !== undefined && a > b ? a : b;
 }

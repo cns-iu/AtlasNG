@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/schema",
   "version": 2,
-  "title": "Page last modified executor",
-  "description": "Writes a JSON file that maps page routes to the date of the last Git commit that changed each page's source file.",
+  "title": "Last modified dates executor",
+  "description": "Writes a JSON file that maps page routes to the timestamp of the last Git commit that changed each page's source file.",
   "type": "object",
   "properties": {
     "pages": {
@@ -26,7 +26,7 @@
     },
     "outputFile": {
       "type": "string",
-      "description": "JSON file to write, relative to the workspace root, for example apps/portal/public/page-last-modified.json."
+      "description": "JSON file to write, relative to the workspace root, for example apps/portal/public/last-modified.json."
     }
   },
   "required": ["pages", "outputFile"]

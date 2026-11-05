@@ -168,14 +168,14 @@ npx nx run @atlasng/monorepo:bootstrap-npm-packages --dryRun
 npx nx run @atlasng/monorepo:bootstrap-npm-packages
 ```
 
-### `page-last-modified`
+### `last-modified-dates`
 
-Writes a JSON file that maps page routes to the date (`YYYY-MM-DD`) of the last Git commit that changed each page's source file, for `ang-page-last-modified` from [`@atlasng/design-system`](../../design-system/README.md#page-last-modified). Layout, style, and component changes don't affect the dates.
+Writes a JSON file that maps page routes to the timestamp (milliseconds since the Unix epoch) of the last Git commit that changed each page's source file, for `ang-last-modified` from [`@atlasng/design-system`](../../design-system/README.md). Layout, style, and component changes don't affect the dates.
 
 - A route with one `:param` segment, such as `/dataset/:datasetId`, gets one entry per file matched by its `source` glob, named after the file without its extension.
-- A route without a `:param` that matches several files gets the latest date.
+- A route without a `:param` that matches several files gets the latest timestamp.
 - Only files tracked by Git are used. Uncommitted new files are left out with a warning.
-- The executor warns in a shallow clone, where every file would get the date of the latest commit. In GitHub Actions, check out the full history with `fetch-depth: 0`.
+- The executor warns in a shallow clone, where every file would get the timestamp of the latest commit. In GitHub Actions, check out the full history with `fetch-depth: 0`.
 
 | Option       | Default    | Description                                                                        |
 | ------------ | ---------- | ---------------------------------------------------------------------------------- |
@@ -185,24 +185,24 @@ Writes a JSON file that maps page routes to the date (`YYYY-MM-DD`) of the last 
 ```json
 {
   "targets": {
-    "page-last-modified": {
-      "executor": "@atlasng/nx-plugin:page-last-modified",
+    "last-modified-dates": {
+      "executor": "@atlasng/nx-plugin:last-modified-dates",
       "cache": false,
       "options": {
-        "outputFile": "apps/portal/public/page-last-modified.json",
+        "outputFile": "apps/portal/public/last-modified.json",
         "pages": [
           { "route": "/dataset/:datasetId", "source": "apps/portal/public/assets/datasets/*.json" },
           { "route": "/about", "source": "apps/portal/content/about.yaml" }
         ]
       }
     },
-    "build": { "dependsOn": ["page-last-modified", "^build"] },
-    "serve": { "dependsOn": ["page-last-modified"] }
+    "build": { "dependsOn": ["last-modified-dates", "^build"] },
+    "serve": { "dependsOn": ["last-modified-dates"] }
   }
 }
 ```
 
-Add the output file to `.gitignore`, since it is regenerated on every build.
+Load the file in the app with `inject(LastModifiedDates).loadFromUrl('last-modified.json')`, and add it to `.gitignore`, since it is regenerated on every build.
 
 ## Nx preset
 
