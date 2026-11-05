@@ -1,5 +1,5 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, inject, input, model, output } from '@angular/core';
+import { Component, Directive, inject, input, model, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -31,6 +31,18 @@ export interface HeaderShellNavigationItem {
   /** Whether to render a divider above this item, separating it from the preceding items. */
   divider?: boolean;
 }
+
+/**
+ * Marks a projected element, typically a `matIconButton`, as an app-wide header action.
+ * Actions render before the help and apps buttons and get the header's focus outline.
+ * Reserve this slot for two or three app-wide actions such as a theme menu;
+ * page-specific actions belong in the page itself.
+ */
+@Directive({
+  selector: '[angHeaderShellAction]',
+  host: { class: 'ang-header-shell--action' },
+})
+export class HeaderShellAction {}
 
 /**
  * Sticky page header shell with responsive desktop/mobile navigation and dynamic icon action overflow.

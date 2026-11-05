@@ -3,7 +3,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { render, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { BehaviorSubject } from 'rxjs';
-import { HeaderShell } from './header-shell';
+import { HeaderShell, HeaderShellAction } from './header-shell';
 
 describe('HeaderShell', () => {
   it('observes the desktop breakpoint starting at exactly 960px', async () => {
@@ -151,5 +151,35 @@ describe('HeaderShell', () => {
 
     expect(screen.getAllByText('Section One').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Section Two').length).toBeGreaterThan(0);
+  });
+
+  it('projects action buttons before the apps button', async () => {
+    await render(
+      `
+        <ang-header-shell>
+          <button angHeaderShellAction type="button" aria-label="Change theme">Theme</button>
+        </ang-header-shell>
+      `,
+      { imports: [HeaderShell, HeaderShellAction] },
+    );
+
+    const action = screen.getByRole('button', { name: 'Change theme' });
+    const apps = screen.getByRole('button', { name: 'Open app switcher' });
+
+    expect(action).toHaveClass('ang-header-shell--action');
+    expect(action.compareDocumentPosition(apps) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('does not project content without the action attribute', async () => {
+    await render(
+      `
+        <ang-header-shell>
+          <button type="button" aria-label="Unmarked">Unmarked</button>
+        </ang-header-shell>
+      `,
+      { imports: [HeaderShell] },
+    );
+
+    expect(screen.queryByRole('button', { name: 'Unmarked' })).not.toBeInTheDocument();
   });
 });

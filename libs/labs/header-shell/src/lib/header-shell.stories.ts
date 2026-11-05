@@ -1,5 +1,8 @@
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { HeaderShell, HeaderShellNavigationItem } from './header-shell';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { HeaderShell, HeaderShellAction, HeaderShellNavigationItem } from './header-shell';
 import { NavigationContainer } from './navigation-container/navigation-container';
 
 const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
@@ -22,30 +25,23 @@ interface WithMenuItems {
   email?: string;
 }
 
-const meta: Meta<HeaderShell & WithMenuItems> = {
-  title: 'Labs/Header Shell',
-  component: HeaderShell,
-  parameters: {
-    design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=6715-15323',
-    },
-    layout: 'fullscreen',
-  },
-  decorators: [
-    moduleMetadata({
-      imports: [NavigationContainer],
-    }),
-  ],
-  args: {
-    logoLink: '/',
-    logoUrl: 'assets/placeholder.png',
-    hasLocalNavigation: true,
-    localNavigationIcon: 'menu',
-    navigationItems: NAVIGATION_ITEMS,
-    navRight: APP_MENU_ITEMS,
-  },
-  render: (args) => ({
+/** Example app-wide actions projected into the header shell. */
+const HEADER_ACTIONS = `
+  <button matIconButton angHeaderShellAction type="button" matTooltip="Theme" aria-label="Change theme">
+    <mat-icon fontIcon="dark_mode" />
+  </button>
+  <button matIconButton angHeaderShellAction type="button" matTooltip="Share" aria-label="Share this page">
+    <mat-icon fontIcon="share" />
+  </button>
+`;
+
+/**
+ * Creates a story render function for the header shell and its navigation container.
+ * @param actions Markup projected into the header shell's action slot.
+ * @returns The story render function.
+ */
+function renderHeaderShell(actions = ''): Meta<HeaderShell & WithMenuItems>['render'] {
+  return (args) => ({
     props: {
       ...args,
       leftMenuOpen: false,
@@ -60,6 +56,7 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
         (localNavigationToggle)="navigation.localNavigationToggle()"
         (appsMenuToggle)="navigation.appsMenuToggle()"
       >
+        ${actions}
       </ang-header-shell>
 
       <ang-navigation-container
@@ -75,7 +72,33 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
       </ang-navigation-container>
     `,
     styles: [`.content { padding: 1rem; }`],
-  }),
+  });
+}
+
+const meta: Meta<HeaderShell & WithMenuItems> = {
+  title: 'Labs/Header Shell',
+  component: HeaderShell,
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=6715-15323',
+    },
+    layout: 'fullscreen',
+  },
+  decorators: [
+    moduleMetadata({
+      imports: [NavigationContainer, HeaderShellAction, MatButtonModule, MatIconModule, MatTooltipModule],
+    }),
+  ],
+  args: {
+    logoLink: '/',
+    logoUrl: 'assets/placeholder.png',
+    hasLocalNavigation: true,
+    localNavigationIcon: 'menu',
+    navigationItems: NAVIGATION_ITEMS,
+    navRight: APP_MENU_ITEMS,
+  },
+  render: renderHeaderShell(),
 };
 
 export default meta;
@@ -87,4 +110,11 @@ export const WithHelp: Story = {
   args: {
     helpLink: '/docs/header-shell',
   },
+};
+
+export const WithHelpAndCustomHeaderActions: Story = {
+  args: {
+    helpLink: '/docs/header-shell',
+  },
+  render: renderHeaderShell(HEADER_ACTIONS),
 };
