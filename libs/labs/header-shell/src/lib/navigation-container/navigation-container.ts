@@ -1,5 +1,6 @@
-import { Component, input, model } from '@angular/core';
+import { Component, inject, input, model } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { NavigationEnd, Router } from '@angular/router';
 import { HeaderShellNavigationItem } from '../header-shell';
 import { NavigationMenu } from '../navigation-menu/navigation-menu';
 
@@ -13,6 +14,9 @@ import { NavigationMenu } from '../navigation-menu/navigation-menu';
   styleUrl: './navigation-container.scss',
 })
 export class NavigationContainer {
+  /** Router instance for handling navigation events. */
+  readonly router = inject(Router);
+
   /** Navigation items for the left menu. */
   readonly navigationItems = input<HeaderShellNavigationItem[]>();
   /** Navigation items for the right menu. */
@@ -26,6 +30,16 @@ export class NavigationContainer {
   readonly leftMenuOpen = model(false);
   /** Opened state of the right navigation menu. */
   readonly rightMenuOpen = model(false);
+
+  /** Closes both drawers after every router navigation, including browser back and forward. */
+  constructor() {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.leftMenuOpen.set(false);
+        this.rightMenuOpen.set(false);
+      }
+    });
+  }
 
   /**
    * Toggles the right navigation menu and ensures the left menu is closed.

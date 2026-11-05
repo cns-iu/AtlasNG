@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { NavigationMenu } from './navigation-menu';
 
 describe('NavigationMenu', () => {
@@ -77,5 +78,19 @@ describe('NavigationMenu', () => {
 
     socialButtons = container.querySelectorAll('ang-social-media-button');
     expect(socialButtons.length).toBe(8);
+  });
+
+  it('emits the selected item when a link is activated', async () => {
+    const user = userEvent.setup();
+    const linkSelected = vi.fn();
+    const about = { id: 'about', label: 'About', link: 'https://example.com/about', external: true };
+    await render(NavigationMenu, {
+      inputs: { navigationItems: [about] },
+      on: { linkSelected },
+    });
+
+    await user.click(screen.getByRole('link', { name: 'About' }));
+
+    expect(linkSelected).toHaveBeenCalledWith(about);
   });
 });

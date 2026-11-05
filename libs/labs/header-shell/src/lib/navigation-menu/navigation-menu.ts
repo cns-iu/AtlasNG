@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -37,4 +37,7 @@ export class NavigationMenu {
 
   /** List of supported social media IDs. */
   readonly socialMediaIds = input<string[]>(SOCIAL_MEDIA_IDS);
+
+  /** Emits the navigation item whose link was activated, including links to the current page. */
+  readonly linkSelected = output<HeaderShellNavigationItem>();
 }
