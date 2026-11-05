@@ -84,6 +84,34 @@ function optionalNumberAttribute(value: unknown): number | undefined {
 export const TABLE_ROW_HEIGHT = 48;
 
 /**
+ * Body row height: a fixed pixel height, `'auto'` to size rows to their
+ * content, or a function estimating each row's pixel height.
+ *
+ * - Numbers and functions keep virtualization; rendered rows are exactly the
+ *   returned height, so content taller than it is clipped. Replace the function
+ *   to recompute every row height, for example after the table width changes.
+ * - `'auto'` disables virtualization and renders every row, so rows wrap and
+ *   grow to fit their content at any width. Prefer it for small or moderately
+ *   sized row sets and when an outer container scrolls the table.
+ */
+export type TableRowHeight<TRow extends Row = Row> = number | 'auto' | ((row: TRow) => number);
+
+/**
+ * Coerces a row height attribute, parsing numeric strings while passing
+ * `'auto'` and estimator functions through.
+ *
+ * @param value Bound or static attribute value.
+ * @returns Row height accepted by ngx-datatable.
+ */
+function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TRow> {
+  if (value === 'auto' || typeof value === 'function') {
+    return value as TableRowHeight<TRow>;
+  }
+
+  return numberAttribute(value, TABLE_ROW_HEIGHT);
+}
+
+/**
  * AtlasNG data table with curated appearance, sorting, selection, reusable
  * templates, and virtualization behavior.
  */
@@ -99,6 +127,7 @@ export const TABLE_ROW_HEIGHT = 48;
     '[class]': '"ang-table--appearance-" + appearance()',
     '[class.ang-table--summary-top]': 'summaryRow() && summaryPosition() === "top"',
     '[class.ang-table--summary-bottom]': 'summaryRow() && summaryPosition() === "bottom"',
+    '[class.ang-table--auto-row-height]': 'rowHeight() === "auto"',
   },
 })
 export class Table<TRow extends Row = Row> {
@@ -111,8 +140,11 @@ export class Table<TRow extends Row = Row> {
   /** Visual treatment applied to rows and internal rules. */
   readonly appearance = input<TableAppearance>('striped');
 
-  /** Height of each virtualized row in pixels. */
-  readonly rowHeight = input(TABLE_ROW_HEIGHT, { transform: numberAttribute });
+  /**
+   * Body row height in pixels, `'auto'` to fit content, or a per-row estimator.
+   * See {@link TableRowHeight} for the virtualization trade-offs.
+   */
+  readonly rowHeight = input<TableRowHeight<TRow>, unknown>(TABLE_ROW_HEIGHT, { transform: rowHeightAttribute });
 
   /** Enables horizontal scrolling when columns exceed the available width. */
   readonly scrollbarH = input(true, { transform: booleanAttribute });
@@ -132,14 +164,26 @@ export class Table<TRow extends Row = Row> {
   /** Displays a row of per-column summaries computed with each column's `summaryFunc`. */
   readonly summaryRow = input(false, { transform: booleanAttribute });
 
-  /** Height of the summary row in pixels; defaults to {@link rowHeight}. */
+  /**
+   * Height of the summary row in pixels; defaults to {@link rowHeight} when it
+   * is a number and to {@link TABLE_ROW_HEIGHT} otherwise.
+   */
   readonly summaryHeight = input(undefined, { transform: optionalNumberAttribute });
 
   /** Placement of the summary row relative to the body rows. */
   readonly summaryPosition = input<TableSummaryPosition>('top');
 
-  /** Summary row height with the body row height applied as a fallback. */
-  protected readonly resolvedSummaryHeight = computed(() => this.summaryHeight() ?? this.rowHeight());
+  /** Summary row height with the numeric body row height applied as a fallback. */
+  protected readonly resolvedSummaryHeight = computed(() => {
+    const rowHeight = this.rowHeight();
+    return this.summaryHeight() ?? (typeof rowHeight === 'number' ? rowHeight : TABLE_ROW_HEIGHT);
+  });
+
+  /**
+   * Whether rows are virtualized. ngx-datatable cannot virtualize `'auto'`
+   * heights because its row height cache needs a height before rendering.
+   */
+  protected readonly virtualization = computed(() => this.rowHeight() !== 'auto');
 
   /** Columns converted to the native ngx-datatable representation. */
   protected readonly resolvedColumns = computed(() => this.columns().map((column) => this.#resolveColumn(column)));

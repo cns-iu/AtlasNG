@@ -51,6 +51,8 @@
   }
 
   .ang-kg-explorer-results-table--table {
+    // Minimum height of content-sized rows; matches KG_EXPLORER_ROW_HEIGHT.
+    --ang-table-auto-row-min-height: 96px;
     // Let the table scroll horizontally instead of widening the page.
     min-width: 0;
     @include breakpoint-padding;
@@ -64,6 +66,16 @@
     .datatable-header {
       border-bottom: 1px solid var(--mat-sys-outline-variant);
       background-color: var(--mat-sys-surface);
+    }
+
+    // Fixed-height rows clamp long content to the lines that fit.
+    .ngx-datatable.fixed-row .datatable-body-cell-label {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      overflow: hidden;
+      text-overflow: clip;
     }
 
     // Keep the divider inside the row height so the virtualized scroller's
@@ -80,13 +92,7 @@
         white-space: normal;
 
         .datatable-body-cell-label {
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 3;
-          line-clamp: 3;
-          overflow: hidden;
           overflow-wrap: anywhere;
-          text-overflow: clip;
           white-space: normal;
         }
 
