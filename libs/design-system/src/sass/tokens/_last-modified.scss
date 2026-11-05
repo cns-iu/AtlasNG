@@ -1,7 +1,7 @@
 @use '../internal/token-utils';
 
 $config: (
-  namespace: 'page-last-modified',
+  namespace: 'last-modified',
   tokens: (
     color: token-utils.sys-token(on-surface-variant),
   ),

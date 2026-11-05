@@ -1,5 +1,5 @@
 @use 'internal/token-utils';
-@use 'tokens/page-last-modified' as *;
+@use 'tokens/last-modified' as *;
 
 :host {
   display: block;
@@ -10,7 +10,7 @@
   line-height: token-utils.sys-slot(body-medium-line-height);
   letter-spacing: token-utils.sys-slot(body-medium-tracking);
 
-  .ang-page-last-modified--text {
+  .ang-last-modified--text {
     margin: 0;
   }
 }

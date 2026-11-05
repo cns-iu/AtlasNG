@@ -1,9 +1,9 @@
 import { type Meta, type StoryObj } from '@storybook/angular';
-import { PageLastModified } from './page-last-modified';
+import { LastModified } from './last-modified';
 
-const meta: Meta<PageLastModified> = {
-  component: PageLastModified,
-  title: 'Design System/Content/Page Last Modified',
+const meta: Meta<LastModified> = {
+  component: LastModified,
+  title: 'Design System/Content/Last Modified',
   parameters: {
     design: {
       type: 'figma',
@@ -11,11 +11,11 @@ const meta: Meta<PageLastModified> = {
     },
   },
   args: {
-    lastModified: '2026-06-16',
+    date: '2026-06-16',
     label: 'Last updated on',
   },
   argTypes: {
-    lastModified: {
+    date: {
       control: 'text',
       description:
         'When the page was last modified, as a `Date`, a timestamp in milliseconds, or an ISO 8601 string. ' +
@@ -29,6 +29,6 @@ const meta: Meta<PageLastModified> = {
 };
 
 export default meta;
-type Story = StoryObj<PageLastModified>;
+type Story = StoryObj<LastModified>;
 
 export const Default: Story = {};
