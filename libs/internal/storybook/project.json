@@ -21,6 +21,27 @@
           "target": "storybook"
         }
       ]
+    },
+    "generate-shape-scss": {
+      "executor": "@atlasng/nx-plugin:generate-shape-scss",
+      "configurations": {
+        "cns": {
+          "input": "{projectRoot}/src/themes/cns/shape.tokens.json",
+          "output": "{projectRoot}/src/themes/cns/_shape.scss"
+        },
+        "hra": {
+          "input": "{projectRoot}/src/themes/hra/shape.tokens.json",
+          "output": "{projectRoot}/src/themes/hra/_shape.scss"
+        },
+        "mhu": {
+          "input": "{projectRoot}/src/themes/mhu/shape.tokens.json",
+          "output": "{projectRoot}/src/themes/mhu/_shape.scss"
+        },
+        "wpp": {
+          "input": "{projectRoot}/src/themes/wpp/shape.tokens.json",
+          "output": "{projectRoot}/src/themes/wpp/_shape.scss"
+        }
+      }
     }
   }
 }

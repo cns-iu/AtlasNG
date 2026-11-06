@@ -17,3 +17,11 @@ Nx starts every referenced Storybook before the composition. The local ports are
 | labs           | 4402 |
 | content-blocks | 4403 |
 | kg-explorer    | 4404 |
+
+## Theme SCSS
+
+`src/themes/<theme>/_shape.scss` is generated from the theme's Figma `shape.tokens.json`. Regenerate it with:
+
+```sh
+npx nx run internal-storybook:generate-shape-scss:<theme>
+```
