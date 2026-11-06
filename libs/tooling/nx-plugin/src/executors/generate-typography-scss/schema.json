@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Generate typography SCSS executor",
+  "description": "Generates typography SCSS maps from Figma font and typescale tokens JSON files.",
+  "type": "object",
+  "properties": {
+    "input": {
+      "type": "string",
+      "description": "Path to the source font tokens JSON file, relative to the workspace root."
+    },
+    "typescale": {
+      "type": "string",
+      "description": "Path to the source typescale tokens JSON file, relative to the workspace root."
+    },
+    "output": {
+      "type": "string",
+      "description": "Path to the output SCSS file, relative to the workspace root. Defaults to `<input name>.typography.scss` next to the input."
+    },
+    "plainVariable": {
+      "type": "boolean",
+      "description": "Append ` Variable` to the plain font family name.",
+      "default": false
+    },
+    "brandVariable": {
+      "type": "boolean",
+      "description": "Append ` Variable` to the brand font family name.",
+      "default": false
+    }
+  },
+  "required": ["input", "typescale"]
+}
