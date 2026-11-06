@@ -1,8 +1,8 @@
 @let results = filteredRows();
 
-@if (showSearch() || showResultsCounter()) {
+@if (!searchDisabled() || resultsCounterDisabled()) {
   <div class="ang-kg-explorer-results-table--navigation">
-    @if (showSearch()) {
+    @if (!searchDisabled()) {
       <mat-form-field class="ang-kg-explorer-results-table--search" subscriptSizing="dynamic">
         <mat-icon matPrefix fontIcon="search" />
         <mat-label>{{ searchLabel() }}</mat-label>
@@ -27,7 +27,7 @@
       </mat-form-field>
     }
 
-    @if (showResultsCounter()) {
+    @if (!resultsCounterDisabled()) {
       <ang-results-indicator
         class="ang-kg-explorer-results-table--counter"
         prefix="Viewing"
@@ -51,7 +51,7 @@
     <ang-no-results-indicator class="ang-kg-explorer-results-table--empty" empty-content (clear)="clear()" />
   </ang-table>
 
-  @if (showEndOfResults() && results.length > 0) {
+  @if (!endOfResultsDisabled() && results.length > 0) {
     <ang-end-of-results-indicator class="ang-kg-explorer-results-table--end" [count]="results.length" />
   }
 

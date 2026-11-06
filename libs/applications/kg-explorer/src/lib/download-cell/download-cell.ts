@@ -25,34 +25,7 @@ export interface DownloadCellConfig<TRow extends Row = Row> {
 @Component({
   selector: 'ang-kg-explorer-download-cell-definition',
   imports: [CellTemplateContext, MatIcon, MatIconButton, MatMenu, MatMenuItem, MatMenuTrigger, MatTooltip],
-  template: `
-    <ng-template let-row="row" [angCellTemplateContext]="rowType">
-      <button
-        matIconButton
-        type="button"
-        class="ang-kg-explorer--download-cell"
-        matTooltip="Choose download format"
-        aria-label="Choose download format"
-        [matMenuTriggerFor]="menu"
-      >
-        <mat-icon fontIcon="download" />
-      </button>
-
-      <mat-menu class="ang-kg-explorer--download-menu" #menu="matMenu">
-        @for (format of config.formats; track format) {
-          <button mat-menu-item type="button" (click)="config.download(row, format)">
-            <mat-icon fontIcon="download" />
-            <span class="ang-kg-explorer--download-option">
-              <span class="ang-kg-explorer--download-option-label">{{ format.label }}</span>
-              @if (format.description) {
-                <span class="ang-kg-explorer--download-option-description">{{ format.description }}</span>
-              }
-            </span>
-          </button>
-        }
-      </mat-menu>
-    </ng-template>
-  `,
+  templateUrl: './download-cell.html',
   styleUrl: './download-cell.scss',
   encapsulation: ViewEncapsulation.None,
 })

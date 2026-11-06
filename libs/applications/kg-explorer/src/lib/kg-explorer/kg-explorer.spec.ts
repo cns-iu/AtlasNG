@@ -69,7 +69,7 @@ describe('KgExplorer', () => {
   });
 
   it('hides the download column with the boolean input', async () => {
-    await setup({ showDownload: false });
+    await setup({ downloadDisabled: true });
 
     expect(screen.queryByRole('button', { name: 'Choose download format' })).not.toBeInTheDocument();
   });

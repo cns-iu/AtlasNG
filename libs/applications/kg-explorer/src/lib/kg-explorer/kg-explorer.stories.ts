@@ -69,9 +69,6 @@ const meta: Meta<KgExplorer<KgExplorerSampleItem>> = {
       imports: [Footer, FooterAction, FooterLogo, KgExplorerTableEndSlot, MatButton],
     }),
   ],
-  globals: {
-    theme: 'WPP Light',
-  },
   parameters: {
     layout: 'fullscreen',
     design: {
@@ -84,10 +81,10 @@ const meta: Meta<KgExplorer<KgExplorerSampleItem>> = {
     columns: KG_EXPLORER_SAMPLE_COLUMNS,
     filters: KG_EXPLORER_SAMPLE_FILTERS,
     filtersOpen: false,
-    showSearch: true,
-    showResultsCounter: true,
-    showEndOfResults: true,
-    showDownload: true,
+    searchDisabled: false,
+    resultsCounterDisabled: false,
+    endOfResultsDisabled: false,
+    downloadDisabled: false,
   },
   argTypes: {
     download: { action: 'download' },
@@ -152,7 +149,7 @@ export const FewResults: Story = {
 
 export const WithoutDownload: Story = {
   args: {
-    showDownload: false,
+    downloadDisabled: true,
   },
 };
 

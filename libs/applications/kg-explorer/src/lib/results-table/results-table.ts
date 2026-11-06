@@ -109,14 +109,14 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Label of the search field. */
   readonly searchLabel = input('Search');
 
-  /** Shows the search field. */
-  readonly showSearch = input(true, { transform: booleanAttribute });
+  /** Disables the search field. */
+  readonly searchDisabled = input(false, { transform: booleanAttribute });
 
-  /** Shows the "Viewing X of Y" results counter. */
-  readonly showResultsCounter = input(true, { transform: booleanAttribute });
+  /** Disables the "Viewing X of Y" results counter. */
+  readonly resultsCounterDisabled = input(false, { transform: booleanAttribute });
 
-  /** Shows the end-of-results indicator below the table. */
-  readonly showEndOfResults = input(true, { transform: booleanAttribute });
+  /** Disables the end-of-results indicator below the table. */
+  readonly endOfResultsDisabled = input(false, { transform: booleanAttribute });
 
   /** Emits when the user clears the results from the no-results indicator. */
   readonly clearResults = output<void>();

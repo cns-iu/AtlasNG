@@ -73,7 +73,7 @@ Give the explorer a height (for example, fill the page below your header) and ap
 
 ## Show and hide features
 
-Boolean inputs that default to `true`: `showSearch`, `showResultsCounter`, `showEndOfResults`, and `showDownload`.
+Boolean inputs that default to `false`: `downloadDisabled`, `endOfResultsDisabled`, `resultsCounterDisabled`, `searchDisabled`,
 
 ## Slots
 

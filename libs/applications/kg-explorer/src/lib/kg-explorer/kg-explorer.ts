@@ -105,17 +105,17 @@ export class KgExplorer<TRow extends Row = Row> {
   /** Derives the autocomplete suggestion for a row. Defaults to the row's `title`. */
   readonly searchLabelFn = input<(row: TRow) => string>(defaultSearchLabel);
 
-  /** Shows the table search field. */
-  readonly showSearch = input(true, { transform: booleanAttribute });
+  /** Disables the table search field. */
+  readonly searchDisabled = input(false, { transform: booleanAttribute });
 
-  /** Shows the "Viewing X of Y" results counter. */
-  readonly showResultsCounter = input(true, { transform: booleanAttribute });
+  /** Disables the "Viewing X of Y" results counter. */
+  readonly resultsCounterDisabled = input(false, { transform: booleanAttribute });
 
-  /** Shows the end-of-results indicator below the table. */
-  readonly showEndOfResults = input(true, { transform: booleanAttribute });
+  /** Disables the end-of-results indicator below the table. */
+  readonly endOfResultsDisabled = input(false, { transform: booleanAttribute });
 
-  /** Adds a download column with a file format menu to each row. */
-  readonly showDownload = input(true, { transform: booleanAttribute });
+  /** Disables the download column. */
+  readonly downloadDisabled = input(false, { transform: booleanAttribute });
 
   /** Emits when a user picks a download format for a row. */
   readonly download = output<KgExplorerDownload<TRow>>();
@@ -166,7 +166,7 @@ export class KgExplorer<TRow extends Row = Row> {
 
   /** Columns displayed by the table, including the optional download column. */
   protected readonly resolvedColumns = computed(() =>
-    this.showDownload() ? [this.downloadColumn(), ...this.columns()] : this.columns(),
+    this.downloadDisabled() ? this.columns() : [this.downloadColumn(), ...this.columns()],
   );
 
   /**
@@ -194,15 +194,4 @@ export class KgExplorer<TRow extends Row = Row> {
     this.filterSelections.set({});
     this.clearFilters.emit();
   }
-
-  // /**
-  //  * Keeps {@link filtersOpen} in sync with the drawer while it is not docked.
-  //  *
-  //  * @param opened Whether the drawer is now open.
-  //  */
-  // protected onOpenedChange(opened: boolean): void {
-  //   if (!this.docked()) {
-  //     this.filtersOpen.set(opened);
-  //   }
-  // }
 }
