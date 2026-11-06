@@ -1,6 +1,6 @@
 # @atlasng/nx-plugin
 
-[Nx](https://nx.dev/) plugin for AtlasNG and other Nx Angular workspaces. It sets up the shared tooling packages, infers Compodoc targets, provides release executors and ships an `nx.json` preset.
+[Nx](https://nx.dev/) plugin for AtlasNG and other Nx Angular workspaces. It sets up the shared tooling packages, infers Compodoc targets, provides release and Figma token SCSS executors and ships an `nx.json` preset.
 
 ## Installation
 
@@ -166,6 +166,33 @@ npm trusted publishing can only be configured for packages that already exist on
 npm login
 npx nx run @atlasng/monorepo:bootstrap-npm-packages --dryRun
 npx nx run @atlasng/monorepo:bootstrap-npm-packages
+```
+
+### `generate-shape-scss`
+
+Generates a `$shape-overrides` SCSS map from the `Corner` group of a Figma shape tokens JSON export. Each supported key (`none`, `extra-small`, `extra-small-top`, `small`, `medium`, `large`, `large-top`, `large-start`, `large-end`, `extra-large`, `extra-large-top`, `full`) becomes a `corner-<key>` entry; `-top`, `-start` and `-end` keys only round those corners. Other keys are ignored, and a supported key without a numeric `$value` fails the executor. The file starts with a banner naming the Nx target that regenerates it.
+
+| Option   | Default                                   | Description                                            |
+| -------- | ----------------------------------------- | ------------------------------------------------------ |
+| `input`  | (required)                                | Shape tokens JSON file, relative to the workspace root |
+| `output` | `<input name>.shape.scss` next to `input` | Output SCSS file, relative to the workspace root       |
+
+```json
+{
+  "targets": {
+    "generate-shape-scss": {
+      "executor": "@atlasng/nx-plugin:generate-shape-scss",
+      "options": {
+        "input": "{projectRoot}/src/theme/shape.tokens.json",
+        "output": "{projectRoot}/src/theme/_shape.scss"
+      }
+    }
+  }
+}
+```
+
+```bash
+npx nx run my-theme:generate-shape-scss
 ```
 
 ## Nx preset
