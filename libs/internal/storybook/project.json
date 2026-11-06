@@ -63,6 +63,37 @@
           "output": "{projectRoot}/src/themes/wpp/_shape.scss"
         }
       }
+    },
+    "generate-typography-scss": {
+      "executor": "@atlasng/nx-plugin:generate-typography-scss",
+      "configurations": {
+        "cns": {
+          "input": "{projectRoot}/src/themes/cns/font.tokens.json",
+          "typescale": "{projectRoot}/src/themes/cns/typescale.tokens.json",
+          "output": "{projectRoot}/src/themes/cns/_typography.scss",
+          "plainVariable": true
+        },
+        "hra": {
+          "input": "{projectRoot}/src/themes/hra/font.tokens.json",
+          "typescale": "{projectRoot}/src/themes/hra/typescale.tokens.json",
+          "output": "{projectRoot}/src/themes/hra/_typography.scss",
+          "plainVariable": true
+        },
+        "mhu": {
+          "input": "{projectRoot}/src/themes/mhu/font.tokens.json",
+          "typescale": "{projectRoot}/src/themes/mhu/typescale.tokens.json",
+          "output": "{projectRoot}/src/themes/mhu/_typography.scss",
+          "plainVariable": true,
+          "brandVariable": true
+        },
+        "wpp": {
+          "input": "{projectRoot}/src/themes/wpp/font.tokens.json",
+          "typescale": "{projectRoot}/src/themes/wpp/typescale.tokens.json",
+          "output": "{projectRoot}/src/themes/wpp/_typography.scss",
+          "plainVariable": true,
+          "brandVariable": true
+        }
+      }
     }
   }
 }
