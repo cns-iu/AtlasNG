@@ -22,6 +22,27 @@
         }
       ]
     },
+    "generate-palettes-scss": {
+      "executor": "@atlasng/nx-plugin:generate-palettes-scss",
+      "configurations": {
+        "cns": {
+          "input": "{projectRoot}/src/themes/cns/palette.tokens.json",
+          "output": "{projectRoot}/src/themes/cns/_palettes.scss"
+        },
+        "hra": {
+          "input": "{projectRoot}/src/themes/hra/palette.tokens.json",
+          "output": "{projectRoot}/src/themes/hra/_palettes.scss"
+        },
+        "mhu": {
+          "input": "{projectRoot}/src/themes/mhu/palette.tokens.json",
+          "output": "{projectRoot}/src/themes/mhu/_palettes.scss"
+        },
+        "wpp": {
+          "input": "{projectRoot}/src/themes/wpp/palette.tokens.json",
+          "output": "{projectRoot}/src/themes/wpp/_palettes.scss"
+        }
+      }
+    },
     "generate-shape-scss": {
       "executor": "@atlasng/nx-plugin:generate-shape-scss",
       "configurations": {

@@ -168,6 +168,33 @@ npx nx run @atlasng/monorepo:bootstrap-npm-packages --dryRun
 npx nx run @atlasng/monorepo:bootstrap-npm-packages
 ```
 
+### `generate-palettes-scss`
+
+Generates Angular Material core palette maps (`$_palettes`, `$primary-palette` and `$tertiary-palette`) from the `palettes` group of a Figma palette tokens JSON export and, when the tokens have an `ext` group, an `$ext-palettes` map of extension palettes. Palette and group names match case-insensitively, ignoring separators, and both flat (`Primary 40`) and nested (`Primary.40`) exports work. The executor fails when a required tone is missing or is not a six-digit hex color. The file starts with a banner naming the Nx target that regenerates it.
+
+| Option   | Default                                      | Description                                              |
+| -------- | -------------------------------------------- | -------------------------------------------------------- |
+| `input`  | (required)                                   | Palette tokens JSON file, relative to the workspace root |
+| `output` | `<input name>.palettes.scss` next to `input` | Output SCSS file, relative to the workspace root         |
+
+```json
+{
+  "targets": {
+    "generate-palettes-scss": {
+      "executor": "@atlasng/nx-plugin:generate-palettes-scss",
+      "options": {
+        "input": "{projectRoot}/src/theme/palette.tokens.json",
+        "output": "{projectRoot}/src/theme/_palettes.scss"
+      }
+    }
+  }
+}
+```
+
+```bash
+npx nx run my-theme:generate-palettes-scss
+```
+
 ### `generate-shape-scss`
 
 Generates a `$shape-overrides` SCSS map from the `Corner` group of a Figma shape tokens JSON export. Each supported key (`none`, `extra-small`, `extra-small-top`, `small`, `medium`, `large`, `large-top`, `large-start`, `large-end`, `extra-large`, `extra-large-top`, `full`) becomes a `corner-<key>` entry; `-top`, `-start` and `-end` keys only round those corners. Other keys are ignored, and a supported key without a numeric `$value` fails the executor. The file starts with a banner naming the Nx target that regenerates it.
