@@ -37,8 +37,6 @@
 }
 
 ang-scroll-area {
-  max-height: 30rem;
-
   @include scroll.overrides(
     (
       container-color: token-utils.slot(container-color, $config),

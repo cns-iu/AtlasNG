@@ -10,9 +10,11 @@
     <mat-icon>open_in_new</mat-icon>
   </a>
   <span class="cdk-visually-hidden" [id]="newTabHintId">Opens in a new tab</span>
-  <div class="ang-link-snippet--text" [attr.id]="labelId">
-    {{ urlLabel() }}
-  </div>
+  <ang-scroll-area class="ang-link-snippet--scroll-area" orientation="horizontal">
+    <div class="ang-link-snippet--text" [attr.id]="labelId">
+      {{ urlLabel() }}
+    </div>
+  </ang-scroll-area>
 </div>
 <button matButton="outlined" class="ang-link-snippet--copy" (click)="copyUrl()">
   <mat-icon>content_copy</mat-icon>
