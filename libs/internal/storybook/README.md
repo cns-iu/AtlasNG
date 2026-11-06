@@ -20,8 +20,9 @@ Nx starts every referenced Storybook before the composition. The local ports are
 
 ## Theme SCSS
 
-`src/themes/<theme>/_shape.scss` is generated from the theme's Figma `shape.tokens.json`. Regenerate it with:
+`src/themes/<theme>/_palettes.scss` and `src/themes/<theme>/_shape.scss` are generated from the theme's Figma `palette.tokens.json` and `shape.tokens.json`. Regenerate them with:
 
 ```sh
+npx nx run internal-storybook:generate-palettes-scss:<theme>
 npx nx run internal-storybook:generate-shape-scss:<theme>
 ```

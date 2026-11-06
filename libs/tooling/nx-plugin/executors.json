@@ -14,6 +14,11 @@
       "implementation": "./src/executors/generate-shape-scss/executor",
       "schema": "./src/executors/generate-shape-scss/schema.json",
       "description": "Generates shape SCSS overrides from a Figma shape tokens JSON file."
+    },
+    "generate-palettes-scss": {
+      "implementation": "./src/executors/generate-palettes-scss/executor",
+      "schema": "./src/executors/generate-palettes-scss/schema.json",
+      "description": "Generates Material core and extension palette SCSS maps from a Figma palette tokens JSON file."
     }
   }
 }
