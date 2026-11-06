@@ -1,4 +1,5 @@
-import { Component, input, model, output } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Component, Directive, inject, input, model, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,10 +27,21 @@ export interface HeaderShellNavigationItem {
   icon?: string;
   /** Whether the link is external. */
   external?: boolean;
+  /** Whether to render a divider above this item, separating it from the preceding items. */
+  divider?: boolean;
 }
 
-/** Screen size breakpoint to disable desktop navigation (px). */
-const DESKTOP_BREAKPOINT = 960;
+/**
+ * Marks a projected element, typically a `matIconButton`, as an app-wide header action.
+ * Actions render before the help and apps buttons and get the header's focus outline.
+ * Reserve this slot for two or three app-wide actions such as a theme menu;
+ * page-specific actions belong in the page itself.
+ */
+@Directive({
+  selector: '[angHeaderShellAction]',
+  host: { class: 'ang-header-shell--action' },
+})
+export class HeaderShellAction {}
 
 /**
  * Sticky page header shell with responsive desktop/mobile navigation and dynamic icon action overflow.
@@ -53,9 +65,6 @@ const DESKTOP_BREAKPOINT = 960;
   templateUrl: './header-shell.html',
   styleUrl: './header-shell.scss',
   providers: [provideEventScope('header-shell')],
-  host: {
-    '(window:resize)': 'closeLocalNavigationOnDesktop()',
-  },
 })
 export class HeaderShell {
   /** Homepage destination used by the logo button. */
@@ -85,14 +94,14 @@ export class HeaderShell {
   /** Emits each time the apps menu toggle button is pressed. */
   readonly appsMenuToggle = output();
 
-  /**
-   * Closes the local navigation menu if the window is resized above the desktop breakpoint
-   * @returns local navigation on desktop
-   */
-  protected closeLocalNavigationOnDesktop(): void {
-    if (!this.hasLocalNavigation() || window.innerWidth <= DESKTOP_BREAKPOINT) {
-      return;
-    }
-    this.localNavigationExpanded.set(false);
+  /** Closes the local navigation whenever the viewport enters the desktop breakpoint. */
+  constructor() {
+    inject(BreakpointObserver)
+      .observe('(min-width: 960px)')
+      .subscribe((state) => {
+        if (state.matches && this.hasLocalNavigation()) {
+          this.localNavigationExpanded.set(false);
+        }
+      });
   }
 }

@@ -1,4 +1,5 @@
-import { render } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { NavigationMenu } from './navigation-menu';
 
 describe('NavigationMenu', () => {
@@ -37,6 +38,34 @@ describe('NavigationMenu', () => {
     expect(icons.length).toBe(1);
   });
 
+  it('does not render dividers by default', async () => {
+    await render(NavigationMenu, {
+      inputs: {
+        navigationItems: [
+          { id: 'home', label: 'Home', link: '/home' },
+          { id: 'about', label: 'About', link: '/about' },
+        ],
+      },
+    });
+
+    expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+  });
+
+  it('renders a divider before items with divider enabled', async () => {
+    await render(NavigationMenu, {
+      inputs: {
+        navigationItems: [
+          { id: 'home', label: 'Home', link: '/home' },
+          { id: 'contact', label: 'Contact Us', link: '/contact', divider: true },
+        ],
+      },
+    });
+
+    const separators = screen.getAllByRole('separator');
+    expect(separators).toHaveLength(1);
+    expect(separators[0].nextElementSibling).toBe(screen.getByRole('link', { name: 'Contact Us' }));
+  });
+
   it('renders default social buttons and adds email button when email is provided', async () => {
     const { container, fixture } = await render(NavigationMenu);
 
@@ -49,5 +78,19 @@ describe('NavigationMenu', () => {
 
     socialButtons = container.querySelectorAll('ang-social-media-button');
     expect(socialButtons.length).toBe(8);
+  });
+
+  it('emits the selected item when a link is activated', async () => {
+    const user = userEvent.setup();
+    const linkSelected = vi.fn();
+    const about = { id: 'about', label: 'About', link: 'https://example.com/about', external: true };
+    await render(NavigationMenu, {
+      inputs: { navigationItems: [about] },
+      on: { linkSelected },
+    });
+
+    await user.click(screen.getByRole('link', { name: 'About' }));
+
+    expect(linkSelected).toHaveBeenCalledWith(about);
   });
 });
