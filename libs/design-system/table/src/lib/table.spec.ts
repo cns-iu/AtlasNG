@@ -426,4 +426,59 @@ describe('Table', () => {
       expect(screen.getAllByText('1,234.5')).toHaveLength(2);
     });
   });
+
+  describe('row height', () => {
+    async function renderRowHeight(rowHeight: unknown, options: { summaryRow?: boolean } = {}) {
+      const result = await render(
+        `<div style="height: 240px">
+          <ang-table [rows]="rows" [columns]="columns" [rowHeight]="rowHeight" [summaryRow]="summaryRow" />
+        </div>`,
+        {
+          imports: [Table],
+          componentProperties: {
+            columns: [{ name: 'Name', prop: 'name' }],
+            rows: ROWS,
+            rowHeight,
+            summaryRow: options.summaryRow ?? false,
+          },
+        },
+      );
+      const table = result.fixture.nativeElement.querySelector('ang-table') as HTMLElement;
+      const datatable = table.querySelector('ngx-datatable') as HTMLElement;
+      return { ...result, table, datatable };
+    }
+
+    it('virtualizes fixed-height rows by default', async () => {
+      const { table, datatable } = await renderRowHeight(undefined);
+
+      expect(datatable).toHaveClass('virtualized', 'fixed-row');
+      expect(table).not.toHaveClass('ang-table--auto-row-height');
+    });
+
+    it('parses numeric row heights', async () => {
+      await renderRowHeight('64');
+
+      expect(screen.getByText('Ada').closest('datatable-body-row')).toHaveStyle({ height: '64px' });
+    });
+
+    it('sizes auto rows to their content without virtualization', async () => {
+      const { table, datatable } = await renderRowHeight('auto', { summaryRow: true });
+      const summary = table.querySelector('datatable-summary-row .datatable-body-row');
+
+      expect(table).toHaveClass('ang-table--auto-row-height');
+      expect(datatable).not.toHaveClass('virtualized');
+      expect(datatable).not.toHaveClass('fixed-row');
+      expect(screen.getByText('Ada')).toBeInTheDocument();
+      expect(summary).toHaveStyle({ height: '48px' });
+    });
+
+    it('uses per-row heights from an estimator function', async () => {
+      const estimate = vi.fn((row: TestRow) => row.name.length * 20);
+      const { datatable } = await renderRowHeight(estimate);
+
+      expect(datatable).toHaveClass('virtualized');
+      expect(estimate).toHaveBeenCalledWith(ROWS[0]);
+      expect(screen.getByText('Ada').closest('datatable-body-row')).toHaveStyle({ height: '60px' });
+    });
+  });
 });

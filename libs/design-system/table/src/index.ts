@@ -25,5 +25,6 @@ export {
   TABLE_ROW_HEIGHT,
   type TableAppearance,
   type TableColumn,
+  type TableRowHeight,
   type TableSummaryPosition,
 } from './lib/table';

@@ -6,7 +6,6 @@ import {
   contentChild,
   input,
   model,
-  numberAttribute,
   output,
   TemplateRef,
   ViewEncapsulation,
@@ -20,10 +19,13 @@ import { EndOfResultsIndicator } from '@atlasng/design-system/indicators/end-of-
 import { NoResultsIndicator } from '@atlasng/design-system/indicators/no-results-indicator';
 import { ResultsIndicator } from '@atlasng/design-system/indicators/results-indicator';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
-import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
+import { Table, type Row, type SortPropDir, type TableColumn, type TableRowHeight } from '@atlasng/design-system/table';
 import { KgExplorerTableEndSlot } from '../slots';
 
-/** Default height of the spacious explorer table rows in pixels. */
+/**
+ * Height of the spacious explorer table rows in pixels. Content-sized rows use
+ * it as their minimum height; pass it as `rowHeight` for fixed-height rows.
+ */
 export const KG_EXPLORER_ROW_HEIGHT = 96;
 
 /** Maximum number of autocomplete suggestions shown below the search field. */
@@ -88,8 +90,11 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Column definitions displayed by the table. Reuse the array between changes. */
   readonly columns = input.required<TableColumn<TRow>[]>();
 
-  /** Height of each table row in pixels. */
-  readonly rowHeight = input(KG_EXPLORER_ROW_HEIGHT, { transform: numberAttribute });
+  /**
+   * Table row height. Defaults to `'auto'`, which grows rows to fit their
+   * wrapped content; pass a number for fixed rows that clamp cells to three lines.
+   */
+  readonly rowHeight = input<TableRowHeight<TRow>>('auto');
 
   /** Current search term. */
   readonly search = model('');
