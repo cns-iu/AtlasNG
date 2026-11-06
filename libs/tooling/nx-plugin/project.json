@@ -54,15 +54,7 @@
         }
       }
     },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": ["default", "^production", { "externalDependencies": ["typescript"] }],
-      "options": {
-        "command": "tsc -p tsconfig.json",
-        "cwd": "{projectRoot}"
-      }
-    },
+    "typecheck": {},
     "nx-release-publish": {}
   }
 }
