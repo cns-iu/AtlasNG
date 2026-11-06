@@ -33,6 +33,7 @@
         }
       }
     },
+    "typecheck": {},
     "nx-release-publish": {}
   }
 }
