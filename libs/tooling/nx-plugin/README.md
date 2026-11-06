@@ -222,6 +222,38 @@ Generates a `$shape-overrides` SCSS map from the `Corner` group of a Figma shape
 npx nx run my-theme:generate-shape-scss
 ```
 
+### `generate-typography-scss`
+
+Generates a `$typography` map of font families and weights from the `Static` group of a Figma font tokens JSON export, and a `$typography-overrides` map of the Angular Material typescale styles from the `Static` group of a typescale tokens JSON export. The file starts with a banner naming the Nx target that regenerates it.
+
+| Option          | Default                                        | Description                                                                         |
+| --------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `input`         | (required)                                     | Font tokens JSON file, relative to the workspace root                               |
+| `typescale`     | (required)                                     | Typescale tokens JSON file, relative to the workspace root                          |
+| `output`        | `<input name>.typography.scss` next to `input` | Output SCSS file, relative to the workspace root                                    |
+| `plainVariable` | `false`                                        | Append ` Variable` to the plain font family name (and the matching typescale fonts) |
+| `brandVariable` | `false`                                        | Append ` Variable` to the brand font family name (and the matching typescale fonts) |
+
+```json
+{
+  "targets": {
+    "generate-typography-scss": {
+      "executor": "@atlasng/nx-plugin:generate-typography-scss",
+      "options": {
+        "input": "{projectRoot}/src/theme/font.tokens.json",
+        "typescale": "{projectRoot}/src/theme/typescale.tokens.json",
+        "output": "{projectRoot}/src/theme/_typography.scss",
+        "plainVariable": true
+      }
+    }
+  }
+}
+```
+
+```bash
+npx nx run my-theme:generate-typography-scss
+```
+
 ## Nx preset
 
 `presets/nx.json` holds the shared `namedInputs`, `targetDefaults` and `generators` defaults (without a selector prefix). It is **not** meant to be used through `nx.json` `"extends"`.

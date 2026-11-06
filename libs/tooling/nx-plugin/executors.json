@@ -19,6 +19,11 @@
       "implementation": "./src/executors/generate-palettes-scss/executor",
       "schema": "./src/executors/generate-palettes-scss/schema.json",
       "description": "Generates Material core and extension palette SCSS maps from a Figma palette tokens JSON file."
+    },
+    "generate-typography-scss": {
+      "implementation": "./src/executors/generate-typography-scss/executor",
+      "schema": "./src/executors/generate-typography-scss/schema.json",
+      "description": "Generates typography SCSS maps from Figma font and typescale tokens JSON files."
     }
   }
 }
