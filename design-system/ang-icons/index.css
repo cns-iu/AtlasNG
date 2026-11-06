@@ -1,0 +1,410 @@
+@font-face {
+  font-family: 'AtlasNG Icons';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(./files/ang-icons.woff2) format('woff2');
+}
+
+.ang-icon {
+  font-family: 'AtlasNG Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.ang-icon--2d-ftu::before {
+  content: '\e027';
+}
+
+.ang-icon--3d-ftu::before {
+  content: '\e006';
+}
+
+.ang-icon--3d-ref::before {
+  content: '\e007';
+}
+
+.ang-icon--adipose-tissue::before {
+  content: '\e008';
+}
+
+.ang-icon--all-organs::before {
+  content: '\e009';
+}
+
+.ang-icon--anatomical-systems::before {
+  content: '\e00a';
+}
+
+.ang-icon--api::before {
+  content: '\e00b';
+}
+
+.ang-icon--apps::before {
+  content: '\e00c';
+}
+
+.ang-icon--asctb::before {
+  content: '\e00d';
+}
+
+.ang-icon--biomarker::before {
+  content: '\e00e';
+}
+
+.ang-icon--bladder::before {
+  content: '\e00f';
+}
+
+.ang-icon--blood::before {
+  content: '\e010';
+}
+
+.ang-icon--bone-marrow::before {
+  content: '\e011';
+}
+
+.ang-icon--brain::before {
+  content: '\e012';
+}
+
+.ang-icon--breast::before {
+  content: '\e013';
+}
+
+.ang-icon--cell-distance-explorer::before {
+  content: '\e014';
+}
+
+.ang-icon--cell-type::before {
+  content: '\e017';
+}
+
+.ang-icon--cell-type-annotation-crosswalks::before {
+  content: '\e018';
+}
+
+.ang-icon--cell-type-population-graphs::before {
+  content: '\e015';
+}
+
+.ang-icon--cell-type-population-predictor::before {
+  content: '\e016';
+}
+
+.ang-icon--collections::before {
+  content: '\e019';
+}
+
+.ang-icon--contribute::before {
+  content: '\e01a';
+}
+
+.ang-icon--dashboard::before {
+  content: '\e01b';
+}
+
+.ang-icon--data::before {
+  content: '\e01c';
+}
+
+.ang-icon--dataset-graphs::before {
+  content: '\e01d';
+}
+
+.ang-icon--design-system::before {
+  content: '\e01e';
+}
+
+.ang-icon--developer-docs::before {
+  content: '\e01f';
+}
+
+.ang-icon--experts::before {
+  content: '\e020';
+}
+
+.ang-icon--exploration-user-interface::before {
+  content: '\e021';
+}
+
+.ang-icon--explore::before {
+  content: '\e022';
+}
+
+.ang-icon--extrapulmonary-bronchus::before {
+  content: '\e023';
+}
+
+.ang-icon--eye::before {
+  content: '\e05e';
+}
+
+.ang-icon--fallopian-tube-left::before {
+  content: '\e024';
+}
+
+.ang-icon--fallopian-tube-right::before {
+  content: '\e025';
+}
+
+.ang-icon--fallopian-tubes::before {
+  content: '\e026';
+}
+
+.ang-icon--glomerulus::before {
+  content: '\e028';
+}
+
+.ang-icon--graphs::before {
+  content: '\e029';
+}
+
+.ang-icon--heart::before {
+  content: '\e003';
+}
+
+.ang-icon--hra-organ-gallery::before {
+  content: '\e02a';
+}
+
+.ang-icon--hrapop-visualizer::before {
+  content: '\e02b';
+}
+
+.ang-icon--human-atlas-stories::before {
+  content: '\e02c';
+}
+
+.ang-icon--intervertebral-disc::before {
+  content: '\e05f';
+}
+
+.ang-icon--kg-explorer::before {
+  content: '\e031';
+}
+
+.ang-icon--kidney-left::before {
+  content: '\e02d';
+}
+
+.ang-icon--kidney-right::before {
+  content: '\e02e';
+}
+
+.ang-icon--kidneys::before {
+  content: '\e02f';
+}
+
+.ang-icon--knee::before {
+  content: '\e030';
+}
+
+.ang-icon--landmark::before {
+  content: '\e032';
+}
+
+.ang-icon--large-intestine::before {
+  content: '\e033';
+}
+
+.ang-icon--larynx::before {
+  content: '\e034';
+}
+
+.ang-icon--liver::before {
+  content: '\e035';
+}
+
+.ang-icon--lung-left::before {
+  content: '\e036';
+}
+
+.ang-icon--lung-right::before {
+  content: '\e037';
+}
+
+.ang-icon--lungs::before {
+  content: '\e038';
+}
+
+.ang-icon--lymph-nodes::before {
+  content: '\e039';
+}
+
+.ang-icon--lymphatic-vasculature::before {
+  content: '\e03a';
+}
+
+.ang-icon--manubrium::before {
+  content: '\e03b';
+}
+
+.ang-icon--millitome::before {
+  content: '\e03c';
+}
+
+.ang-icon--mouth::before {
+  content: '\e03d';
+}
+
+.ang-icon--muscular-system::before {
+  content: '\e03e';
+}
+
+.ang-icon--omap::before {
+  content: '\e03f';
+}
+
+.ang-icon--ovaries::before {
+  content: '\e040';
+}
+
+.ang-icon--ovary-left::before {
+  content: '\e060';
+}
+
+.ang-icon--ovary-right::before {
+  content: '\e061';
+}
+
+.ang-icon--palatine-tonsil::before {
+  content: '\e041';
+}
+
+.ang-icon--pancreas::before {
+  content: '\e042';
+}
+
+.ang-icon--pelvis::before {
+  content: '\e043';
+}
+
+.ang-icon--peripheral-nervous-system::before {
+  content: '\e062';
+}
+
+.ang-icon--placenta::before {
+  content: '\e044';
+}
+
+.ang-icon--prostate::before {
+  content: '\e045';
+}
+
+.ang-icon--publications::before {
+  content: '\e046';
+}
+
+.ang-icon--registration-user-interface::before {
+  content: '\e047';
+}
+
+.ang-icon--renal-pelvis::before {
+  content: '\e048';
+}
+
+.ang-icon--renal-pelvis-left::before {
+  content: '\e063';
+}
+
+.ang-icon--renal-pelvis-right::before {
+  content: '\e064';
+}
+
+.ang-icon--schema::before {
+  content: '\e049';
+}
+
+.ang-icon--skeletal-system::before {
+  content: '\e04a';
+}
+
+.ang-icon--skin::before {
+  content: '\e04b';
+}
+
+.ang-icon--small-intestine::before {
+  content: '\e04c';
+}
+
+.ang-icon--spinal-cord::before {
+  content: '\e04d';
+}
+
+.ang-icon--spleen::before {
+  content: '\e04e';
+}
+
+.ang-icon--sternum::before {
+  content: '\e04f';
+}
+
+.ang-icon--stomach::before {
+  content: '\e050';
+}
+
+.ang-icon--thymus::before {
+  content: '\e051';
+}
+
+.ang-icon--tissue-origin-predictor::before {
+  content: '\e052';
+}
+
+.ang-icon--trachea::before {
+  content: '\e053';
+}
+
+.ang-icon--training::before {
+  content: '\e054';
+}
+
+.ang-icon--ureter-left::before {
+  content: '\e055';
+}
+
+.ang-icon--ureter-right::before {
+  content: '\e056';
+}
+
+.ang-icon--ureters::before {
+  content: '\e057';
+}
+
+.ang-icon--uterus::before {
+  content: '\e058';
+}
+
+.ang-icon--vascular-geometry::before {
+  content: '\e059';
+}
+
+.ang-icon--vasculature-thick::before {
+  content: '\e05a';
+}
+
+.ang-icon--vasculature-thin::before {
+  content: '\e05b';
+}
+
+.ang-icon--vocabulary::before {
+  content: '\e05c';
+}
+
+.ang-icon--web-components::before {
+  content: '\e05d';
+}
