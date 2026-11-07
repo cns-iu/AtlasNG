@@ -6,13 +6,12 @@ import {
   contentChild,
   input,
   model,
-  numberAttribute,
   output,
   TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
 import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
+import { MatIconButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
@@ -87,9 +86,6 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
 
   /** Column definitions displayed by the table. Reuse the array between changes. */
   readonly columns = input.required<TableColumn<TRow>[]>();
-
-  /** Height of each table row in pixels. */
-  readonly rowHeight = input(KG_EXPLORER_ROW_HEIGHT, { transform: numberAttribute });
 
   /** Current search term. */
   readonly search = model('');

@@ -20,11 +20,7 @@ import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-sys
 import { map } from 'rxjs';
 import { DownloadCellDefinition, type DownloadCellConfig } from '../download-cell/download-cell';
 import type { KgExplorerDownload, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
-import {
-  defaultKgExplorerSearch,
-  KG_EXPLORER_ROW_HEIGHT,
-  KgExplorerResultsTable,
-} from '../results-table/results-table';
+import { defaultKgExplorerSearch, KgExplorerResultsTable } from '../results-table/results-table';
 import { KgExplorerTableEndSlot } from '../slots';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
@@ -77,9 +73,6 @@ export class KgExplorer<TRow extends Row = Row> {
 
   /** File formats offered by the per-row download menu. */
   readonly downloadFormats = input<readonly VersionControlFileFormat[]>(FILE_FORMATS);
-
-  /** Height of each table row in pixels. */
-  readonly rowHeight = input(KG_EXPLORER_ROW_HEIGHT);
 
   /** Filters displayed in the filter menu, in display order. */
   readonly filters = input<readonly KgExplorerFilter[]>([]);

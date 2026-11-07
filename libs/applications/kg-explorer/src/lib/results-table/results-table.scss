@@ -1,4 +1,6 @@
 @use 'internal/token-utils';
+@use 'tokens/end-of-results-indicator' as end-of-results-indicator;
+@use 'tokens/table' as table;
 
 @mixin table-padding() {
   padding: 1.25rem;
@@ -12,7 +14,12 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 0;
+
+  .ang-kg-explorer-results-table--navigation,
+  .ang-kg-explorer-results-table--table {
+    max-width: 96rem;
+    margin: 0 auto;
+  }
 
   .ang-kg-explorer-results-table--navigation {
     display: flex;
@@ -21,13 +28,9 @@
     justify-content: space-between;
     gap: 1rem;
     background-color: token-utils.sys-slot(surface);
+    width: calc(100% - 4rem);
 
     @include table-padding;
-  }
-
-  .ang-kg-explorer-results-table--scroll-area {
-    flex: 1 1 0;
-    min-height: 0;
   }
 
   .ang-kg-explorer-results-table--search {
@@ -36,8 +39,6 @@
   }
 
   .ang-kg-explorer-results-table--table {
-    min-width: 0;
-
     @include table-padding;
     padding-top: 0;
 
@@ -47,35 +48,22 @@
     }
 
     .datatable-header {
-      --ang-table-header-background-color: #{token-utils.sys-slot(surface)};
+      @include table.overrides(
+        (
+          header-background-color: token-utils.sys-slot(surface),
+        )
+      );
+
       border-bottom: 1px solid token-utils.sys-slot(outline-variant);
     }
 
     .datatable-body-row {
       box-sizing: border-box;
-      border-bottom: 1px solid var(--mat-sys-outline-variant);
-      color: var(--mat-sys-on-surface-variant);
+      border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+      min-height: 3rem;
 
-      .datatable-body-cell {
-        align-items: flex-start;
-        padding: 0.5rem 1rem;
-        overflow: hidden;
+      .datatable-body-cell-label {
         white-space: normal;
-
-        .datatable-body-cell-label {
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 3;
-          line-clamp: 3;
-          overflow: hidden;
-          overflow-wrap: anywhere;
-          text-overflow: clip;
-          white-space: normal;
-        }
-
-        .ang-table--link-cell {
-          display: inline;
-        }
       }
 
       .datatable-body-cell:has(.ang-kg-explorer--download-cell) {
@@ -85,7 +73,11 @@
   }
 
   .ang-kg-explorer-results-table--end {
-    --ang-end-of-results-indicator-background-color: #{token-utils.sys-slot(surface-container-low)};
+    @include end-of-results-indicator.overrides(
+      (
+        background-color: token-utils.sys-slot(surface-container-low),
+      )
+    );
 
     @include table-padding;
     padding-top: 0;

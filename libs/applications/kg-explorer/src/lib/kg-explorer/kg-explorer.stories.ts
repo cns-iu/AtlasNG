@@ -1,15 +1,15 @@
 import type { Type } from '@angular/core';
-import { type Args, argsToTemplate, type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
-import { expect, userEvent, within } from 'storybook/test';
-import {
-  KG_EXPLORER_SAMPLE_COLUMNS,
-  KG_EXPLORER_SAMPLE_ITEMS,
-  KG_EXPLORER_SAMPLE_FILTERS,
-  type KgExplorerSampleItem,
-} from '../sample-data';
 import { MatButton } from '@angular/material/button';
 import { Footer, FooterAction, FooterLogo } from '@atlasng/design-system/footer';
+import { type Args, argsToTemplate, type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
+import { expect, userEvent, within } from 'storybook/test';
 import type { KgExplorerFilterSelections } from '../models';
+import {
+  KG_EXPLORER_SAMPLE_COLUMNS,
+  KG_EXPLORER_SAMPLE_FILTERS,
+  KG_EXPLORER_SAMPLE_ITEMS,
+  type KgExplorerSampleItem,
+} from '../sample-data';
 import { KgExplorerTableEndSlot } from '../slots';
 import { KgExplorer } from './kg-explorer';
 
