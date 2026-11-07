@@ -1,0 +1,5 @@
+@if (resolvedDate(); as date) {
+  <p class="ang-last-modified--text">
+    {{ label() }} <time [attr.datetime]="date | date: 'yyyy-MM-dd'">{{ date | date: 'MMMM d, y' }}</time>
+  </p>
+}

@@ -35,6 +35,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/content/content-paragraph`           | `ContentParagraph`                                                        |
 | `@atlasng/design-system/content/content-section`             | `ContentSection`                                                          |
 | `@atlasng/design-system/content/heading`                     | `Heading`                                                                 |
+| `@atlasng/design-system/content/last-modified`               | `LastModified`, `LastModifiedDates`                                       |
 | `@atlasng/design-system/cookie-banner`                       | `CookieBanner`, `CookieBannerContainer`, and its content directives       |
 | `@atlasng/design-system/error-page`                          | `ErrorPage` and its content directives, `NotFoundPage`, `ServerErrorPage` |
 | `@atlasng/design-system/footer`                              | `Footer`, `FooterLogo`, `FooterAction`                                    |

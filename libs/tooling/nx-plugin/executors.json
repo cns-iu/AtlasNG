@@ -9,6 +9,11 @@
       "implementation": "./src/executors/bootstrap-npm-packages/executor",
       "schema": "./src/executors/bootstrap-npm-packages/schema.json",
       "description": "Publishes release projects that do not exist on npm yet and configures npm trusted publishing for them."
+    },
+    "last-modified-dates": {
+      "implementation": "./src/executors/last-modified-dates/executor",
+      "schema": "./src/executors/last-modified-dates/schema.json",
+      "description": "Writes a JSON file that maps page routes to the timestamp of the last Git commit that changed each page's source file."
     }
   }
 }
