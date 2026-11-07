@@ -80,9 +80,6 @@ function optionalNumberAttribute(value: unknown): number | undefined {
   return value == null ? undefined : numberAttribute(value);
 }
 
-/** Default row height used by the virtualized table. */
-export const TABLE_ROW_HEIGHT = 48;
-
 /**
  * AtlasNG data table with curated appearance, sorting, selection, reusable
  * templates, and virtualization behavior.
@@ -112,7 +109,7 @@ export class Table<TRow extends Row = Row> {
   readonly appearance = input<TableAppearance>('striped');
 
   /** Height of each virtualized row in pixels. */
-  readonly rowHeight = input(TABLE_ROW_HEIGHT, { transform: numberAttribute });
+  readonly rowHeight = input<number | 'auto'>('auto');
 
   /** Enables horizontal scrolling when columns exceed the available width. */
   readonly scrollbarH = input(true, { transform: booleanAttribute });

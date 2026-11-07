@@ -1,0 +1,96 @@
+@use 'internal/token-utils';
+@use 'tokens/end-of-results-indicator' as end-of-results-indicator;
+@use 'tokens/table' as table;
+
+@mixin table-padding() {
+  padding: 1.25rem;
+
+  @media (min-width: 740px) {
+    padding: 2rem;
+  }
+}
+
+.ang-kg-explorer-results-table {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .ang-kg-explorer-results-table--navigation,
+  .ang-kg-explorer-results-table--table {
+    max-width: 96rem;
+    margin: 0 auto;
+  }
+
+  .ang-kg-explorer-results-table--navigation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    background-color: token-utils.sys-slot(surface);
+    width: calc(100% - 4rem);
+
+    @include table-padding;
+  }
+
+  .ang-kg-explorer-results-table--search {
+    flex: 1 1 18rem;
+    max-width: 36.25rem;
+  }
+
+  .ang-kg-explorer-results-table--table {
+    @include table-padding;
+    padding-top: 0;
+
+    .ang-kg-explorer-results-table--empty {
+      grid-column: 1 / -1;
+      padding-block: 2.5rem;
+    }
+
+    .datatable-header {
+      @include table.overrides(
+        (
+          header-background-color: token-utils.sys-slot(surface),
+        )
+      );
+
+      border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+    }
+
+    .datatable-body-row {
+      box-sizing: border-box;
+      border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+      min-height: 3rem;
+
+      .datatable-body-cell-label {
+        white-space: normal;
+      }
+
+      .datatable-body-cell:has(.ang-kg-explorer--download-cell) {
+        padding: 0;
+      }
+    }
+  }
+
+  .ang-kg-explorer-results-table--end {
+    @include end-of-results-indicator.overrides(
+      (
+        background-color: token-utils.sys-slot(surface-container-low),
+      )
+    );
+
+    @include table-padding;
+    padding-top: 0;
+
+    .mat-divider {
+      display: none;
+    }
+
+    .ang-end-of-results-indicator--container {
+      grid-auto-flow: column;
+      width: fit-content;
+      margin: 0 auto;
+      margin-top: 0rem !important;
+    }
+  }
+}
