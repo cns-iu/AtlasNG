@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Generate palettes SCSS executor",
+  "description": "Generates Material core and extension palette SCSS maps from a Figma palette tokens JSON file.",
+  "type": "object",
+  "properties": {
+    "input": {
+      "type": "string",
+      "description": "Path to the source palette tokens JSON file, relative to the workspace root."
+    },
+    "output": {
+      "type": "string",
+      "description": "Path to the output SCSS file, relative to the workspace root. Defaults to `<input name>.palettes.scss` next to the input."
+    }
+  },
+  "required": ["input"]
+}
