@@ -8,6 +8,7 @@ import {
   findKey,
   getHex,
   getNumberToken,
+  getTokenValue,
   isJsonObject,
   normalizeKey,
   readTokensFile,
@@ -21,6 +22,16 @@ describe('tokens utils', () => {
 
     it.each([null, undefined, 'text', 1, [], [{}]])('rejects %o', (value) => {
       expect(isJsonObject(value)).toBe(false);
+    });
+  });
+
+  describe('getTokenValue', () => {
+    it('reads $value', () => {
+      expect(getTokenValue({ $value: 'x' })).toBe('x');
+    });
+
+    it.each([null, undefined, 'text', [{ $value: 'x' }]])('returns undefined for %o', (token) => {
+      expect(getTokenValue(token)).toBeUndefined();
     });
   });
 

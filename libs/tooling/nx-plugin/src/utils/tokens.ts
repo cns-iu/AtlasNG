@@ -29,6 +29,16 @@ export function assertJsonObject(value: unknown, message: string): asserts value
 }
 
 /**
+ * Reads a token's `$value`.
+ *
+ * @param token The token, or any other value.
+ * @returns The token's `$value`, or `undefined` when there is none.
+ */
+export function getTokenValue(token: unknown): unknown {
+  return isJsonObject(token) ? token['$value'] : undefined;
+}
+
+/**
  * Reads a token's numeric `$value`.
  *
  * @param group The token group containing the token.
@@ -38,7 +48,7 @@ export function assertJsonObject(value: unknown, message: string): asserts value
  * @throws If the value is not a finite number.
  */
 export function getNumberToken(group: Record<string, unknown>, key: string, path: string): number {
-  const value = (group[key] as { $value?: unknown } | undefined)?.$value;
+  const value = getTokenValue(group[key]);
   if (typeof value !== 'number' || !Number.isFinite(value)) {
     throw new Error(`Missing or invalid ${path}.${key}.$value (expected a number).`);
   }
@@ -114,6 +124,7 @@ export function findKey(object: unknown, name: string): unknown {
  * @returns The hex color, or `undefined` if the token has none.
  */
 export function getHex(token: unknown): string | undefined {
-  const hex = (token as { $value?: { hex?: unknown } } | null | undefined)?.$value?.hex;
+  const value = getTokenValue(token);
+  const hex = isJsonObject(value) ? value['hex'] : undefined;
   return typeof hex === 'string' ? hex.toLowerCase() : undefined;
 }

@@ -269,7 +269,7 @@ describe('generate-typography-scss executor', () => {
   });
 
   it('builds empty maps', () => {
-    expect(buildScss('// banner', 'a.json', 'b.json', { plainFamily: 'A', brandFamily: 'B', weights: {} }, []))
+    expect(buildScss('a.json', 'b.json', ['// banner'], { plainFamily: 'A', brandFamily: 'B', weights: {} }, []))
       .toMatchInlineSnapshot(`
       "// banner
 

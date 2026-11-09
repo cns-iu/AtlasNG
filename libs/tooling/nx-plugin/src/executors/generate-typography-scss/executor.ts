@@ -1,15 +1,24 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
 import { relative, resolve } from 'node:path';
+import { type ExecutorResult, resolveOutputPath, runExecutorTask, writeFile } from '../../utils/executor.ts';
+import { formatOutputData, indent, type OutputData } from '../../utils/output.ts';
 import {
+  assertJsonObject,
   createScssBanner,
-  type ExecutorResult,
+  getTokenValue,
+  isJsonObject,
+  normalizeKey,
   readTokensFile,
-  resolveOutputPath,
-  runExecutorTask,
-  SCSS_INDENT,
   type TokensObject,
-  writeScssFile,
-} from '../../utils/scss.ts';
+} from '../../utils/tokens.ts';
+import {
+  PROMINENT_WEIGHT_STYLES,
+  REM_DECIMALS,
+  SCSS_IDENTIFIER_REGEX,
+  TYPESCALE_STYLES,
+  VARIABLE_FONT_SUFFIX,
+  WEIGHT_BY_NAME,
+} from './constants.ts';
 
 /** Options for the `generate-typography-scss` executor. */
 export interface GenerateTypographyScssExecutorOptions {
@@ -56,58 +65,6 @@ export interface TypescaleStyle {
   prominentWeight?: number;
 }
 
-/** Number of decimals kept when converting pixels to rem. */
-const REM_DECIMALS = 3;
-
-/** Suffix that marks a variable font family name. */
-const VARIABLE_FONT_SUFFIX = ' Variable';
-
-/** Material typescale style names, in output order. */
-export const TYPESCALE_STYLE_ORDER = [
-  'body-large',
-  'body-medium',
-  'body-small',
-  'display-large',
-  'display-medium',
-  'display-small',
-  'headline-large',
-  'headline-medium',
-  'headline-small',
-  'label-large',
-  'label-medium',
-  'label-small',
-  'title-large',
-  'title-medium',
-  'title-small',
-] as const;
-
-/** Typescale styles whose emphasized weight is written as `-weight-prominent`. */
-const PROMINENT_WEIGHT_STYLES: readonly string[] = ['label-large', 'label-medium'];
-
-/**
- * Numeric font weights keyed by normalized weight name.
- *
- * @see https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight#common_weight_name_mapping
- */
-const WEIGHT_BY_NAME: Readonly<Record<string, number>> = {
-  thin: 100,
-  hairline: 100,
-  'extra light': 200,
-  'ultra light': 200,
-  light: 300,
-  regular: 400,
-  normal: 400,
-  medium: 500,
-  'semi bold': 600,
-  semibold: 600,
-  demibold: 600,
-  bold: 700,
-  'extra bold': 800,
-  'ultra bold': 800,
-  black: 900,
-  heavy: 900,
-};
-
 /**
  * Generates `$typography` and `$typography-overrides` SCSS maps from Figma font and typescale tokens exports.
  *
@@ -121,40 +78,15 @@ export default async function generateTypographyScssExecutor(
 ): Promise<ExecutorResult> {
   return runExecutorTask(async () => {
     const outputPath = resolveOutputPath(context.root, options.input, options.output, '.typography.scss');
-    const tokens = await readTokensFile(resolve(context.root, options.input));
-    const typescaleTokens = await readTokensFile(resolve(context.root, options.typescale));
-    const typography = parseTypography(tokens, options);
-    const styles = parseTypescale(typescaleTokens, typography, options);
-    const scss = buildScss(createScssBanner(context), options.input, options.typescale, typography, styles);
+    const typography = parseTypography(await readTokensFile(resolve(context.root, options.input)), options);
+    const styles = parseTypescale(await readTokensFile(resolve(context.root, options.typescale)), typography, options);
 
-    await writeScssFile(outputPath, scss);
+    await writeFile(
+      outputPath,
+      buildScss(options.input, options.typescale, createScssBanner(context), typography, styles),
+    );
     logger.info(`Wrote ${relative(context.root, outputPath)}`);
   });
-}
-
-/**
- * Reads a token's `$value`.
- *
- * @param token The token, or any other value.
- * @returns The token's `$value`, or `undefined` when there is none.
- */
-function getTokenValue(token: unknown): unknown {
-  return (token as { $value?: unknown } | null | undefined)?.$value;
-}
-
-/**
- * Normalizes a weight name for lookup, dropping `italic` and treating `-`/`_` as spaces.
- *
- * @param name The weight name.
- * @returns The normalized name.
- */
-function normalizeWeightName(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/\bitalic\b/g, '')
-    .replace(/[_-]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
 }
 
 /**
@@ -165,36 +97,18 @@ function normalizeWeightName(name: string): string {
  * @returns The numeric weight, or `undefined` for unknown names.
  */
 export function parseWeight(value: unknown, fallbackName: string): number | undefined {
-  return WEIGHT_BY_NAME[normalizeWeightName(String(value || fallbackName))];
+  return WEIGHT_BY_NAME[toWeightKey(String(value || fallbackName))];
 }
 
 /**
- * Converts a weight token key to a kebab-case map key, dropping `italic`.
+ * Normalizes a weight name to a kebab-case key, dropping `italic`,
+ * e.g. `Semi_bold Italic` => `semi-bold`.
  *
- * @param name The token key.
- * @returns The map key.
+ * @param name The weight name.
+ * @returns The weight key.
  */
 function toWeightKey(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/\bitalic\b/g, '')
-    .replace(/[_\s]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
-/**
- * Converts a typescale style name to kebab case.
- *
- * @param value The style name, e.g. `Body large`.
- * @returns The kebab-case name, e.g. `body-large`.
- */
-function toKebabCase(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[\s_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+  return normalizeKey(name.replace(/\bitalic\b/gi, '')).replace(/^-|-$/g, '');
 }
 
 /**
@@ -204,7 +118,7 @@ function toKebabCase(value: string): string {
  * @returns The SCSS identifier or quoted string.
  */
 export function toScssString(value: string): string {
-  if (/^[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value)) {
+  if (SCSS_IDENTIFIER_REGEX.test(value)) {
     return value;
   }
 
@@ -274,9 +188,10 @@ function shouldUseVariableFont(fontName: string, typography: Typography, options
  * @throws If `Static.Font.Plain`, `Static.Font.Brand` or `Static.Weight` is missing, or a weight name is unsupported.
  */
 export function parseTypography(tokens: TokensObject, options: VariableFontOptions = {}): Typography {
-  const staticTokens = tokens['Static'] as { Font?: Record<string, unknown>; Weight?: unknown } | undefined;
-  const plainFamily = getTokenValue(staticTokens?.Font?.['Plain']);
-  const brandFamily = getTokenValue(staticTokens?.Font?.['Brand']);
+  const staticTokens = isJsonObject(tokens['Static']) ? tokens['Static'] : {};
+  const font = isJsonObject(staticTokens['Font']) ? staticTokens['Font'] : {};
+  const plainFamily = getTokenValue(font['Plain']);
+  const brandFamily = getTokenValue(font['Brand']);
 
   if (typeof plainFamily !== 'string' || plainFamily.trim().length === 0) {
     throw new Error('Missing required token: Static.Font.Plain.$value');
@@ -286,10 +201,8 @@ export function parseTypography(tokens: TokensObject, options: VariableFontOptio
     throw new Error('Missing required token: Static.Font.Brand.$value');
   }
 
-  const weightGroup = staticTokens?.Weight;
-  if (!weightGroup || typeof weightGroup !== 'object') {
-    throw new Error('Missing required token group: Static.Weight');
-  }
+  const weightGroup = staticTokens['Weight'];
+  assertJsonObject(weightGroup, 'Missing required token group: Static.Weight');
 
   const weights: Record<string, number> = {};
   for (const [key, token] of Object.entries(weightGroup)) {
@@ -316,7 +229,7 @@ export function parseTypography(tokens: TokensObject, options: VariableFontOptio
  * @param tokens The parsed typescale tokens file.
  * @param typography The parsed typography, used to resolve variable font names.
  * @param options The variable font options.
- * @returns The styles, in {@link TYPESCALE_STYLE_ORDER}.
+ * @returns The styles, in {@link TYPESCALE_STYLES} order.
  * @throws If `Static` is missing, no Material style is found, or a weight name is unsupported.
  */
 export function parseTypescale(
@@ -325,12 +238,10 @@ export function parseTypescale(
   options: VariableFontOptions = {},
 ): TypescaleStyle[] {
   const staticTokens = tokens['Static'];
-  if (!staticTokens || typeof staticTokens !== 'object') {
-    throw new Error('Missing required token group: Static');
-  }
+  assertJsonObject(staticTokens, 'Missing required token group: Static');
 
   const styles = new Map<string, TypescaleStyle>();
-  for (const [rawStyleName, styleTokens] of Object.entries(staticTokens as Record<string, unknown>)) {
+  for (const [rawStyleName, styleTokens] of Object.entries(staticTokens)) {
     const style = parseTypescaleStyle(rawStyleName, styleTokens, typography, options);
     if (style) {
       styles.set(style.name, style);
@@ -341,7 +252,7 @@ export function parseTypescale(
     throw new Error('No valid typescale styles were found in the provided typescale tokens file.');
   }
 
-  const ordered = TYPESCALE_STYLE_ORDER.map((name) => styles.get(name)).filter(
+  const ordered = TYPESCALE_STYLES.map((name) => styles.get(name)).filter(
     (style): style is TypescaleStyle => style !== undefined,
   );
   if (ordered.length === 0) {
@@ -367,16 +278,15 @@ function parseTypescaleStyle(
   typography: Typography,
   options: VariableFontOptions,
 ): TypescaleStyle | undefined {
-  if (!styleTokens || typeof styleTokens !== 'object') {
+  if (!isJsonObject(styleTokens)) {
     return undefined;
   }
 
-  const group = styleTokens as Record<string, unknown>;
-  const font = getTokenValue(group['Font']);
-  const weightName = getTokenValue(group['Weight']);
-  const size = getTokenValue(group['Size']);
-  const lineHeight = getTokenValue(group['Line height']);
-  const tracking = getTokenValue(group['Tracking']);
+  const font = getTokenValue(styleTokens['Font']);
+  const weightName = getTokenValue(styleTokens['Weight']);
+  const size = getTokenValue(styleTokens['Size']);
+  const lineHeight = getTokenValue(styleTokens['Line height']);
+  const tracking = getTokenValue(styleTokens['Tracking']);
 
   if (
     typeof font !== 'string' ||
@@ -394,7 +304,7 @@ function parseTypescaleStyle(
   }
 
   const style: TypescaleStyle = {
-    name: toKebabCase(rawStyleName),
+    name: normalizeKey(rawStyleName),
     font: shouldUseVariableFont(font, typography, options) ? toVariableFontName(font) : font.trim(),
     weight,
     size: toRem(size),
@@ -402,7 +312,7 @@ function parseTypescaleStyle(
     tracking: toRem(tracking),
   };
 
-  const prominentWeightName = getTokenValue(group['Weight-emphasized']);
+  const prominentWeightName = getTokenValue(styleTokens['Weight-emphasized']);
   if (typeof prominentWeightName === 'string') {
     const prominentWeight = parseWeight(prominentWeightName, `${rawStyleName} Weight-emphasized`);
     if (prominentWeight === undefined) {
@@ -431,7 +341,7 @@ function isFiniteNumber(value: unknown): value is number {
  * @param typography The parsed typography.
  * @returns The map entries.
  */
-function typographyEntries(typography: Typography): string[] {
+function typographyEntries(typography: Typography): OutputData {
   return [
     `plain-family: ${toScssString(typography.plainFamily)},`,
     `brand-family: ${toScssString(typography.brandFamily)},`,
@@ -445,60 +355,52 @@ function typographyEntries(typography: Typography): string[] {
  * @param styles The parsed typescale styles.
  * @returns The map entries.
  */
-function typescaleEntries(styles: TypescaleStyle[]): string[] {
-  return styles.flatMap((style) => {
+function typescaleEntries(styles: TypescaleStyle[]): OutputData {
+  return styles.map((style) => {
     const font = toScssString(style.font);
-    const entries = [
+    return [
       `${style.name}: ${style.weight} ${style.size} #{'/'} ${style.lineHeight} ${font},`,
       `${style.name}-font: ${font},`,
       `${style.name}-line-height: ${style.lineHeight},`,
       `${style.name}-size: ${style.size},`,
       `${style.name}-tracking: ${style.tracking},`,
       `${style.name}-weight: ${style.weight},`,
+      PROMINENT_WEIGHT_STYLES.includes(style.name) && style.prominentWeight !== undefined
+        ? `${style.name}-weight-prominent: ${style.prominentWeight},`
+        : [],
     ];
-    if (PROMINENT_WEIGHT_STYLES.includes(style.name) && style.prominentWeight !== undefined) {
-      entries.push(`${style.name}-weight-prominent: ${style.prominentWeight},`);
-    }
-
-    return entries;
   });
-}
-
-/**
- * Formats an SCSS map.
- *
- * @param entries The map entries, without indentation.
- * @returns The SCSS map.
- */
-function toScssMap(entries: string[]): string {
-  return ['(', ...entries.map((entry) => `${SCSS_INDENT}${entry}`), ')'].join('\n');
 }
 
 /**
  * Builds the generated SCSS file.
  *
+ * @param inputPath The font tokens path, as shown in the file.
+ * @param typescalePath The typescale tokens path, as shown in the file.
  * @param banner The generated-file banner.
- * @param input The font tokens path, as shown in the file.
- * @param typescale The typescale tokens path, as shown in the file.
  * @param typography The parsed typography.
  * @param styles The parsed typescale styles.
  * @returns The SCSS source.
  */
 export function buildScss(
-  banner: string,
-  input: string,
-  typescale: string,
+  inputPath: string,
+  typescalePath: string,
+  banner: OutputData,
   typography: Typography,
   styles: TypescaleStyle[],
 ): string {
-  return [
+  return formatOutputData([
     banner,
     '',
-    `// Note: Typography tokens are generated from '${input}'`,
-    `$typography: ${toScssMap(typographyEntries(typography))};`,
+    `// Note: Typography tokens are generated from '${inputPath}'`,
+    '$typography: (',
+    indent(typographyEntries(typography)),
+    ');',
     '',
-    `// Note: Typography overrides are generated from '${typescale}'`,
-    `$typography-overrides: ${toScssMap(typescaleEntries(styles))};`,
+    `// Note: Typography overrides are generated from '${typescalePath}'`,
+    '$typography-overrides: (',
+    indent(typescaleEntries(styles)),
+    ');',
     '',
-  ].join('\n');
+  ]);
 }
