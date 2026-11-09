@@ -1,17 +1,19 @@
 <div class="ang-metadata-page--layout">
   <header class="ang-metadata-page--header">
-    @if (showBreadcrumbs() && breadcrumbs().length > 0) {
+    @if (!breadcrumbsDisabled() && breadcrumbs().length > 0) {
       <ang-breadcrumbs class="ang-metadata-page--breadcrumbs" [items]="breadcrumbs()" />
     }
-    @if (showIcons() && icons().length > 0) {
+    @if (!iconsDisabled() && icons().length > 0) {
       <div class="ang-metadata-page--icons">
         @for (icon of icons(); track $index) {
-          <img class="ang-metadata-page--icon" [attr.src]="icon.src" [attr.alt]="icon.alt" />
+          <div class="ang-metadata-page--icon-wrapper">
+            <img class="ang-metadata-page--icon" fill [ngSrc]="icon.src" [alt]="icon.alt" />
+          </div>
         }
       </div>
     }
     <ang-heading class="ang-metadata-page--title" level="1">{{ title() }}</ang-heading>
-    @if (showUrl() && url(); as url) {
+    @if (!urlDisabled() && url(); as url) {
       <ang-link-snippet class="ang-metadata-page--url" [url]="url" />
     }
   </header>

@@ -147,7 +147,7 @@ describe('MetadataPage', () => {
   });
 
   it('hides parts that are turned off', async () => {
-    await setup({ showBreadcrumbs: false, showIcons: false, showUrl: false });
+    await setup({ breadcrumbsDisabled: true, iconsDisabled: true, urlDisabled: true });
 
     expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument();
     expect(screen.queryByRole('img', { name: 'Organ icon' })).not.toBeInTheDocument();

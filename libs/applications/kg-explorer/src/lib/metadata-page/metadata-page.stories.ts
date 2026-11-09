@@ -119,9 +119,9 @@ const meta: Meta<MetadataPage> = {
     versions: VERSIONS,
     versionControlTagline: 'Digital object version',
     sectionHeadingLevel: 2,
-    showBreadcrumbs: true,
-    showIcons: true,
-    showUrl: true,
+    breadcrumbsDisabled: false,
+    iconsDisabled: false,
+    urlDisabled: false,
     underlinedSections: true,
   },
   render: (args) => ({

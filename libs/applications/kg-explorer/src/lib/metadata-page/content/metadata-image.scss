@@ -1,9 +1,6 @@
-:host {
-  display: block;
+@use 'sass:list';
 
-  .ang-metadata-image--image {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
+:host {
+  position: relative;
+  aspect-ratio: list.slash(16, 9);
 }

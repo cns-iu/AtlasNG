@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
 import { ContentBlock } from '@atlasng/content-blocks';
 import { provideDefinitions } from '@atlasng/content-blocks/definitions';
@@ -58,7 +58,16 @@ export interface MetadataIcon {
  */
 @Component({
   selector: 'ang-metadata-page',
-  imports: [Breadcrumbs, ContentBlock, ContentSection, Heading, LinkSnippet, NgTemplateOutlet, VersionControl],
+  imports: [
+    Breadcrumbs,
+    ContentBlock,
+    ContentSection,
+    Heading,
+    LinkSnippet,
+    NgOptimizedImage,
+    NgTemplateOutlet,
+    VersionControl,
+  ],
   templateUrl: './metadata-page.html',
   styleUrl: './metadata-page.scss',
   providers: [provideDesignSystemDefinitions(), provideDefinitions(METADATA_PAGE_DEFINITIONS)],
@@ -85,12 +94,12 @@ export class MetadataPage<T extends VersionControlFileFormat = VersionControlFil
   /** Heading level of the section titles. */
   readonly sectionHeadingLevel = input<number | string>(2);
 
-  /** Whether to display the breadcrumbs. */
-  readonly showBreadcrumbs = input(true, { transform: booleanAttribute });
-  /** Whether to display the icons. */
-  readonly showIcons = input(true, { transform: booleanAttribute });
-  /** Whether to display the URL link snippet. */
-  readonly showUrl = input(true, { transform: booleanAttribute });
+  /** Whether to hide the breadcrumbs. */
+  readonly breadcrumbsDisabled = input(false, { transform: booleanAttribute });
+  /** Whether to hide the icons. */
+  readonly iconsDisabled = input(false, { transform: booleanAttribute });
+  /** Whether to hide the URL link snippet. */
+  readonly urlDisabled = input(false, { transform: booleanAttribute });
   /** Whether to display a divider beneath each section title. */
   readonly underlinedSections = input(true, { transform: booleanAttribute });
 

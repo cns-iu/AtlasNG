@@ -32,14 +32,14 @@ Application library for the AtlasNG knowledge graph explorer. It is in early dev
 | `sectionHeadingLevel`   | `2`                        | Heading level of the section titles.                                     |
 | `selectedVersion`       | first version              | Two-way bindable selected version.                                       |
 
-The version control panel is always displayed; with no versions its selector is disabled. Other parts of the page can be turned off with a boolean input. All default to `true`, and a part is also hidden when it has no data.
+The version control panel is always displayed; with no versions its selector is disabled. Other parts of the page can be changed with a boolean input. A part is also hidden when it has no data.
 
-| Input                | Hides or changes                   |
-| -------------------- | ---------------------------------- |
-| `showBreadcrumbs`    | Breadcrumbs                        |
-| `showIcons`          | Icons above the title              |
-| `showUrl`            | URL link snippet                   |
-| `underlinedSections` | Divider beneath each section title |
+| Input                 | Default | Effect                                     |
+| --------------------- | ------- | ------------------------------------------ |
+| `breadcrumbsDisabled` | `false` | Hides the breadcrumbs                      |
+| `iconsDisabled`       | `false` | Hides the icons above the title            |
+| `urlDisabled`         | `false` | Hides the URL link snippet                 |
+| `underlinedSections`  | `true`  | Shows a divider beneath each section title |
 
 ### Section content
 

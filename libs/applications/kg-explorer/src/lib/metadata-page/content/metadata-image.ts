@@ -1,9 +1,11 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 /** Renders a full-width image for a `MetadataImage` content node. */
 @Component({
   selector: 'ang-metadata-image',
-  template: '<img class="ang-metadata-image--image" [attr.src]="src()" [attr.alt]="alt()" />',
+  imports: [NgOptimizedImage],
+  templateUrl: './metadata-image.html',
   styleUrl: './metadata-image.scss',
   host: { class: 'ang-metadata-image' },
 })
