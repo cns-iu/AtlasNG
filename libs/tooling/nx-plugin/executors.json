@@ -9,6 +9,11 @@
       "implementation": "./src/executors/bootstrap-npm-packages/executor",
       "schema": "./src/executors/bootstrap-npm-packages/schema.json",
       "description": "Publishes release projects that do not exist on npm yet and configures npm trusted publishing for them."
+    },
+    "generate-shape-scss": {
+      "implementation": "./src/executors/generate-shape-scss/executor",
+      "schema": "./src/executors/generate-shape-scss/schema.json",
+      "description": "Generates shape SCSS overrides from a Figma shape tokens JSON file."
     }
   }
 }
