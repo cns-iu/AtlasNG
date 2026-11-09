@@ -65,7 +65,28 @@ The caller's repository must provide:
 
 ## Preview deploys
 
-With `deploy-preview: true`, `nx-ci.yml` runs `./.github/actions/deploy-preview` from the caller's checkout with the inputs `issue-number`, `commit-sha`, `netlify-auth-token`, `netlify-site-id`, and `netlify-filter`. GitHub resolves local action paths against the caller's repository, so the caller provides this action.
+`nx-ci.yml` deploys Netlify previews for pull requests when `deploy-preview` is `true`. Previews are skipped for pull requests from forks and when `NETLIFY_AUTH_TOKEN` is empty. Set `netlify-filter` when the Netlify site belongs to one package in a monorepo.
+
+### Single-app workspaces
+
+Set `preview-dir` to the app's build output. The workflow deploys it at the root of the preview URL, adds a `_redirects` rewrite to `index.html` for client-side routing, and comments the preview link on the pull request. The app is built with its default configuration and `<base href="/">`, and the preview is skipped when the directory has no `index.html`, for example when the app is not affected.
+
+```yaml
+jobs:
+  ci:
+    uses: cns-iu/AtlasNG/.github/workflows/nx-ci.yml@workflows/v1
+    with:
+      deploy-preview: true
+      preview-dir: dist/apps/my-app/browser
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+```
+
+### Multi-project workspaces
+
+Without `preview-dir`, `nx-ci.yml` runs `./.github/actions/deploy-preview` from the caller's checkout with the inputs `issue-number`, `commit-sha`, `netlify-auth-token`, `netlify-site-id`, and `netlify-filter`. GitHub resolves local action paths against the caller's repository, so the caller provides this action.
 
 AtlasNG's [deploy-preview](../actions/deploy-preview/action.yml) deploys `dist/apps`, `dist/compodoc`, and `dist/storybook` behind a generated index page. If that layout fits, the caller's action can wrap it:
 
@@ -97,4 +118,4 @@ runs:
         netlify-filter: ${{ inputs.netlify-filter }}
 ```
 
-Otherwise, write an action with the same inputs that deploys the caller's own build output. Previews are skipped for pull requests from forks and when `NETLIFY_AUTH_TOKEN` is empty.
+Otherwise, write an action with the same inputs that deploys the caller's own build output.
