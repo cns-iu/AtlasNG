@@ -16,9 +16,35 @@
         "command": "sass --no-source-map --load-path=dist/libs --load-path=node_modules tools/sass-smoke/design-system.scss > /dev/null"
       }
     },
-    "build-storybook": {},
+    "build-storybook": {
+      "dependsOn": [
+        "build-storybook-compodoc",
+        {
+          "projects": ["icons"],
+          "target": "build"
+        }
+      ],
+      "inputs": [
+        "default",
+        "^production",
+        "{projectRoot}/.storybook/**/*",
+        {
+          "dependentTasksOutputFiles": "**/*"
+        },
+        {
+          "externalDependencies": ["storybook", "@storybook/angular"]
+        }
+      ]
+    },
     "serve-static-storybook": {},
     "storybook": {
+      "dependsOn": [
+        "build-storybook-compodoc",
+        {
+          "projects": ["icons"],
+          "target": "build"
+        }
+      ],
       "options": {
         "port": 4401
       }

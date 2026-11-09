@@ -10,7 +10,7 @@ Browse the components in the [AtlasNG Storybook](https://cns-iu.github.io/AtlasN
 npm install @atlasng/design-system
 ```
 
-The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@angular/forms`, `rxjs`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player` and `@swimlane/ngx-datatable` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
+The package's peer dependencies are `@angular/material`, `@angular/cdk`, `@angular/forms`, `@angular/platform-browser`, `rxjs`, `@atlasng/analytics`, `@atlasng/common`, and `@atlasng/core`. Install any your package manager does not add automatically. `@angular/youtube-player` and `@swimlane/ngx-datatable` are optional peers; install them only if you use the `youtube-player` or `table` entry points.
 
 ## Setup
 
@@ -38,6 +38,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/cookie-banner`                       | `CookieBanner`, `CookieBannerContainer`, and its content directives       |
 | `@atlasng/design-system/error-page`                          | `ErrorPage` and its content directives, `NotFoundPage`, `ServerErrorPage` |
 | `@atlasng/design-system/footer`                              | `Footer`, `FooterLogo`, `FooterAction`                                    |
+| `@atlasng/design-system/icons`                               | `provideAngIcons`, `AngIconsOptions`                                      |
 | `@atlasng/design-system/indicators/end-of-results-indicator` | `EndOfResultsIndicator`                                                   |
 | `@atlasng/design-system/indicators/no-results-indicator`     | `NoResultsIndicator`                                                      |
 | `@atlasng/design-system/indicators/notice`                   | `Notice`                                                                  |
@@ -67,6 +68,29 @@ A few components with notable options:
 
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
+
+## Icons
+
+`provideAngIcons` from `@atlasng/design-system/icons` registers the [`@atlasng/icons`](../resources/icons/README.md) icon font, SVG sprite, and SVG literals with `MatIconRegistry`. Install `@atlasng/icons` separately; the design system does not depend on it.
+
+```ts
+import { provideAngIcons } from '@atlasng/design-system/icons';
+import * as literals from '@atlasng/icons/literals';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAngIcons({ spriteUrl: 'assets/ang-icons/sprite.svg' }), // or { literals }
+  ],
+};
+```
+
+```html
+<mat-icon fontSet="ang-icons">heart</mat-icon>
+<!-- needs the @atlasng/icons CSS -->
+<mat-icon svgIcon="ang:heart" />
+```
+
+The font set alias `ang-icons` is always registered. `spriteUrl` and `literals` register SVG icons in the `ang` namespace (change it with `namespace`). `literals` accepts icon names (`{ heart: angIconHeart }`) or the `@atlasng/icons/literals` module namespace; export names are converted to icon names with `toAngIconName`.
 
 ## Sass API
 
@@ -117,9 +141,23 @@ Functions ending in `-token` return a CSS variable name, which you use to declar
 }
 ```
 
-### Material defaults
+### Defaults
 
-Some AtlasNG components pair with Angular Material components that use different default tokens. Include `ds.mat-all-defaults()` once in your theme to apply them, or include `ds.mat-button-defaults()` or `ds.mat-form-field-defaults()` individually.
+Include `ds.defaults()` once at your app root to apply every AtlasNG default style. New defaults are added to it, so apps pick them up without changes. Pass `$include` or `$exclude` with feature names to pick which ones apply:
+
+| Feature          | Applies                                                                          |
+| ---------------- | -------------------------------------------------------------------------------- |
+| `mat-button`     | AtlasNG tokens for Angular Material buttons (`ds.mat-button-defaults()`)         |
+| `mat-form-field` | AtlasNG tokens for Angular Material form fields (`ds.mat-form-field-defaults()`) |
+| `text-selection` | Theme colors for selected text (`ds.text-selection-styles()`)                    |
+
+```scss
+@include ds.defaults($exclude: text-selection);
+```
+
+Each feature's mixin can also be included on its own. `ds.mat-all-defaults()` applies both Material features.
+
+Text selection defaults to the `tertiary-container` and `on-tertiary-container` pair; override both together with `ds.text-selection-overrides((background-color: ..., text-color: ...))`. Forced colors mode keeps the system highlight colors.
 
 ### Breakpoints
 

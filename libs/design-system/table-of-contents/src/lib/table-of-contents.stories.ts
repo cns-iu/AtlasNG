@@ -38,3 +38,14 @@ export const Default: Story = {};
 export const ActiveItem: Story = {
   args: { activeItem: items[2] },
 };
+
+const longItems: TableOfContentsItem[] = [
+  { tagline: 'Overview', level: 2, anchor: 'overview' },
+  { tagline: 'Single-cell RNA sequencing data processing and quality control', level: 2, anchor: 'processing' },
+  { tagline: 'Spatial transcriptomics alignment to the reference coordinate system', level: 4, anchor: 'alignment' },
+  { tagline: 'References', level: 2, anchor: 'references' },
+];
+
+export const LongEntries: Story = {
+  args: { items: longItems, activeItem: longItems[1] },
+};

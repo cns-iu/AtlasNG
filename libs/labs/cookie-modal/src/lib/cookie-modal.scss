@@ -24,11 +24,22 @@
 
   .ang-cookie-modal--header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+
+    // Material's dialog title strut would otherwise become a flex item and center the logo
+    &::before {
+      display: none;
+    }
   }
 
   .ang-cookie-modal--logo {
-    height: 40px;
+    height: token-utils.slot(logo-height, $config);
+
+    img {
+      display: block;
+      height: 100%;
+    }
   }
 
   .ang-cookie-modal--tabs {

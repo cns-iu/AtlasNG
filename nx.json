@@ -237,6 +237,15 @@
           "watch": true
         }
       }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^production", { "externalDependencies": ["typescript"] }],
+      "options": {
+        "command": "tsc -p tsconfig.json",
+        "cwd": "{projectRoot}"
+      }
     }
   },
   "generators": {
@@ -293,10 +302,17 @@
         "releaseTag": {
           "pattern": "{projectName}@{version}"
         }
+      },
+      "resources": {
+        "projects": ["libs/resources/*"],
+        "projectsRelationship": "independent",
+        "releaseTag": {
+          "pattern": "{projectName}@{version}"
+        }
       }
     },
     "version": {
-      "preVersionCommand": "npx nx run-many -t build --projects=tag:library,tag:tooling",
+      "preVersionCommand": "npx nx run-many -t build --projects=tag:library,tag:tooling,tag:resources",
       "manifestRootsToUpdate": [
         "{projectRoot}",
         {

@@ -2,6 +2,9 @@
 // in cases where we use different tokens than the Material defaults.
 @forward './mat-defaults' as mat-*;
 
+// Applies all AtlasNG defaults, optionally filtered by feature
+@forward './defaults' show defaults;
+
 // Utilities
 @forward './breakpoints' show $breakpoints, $print-breakpoint, breakpoint;
 @forward './ext-colors' show ext-level-colors;
@@ -39,5 +42,7 @@
 @forward './tokens/snackbar' as snackbar-* show snackbar-overrides, snackbar-slot;
 @forward './tokens/table' as table-* show table-overrides, table-slot;
 @forward './tokens/table-of-contents' as table-of-contents-* show table-of-contents-overrides, table-of-contents-slot;
+@forward './tokens/text-selection' as text-selection-* show text-selection-overrides, text-selection-slot,
+  text-selection-styles;
 @forward './tokens/version-control' as version-control-* show version-control-overrides, version-control-slot;
 @forward './tokens/youtube-player' as youtube-player-* show youtube-player-overrides, youtube-player-slot;
