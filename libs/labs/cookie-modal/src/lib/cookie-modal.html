@@ -16,17 +16,21 @@
 
 <mat-tab-group matDialogContent class="ang-cookie-modal--tabs" angEventScope="tabs" [(selectedIndex)]="activeTab">
   <mat-tab label="Consent" angEventScope="consent-tab">
-    <div class="ang-cookie-modal--content">
-      <p>This website uses cookies and similar technologies.</p>
-      <p>
-        We use anonymized statistics data insights to improve our website. Marketing cookies are needed to watch videos
-        on this website.
-      </p>
-    </div>
+    <ang-scroll-area class="ang-cookie-modal--scroll-area">
+      <div class="ang-cookie-modal--content">
+        <p>This website uses cookies and similar technologies.</p>
+        <p>
+          We use anonymized statistics data insights to improve our website. Marketing cookies are needed to watch
+          videos on this website.
+        </p>
+      </div>
+    </ang-scroll-area>
   </mat-tab>
 
   <mat-tab label="Details" angEventScope="details-tab">
-    <ang-cookie-permissions class="ang-cookie-modal--content" [providers]="providers" [(permissions)]="permissions" />
+    <ang-scroll-area class="ang-cookie-modal--scroll-area">
+      <ang-cookie-permissions class="ang-cookie-modal--content" [providers]="providers" [(permissions)]="permissions" />
+    </ang-scroll-area>
   </mat-tab>
 </mat-tab-group>
 
