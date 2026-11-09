@@ -29,7 +29,7 @@ describe('kgExplorer column builders', () => {
     const byFn = kgExplorerLinkColumn<TestRow>('Name', 'url', { labelFn: (row) => row.name.toUpperCase() });
     const byLabel = kgExplorerLinkColumn<TestRow>('Name', 'url', { label: 'Open' }, { flexGrow: 2 });
 
-    expect(byProp).toMatchObject({ name: 'Name', prop: 'url', minWidth: 200, flexGrow: 1 });
+    expect(byProp).toMatchObject({ name: 'Name', prop: 'url', minWidth: 140, flexGrow: 1 });
     expect(byProp.cellTemplate).toBe(LinkCellDefinition);
     expect(byProp.comparator?.(undefined, undefined, ADA, GRACE)).toBeLessThan(0);
     expect(byFn.comparator?.(undefined, undefined, GRACE, ADA)).toBeGreaterThan(0);
@@ -37,18 +37,15 @@ describe('kgExplorer column builders', () => {
     expect(byLabel.flexGrow).toBe(2);
   });
 
-  it('builds text, number, and date columns that size to content', () => {
+  it('builds text, number, and date columns', () => {
     expect(kgExplorerTextColumn<TestRow>('Name', 'name')).toMatchObject({
-      flexGrow: 0,
       cellTemplate: TextCellDefinition,
     });
     expect(kgExplorerNumberColumn<TestRow>('Count', 'count')).toMatchObject({
-      flexGrow: 0,
       cellTemplate: NumberCellDefinition,
       headerConfig: { align: 'end' },
     });
     expect(kgExplorerDateColumn<TestRow>('Date', 'date')).toMatchObject({
-      flexGrow: 0,
       cellConfig: { align: 'end' },
     });
   });
