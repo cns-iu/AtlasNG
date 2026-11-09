@@ -22,7 +22,12 @@ const COLUMNS: TableColumn<TestRow>[] = [{ name: 'Title', prop: 'title', cellTem
 @Component({
   imports: [KgExplorerResultsTable, KgExplorerTableEndSlot],
   template: `
-    <ang-kg-explorer-results-table [rows]="rows" [columns]="columns" [search]="search" [showEndOfResults]="showEnd">
+    <ang-kg-explorer-results-table
+      [rows]="rows"
+      [columns]="columns"
+      [search]="search"
+      [endOfResultsDisabled]="!showEnd"
+    >
       <ng-template angKgExplorerTableEnd><footer>Table footer</footer></ng-template>
     </ang-kg-explorer-results-table>
   `,
@@ -95,7 +100,7 @@ describe('KgExplorerResultsTable', () => {
   });
 
   it('hides sections with the boolean inputs', async () => {
-    await setup({ showSearch: false, showResultsCounter: false, showEndOfResults: false });
+    await setup({ searchDisabled: true, resultsCounterDisabled: true, endOfResultsDisabled: true });
 
     expect(screen.queryByRole('combobox', { name: 'Search' })).not.toBeInTheDocument();
     expect(screen.queryByText('Viewing 3 of 3')).not.toBeInTheDocument();

@@ -15,7 +15,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
-import type { Row, SortPropDir, TableColumn, TableRowHeight } from '@atlasng/design-system/table';
+import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import { map } from 'rxjs';
 import { DownloadCellDefinition, type DownloadCellConfig } from '../download-cell/download-cell';
@@ -74,9 +74,6 @@ export class KgExplorer<TRow extends Row = Row> {
   /** File formats offered by the per-row download menu. */
   readonly downloadFormats = input<readonly VersionControlFileFormat[]>(FILE_FORMATS);
 
-  /** Table row height; `'auto'` grows rows to fit their wrapped content. */
-  readonly rowHeight = input<TableRowHeight<TRow>>('auto');
-
   /** Filters displayed in the filter menu, in display order. */
   readonly filters = input<readonly KgExplorerFilter[]>([]);
 
@@ -101,17 +98,17 @@ export class KgExplorer<TRow extends Row = Row> {
   /** Derives the autocomplete suggestion for a row. Defaults to the row's `title`. */
   readonly searchLabelFn = input<(row: TRow) => string>(defaultSearchLabel);
 
-  /** Shows the table search field. */
-  readonly showSearch = input(true, { transform: booleanAttribute });
+  /** Disables the table search field. */
+  readonly searchDisabled = input(false, { transform: booleanAttribute });
 
-  /** Shows the "Viewing X of Y" results counter. */
-  readonly showResultsCounter = input(true, { transform: booleanAttribute });
+  /** Disables the "Viewing X of Y" results counter. */
+  readonly resultsCounterDisabled = input(false, { transform: booleanAttribute });
 
-  /** Shows the end-of-results indicator below the table. */
-  readonly showEndOfResults = input(true, { transform: booleanAttribute });
+  /** Disables the end-of-results indicator below the table. */
+  readonly endOfResultsDisabled = input(false, { transform: booleanAttribute });
 
-  /** Adds a download column with a file format menu to each row. */
-  readonly showDownload = input(true, { transform: booleanAttribute });
+  /** Disables the download column. */
+  readonly downloadDisabled = input(false, { transform: booleanAttribute });
 
   /** Emits when a user picks a download format for a row. */
   readonly download = output<KgExplorerDownload<TRow>>();
@@ -162,7 +159,7 @@ export class KgExplorer<TRow extends Row = Row> {
 
   /** Columns displayed by the table, including the optional download column. */
   protected readonly resolvedColumns = computed(() =>
-    this.showDownload() ? [this.downloadColumn(), ...this.columns()] : this.columns(),
+    this.downloadDisabled() ? this.columns() : [this.downloadColumn(), ...this.columns()],
   );
 
   /**
@@ -190,15 +187,4 @@ export class KgExplorer<TRow extends Row = Row> {
     this.filterSelections.set({});
     this.clearFilters.emit();
   }
-
-  // /**
-  //  * Keeps {@link filtersOpen} in sync with the drawer while it is not docked.
-  //  *
-  //  * @param opened Whether the drawer is now open.
-  //  */
-  // protected onOpenedChange(opened: boolean): void {
-  //   if (!this.docked()) {
-  //     this.filtersOpen.set(opened);
-  //   }
-  // }
 }

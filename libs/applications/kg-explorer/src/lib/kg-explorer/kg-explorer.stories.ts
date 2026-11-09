@@ -1,15 +1,15 @@
 import type { Type } from '@angular/core';
-import { type Args, argsToTemplate, type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
-import { expect, userEvent, within } from 'storybook/test';
-import {
-  KG_EXPLORER_SAMPLE_COLUMNS,
-  KG_EXPLORER_SAMPLE_ITEMS,
-  KG_EXPLORER_SAMPLE_FILTERS,
-  type KgExplorerSampleItem,
-} from '../sample-data';
 import { MatButton } from '@angular/material/button';
 import { Footer, FooterAction, FooterLogo } from '@atlasng/design-system/footer';
+import { type Args, argsToTemplate, type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
+import { expect, userEvent, within } from 'storybook/test';
 import type { KgExplorerFilterSelections } from '../models';
+import {
+  KG_EXPLORER_SAMPLE_COLUMNS,
+  KG_EXPLORER_SAMPLE_FILTERS,
+  KG_EXPLORER_SAMPLE_ITEMS,
+  type KgExplorerSampleItem,
+} from '../sample-data';
 import { KgExplorerTableEndSlot } from '../slots';
 import { KgExplorer } from './kg-explorer';
 
@@ -69,9 +69,6 @@ const meta: Meta<KgExplorer<KgExplorerSampleItem>> = {
       imports: [Footer, FooterAction, FooterLogo, KgExplorerTableEndSlot, MatButton],
     }),
   ],
-  globals: {
-    theme: 'WPP Light',
-  },
   parameters: {
     layout: 'fullscreen',
     design: {
@@ -84,10 +81,10 @@ const meta: Meta<KgExplorer<KgExplorerSampleItem>> = {
     columns: KG_EXPLORER_SAMPLE_COLUMNS,
     filters: KG_EXPLORER_SAMPLE_FILTERS,
     filtersOpen: false,
-    showSearch: true,
-    showResultsCounter: true,
-    showEndOfResults: true,
-    showDownload: true,
+    searchDisabled: false,
+    resultsCounterDisabled: false,
+    endOfResultsDisabled: false,
+    downloadDisabled: false,
   },
   argTypes: {
     download: { action: 'download' },
@@ -152,7 +149,7 @@ export const FewResults: Story = {
 
 export const WithoutDownload: Story = {
   args: {
-    showDownload: false,
+    downloadDisabled: true,
   },
 };
 

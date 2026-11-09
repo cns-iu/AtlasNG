@@ -10,8 +10,8 @@ import {
   TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
 import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
+import { MatIconButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
@@ -19,13 +19,10 @@ import { EndOfResultsIndicator } from '@atlasng/design-system/indicators/end-of-
 import { NoResultsIndicator } from '@atlasng/design-system/indicators/no-results-indicator';
 import { ResultsIndicator } from '@atlasng/design-system/indicators/results-indicator';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
-import { Table, type Row, type SortPropDir, type TableColumn, type TableRowHeight } from '@atlasng/design-system/table';
+import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
 import { KgExplorerTableEndSlot } from '../slots';
 
-/**
- * Height of the spacious explorer table rows in pixels. Content-sized rows use
- * it as their minimum height; pass it as `rowHeight` for fixed-height rows.
- */
+/** Default height of the spacious explorer table rows in pixels. */
 export const KG_EXPLORER_ROW_HEIGHT = 96;
 
 /** Maximum number of autocomplete suggestions shown below the search field. */
@@ -90,12 +87,6 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Column definitions displayed by the table. Reuse the array between changes. */
   readonly columns = input.required<TableColumn<TRow>[]>();
 
-  /**
-   * Table row height. Defaults to `'auto'`, which grows rows to fit their
-   * wrapped content; pass a number for fixed rows that clamp cells to three lines.
-   */
-  readonly rowHeight = input<TableRowHeight<TRow>>('auto');
-
   /** Current search term. */
   readonly search = model('');
 
@@ -114,14 +105,14 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Label of the search field. */
   readonly searchLabel = input('Search');
 
-  /** Shows the search field. */
-  readonly showSearch = input(true, { transform: booleanAttribute });
+  /** Disables the search field. */
+  readonly searchDisabled = input(false, { transform: booleanAttribute });
 
-  /** Shows the "Viewing X of Y" results counter. */
-  readonly showResultsCounter = input(true, { transform: booleanAttribute });
+  /** Disables the "Viewing X of Y" results counter. */
+  readonly resultsCounterDisabled = input(false, { transform: booleanAttribute });
 
-  /** Shows the end-of-results indicator below the table. */
-  readonly showEndOfResults = input(true, { transform: booleanAttribute });
+  /** Disables the end-of-results indicator below the table. */
+  readonly endOfResultsDisabled = input(false, { transform: booleanAttribute });
 
   /** Emits when the user clears the results from the no-results indicator. */
   readonly clearResults = output<void>();

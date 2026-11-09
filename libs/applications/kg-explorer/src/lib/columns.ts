@@ -49,8 +49,7 @@ export function kgExplorerLinkColumn<TRow extends Row = Row>(
     name,
     prop,
     minWidth: 200,
-    maxWidth: 640,
-    flexGrow: 3,
+    flexGrow: 1,
     comparator: (_a: unknown, _b: unknown, rowA: TRow, rowB: TRow) => labelOf(rowA).localeCompare(labelOf(rowB)),
     cellTemplate: LinkCellDefinition,
     cellConfig: label,
@@ -72,7 +71,7 @@ export function kgExplorerTextColumn<TRow extends Row = Row>(
   prop: keyof TRow & string,
   overrides: KgExplorerColumnOverrides<TRow> = {},
 ): TableColumn<TRow> {
-  return { name, prop, minWidth: 156, maxWidth: 240, cellTemplate: TextCellDefinition, ...START_HEADER, ...overrides };
+  return { name, prop, flexGrow: 0, cellTemplate: TextCellDefinition, ...START_HEADER, ...overrides };
 }
 
 /**
@@ -92,8 +91,7 @@ export function kgExplorerListColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 144,
-    maxWidth: 212,
+    flexGrow: 1,
     sortable: false,
     pipe: LIST_PIPE,
     cellTemplate: TextCellDefinition,
@@ -115,7 +113,14 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
   prop: keyof TRow & string,
   overrides: KgExplorerColumnOverrides<TRow> = {},
 ): TableColumn<TRow> {
-  return { name, prop, minWidth: 98, maxWidth: 132, cellTemplate: NumberCellDefinition, ...END_HEADER, ...overrides };
+  return {
+    name,
+    prop,
+    flexGrow: 0,
+    cellTemplate: NumberCellDefinition,
+    ...END_HEADER,
+    ...overrides,
+  };
 }
 
 /**
@@ -135,8 +140,7 @@ export function kgExplorerDateColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 112,
-    maxWidth: 132,
+    flexGrow: 0,
     cellTemplate: TextCellDefinition,
     cellConfig: { align: 'end' },
     ...END_HEADER,

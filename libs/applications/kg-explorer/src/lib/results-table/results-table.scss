@@ -1,33 +1,25 @@
-/// Padding around the search bar area and the table, following the Angular
-/// Material breakpoints.
-///
-/// @param {Boolean} $bottom Whether to pad the bottom edge.
-@mixin breakpoint-padding($bottom: true) {
-  padding: 1rem;
+@use 'internal/token-utils';
+@use 'tokens/end-of-results-indicator' as end-of-results-indicator;
+@use 'tokens/table' as table;
 
-  @media (min-width: 600px) {
-    padding: 1.5rem;
-  }
+@mixin table-padding() {
+  padding: 1.25rem;
 
-  @media (min-width: 960px) {
+  @media (min-width: 740px) {
     padding: 2rem;
-  }
-
-  // Emitted after the media queries so it overrides their bottom padding.
-  @if not $bottom {
-    & {
-      padding-bottom: 0;
-    }
   }
 }
 
 .ang-kg-explorer-results-table {
-  // Fills its container's height. The search bar stays put while the scroll
-  // area below it scrolls the table, which grows to fit its rows.
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 0;
+
+  .ang-kg-explorer-results-table--navigation,
+  .ang-kg-explorer-results-table--table {
+    max-width: 96rem;
+    margin: 0 auto;
+  }
 
   .ang-kg-explorer-results-table--navigation {
     display: flex;
@@ -35,14 +27,10 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-    background-color: var(--mat-sys-surface);
-    // The table's top padding separates it from the search bar.
-    @include breakpoint-padding($bottom: false);
-  }
+    background-color: token-utils.sys-slot(surface);
+    width: calc(100% - 4rem);
 
-  .ang-kg-explorer-results-table--scroll-area {
-    flex: 1 1 0;
-    min-height: 0;
+    @include table-padding;
   }
 
   .ang-kg-explorer-results-table--search {
@@ -51,58 +39,33 @@
   }
 
   .ang-kg-explorer-results-table--table {
-    // Minimum height of content-sized rows; matches KG_EXPLORER_ROW_HEIGHT.
-    --ang-table-auto-row-min-height: 96px;
-    // Let the table scroll horizontally instead of widening the page.
-    min-width: 0;
-    @include breakpoint-padding;
+    @include table-padding;
+    padding-top: 0;
 
-    // Span every grid column like ngx-datatable's default empty row.
     .ang-kg-explorer-results-table--empty {
       grid-column: 1 / -1;
       padding-block: 2.5rem;
     }
 
     .datatable-header {
-      border-bottom: 1px solid var(--mat-sys-outline-variant);
-      background-color: var(--mat-sys-surface);
+      @include table.overrides(
+        (
+          header-background-color: token-utils.sys-slot(surface),
+        )
+      );
+
+      border-bottom: 1px solid token-utils.sys-slot(outline-variant);
     }
 
-    // Fixed-height rows clamp long content to the lines that fit.
-    .ngx-datatable.fixed-row .datatable-body-cell-label {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-      overflow: hidden;
-      text-overflow: clip;
-    }
-
-    // Keep the divider inside the row height so the virtualized scroller's
-    // computed height matches the rendered rows.
     .datatable-body-row {
       box-sizing: border-box;
-      border-bottom: 1px solid var(--mat-sys-outline-variant);
-      color: var(--mat-sys-on-surface-variant);
+      border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+      min-height: 3rem;
 
-      .datatable-body-cell {
-        align-items: flex-start;
-        padding: 0.5rem 1rem;
-        overflow: hidden;
+      .datatable-body-cell-label {
         white-space: normal;
-
-        .datatable-body-cell-label {
-          overflow-wrap: anywhere;
-          white-space: normal;
-        }
-
-        // Inline links let the clamp above truncate long titles.
-        .ang-table--link-cell {
-          display: inline;
-        }
       }
 
-      // The download icon button sits flush with the row like in the design.
       .datatable-body-cell:has(.ang-kg-explorer--download-cell) {
         padding: 0;
       }
@@ -110,11 +73,24 @@
   }
 
   .ang-kg-explorer-results-table--end {
-    padding-bottom: 1.5rem;
+    @include end-of-results-indicator.overrides(
+      (
+        background-color: token-utils.sys-slot(surface-container-low),
+      )
+    );
 
-    // The last row's border already separates the rows from the indicator.
+    @include table-padding;
+    padding-top: 0;
+
     .mat-divider {
       display: none;
+    }
+
+    .ang-end-of-results-indicator--container {
+      grid-auto-flow: column;
+      width: fit-content;
+      margin: 0 auto;
+      margin-top: 0rem !important;
     }
   }
 }
