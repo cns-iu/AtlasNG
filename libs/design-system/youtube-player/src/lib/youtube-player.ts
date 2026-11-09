@@ -51,8 +51,8 @@ export function provideYouTubePlayerConfig(config: YouTubePlayerConfig): Provide
  * Marks custom content to display beneath the disabled YouTube player placeholder.
  *
  * Project marked content into {@link YouTubePlayer} to replace its default enable-request
- * message. The consumer owns the custom content's interaction and can enable the required
- * marketing permission through its application-specific consent flow.
+ * message. The consumer owns the custom content's interaction. To use the same consent flow as the
+ * default button, call `AnalyticsPermissionsManager.requestCategories(AnalyticsEventCategory.Marketing)`.
  */
 @Directive({
   selector: '[angYouTubePlayerEnableRequest]',
@@ -65,9 +65,10 @@ export class YouTubePlayerEnableRequest {}
  *
  * The underlying player is rendered only when marketing permission is enabled. Otherwise, the
  * component displays a privacy-preserving placeholder that links to the video on YouTube and an
- * enable-request area beneath it. The default area's button grants marketing permission, which
- * loads the player. Consumers can replace that area with content marked by
- * {@link YouTubePlayerEnableRequest}, which owns its own consent flow.
+ * enable-request area beneath it. The default area's button requests marketing permission through
+ * `AnalyticsPermissionsManager.requestCategories()`, which opens the application's consent dialog
+ * when one is provided and otherwise grants the permission directly. Consumers can replace that area
+ * with content marked by {@link YouTubePlayerEnableRequest}.
  *
  * `width` and `height` set the largest size and the aspect ratio. In containers narrower than
  * `width`, the player and placeholder shrink to the container's width and keep the aspect ratio.
@@ -208,11 +209,9 @@ export class YouTubePlayer {
     }
   }
 
-  /** Grants marketing permission from the default enable-request button, which loads the player. */
-  protected enableMarketing(): void {
-    this.#permissionsManager.updatePermissions((permissions) =>
-      permissions.enableCategory(AnalyticsEventCategory.Marketing),
-    );
+  /** Requests marketing permission from the default enable-request button. The player loads once it's granted. */
+  protected requestMarketing(): void {
+    this.#permissionsManager.requestCategories(AnalyticsEventCategory.Marketing);
   }
 
   /**
