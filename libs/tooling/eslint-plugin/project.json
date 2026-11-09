@@ -48,6 +48,7 @@
         }
       }
     },
+    "typecheck": {},
     "nx-release-publish": {}
   }
 }

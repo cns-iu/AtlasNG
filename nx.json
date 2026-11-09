@@ -221,6 +221,15 @@
           "watch": true
         }
       }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^production", { "externalDependencies": ["typescript"] }],
+      "options": {
+        "command": "tsc -p tsconfig.json",
+        "cwd": "{projectRoot}"
+      }
     }
   },
   "generators": {

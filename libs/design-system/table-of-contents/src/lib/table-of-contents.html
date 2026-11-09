@@ -12,7 +12,7 @@
         [style.--ang-table-of-contents--level]="item.level"
         (click)="activeItem.set(item)"
       >
-        <span matListItemTitle>{{ item.tagline }}</span>
+        <span class="ang-table-of-contents--title" matListItemTitle>{{ item.tagline }}</span>
       </a>
     }
   </mat-nav-list>
