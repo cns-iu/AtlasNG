@@ -92,7 +92,7 @@
   // Content-sized rows keep the fixed-height default as their minimum and
   // break long words so cells wrap instead of overflowing their column.
   &.ang-table--auto-row-height .datatable-body .datatable-body-row {
-    min-height: var(--ang-table-auto-row-min-height, 48px);
+    min-height: token-utils.slot('auto-row-min-height', $config);
 
     .datatable-body-cell {
       overflow-wrap: anywhere;
