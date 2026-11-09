@@ -1,15 +1,28 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
 import { relative, resolve } from 'node:path';
+import { type ExecutorResult, resolveOutputPath, runExecutorTask, writeFile } from '../../utils/executor.ts';
+import { formatOutputData, indent, type OutputData } from '../../utils/output.ts';
 import {
+  assertJsonObject,
   createScssBanner,
-  type ExecutorResult,
+  findKey,
+  getHex,
+  isJsonObject,
+  normalizeKey,
   readTokensFile,
-  resolveOutputPath,
-  runExecutorTask,
-  SCSS_INDENT,
   type TokensObject,
-  writeScssFile,
-} from '../../utils/scss.ts';
+} from '../../utils/tokens.ts';
+import {
+  EXT_TONES,
+  EXT_VARIANT_TONES,
+  HEX_COLOR_REGEX,
+  PALETTE_TONE_KEY_REGEX,
+  PALETTES,
+  type PaletteName,
+  SCSS_EXPORTS,
+  TONE_REGEX,
+  TONES_BY_PALETTE,
+} from './constants.ts';
 
 /** Options for the `generate-palettes-scss` executor. */
 export interface GeneratePalettesScssExecutorOptions {
@@ -23,7 +36,7 @@ export interface GeneratePalettesScssExecutorOptions {
 export type Tones = Record<number, string | undefined>;
 
 /** Material core palette tones keyed by palette name. */
-export type CorePalettes = Partial<Record<(typeof PALETTES)[number], Tones>>;
+export type CorePalettes = Partial<Record<PaletteName, Tones>>;
 
 /** An extension palette with its optional `variant` sub-palette. */
 export interface ExtPalette {
@@ -44,53 +57,9 @@ export interface ValidationSpec {
   palette: Tones;
   /** The tones the palette must provide. */
   tones: readonly number[];
+  /** Whether every collected tone is validated as a hex color, not just the required ones. */
+  validateAllTones: boolean;
 }
-
-/** Material core palettes, in output order. */
-export const PALETTES = ['primary', 'secondary', 'tertiary', 'neutral', 'neutral-variant', 'error'] as const;
-
-/** Tones every core palette must provide, in output order. */
-const TONES = [0, 10, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100];
-
-/** Additional tones the neutral palette must provide for surface colors. */
-const EXTRA_TONES = [4, 6, 12, 17, 22, 24, 87, 92, 94, 96];
-
-/** Required tones of each core palette, in output order. */
-const TONES_BY_PALETTE: Record<(typeof PALETTES)[number], readonly number[]> = {
-  primary: TONES,
-  secondary: TONES,
-  tertiary: TONES,
-  neutral: [...TONES, ...EXTRA_TONES],
-  'neutral-variant': TONES,
-  error: TONES,
-};
-
-/** Tones every extension palette must provide (read by the `ext-level-colors` mixin). */
-const EXT_TONES = [10, 20, 30, 40, 80, 90, 100];
-
-/** Tones an extension palette's optional `variant` sub-palette must provide. */
-const EXT_VARIANT_TONES = [30, 80];
-
-/** Matches flattened core palette keys such as `Primary 40` or `neutral-variant-90`. */
-const PALETTE_TONE_KEY_REGEX = /^(.+?)[\s-]+(\d+)$/i;
-
-/** Matches numeric tone keys. */
-const TONE_REGEX = /^\d+$/;
-
-/** Matches six-digit hex colors. */
-const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
-
-/** Sass exports appended after the core palettes map. */
-const SCSS_EXPORTS = `$_rest: (
-  secondary: map.get($_palettes, secondary),
-  neutral: map.get($_palettes, neutral),
-  neutral-variant: map.get($_palettes, neutral-variant),
-  error: map.get($_palettes, error),
-);
-
-$primary-palette: map.merge(map.get($_palettes, primary), $_rest);
-$tertiary-palette: map.merge(map.get($_palettes, tertiary), $_rest);
-`;
 
 /**
  * Generates Material core and extension palette SCSS maps from a Figma palette tokens export.
@@ -111,53 +80,9 @@ export default async function generatePalettesScssExecutor(
 
     validatePalettes(buildValidationSpecs(core, ext));
 
-    await writeScssFile(outputPath, buildScss(createScssBanner(context), options.input, core, ext));
+    await writeFile(outputPath, buildScss(options.input, createScssBanner(context), core, ext));
     logger.info(`Wrote ${relative(context.root, outputPath)}`);
   });
-}
-
-/**
- * Normalizes a token key for comparison by lowercasing it and collapsing runs of
- * whitespace, underscores, and hyphens into a single hyphen,
- * e.g. `"Neutral Variant"` => `"neutral-variant"`.
- *
- * @param key The key to normalize.
- * @returns The normalized key.
- */
-export function normalizeKey(key: string): string {
-  return key
-    .trim()
-    .toLowerCase()
-    .replace(/[\s_-]+/g, '-');
-}
-
-/**
- * Finds the value of a key in an object, ignoring case and separator differences.
- * Keys starting with `$` (token metadata) are ignored.
- *
- * @param object The object to search.
- * @param name The key to look for.
- * @returns The matching value, or `undefined` if there is no match.
- */
-export function findKey(object: unknown, name: string): unknown {
-  if (!object || typeof object !== 'object') {
-    return undefined;
-  }
-
-  const target = normalizeKey(name);
-  const key = Object.keys(object).find((k) => !k.startsWith('$') && normalizeKey(k) === target);
-  return key === undefined ? undefined : (object as Record<string, unknown>)[key];
-}
-
-/**
- * Reads a token's hex color, lowercased.
- *
- * @param token A color token.
- * @returns The hex color, or `undefined` if the token has none.
- */
-function getHex(token: unknown): string | undefined {
-  const hex = (token as { $value?: { hex?: unknown } } | null | undefined)?.$value?.hex;
-  return typeof hex === 'string' ? hex.toLowerCase() : undefined;
 }
 
 /**
@@ -169,11 +94,9 @@ function getHex(token: unknown): string | undefined {
  */
 export function readPalettes(tokens: TokensObject): TokensObject {
   const palettes = findKey(tokens, 'palettes');
-  if (!palettes || typeof palettes !== 'object') {
-    throw new Error('Input file must contain a "palettes" object (case-insensitive).');
-  }
+  assertJsonObject(palettes, 'Input file must contain a "palettes" object (case-insensitive).');
 
-  return palettes as TokensObject;
+  return palettes;
 }
 
 /**
@@ -184,11 +107,21 @@ export function readPalettes(tokens: TokensObject): TokensObject {
  * @returns Flattened palette token entries.
  */
 function flattenPaletteEntries(palettes: TokensObject): [string, unknown][] {
-  return Object.entries(palettes).flatMap(([key, value]): [string, unknown][] =>
-    value && typeof value === 'object' && !('$value' in value)
-      ? Object.entries(value).map(([tone, token]): [string, unknown] => [`${key} ${tone}`, token])
-      : [[key, value]],
-  );
+  const entries: [string, unknown][] = [];
+
+  for (const [key, value] of Object.entries(palettes)) {
+    // A token has a `$value`; any other object is a group of tokens keyed by tone.
+    if (!isJsonObject(value) || '$value' in value) {
+      entries.push([key, value]);
+      continue;
+    }
+
+    for (const [tone, token] of Object.entries(value)) {
+      entries.push([`${key} ${tone}`, token]);
+    }
+  }
+
+  return entries;
 }
 
 /**
@@ -206,7 +139,7 @@ export function parseCorePalettes(palettes: TokensObject): CorePalettes {
       continue;
     }
 
-    const paletteKey = normalizeKey(match[1]) as (typeof PALETTES)[number];
+    const paletteKey = normalizeKey(match[1]) as PaletteName;
     if (!PALETTES.includes(paletteKey)) {
       continue;
     }
@@ -225,10 +158,10 @@ export function parseCorePalettes(palettes: TokensObject): CorePalettes {
  * @param group A palette group keyed by tone.
  * @returns Hex colors keyed by tone.
  */
-function collectTones(group: object): Tones {
+function collectTones(group: TokensObject): Tones {
   const tones = Object.keys(group)
     .filter((key) => TONE_REGEX.test(key.trim()))
-    .map((key): [number, string | undefined] => [parseInt(key, 10), getHex((group as TokensObject)[key])])
+    .map((key): [number, string | undefined] => [parseInt(key, 10), getHex(group[key])])
     .sort(([a], [b]) => a - b);
 
   return Object.fromEntries(tones);
@@ -243,25 +176,31 @@ function collectTones(group: object): Tones {
  */
 export function parseExtPalettes(palettes: TokensObject): ExtPalettes | null {
   const ext = findKey(palettes, 'ext');
-  if (!ext || typeof ext !== 'object') {
+  if (!isJsonObject(ext)) {
     return null;
   }
 
-  const entries = Object.entries(ext)
-    .filter(([key, value]) => !key.startsWith('$') && value && typeof value === 'object')
-    .map(([key, group]): [string, ExtPalette] => {
-      const variant = findKey(group, 'variant');
-      return [
-        normalizeKey(key),
-        {
-          tones: collectTones(group as object),
-          variant: variant && typeof variant === 'object' ? collectTones(variant) : null,
-        },
-      ];
-    })
-    .sort(([a], [b]) => a.localeCompare(b));
+  const result: ExtPalettes = {};
 
-  return entries.length > 0 ? Object.fromEntries(entries) : null;
+  for (const [key, group] of Object.entries(ext)) {
+    // Skip token metadata such as `$type` and anything that is not a palette group.
+    if (key.startsWith('$') || !isJsonObject(group)) {
+      continue;
+    }
+
+    const variant = findKey(group, 'variant');
+    result[normalizeKey(key)] = {
+      tones: collectTones(group),
+      variant: isJsonObject(variant) ? collectTones(variant) : null,
+    };
+  }
+
+  const names = Object.keys(result).sort((a, b) => a.localeCompare(b));
+  if (names.length === 0) {
+    return null;
+  }
+
+  return Object.fromEntries(names.map((name) => [name, result[name]]));
 }
 
 /**
@@ -276,12 +215,14 @@ export function buildValidationSpecs(core: CorePalettes, ext: ExtPalettes | null
     label: key,
     palette: core[key] ?? {},
     tones: TONES_BY_PALETTE[key],
+    // Core palettes only emit their required tones.
+    validateAllTones: false,
   }));
 
   for (const [name, { tones, variant }] of Object.entries(ext ?? {})) {
-    specs.push({ label: `ext ${name}`, palette: tones, tones: EXT_TONES });
+    specs.push({ label: `ext ${name}`, palette: tones, tones: EXT_TONES, validateAllTones: true });
     if (variant) {
-      specs.push({ label: `ext ${name} variant`, palette: variant, tones: EXT_VARIANT_TONES });
+      specs.push({ label: `ext ${name} variant`, palette: variant, tones: EXT_VARIANT_TONES, validateAllTones: true });
     }
   }
 
@@ -299,15 +240,14 @@ export function validatePalettes(specs: ValidationSpec[]): void {
   const missing: string[] = [];
   const invalid: string[] = [];
 
-  for (const { label, palette, tones } of specs) {
+  for (const { label, palette, tones, validateAllTones } of specs) {
     for (const tone of tones) {
       if (!(tone in palette)) {
         missing.push(`${label} ${tone}`);
       }
     }
 
-    // Core palettes only emit their required tones; extension palettes emit every collected tone.
-    const checked = label.startsWith('ext ') ? Object.keys(palette).map(Number) : tones;
+    const checked = validateAllTones ? Object.keys(palette).map(Number) : tones;
     for (const tone of checked) {
       if (tone in palette && !HEX_COLOR_REGEX.test(palette[tone] ?? '')) {
         invalid.push(`${label} ${tone}`);
@@ -329,85 +269,56 @@ export function validatePalettes(specs: ValidationSpec[]): void {
 }
 
 /**
- * Converts the validated core palettes into a Sass map with each palette's required tones.
+ * Converts the validated core palettes into Sass map entries with each palette's required tones.
  *
  * @param palettes The parsed core palettes.
- * @returns The Sass map source.
+ * @returns The Sass map entries.
  */
-function corePalettesToScssMap(palettes: CorePalettes): string {
-  const lines = ['('];
-
-  for (const key of PALETTES) {
+function corePalettesToScssEntries(palettes: CorePalettes): OutputData {
+  return PALETTES.map((key) => {
     const palette = palettes[key] ?? {};
-    lines.push(`${SCSS_INDENT}${key}: (`);
-
-    for (const tone of TONES_BY_PALETTE[key]) {
-      lines.push(`${SCSS_INDENT}${SCSS_INDENT}${tone}: ${palette[tone]},`);
-    }
-
-    lines.push(`${SCSS_INDENT}),`);
-  }
-
-  lines.push(')');
-  return lines.join('\n');
+    return [`${key}: (`, indent(TONES_BY_PALETTE[key].map((tone) => `${tone}: ${palette[tone]},`)), '),'];
+  });
 }
 
 /**
- * Converts the extension palettes into a Sass map, nesting each palette's
+ * Converts the extension palettes into Sass map entries, nesting each palette's
  * optional `variant` sub-palette.
  *
  * @param ext The parsed extension palettes.
- * @returns The Sass map source.
+ * @returns The Sass map entries.
  */
-function extPalettesToScssMap(ext: ExtPalettes): string {
-  const lines = ['('];
+function extPalettesToScssEntries(ext: ExtPalettes): OutputData {
+  const toneEntries = (tones: Tones): OutputData => Object.entries(tones).map(([tone, hex]) => `${tone}: ${hex},`);
 
-  for (const [name, { tones, variant }] of Object.entries(ext)) {
-    lines.push(`${SCSS_INDENT}${name}: (`);
-
-    for (const [tone, hex] of Object.entries(tones)) {
-      lines.push(`${SCSS_INDENT}${SCSS_INDENT}${tone}: ${hex},`);
-    }
-
-    if (variant) {
-      lines.push(`${SCSS_INDENT}${SCSS_INDENT}variant: (`);
-      for (const [tone, hex] of Object.entries(variant)) {
-        lines.push(`${SCSS_INDENT}${SCSS_INDENT}${SCSS_INDENT}${tone}: ${hex},`);
-      }
-      lines.push(`${SCSS_INDENT}${SCSS_INDENT}),`);
-    }
-
-    lines.push(`${SCSS_INDENT}),`);
-  }
-
-  lines.push(')');
-  return lines.join('\n');
+  return Object.entries(ext).map(([name, { tones, variant }]) => [
+    `${name}: (`,
+    indent([toneEntries(tones), variant ? ['variant: (', indent(toneEntries(variant)), '),'] : []]),
+    '),',
+  ]);
 }
 
 /**
  * Builds the generated palettes SCSS file.
  *
+ * @param inputPath The input path, as shown in the file.
  * @param banner The generated-file banner.
- * @param input The input path, as shown in the file.
  * @param core The parsed core palettes.
  * @param ext The parsed extension palettes, or `null`.
  * @returns The SCSS source.
  */
-export function buildScss(banner: string, input: string, core: CorePalettes, ext: ExtPalettes | null): string {
-  const lines = [
+export function buildScss(inputPath: string, banner: OutputData, core: CorePalettes, ext: ExtPalettes | null): string {
+  return formatOutputData([
     banner,
     '',
     `@use 'sass:map';`,
     '',
-    `// Note: Color palettes are generated from '${input}'`,
-    `$_palettes: ${corePalettesToScssMap(core)};`,
+    `// Note: Color palettes are generated from '${inputPath}'`,
+    '$_palettes: (',
+    indent(corePalettesToScssEntries(core)),
+    ');',
     '',
     SCSS_EXPORTS,
-  ];
-
-  if (ext) {
-    lines.push(`$ext-palettes: ${extPalettesToScssMap(ext)};`, '');
-  }
-
-  return lines.join('\n');
+    ext ? ['$ext-palettes: (', indent(extPalettesToScssEntries(ext)), ');', ''] : [],
+  ]);
 }

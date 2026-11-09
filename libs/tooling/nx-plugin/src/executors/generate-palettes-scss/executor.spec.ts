@@ -6,8 +6,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import generatePalettesScssExecutor, {
   buildScss,
   buildValidationSpecs,
-  findKey,
-  normalizeKey,
   parseCorePalettes,
   parseExtPalettes,
   readPalettes,
@@ -269,25 +267,6 @@ describe('generate-palettes-scss executor', () => {
     expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Missing palette entries ('));
   });
 
-  it.each([
-    ['Neutral Variant', 'neutral-variant'],
-    ['  Neutral__variant ', 'neutral-variant'],
-    ['ERROR', 'error'],
-  ])('normalizes %o to %o', (key, expected) => {
-    expect(normalizeKey(key)).toBe(expected);
-  });
-
-  describe('findKey', () => {
-    it.each([null, undefined, 'text'])('returns undefined for %o', (object) => {
-      expect(findKey(object, 'ext')).toBeUndefined();
-    });
-
-    it('matches keys ignoring case and separators but skips metadata', () => {
-      expect(findKey({ $ext: 1, 'EXT ': 2 }, 'ext')).toBe(2);
-      expect(findKey({ $ext: 1 }, 'ext')).toBeUndefined();
-    });
-  });
-
   describe('readPalettes', () => {
     it.each([{}, { palettes: 'x' }, { palettes: null }])('rejects %o', (tokens) => {
       expect(() => readPalettes(tokens)).toThrow('Input file must contain a "palettes" object (case-insensitive).');
@@ -366,14 +345,14 @@ describe('generate-palettes-scss executor', () => {
     });
 
     it('reports only invalid tones', () => {
-      expect(() => validatePalettes([{ label: 'ext x', palette: { 1: '#00000g' }, tones: [] }])).toThrow(
-        /^Invalid hex color entries \(1\): ext x 1$/,
-      );
+      expect(() =>
+        validatePalettes([{ label: 'ext x', palette: { 1: '#00000g' }, tones: [], validateAllTones: true }]),
+      ).toThrow(/^Invalid hex color entries \(1\): ext x 1$/);
     });
   });
 
   it('builds the file without extension palettes', () => {
-    const scss = buildScss('// banner', 'in.json', {}, null);
+    const scss = buildScss('in.json', ['// banner'], {}, null);
 
     expect(scss).toMatch(
       /^\/\/ banner\n\n@use 'sass:map';\n\n\/\/ Note: Color palettes are generated from 'in.json'\n/,

@@ -89,8 +89,8 @@ describe('generate-shape-scss executor', () => {
   });
 
   describe('parseShapes', () => {
-    it('requires a Corner object', () => {
-      expect(() => parseShapes({})).toThrow('Input file must contain a "Corner" object.');
+    it.each([{}, { Corner: [] }])('requires a Corner object in %o', (tokens) => {
+      expect(() => parseShapes(tokens)).toThrow('Input file must contain a "Corner" object.');
     });
 
     it.each([{}, { $value: Number.NaN }, null])('rejects the token %o', (token) => {
@@ -114,7 +114,7 @@ describe('generate-shape-scss executor', () => {
   });
 
   it('builds an empty map', () => {
-    expect(buildScss('// banner', 'in.json', {})).toMatchInlineSnapshot(`
+    expect(buildScss('in.json', ['// banner'], {})).toMatchInlineSnapshot(`
       "// banner
 
       // Note: Shape overrides are generated from 'in.json'
