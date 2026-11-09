@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { createScssBanner, getNumberToken, readTokensFile } from './tokens.ts';
+import { createScssBanner, findKey, getHex, getNumberToken, normalizeKey, readTokensFile } from './tokens.ts';
 
 describe('tokens utils', () => {
   describe('readTokensFile', () => {
@@ -59,6 +59,37 @@ describe('tokens utils', () => {
       const context = { projectName: 'lib', targetName: 'gen' } as ExecutorContext;
 
       expect(createScssBanner(context)[0]).toContain("'npx nx run lib:gen'");
+    });
+  });
+
+  describe('normalizeKey', () => {
+    it.each([
+      ['Neutral Variant', 'neutral-variant'],
+      ['  Neutral__variant ', 'neutral-variant'],
+      ['ERROR', 'error'],
+    ])('normalizes %o to %o', (key, expected) => {
+      expect(normalizeKey(key)).toBe(expected);
+    });
+  });
+
+  describe('findKey', () => {
+    it.each([null, undefined, 'text'])('returns undefined for %o', (object) => {
+      expect(findKey(object, 'ext')).toBeUndefined();
+    });
+
+    it('matches keys ignoring case and separators but skips metadata', () => {
+      expect(findKey({ $ext: 1, 'EXT ': 2 }, 'ext')).toBe(2);
+      expect(findKey({ $ext: 1 }, 'ext')).toBeUndefined();
+    });
+  });
+
+  describe('getHex', () => {
+    it('reads the lowercased hex color', () => {
+      expect(getHex({ $value: { hex: '#ABCDEF' } })).toBe('#abcdef');
+    });
+
+    it.each([null, undefined, {}, { $value: { hex: 1 } }])('returns undefined for %o', (token) => {
+      expect(getHex(token)).toBeUndefined();
     });
   });
 });

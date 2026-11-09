@@ -63,3 +63,47 @@ export function createScssBanner(context: ExecutorContext): OutputData {
     '// Proceed with caution if making changes to this file.',
   ];
 }
+
+/**
+ * Normalizes a token key for comparison by lowercasing it and collapsing runs of
+ * whitespace, underscores, and hyphens into a single hyphen,
+ * e.g. `"Neutral Variant"` => `"neutral-variant"`.
+ *
+ * @param key The key to normalize.
+ * @returns The normalized key.
+ */
+export function normalizeKey(key: string): string {
+  return key
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, '-');
+}
+
+/**
+ * Finds the value of a key in an object, ignoring case and separator differences.
+ * Keys starting with `$` (token metadata) are ignored.
+ *
+ * @param object The object to search.
+ * @param name The key to look for.
+ * @returns The matching value, or `undefined` if there is no match.
+ */
+export function findKey(object: unknown, name: string): unknown {
+  if (!object || typeof object !== 'object') {
+    return undefined;
+  }
+
+  const target = normalizeKey(name);
+  const key = Object.keys(object).find((k) => !k.startsWith('$') && normalizeKey(k) === target);
+  return key === undefined ? undefined : (object as Record<string, unknown>)[key];
+}
+
+/**
+ * Reads a token's hex color, lowercased.
+ *
+ * @param token A color token.
+ * @returns The hex color, or `undefined` if the token has none.
+ */
+export function getHex(token: unknown): string | undefined {
+  const hex = (token as { $value?: { hex?: unknown } } | null | undefined)?.$value?.hex;
+  return typeof hex === 'string' ? hex.toLowerCase() : undefined;
+}

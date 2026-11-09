@@ -2,7 +2,14 @@ import { type ExecutorContext, logger } from '@nx/devkit';
 import { relative, resolve } from 'node:path';
 import { type ExecutorResult, resolveOutputPath, runExecutorTask, writeFile } from '../../utils/executor.ts';
 import { formatOutputData, indent, type OutputData } from '../../utils/output.ts';
-import { createScssBanner, readTokensFile, type TokensObject } from '../../utils/tokens.ts';
+import {
+  createScssBanner,
+  findKey,
+  getHex,
+  normalizeKey,
+  readTokensFile,
+  type TokensObject,
+} from '../../utils/tokens.ts';
 
 /** Options for the `generate-palettes-scss` executor. */
 export interface GeneratePalettesScssExecutorOptions {
@@ -107,50 +114,6 @@ export default async function generatePalettesScssExecutor(
     await writeFile(outputPath, buildScss(options.input, createScssBanner(context), core, ext));
     logger.info(`Wrote ${relative(context.root, outputPath)}`);
   });
-}
-
-/**
- * Normalizes a token key for comparison by lowercasing it and collapsing runs of
- * whitespace, underscores, and hyphens into a single hyphen,
- * e.g. `"Neutral Variant"` => `"neutral-variant"`.
- *
- * @param key The key to normalize.
- * @returns The normalized key.
- */
-export function normalizeKey(key: string): string {
-  return key
-    .trim()
-    .toLowerCase()
-    .replace(/[\s_-]+/g, '-');
-}
-
-/**
- * Finds the value of a key in an object, ignoring case and separator differences.
- * Keys starting with `$` (token metadata) are ignored.
- *
- * @param object The object to search.
- * @param name The key to look for.
- * @returns The matching value, or `undefined` if there is no match.
- */
-export function findKey(object: unknown, name: string): unknown {
-  if (!object || typeof object !== 'object') {
-    return undefined;
-  }
-
-  const target = normalizeKey(name);
-  const key = Object.keys(object).find((k) => !k.startsWith('$') && normalizeKey(k) === target);
-  return key === undefined ? undefined : (object as Record<string, unknown>)[key];
-}
-
-/**
- * Reads a token's hex color, lowercased.
- *
- * @param token A color token.
- * @returns The hex color, or `undefined` if the token has none.
- */
-function getHex(token: unknown): string | undefined {
-  const hex = (token as { $value?: { hex?: unknown } } | null | undefined)?.$value?.hex;
-  return typeof hex === 'string' ? hex.toLowerCase() : undefined;
 }
 
 /**
