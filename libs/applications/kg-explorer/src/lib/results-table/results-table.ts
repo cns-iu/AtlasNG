@@ -22,9 +22,6 @@ import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
 import { KgExplorerTableEndSlot } from '../slots';
 
-/** Default height of the spacious explorer table rows in pixels. */
-export const KG_EXPLORER_ROW_HEIGHT = 96;
-
 /** Maximum number of autocomplete suggestions shown below the search field. */
 const MAX_SUGGESTIONS = 8;
 

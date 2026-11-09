@@ -1,8 +1,13 @@
-import { LinkCellDefinition, NumberCellDefinition, TextCellDefinition } from '@atlasng/design-system/table/columns';
 import {
+  ChipCellDefinition,
+  LinkCellDefinition,
+  NumberCellDefinition,
+  TextCellDefinition,
+} from '@atlasng/design-system/table/columns';
+import {
+  kgExplorerChipColumn,
   kgExplorerDateColumn,
   kgExplorerLinkColumn,
-  kgExplorerListColumn,
   kgExplorerNumberColumn,
   kgExplorerTextColumn,
 } from './columns';
@@ -48,11 +53,10 @@ describe('kgExplorer column builders', () => {
     });
   });
 
-  it('builds unsortable list columns that join array values', () => {
-    const column = kgExplorerListColumn<TestRow>('Tags', 'tags');
+  it('builds unsortable chip columns', () => {
+    const column = kgExplorerChipColumn<TestRow>('Tags', 'tags');
 
-    expect(column).toMatchObject({ sortable: false, flexGrow: 1 });
-    expect(column.pipe?.transform(ADA.tags)).toBe('Kidney, Lung');
-    expect(column.pipe?.transform('Skin')).toBe('Skin');
+    expect(column).toMatchObject({ sortable: false, flexGrow: 1, cellTemplate: ChipCellDefinition });
+    expect(column.pipe).toBeUndefined();
   });
 });

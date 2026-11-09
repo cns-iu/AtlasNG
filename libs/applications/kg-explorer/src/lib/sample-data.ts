@@ -2,9 +2,9 @@ import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { KgExplorerFilter } from './models';
 import type { Row, TableColumn } from '@atlasng/design-system/table';
 import {
+  kgExplorerChipColumn,
   kgExplorerDateColumn,
   kgExplorerLinkColumn,
-  kgExplorerListColumn,
   kgExplorerNumberColumn,
   kgExplorerTextColumn,
 } from './columns';
@@ -70,7 +70,7 @@ export const KG_EXPLORER_SAMPLE_ITEMS: KgExplorerSampleItem[] = SAMPLE_TITLES.ma
 export const KG_EXPLORER_SAMPLE_COLUMNS: TableColumn<KgExplorerSampleItem>[] = [
   kgExplorerLinkColumn('Title', 'url', { labelProp: 'title' }),
   kgExplorerTextColumn('Type', 'type'),
-  kgExplorerListColumn('Organs', 'tags'),
+  kgExplorerChipColumn('Organs', 'tags'),
   kgExplorerNumberColumn('#Cell types', 'cellTypeCount'),
   kgExplorerNumberColumn('#Biomarkers', 'biomarkerCount'),
   kgExplorerDateColumn('Last modified', 'lastModified'),

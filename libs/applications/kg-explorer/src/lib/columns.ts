@@ -1,6 +1,6 @@
-import type { PipeTransform } from '@angular/core';
 import type { Row, TableColumn } from '@atlasng/design-system/table';
 import {
+  ChipCellDefinition,
   LinkCellDefinition,
   NumberCellDefinition,
   TextCellDefinition,
@@ -10,11 +10,6 @@ import {
 
 /** Column settings that override the defaults applied by a column builder. */
 export type KgExplorerColumnOverrides<TRow extends Row = Row> = Partial<TableColumn<TRow>>;
-
-/** Joins array cell values into a comma-separated list. */
-const LIST_PIPE: PipeTransform = {
-  transform: (value: unknown) => (Array.isArray(value) ? value.join(', ') : value),
-};
 
 /** Start-aligned sortable text header. */
 const START_HEADER = { headerTemplate: TextHeaderCellDefinition, headerConfig: { align: 'start' } } as const;
@@ -48,7 +43,7 @@ export function kgExplorerLinkColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 200,
+    minWidth: 140,
     flexGrow: 1,
     comparator: (_a: unknown, _b: unknown, rowA: TRow, rowB: TRow) => labelOf(rowA).localeCompare(labelOf(rowB)),
     cellTemplate: LinkCellDefinition,
@@ -71,19 +66,28 @@ export function kgExplorerTextColumn<TRow extends Row = Row>(
   prop: keyof TRow & string,
   overrides: KgExplorerColumnOverrides<TRow> = {},
 ): TableColumn<TRow> {
-  return { name, prop, flexGrow: 0, cellTemplate: TextCellDefinition, ...START_HEADER, ...overrides };
+  return {
+    name,
+    prop,
+    // flexGrow: 0,
+    minWidth: 140,
+    cellTemplate: TextCellDefinition,
+    ...START_HEADER,
+    ...overrides,
+  };
 }
 
 /**
- * Creates an unsortable column that shows an array value as a comma-separated
- * list, sized like the Figma tag column.
+ * Creates an unsortable column that renders each array value as a stateless
+ * chip, like the Figma Organs column. A scalar value renders a single chip and
+ * empty values render nothing.
  *
  * @param name Header label.
- * @param prop Row property holding the list.
+ * @param prop Row property holding the chip values.
  * @param overrides Column settings replacing the defaults.
- * @returns List column definition.
+ * @returns Chip column definition.
  */
-export function kgExplorerListColumn<TRow extends Row = Row>(
+export function kgExplorerChipColumn<TRow extends Row = Row>(
   name: string,
   prop: keyof TRow & string,
   overrides: KgExplorerColumnOverrides<TRow> = {},
@@ -92,9 +96,9 @@ export function kgExplorerListColumn<TRow extends Row = Row>(
     name,
     prop,
     flexGrow: 1,
+    minWidth: 248,
     sortable: false,
-    pipe: LIST_PIPE,
-    cellTemplate: TextCellDefinition,
+    cellTemplate: ChipCellDefinition,
     ...START_HEADER,
     ...overrides,
   };
@@ -116,7 +120,8 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    flexGrow: 0,
+    minWidth: 96,
+    // flexGrow: 0,
     cellTemplate: NumberCellDefinition,
     ...END_HEADER,
     ...overrides,
@@ -140,7 +145,8 @@ export function kgExplorerDateColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    flexGrow: 0,
+    minWidth: 136,
+    // flexGrow: 0,
     cellTemplate: TextCellDefinition,
     cellConfig: { align: 'end' },
     ...END_HEADER,

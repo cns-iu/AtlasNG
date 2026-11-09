@@ -42,6 +42,20 @@
     @include table-padding;
     padding-top: 0;
 
+    @include table.overrides(
+      (
+        chip-cell-container-color: token-utils.sys-slot(tertiary-container),
+        chip-cell-container-height: 1.75rem,
+        chip-cell-text-color: token-utils.sys-slot(on-tertiary-container),
+        chip-cell-text-font: token-utils.sys-slot(label-medium-font),
+        chip-cell-text-line-height: token-utils.sys-slot(label-medium-line-height),
+        chip-cell-text-size: token-utils.sys-slot(label-medium-size),
+        chip-cell-text-tracking: token-utils.sys-slot(label-medium-tracking),
+        chip-cell-text-weight: token-utils.sys-slot(label-medium-weight),
+        chip-cell-outline-width: 0,
+      )
+    );
+
     .ang-kg-explorer-results-table--empty {
       grid-column: 1 / -1;
       padding-block: 2.5rem;
@@ -58,7 +72,6 @@
     }
 
     .datatable-body-row {
-      box-sizing: border-box;
       border-bottom: 1px solid token-utils.sys-slot(outline-variant);
       min-height: 3rem;
 
