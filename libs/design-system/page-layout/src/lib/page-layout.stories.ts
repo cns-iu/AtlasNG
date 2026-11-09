@@ -141,13 +141,13 @@ export const WithoutSidePanel: Story = {
 
 /**
  * A metadata page: breadcrumbs, the page label, and a copyable URL in the page header, the first section in the
- * intro, and version control in the side panel. On narrow screens, version control follows the first section.
+ * intro, and version control in a large side panel. On narrow screens, version control follows the first section.
  */
 export const MetadataPage: Story = {
   render: () => ({
     props: { crumbs: CRUMBS, sections: SECTIONS, lorem: LOREM, versions: VERSIONS, selectedVersion: VERSIONS[0] },
     template: `
-      <ang-page-layout>
+      <ang-page-layout sidePanelWidth="large">
         <div angPageLayoutHeader style="display: flex; flex-direction: column; gap: 2rem;">
           <ang-breadcrumbs [items]="crumbs" />
           <div style="display: flex; flex-direction: column; gap: 1rem;">

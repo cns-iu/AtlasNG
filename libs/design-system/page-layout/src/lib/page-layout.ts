@@ -1,4 +1,12 @@
-import { Component, Directive } from '@angular/core';
+import { Component, Directive, input } from '@angular/core';
+
+/**
+ * Width of the page layout's side panel column from the `medium` breakpoint.
+ *
+ * - `medium`: fits a table of contents. The column is 15rem to 18.75rem wide and runs to the layout's edge.
+ * - `large`: fits version control. The panel is 17.5rem to 25rem wide and stays inside the side padding.
+ */
+export type PageLayoutSidePanelWidth = 'medium' | 'large';
 
 /**
  * Marks projected content as the page header, such as breadcrumbs, the page title, a description, and actions.
@@ -43,7 +51,8 @@ export class PageLayoutEnd {}
  * Unmarked content is projected into the main slot. From the `medium` breakpoint, the side panel is a sticky
  * column beside the page header, intro, main content, and end. Below it, the slots stack in a single column with
  * the side panel after the page header and intro. Empty slots take no space, but an empty side panel keeps its
- * column on wide screens so the main content width stays the same from page to page.
+ * column on wide screens so the main content width stays the same from page to page. Set `sidePanelWidth` to
+ * `large` for wider side panel content, such as a metadata page's version control.
  *
  * The maximum width and side padding come from the `page-layout` tokens, which the `page-container` Sass mixin
  * shares with sections outside the layout.
@@ -55,6 +64,12 @@ export class PageLayoutEnd {}
   selector: 'ang-page-layout',
   templateUrl: './page-layout.html',
   styleUrl: './page-layout.scss',
-  host: { class: 'ang-page-layout' },
+  host: {
+    class: 'ang-page-layout',
+    '[class]': '"ang-page-layout--side-panel-width-" + sidePanelWidth()',
+  },
 })
-export class PageLayout {}
+export class PageLayout {
+  /** Width of the side panel column from the `medium` breakpoint. Use `large` for version control. */
+  readonly sidePanelWidth = input<PageLayoutSidePanelWidth>('medium');
+}

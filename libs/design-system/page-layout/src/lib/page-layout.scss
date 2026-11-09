@@ -70,5 +70,14 @@ $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
       padding: 2.5rem 1rem;
       overflow: hidden auto;
     }
+
+    &.ang-page-layout--side-panel-width-large {
+      // The side panel column includes the side padding, so the panel itself is 17.5rem to 25rem wide
+      grid-template-columns: minmax(min(45rem, 100% - 20rem), 1fr) minmax(20rem, 27.5rem);
+
+      .ang-page-layout--side-panel {
+        padding-inline: 0 $_side-padding-medium;
+      }
+    }
   }
 }
