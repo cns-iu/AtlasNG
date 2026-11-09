@@ -80,35 +80,17 @@ npx nx build-compodoc <project>  # static
 
 CI, publishing, and the Storybook deploy run through reusable workflows (prefixed `nx-`) that other Nx repos can call. AtlasNG's own [ci.yml](.github/workflows/ci.yml), [publish.yml](.github/workflows/publish.yml), and [storybook-gh-pages.yml](.github/workflows/storybook-gh-pages.yml) are thin callers, so every AtlasNG PR exercises them.
 
-| Workflow or action                                                                     | Purpose                                                                                               |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| [nx-ci.yml](.github/workflows/nx-ci.yml)                                               | commitlint, `nx format:check`, `nx affected` with Nx Cloud distribution, `nx fix-ci`, Netlify preview |
-| [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)                     | Publishes the tagged release group or project to npm and creates the fixed group's GitHub Release     |
-| [nx-storybook-gh-pages.yml](.github/workflows/nx-storybook-gh-pages.yml)               | Builds a Storybook project and deploys it to GitHub Pages                                             |
-| [setup-nx-workspace](.github/actions/setup-nx-workspace/action.yml) (composite action) | Node.js from `.nvmrc`, `npm ci --no-audit`, optional `nx-set-shas`                                    |
+| Workflow or action                                                       | Purpose                                                                                               |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| [nx-ci.yml](.github/workflows/nx-ci.yml)                                 | commitlint, `nx format:check`, `nx affected` with Nx Cloud distribution, `nx fix-ci`, Netlify preview |
+| [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)       | Publishes the tagged release group or project to npm and creates the fixed group's GitHub Release     |
+| [nx-storybook-gh-pages.yml](.github/workflows/nx-storybook-gh-pages.yml) | Builds a Storybook project and deploys it to GitHub Pages                                             |
 
-Each file documents its inputs and secrets. `nx-ci.yml` distributes tasks with `.nx/workflows/distribution-config.yaml` and runs them all on the CI runner when that file is missing. A caller owns the triggers, `concurrency`, and `permissions`, for example:
+See [Using these workflows](.github/workflows/README.md) for version pinning, an example caller, required permissions and secrets, and status check names.
 
-```yaml
-jobs:
-  ci:
-    uses: cns-iu/AtlasNG/.github/workflows/nx-ci.yml@workflows/v1
-    with:
-      targets: lint test build
-    secrets:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-```
+### Releasing the workflows
 
-The workflows still reference their actions with local `./.github/actions/...` paths, which resolve against the calling repository, so callers outside AtlasNG need their own copies of those actions for now.
-
-### Versions
-
-The reusable workflows and composite actions are released together, independently of the npm packages, with two tags:
-
-- `workflows/v<major>` (for example `workflows/v1`) moves to every release with that major version. Pin it to get fixes and new inputs without breaking changes.
-- `workflows/v<major>.<minor>.<patch>` (for example `workflows/v1.2.0`) never moves. Pin it, or its commit SHA, for fully reproducible runs.
-
-Pin actions the same way, for example `uses: cns-iu/AtlasNG/.github/actions/setup-nx-workspace@workflows/v1`. Each release has a [GitHub Release](https://github.com/cns-iu/AtlasNG/releases) listing the commits that touched the workflows and actions since the previous one; a major version bump marks breaking changes such as removed or renamed inputs and secrets.
+The reusable workflows and composite actions are released together, independently of the npm packages, as `workflows/v<major>.<minor>.<patch>` tags plus a moving `workflows/v<major>` tag.
 
 To cut a release, run the [Release workflows](.github/workflows/release-workflows.yml) workflow on `main` with the new version (enable `dry-run` to preview the notes first). It tags `main`, moves the major tag, and creates the GitHub Release. It refuses versions that are not greater than the latest release, releases without workflow or action changes, and breaking changes (`type!:` or a `BREAKING CHANGE` footer) without a major version bump from 1.0.0 on.
 

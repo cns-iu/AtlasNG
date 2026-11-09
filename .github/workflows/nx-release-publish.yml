@@ -2,7 +2,8 @@
 # Reusable workflows are prefixed with `nx-`; AtlasNG's publish.yml is a thin caller. Callers own
 # triggers and concurrency and must grant contents: write and id-token: write.
 # Tags are v<version> (the fixed release group) or <project>@<version> (independently versioned
-# projects). Local `./.github/actions/*` refs resolve against the caller's checkout.
+# projects). The status checks are named `<caller job> / Publish` and
+# `<caller job> / Create fixed group GitHub Release`. See README.md in this directory for setup.
 name: Nx release publish
 
 on:
@@ -60,11 +61,14 @@ jobs:
 
       # The npm cache stays off: restoring a cache that other workflows can write into a job that
       # publishes with provenance would let a poisoned cache reach the published packages.
-      - name: Set up Nx workspace
-        uses: ./.github/actions/setup-nx-workspace
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
           node-version-file: ${{ inputs.node-version-file }}
-          npm-cache: 'false'
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm ci --no-audit
 
       - name: Print Environment Info
         run: npx nx report
@@ -121,12 +125,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up Nx workspace
-        uses: ./.github/actions/setup-nx-workspace
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
           node-version-file: ${{ inputs.node-version-file }}
-          npm-cache: 'false'
-          install-dependencies: ${{ inputs.release-notes-install }}
+          package-manager-cache: false
+
+      - name: Install dependencies
+        if: inputs.release-notes-install
+        run: npm ci --no-audit
 
       - name: Create or update GitHub Release
         env:
