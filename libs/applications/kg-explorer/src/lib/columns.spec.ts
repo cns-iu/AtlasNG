@@ -22,31 +22,28 @@ describe('kgExplorer column builders', () => {
   it('builds link columns that sort by the displayed label', () => {
     const byProp = kgExplorerLinkColumn<TestRow>('Name', 'url', { labelProp: 'name' });
     const byFn = kgExplorerLinkColumn<TestRow>('Name', 'url', { labelFn: (row) => row.name.toUpperCase() });
-    const byLabel = kgExplorerLinkColumn<TestRow>('Name', 'url', { label: 'Open' }, { maxWidth: 400 });
+    const byLabel = kgExplorerLinkColumn<TestRow>('Name', 'url', { label: 'Open' }, { flexGrow: 2 });
 
-    expect(byProp).toMatchObject({ name: 'Name', prop: 'url', minWidth: 200, maxWidth: 640 });
+    expect(byProp).toMatchObject({ name: 'Name', prop: 'url', minWidth: 200, flexGrow: 1 });
     expect(byProp.cellTemplate).toBe(LinkCellDefinition);
     expect(byProp.comparator?.(undefined, undefined, ADA, GRACE)).toBeLessThan(0);
     expect(byFn.comparator?.(undefined, undefined, GRACE, ADA)).toBeGreaterThan(0);
     expect(byLabel.comparator?.(undefined, undefined, ADA, GRACE)).toBe(0);
-    expect(byLabel.maxWidth).toBe(400);
+    expect(byLabel.flexGrow).toBe(2);
   });
 
-  it('builds text, number, and date columns with Figma widths', () => {
+  it('builds text, number, and date columns that size to content', () => {
     expect(kgExplorerTextColumn<TestRow>('Name', 'name')).toMatchObject({
-      minWidth: 156,
-      maxWidth: 240,
+      flexGrow: 0,
       cellTemplate: TextCellDefinition,
     });
     expect(kgExplorerNumberColumn<TestRow>('Count', 'count')).toMatchObject({
-      minWidth: 98,
-      maxWidth: 132,
+      flexGrow: 0,
       cellTemplate: NumberCellDefinition,
       headerConfig: { align: 'end' },
     });
     expect(kgExplorerDateColumn<TestRow>('Date', 'date')).toMatchObject({
-      minWidth: 112,
-      maxWidth: 132,
+      flexGrow: 0,
       cellConfig: { align: 'end' },
     });
   });
@@ -54,7 +51,7 @@ describe('kgExplorer column builders', () => {
   it('builds unsortable list columns that join array values', () => {
     const column = kgExplorerListColumn<TestRow>('Tags', 'tags');
 
-    expect(column.sortable).toBe(false);
+    expect(column).toMatchObject({ sortable: false, flexGrow: 1 });
     expect(column.pipe?.transform(ADA.tags)).toBe('Kidney, Lung');
     expect(column.pipe?.transform('Skin')).toBe('Skin');
   });
