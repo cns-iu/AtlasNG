@@ -1,15 +1,8 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
 import { relative, resolve } from 'node:path';
-import {
-  createScssBanner,
-  type ExecutorResult,
-  readTokensFile,
-  resolveOutputPath,
-  runExecutorTask,
-  SCSS_INDENT,
-  type TokensObject,
-  writeScssFile,
-} from '../../utils/scss.ts';
+import { type ExecutorResult, resolveOutputPath, runExecutorTask, writeFile } from '../../utils/executor.ts';
+import { formatOutputData, indent, type OutputData } from '../../utils/output.ts';
+import { createScssBanner, readTokensFile, type TokensObject } from '../../utils/tokens.ts';
 
 /** Options for the `generate-palettes-scss` executor. */
 export interface GeneratePalettesScssExecutorOptions {
@@ -111,7 +104,7 @@ export default async function generatePalettesScssExecutor(
 
     validatePalettes(buildValidationSpecs(core, ext));
 
-    await writeScssFile(outputPath, buildScss(createScssBanner(context), options.input, core, ext));
+    await writeFile(outputPath, buildScss(options.input, createScssBanner(context), core, ext));
     logger.info(`Wrote ${relative(context.root, outputPath)}`);
   });
 }
@@ -329,85 +322,56 @@ export function validatePalettes(specs: ValidationSpec[]): void {
 }
 
 /**
- * Converts the validated core palettes into a Sass map with each palette's required tones.
+ * Converts the validated core palettes into Sass map entries with each palette's required tones.
  *
  * @param palettes The parsed core palettes.
- * @returns The Sass map source.
+ * @returns The Sass map entries.
  */
-function corePalettesToScssMap(palettes: CorePalettes): string {
-  const lines = ['('];
-
-  for (const key of PALETTES) {
+function corePalettesToScssEntries(palettes: CorePalettes): OutputData {
+  return PALETTES.map((key) => {
     const palette = palettes[key] ?? {};
-    lines.push(`${SCSS_INDENT}${key}: (`);
-
-    for (const tone of TONES_BY_PALETTE[key]) {
-      lines.push(`${SCSS_INDENT}${SCSS_INDENT}${tone}: ${palette[tone]},`);
-    }
-
-    lines.push(`${SCSS_INDENT}),`);
-  }
-
-  lines.push(')');
-  return lines.join('\n');
+    return [`${key}: (`, indent(TONES_BY_PALETTE[key].map((tone) => `${tone}: ${palette[tone]},`)), '),'];
+  });
 }
 
 /**
- * Converts the extension palettes into a Sass map, nesting each palette's
+ * Converts the extension palettes into Sass map entries, nesting each palette's
  * optional `variant` sub-palette.
  *
  * @param ext The parsed extension palettes.
- * @returns The Sass map source.
+ * @returns The Sass map entries.
  */
-function extPalettesToScssMap(ext: ExtPalettes): string {
-  const lines = ['('];
+function extPalettesToScssEntries(ext: ExtPalettes): OutputData {
+  const toneEntries = (tones: Tones): OutputData => Object.entries(tones).map(([tone, hex]) => `${tone}: ${hex},`);
 
-  for (const [name, { tones, variant }] of Object.entries(ext)) {
-    lines.push(`${SCSS_INDENT}${name}: (`);
-
-    for (const [tone, hex] of Object.entries(tones)) {
-      lines.push(`${SCSS_INDENT}${SCSS_INDENT}${tone}: ${hex},`);
-    }
-
-    if (variant) {
-      lines.push(`${SCSS_INDENT}${SCSS_INDENT}variant: (`);
-      for (const [tone, hex] of Object.entries(variant)) {
-        lines.push(`${SCSS_INDENT}${SCSS_INDENT}${SCSS_INDENT}${tone}: ${hex},`);
-      }
-      lines.push(`${SCSS_INDENT}${SCSS_INDENT}),`);
-    }
-
-    lines.push(`${SCSS_INDENT}),`);
-  }
-
-  lines.push(')');
-  return lines.join('\n');
+  return Object.entries(ext).map(([name, { tones, variant }]) => [
+    `${name}: (`,
+    indent([toneEntries(tones), variant ? ['variant: (', indent(toneEntries(variant)), '),'] : []]),
+    '),',
+  ]);
 }
 
 /**
  * Builds the generated palettes SCSS file.
  *
+ * @param inputPath The input path, as shown in the file.
  * @param banner The generated-file banner.
- * @param input The input path, as shown in the file.
  * @param core The parsed core palettes.
  * @param ext The parsed extension palettes, or `null`.
  * @returns The SCSS source.
  */
-export function buildScss(banner: string, input: string, core: CorePalettes, ext: ExtPalettes | null): string {
-  const lines = [
+export function buildScss(inputPath: string, banner: OutputData, core: CorePalettes, ext: ExtPalettes | null): string {
+  return formatOutputData([
     banner,
     '',
     `@use 'sass:map';`,
     '',
-    `// Note: Color palettes are generated from '${input}'`,
-    `$_palettes: ${corePalettesToScssMap(core)};`,
+    `// Note: Color palettes are generated from '${inputPath}'`,
+    '$_palettes: (',
+    indent(corePalettesToScssEntries(core)),
+    ');',
     '',
     SCSS_EXPORTS,
-  ];
-
-  if (ext) {
-    lines.push(`$ext-palettes: ${extPalettesToScssMap(ext)};`, '');
-  }
-
-  return lines.join('\n');
+    ext ? ['$ext-palettes: (', indent(extPalettesToScssEntries(ext)), ');', ''] : [],
+  ]);
 }

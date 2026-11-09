@@ -373,7 +373,7 @@ describe('generate-palettes-scss executor', () => {
   });
 
   it('builds the file without extension palettes', () => {
-    const scss = buildScss('// banner', 'in.json', {}, null);
+    const scss = buildScss('in.json', ['// banner'], {}, null);
 
     expect(scss).toMatch(
       /^\/\/ banner\n\n@use 'sass:map';\n\n\/\/ Note: Color palettes are generated from 'in.json'\n/,
