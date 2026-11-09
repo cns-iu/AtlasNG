@@ -345,9 +345,9 @@ describe('generate-palettes-scss executor', () => {
     });
 
     it('reports only invalid tones', () => {
-      expect(() => validatePalettes([{ label: 'ext x', palette: { 1: '#00000g' }, tones: [] }])).toThrow(
-        /^Invalid hex color entries \(1\): ext x 1$/,
-      );
+      expect(() =>
+        validatePalettes([{ label: 'ext x', palette: { 1: '#00000g' }, tones: [], validateAllTones: true }]),
+      ).toThrow(/^Invalid hex color entries \(1\): ext x 1$/);
     });
   });
 

@@ -3,9 +3,27 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { createScssBanner, findKey, getHex, getNumberToken, normalizeKey, readTokensFile } from './tokens.ts';
+import {
+  createScssBanner,
+  findKey,
+  getHex,
+  getNumberToken,
+  isJsonObject,
+  normalizeKey,
+  readTokensFile,
+} from './tokens.ts';
 
 describe('tokens utils', () => {
+  describe('isJsonObject', () => {
+    it('accepts plain objects', () => {
+      expect(isJsonObject({})).toBe(true);
+    });
+
+    it.each([null, undefined, 'text', 1, [], [{}]])('rejects %o', (value) => {
+      expect(isJsonObject(value)).toBe(false);
+    });
+  });
+
   describe('readTokensFile', () => {
     let root: string;
 
@@ -73,7 +91,7 @@ describe('tokens utils', () => {
   });
 
   describe('findKey', () => {
-    it.each([null, undefined, 'text'])('returns undefined for %o', (object) => {
+    it.each([null, undefined, 'text', ['ext']])('returns undefined for %o', (object) => {
       expect(findKey(object, 'ext')).toBeUndefined();
     });
 

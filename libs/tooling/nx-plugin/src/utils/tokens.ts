@@ -6,6 +6,16 @@ import { type OutputData } from './output.ts';
 export type TokensObject = Record<string, unknown>;
 
 /**
+ * Checks whether a value is a plain JSON object, not `null` or an array.
+ *
+ * @param value The value to check.
+ * @returns Whether `value` is a JSON object.
+ */
+export function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+/**
  * Asserts that a value is a plain JSON object, not `null` or an array.
  *
  * @param value The value to check.
@@ -13,7 +23,7 @@ export type TokensObject = Record<string, unknown>;
  * @throws If `value` is not a JSON object.
  */
 export function assertJsonObject(value: unknown, message: string): asserts value is Record<string, unknown> {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+  if (!isJsonObject(value)) {
     throw new Error(message);
   }
 }
@@ -88,13 +98,13 @@ export function normalizeKey(key: string): string {
  * @returns The matching value, or `undefined` if there is no match.
  */
 export function findKey(object: unknown, name: string): unknown {
-  if (!object || typeof object !== 'object') {
+  if (!isJsonObject(object)) {
     return undefined;
   }
 
   const target = normalizeKey(name);
   const key = Object.keys(object).find((k) => !k.startsWith('$') && normalizeKey(k) === target);
-  return key === undefined ? undefined : (object as Record<string, unknown>)[key];
+  return key === undefined ? undefined : object[key];
 }
 
 /**
