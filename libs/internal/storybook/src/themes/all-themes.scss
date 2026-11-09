@@ -48,3 +48,8 @@ $themes: (cns, hra, mhu, wpp);
 }
 
 @include ds.defaults;
+
+body {
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
