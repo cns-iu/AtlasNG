@@ -1,0 +1,110 @@
+# Reusable workflow (workflow_call): builds an Nx application and deploys it to GitHub Pages with
+# actions/deploy-pages. Callers own triggers and concurrency and must grant contents: read,
+# pages: write, and id-token: write; the repository's Pages source must be GitHub Actions. The
+# status checks are named `<caller job> / Build app` and `<caller job> / Deploy to GitHub Pages`.
+# See README.md in this directory for setup.
+name: Nx app GH Pages
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: Nx application project to build
+        type: string
+        required: true
+      configuration:
+        description: Configuration passed to the build target
+        type: string
+        required: false
+        default: production
+      output-dir:
+        description: Directory with the built app (for example dist/apps/<app>/browser)
+        type: string
+        required: true
+      prepare-command:
+        description: >-
+          Bash command run in output-dir after the build, before the SPA fallback is added (for
+          example to copy index.html to known routes so Pages serves them with a 200 status)
+        type: string
+        required: false
+        default: ''
+      node-version-file:
+        description: File that pins the Node.js version
+        type: string
+        required: false
+        default: .nvmrc
+      timeout-minutes:
+        description: Timeout for the build job
+        type: number
+        required: false
+        default: 30
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        description: Nx Cloud access token
+        required: false
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  HUSKY: 0
+
+jobs:
+  build:
+    name: Build app
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ${{ inputs.node-version-file }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - name: Build app
+        env:
+          PROJECT: ${{ inputs.project }}
+          CONFIGURATION: ${{ inputs.configuration }}
+        run: npx nx build "$PROJECT" --configuration="$CONFIGURATION"
+
+      - name: Run prepare command
+        if: inputs.prepare-command != ''
+        working-directory: ${{ inputs.output-dir }}
+        env:
+          PREPARE_COMMAND: ${{ inputs.prepare-command }}
+        run: bash -c "$PREPARE_COMMAND"
+
+      # GitHub Pages serves 404.html for unknown paths, so a copy of index.html lets a client-side
+      # router handle deep links. .nojekyll keeps Pages from dropping files that start with `_`.
+      - name: Add SPA fallback
+        env:
+          OUTPUT_DIR: ${{ inputs.output-dir }}
+        run: |
+          cp "$OUTPUT_DIR/index.html" "$OUTPUT_DIR/404.html"
+          touch "$OUTPUT_DIR/.nojekyll"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ inputs.output-dir }}
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

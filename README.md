@@ -85,6 +85,7 @@ CI, publishing, and the Storybook deploy run through reusable workflows (prefixe
 | [nx-ci.yml](.github/workflows/nx-ci.yml)                                 | commitlint, `nx format:check`, `nx affected` with Nx Cloud distribution, `nx fix-ci`, Netlify preview |
 | [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)       | Publishes the tagged release group or project to npm and creates the fixed group's GitHub Release     |
 | [nx-storybook-gh-pages.yml](.github/workflows/nx-storybook-gh-pages.yml) | Builds a Storybook project and deploys it to GitHub Pages                                             |
+| [nx-app-gh-pages.yml](.github/workflows/nx-app-gh-pages.yml)             | Builds an Nx app and deploys it to GitHub Pages with a SPA fallback                                   |
 
 See [Using these workflows](.github/workflows/README.md) for version pinning, an example caller, required permissions and secrets, and status check names.
 
