@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Generate shape SCSS executor",
+  "description": "Generates shape SCSS overrides from a Figma shape tokens JSON file.",
+  "type": "object",
+  "properties": {
+    "input": {
+      "type": "string",
+      "description": "Path to the source shape tokens JSON file, relative to the workspace root."
+    },
+    "output": {
+      "type": "string",
+      "description": "Path to the output SCSS file, relative to the workspace root. Defaults to `<input name>.shape.scss` next to the input."
+    }
+  },
+  "required": ["input"]
+}

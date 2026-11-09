@@ -21,6 +21,79 @@
           "target": "storybook"
         }
       ]
+    },
+    "generate-palettes-scss": {
+      "executor": "@atlasng/nx-plugin:generate-palettes-scss",
+      "configurations": {
+        "cns": {
+          "input": "{projectRoot}/src/themes/cns/palette.tokens.json",
+          "output": "{projectRoot}/src/themes/cns/_palettes.scss"
+        },
+        "hra": {
+          "input": "{projectRoot}/src/themes/hra/palette.tokens.json",
+          "output": "{projectRoot}/src/themes/hra/_palettes.scss"
+        },
+        "mhu": {
+          "input": "{projectRoot}/src/themes/mhu/palette.tokens.json",
+          "output": "{projectRoot}/src/themes/mhu/_palettes.scss"
+        },
+        "wpp": {
+          "input": "{projectRoot}/src/themes/wpp/palette.tokens.json",
+          "output": "{projectRoot}/src/themes/wpp/_palettes.scss"
+        }
+      }
+    },
+    "generate-shape-scss": {
+      "executor": "@atlasng/nx-plugin:generate-shape-scss",
+      "configurations": {
+        "cns": {
+          "input": "{projectRoot}/src/themes/cns/shape.tokens.json",
+          "output": "{projectRoot}/src/themes/cns/_shape.scss"
+        },
+        "hra": {
+          "input": "{projectRoot}/src/themes/hra/shape.tokens.json",
+          "output": "{projectRoot}/src/themes/hra/_shape.scss"
+        },
+        "mhu": {
+          "input": "{projectRoot}/src/themes/mhu/shape.tokens.json",
+          "output": "{projectRoot}/src/themes/mhu/_shape.scss"
+        },
+        "wpp": {
+          "input": "{projectRoot}/src/themes/wpp/shape.tokens.json",
+          "output": "{projectRoot}/src/themes/wpp/_shape.scss"
+        }
+      }
+    },
+    "generate-typography-scss": {
+      "executor": "@atlasng/nx-plugin:generate-typography-scss",
+      "configurations": {
+        "cns": {
+          "input": "{projectRoot}/src/themes/cns/font.tokens.json",
+          "typescale": "{projectRoot}/src/themes/cns/typescale.tokens.json",
+          "output": "{projectRoot}/src/themes/cns/_typography.scss",
+          "plainVariable": true
+        },
+        "hra": {
+          "input": "{projectRoot}/src/themes/hra/font.tokens.json",
+          "typescale": "{projectRoot}/src/themes/hra/typescale.tokens.json",
+          "output": "{projectRoot}/src/themes/hra/_typography.scss",
+          "plainVariable": true
+        },
+        "mhu": {
+          "input": "{projectRoot}/src/themes/mhu/font.tokens.json",
+          "typescale": "{projectRoot}/src/themes/mhu/typescale.tokens.json",
+          "output": "{projectRoot}/src/themes/mhu/_typography.scss",
+          "plainVariable": true,
+          "brandVariable": true
+        },
+        "wpp": {
+          "input": "{projectRoot}/src/themes/wpp/font.tokens.json",
+          "typescale": "{projectRoot}/src/themes/wpp/typescale.tokens.json",
+          "output": "{projectRoot}/src/themes/wpp/_typography.scss",
+          "plainVariable": true,
+          "brandVariable": true
+        }
+      }
     }
   }
 }
