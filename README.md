@@ -87,7 +87,7 @@ CI, publishing, and the Storybook deploy run through reusable workflows (prefixe
 | [nx-storybook-gh-pages.yml](.github/workflows/nx-storybook-gh-pages.yml)               | Builds a Storybook project and deploys it to GitHub Pages                                             |
 | [setup-nx-workspace](.github/actions/setup-nx-workspace/action.yml) (composite action) | Node.js from `.nvmrc`, `npm ci --no-audit`, optional `nx-set-shas`                                    |
 
-Each file documents its inputs and secrets. A caller owns the triggers, `concurrency`, and `permissions`, for example:
+Each file documents its inputs and secrets. `nx-ci.yml` distributes tasks with `.nx/workflows/distribution-config.yaml` and runs them all on the CI runner when that file is missing. A caller owns the triggers, `concurrency`, and `permissions`, for example:
 
 ```yaml
 jobs:
