@@ -20,7 +20,9 @@ on:
         required: false
         default: ''
       distribute-on:
-        description: Nx Cloud distribution config (file path or agent spec); empty disables task distribution
+        description: >-
+          Nx Cloud distribution config (file path or agent spec); empty disables task distribution.
+          When left at the default and that file doesn't exist, all tasks run on the CI runner.
         type: string
         required: false
         default: .nx/workflows/distribution-config.yaml
@@ -91,6 +93,10 @@ jobs:
           STOP_AGENTS_AFTER: ${{ inputs.stop-agents-after }}
           TARGETS: ${{ inputs.targets }}
         run: |
+          if [[ "$DISTRIBUTE_ON" == .nx/workflows/distribution-config.yaml && ! -f "$DISTRIBUTE_ON" ]]; then
+            echo "::notice::$DISTRIBUTE_ON not found; running all tasks on the CI runner without Nx Agents"
+            exit 0
+          fi
           if [[ -z "$STOP_AGENTS_AFTER" ]]; then
             read -ra targets <<< "$TARGETS"
             STOP_AGENTS_AFTER=$(IFS=,; echo "${targets[*]}")
