@@ -47,7 +47,7 @@ on:
         required: false
         default: true
       deploy-preview:
-        description: Deploy a Netlify preview of dist/ for pull requests (uses the caller's .github/actions/deploy-preview)
+        description: Deploy a Netlify preview of dist/ for pull requests (uses the caller's .github/actions/deploy-preview); skipped for fork pull requests or when NETLIFY_AUTH_TOKEN is empty
         type: boolean
         required: false
         default: false
@@ -142,8 +142,30 @@ jobs:
         if: failure()
         run: npx nx fix-ci
 
-      - name: Deploy preview
+      # Fork PRs get no secrets and a read-only token, so the deploy and its PR comment would fail.
+      - name: Check preview deploy eligibility
+        id: preview
         if: inputs.deploy-preview && github.event_name == 'pull_request' && !cancelled()
+        env:
+          IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          reason=''
+          if [[ "$IS_FORK" == 'true' ]]; then
+            reason='pull requests from forks do not receive repository secrets'
+          elif [[ -z "$NETLIFY_AUTH_TOKEN" ]]; then
+            reason='the NETLIFY_AUTH_TOKEN secret is not set'
+          fi
+          if [[ -n "$reason" ]]; then
+            echo "::notice title=Preview deploy skipped::Skipped because $reason."
+            printf '### :warning: Preview deploy skipped\n\nSkipped because %s.\n' "$reason" >> "$GITHUB_STEP_SUMMARY"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy preview
+        if: steps.preview.outputs.deploy == 'true' && !cancelled()
         uses: ./.github/actions/deploy-preview
         with:
           issue-number: ${{ github.event.pull_request.number }}
