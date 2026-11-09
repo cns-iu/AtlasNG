@@ -28,7 +28,26 @@ $button-defaults: (
   }
 }
 
+$progress-bar-defaults: (
+  track-color: token-utils.sys-slot(outline-variant),
+);
+
+@mixin progress-bar-defaults {
+  @include mat.progress-bar-overrides($progress-bar-defaults);
+}
+
+// Material fixes the inactive track at 24% opacity, so it needs a strong color to stay visible.
+$slider-defaults: (
+  inactive-track-color: token-utils.sys-slot(on-surface-variant),
+);
+
+@mixin slider-defaults {
+  @include mat.slider-overrides($slider-defaults);
+}
+
 @mixin all-defaults {
   @include button-defaults;
   @include form-field-defaults;
+  @include progress-bar-defaults;
+  @include slider-defaults;
 }
