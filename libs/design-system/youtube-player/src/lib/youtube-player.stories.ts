@@ -125,11 +125,6 @@ const meta: Meta<YouTubePlayer> = {
       options: ['low', 'standard', 'high'],
       table: { category: 'Inputs' },
     },
-    enableRequest: {
-      control: false,
-      description: 'Emitted when the default enable-request button is clicked, after it grants marketing permission.',
-      table: { category: 'Outputs' },
-    },
     ready: {
       control: false,
       description: 'Emits when the underlying YouTube player is initialized.',

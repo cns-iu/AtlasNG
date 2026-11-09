@@ -24,11 +24,10 @@ describe('YouTubePlayer', () => {
     options: {
       enabled?: boolean;
       inputs?: ComponentInput<YouTubePlayer>;
-      onEnableRequest?: () => void;
       resizeObserver?: boolean;
     } = {},
   ) {
-    const { enabled = false, inputs = {}, onEnableRequest, resizeObserver: withResizeObserver = true } = options;
+    const { enabled = false, inputs = {}, resizeObserver: withResizeObserver = true } = options;
     let resizeObserverCallback: ResizeObserverCallback | undefined;
     const resizeObserver = {
       observe: vi.fn(),
@@ -48,7 +47,6 @@ describe('YouTubePlayer', () => {
         videoId: 'pzUFmDhQEO8',
         ...inputs,
       },
-      on: onEnableRequest ? { enableRequest: onEnableRequest } : undefined,
       providers: [
         provideInitialAnalyticsPermissions(enabled ? AnalyticsPermissions.FULL : AnalyticsPermissions.DEFAULT),
         permissionsConfig,
@@ -104,19 +102,6 @@ describe('YouTubePlayer', () => {
     expect(permissionsManager.permissions().isCategoryEnabled(AnalyticsEventCategory.Marketing)).toBe(true);
     expect(fixture.componentInstance.ngPlayer()).toBe(getNgPlayer(fixture));
     expect(screen.queryByRole('button', { name: 'Enable cookies' })).not.toBeInTheDocument();
-  });
-
-  it('emits enableRequest after granting marketing permission', async () => {
-    let enabledWhenEmitted: boolean | undefined;
-    const { permissionsManager, user } = await setup({
-      onEnableRequest: () => {
-        enabledWhenEmitted = permissionsManager.permissions().isCategoryEnabled(AnalyticsEventCategory.Marketing);
-      },
-    });
-
-    await user.click(screen.getByRole('button', { name: 'Enable cookies' }));
-
-    expect(enabledWhenEmitted).toBe(true);
   });
 
   it('projects custom enable-request content instead of the default message', async () => {

@@ -7,7 +7,6 @@ import {
   ElementRef,
   inject,
   input,
-  output,
   Provider,
   signal,
   viewChild,
@@ -131,9 +130,6 @@ export class YouTubePlayer {
   /** Observable form of {@link ngPlayer}, used to attach output forwarding lazily. */
   readonly #ngPlayer$ = toObservable(this.ngPlayer);
 
-  /** Emitted when the default enable-request button is clicked, after it grants marketing permission. */
-  readonly enableRequest = output<void>();
-
   /** Emits when the underlying YouTube player is initialized and ready to receive commands. */
   readonly ready = outputFromObservable<YT.PlayerEvent>(this.#getLazyOutputForwarding('ready'));
 
@@ -212,12 +208,11 @@ export class YouTubePlayer {
     }
   }
 
-  /** Grants marketing permission from the default enable-request button, then emits {@link enableRequest}. */
-  protected requestEnable(): void {
+  /** Grants marketing permission from the default enable-request button, which loads the player. */
+  protected enableMarketing(): void {
     this.#permissionsManager.updatePermissions((permissions) =>
       permissions.enableCategory(AnalyticsEventCategory.Marketing),
     );
-    this.enableRequest.emit();
   }
 
   /**
