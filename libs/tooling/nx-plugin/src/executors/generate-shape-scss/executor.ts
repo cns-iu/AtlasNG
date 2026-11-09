@@ -1,15 +1,14 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
 import { relative, resolve } from 'node:path';
+import { type ExecutorResult, resolveOutputPath, runExecutorTask, writeFile } from '../../utils/executor.ts';
+import { formatOutputData, indent, type OutputData } from '../../utils/output.ts';
 import {
+  assertJsonObject,
   createScssBanner,
-  type ExecutorResult,
+  getNumberToken,
   readTokensFile,
-  resolveOutputPath,
-  runExecutorTask,
-  SCSS_INDENT,
   type TokensObject,
-  writeScssFile,
-} from '../../utils/scss.ts';
+} from '../../utils/tokens.ts';
 
 /** Options for the `generate-shape-scss` executor. */
 export interface GenerateShapeScssExecutorOptions {
@@ -52,9 +51,9 @@ export default async function generateShapeScssExecutor(
   return runExecutorTask(async () => {
     const outputPath = resolveOutputPath(context.root, options.input, options.output, '.shape.scss');
     const tokens = await readTokensFile(resolve(context.root, options.input));
-    const scss = buildScss(createScssBanner(context), options.input, parseShapes(tokens));
+    const scss = buildScss(options.input, createScssBanner(context), parseShapes(tokens));
 
-    await writeScssFile(outputPath, scss);
+    await writeFile(outputPath, scss);
     logger.info(`Wrote ${relative(context.root, outputPath)}`);
   });
 }
@@ -68,35 +67,16 @@ export default async function generateShapeScssExecutor(
  */
 export function parseShapes(tokens: TokensObject): Shapes {
   const corner = tokens['Corner'];
-  if (!corner || typeof corner !== 'object') {
-    throw new Error('Input file must contain a "Corner" object.');
-  }
+  assertJsonObject(corner, 'Input file must contain a "Corner" object.');
 
   const shapes: Shapes = {};
   for (const key of SHAPE_KEYS) {
     if (key in corner) {
-      shapes[key] = getNumberToken(corner as Record<string, unknown>, key);
+      shapes[key] = getNumberToken(corner, key, 'Corner');
     }
   }
 
   return shapes;
-}
-
-/**
- * Reads a token's numeric `$value`.
- *
- * @param cornerTokens The `Corner` token group.
- * @param key The token key.
- * @returns The token value.
- * @throws If the value is not a finite number.
- */
-function getNumberToken(cornerTokens: Record<string, unknown>, key: string): number {
-  const value = (cornerTokens[key] as { $value?: unknown } | undefined)?.$value;
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    throw new Error(`Missing or invalid Corner.${key}.$value (expected a number).`);
-  }
-
-  return value;
 }
 
 /**
@@ -134,21 +114,23 @@ export function toCornerValue(key: string, value: number): string {
 /**
  * Builds the generated SCSS file.
  *
+ * @param inputPath The input path, as shown in the file.
  * @param banner The generated-file banner.
- * @param input The input path, as shown in the file.
  * @param shapes The parsed shapes.
  * @returns The SCSS source.
  */
-export function buildScss(banner: string, input: string, shapes: Shapes): string {
+export function buildScss(inputPath: string, banner: OutputData, shapes: Shapes): string {
   const entries = SHAPE_KEYS.filter((key) => key in shapes).map(
-    (key) => `${SCSS_INDENT}corner-${key}: ${toCornerValue(key, shapes[key] as number)},`,
+    (key) => `corner-${key}: ${toCornerValue(key, shapes[key] as number)},`,
   );
 
-  return [
+  return formatOutputData([
     banner,
     '',
-    `// Note: Shape overrides are generated from '${input}'`,
-    `$shape-overrides: ${['(', ...entries, ')'].join('\n')};`,
+    `// Note: Shape overrides are generated from '${inputPath}'`,
+    '$shape-overrides: (',
+    indent(entries),
+    ');',
     '',
-  ].join('\n');
+  ]);
 }
