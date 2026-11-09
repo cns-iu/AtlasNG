@@ -110,10 +110,12 @@ export function provideInitialAnalyticsPermissions(permissions: AnalyticsPermiss
  * Asks the user to approve requested permissions, for example in a consent dialog.
  *
  * @param requested Current permissions with the requested categories enabled.
+ * @param categories The requested categories, for example to point them out in the dialog.
  * @returns An observable whose first value is the user's decision, or `undefined` when the user dismisses the request.
  */
 export type AnalyticsPermissionsRequestHandler = (
   requested: AnalyticsPermissions,
+  categories: AnalyticsEventCategory[],
 ) => Observable<AnalyticsPermissions | undefined>;
 
 /**
@@ -263,7 +265,7 @@ export class AnalyticsPermissionsManager {
       (permissions, category) => permissions.enableCategory(category),
       this.#permissions(),
     );
-    this.#pendingRequest = this.#requestHandler(requested)
+    this.#pendingRequest = this.#requestHandler(requested, categories)
       .pipe(take(1), takeUntilDestroyed(this.#destroyRef))
       .subscribe((permissions) => {
         if (permissions) {

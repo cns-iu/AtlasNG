@@ -232,6 +232,7 @@ describe('PermissionsManager', () => {
       AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Statistics).enableCategory(
         AnalyticsEventCategory.Marketing,
       ),
+      [AnalyticsEventCategory.Marketing],
     );
     expect(manager.hasDecision()).toBe(false);
 

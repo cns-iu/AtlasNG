@@ -118,6 +118,7 @@ describe('YouTubePlayer', () => {
 
     expect(requestHandler).toHaveBeenCalledWith(
       AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Marketing),
+      [AnalyticsEventCategory.Marketing],
     );
     expect(fixture.componentInstance.ngPlayer()).toBeUndefined();
 
