@@ -20,4 +20,10 @@ export {
   SummaryCellDefinition,
   TableTemplateDefinition,
 } from './lib/definitions/template-definition';
-export { Table, type TableAppearance, type TableColumn, type TableRowHeight, type TableSummaryPosition } from './lib/table';
+export {
+  Table,
+  type TableAppearance,
+  type TableColumn,
+  type TableRowHeight,
+  type TableSummaryPosition,
+} from './lib/table';
