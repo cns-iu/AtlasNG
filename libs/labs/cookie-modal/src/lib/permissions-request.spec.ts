@@ -23,6 +23,18 @@ class PermissionsRequestHost {
 }
 
 describe('provideCookieModalPermissionsRequest', () => {
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+  const scrollIntoView = vi.fn();
+
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = scrollIntoView;
+  });
+
+  afterEach(() => {
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+    scrollIntoView.mockClear();
+  });
+
   async function setup() {
     const user = userEvent.setup();
     const { fixture } = await render(PermissionsRequestHost, {
@@ -45,6 +57,15 @@ describe('provideCookieModalPermissionsRequest', () => {
     expect(screen.getByRole('img', { name: 'Example logo' })).toHaveAttribute('src', 'logo.svg');
     expect(screen.getByRole('tab', { name: 'Details', selected: true })).toBeInTheDocument();
     expect(await screen.findByRole('switch', { name: 'Disallow marketing cookies' })).toBeChecked();
+  });
+
+  it('scrolls the requested category into view', async () => {
+    await setup();
+
+    const marketingSwitch = await screen.findByRole('switch', { name: 'Disallow marketing cookies' });
+    await waitFor(() => {
+      expect(scrollIntoView.mock.contexts).toContain(marketingSwitch.closest('ang-cookie-permission-item'));
+    });
   });
 
   it('grants the selection when the user allows it', async () => {

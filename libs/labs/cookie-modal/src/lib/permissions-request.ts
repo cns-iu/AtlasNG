@@ -8,8 +8,8 @@ const DETAILS_TAB_INDEX = 1;
 
 /**
  * Makes `AnalyticsPermissionsManager.requestCategories()` open the {@link CookieModal} on its Details tab
- * with the requested categories toggled on, so the user approves them before they're granted.
- * Add it to the application's root providers.
+ * with the requested categories toggled on and the first one scrolled into view, so the user sees and
+ * approves them before they're granted. Add it to the application's root providers.
  *
  * @param data Logo and providers shown in the modal.
  * @returns Provider for the analytics permissions request handler.
@@ -19,10 +19,10 @@ export function provideCookieModalPermissionsRequest(
 ): Provider {
   return provideAnalyticsPermissionsRequestHandler(() => {
     const dialog = inject(MatDialog);
-    return (permissions) =>
+    return (permissions, categories) =>
       dialog
         .open<CookieModal, CookieModalData, CookieModalResult>(CookieModal, {
-          data: { ...data, permissions, activeTab: DETAILS_TAB_INDEX },
+          data: { ...data, permissions, activeTab: DETAILS_TAB_INDEX, scrollToCategory: categories[0] },
         })
         .afterClosed();
   });
