@@ -1,0 +1,18 @@
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'page-layout',
+  tokens: (
+    side-panel-sticky-top: 0,
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
+
+// Returns a CSS variable for one of this component's tokens that falls back to its default value,
+// e.g. slot(primary) => var(--ang-<component>-primary, var(--mat-sys-primary))
+@function slot($token, $fallback: null) {
+  @return token-utils.slot($token, $config, $fallback);
+}

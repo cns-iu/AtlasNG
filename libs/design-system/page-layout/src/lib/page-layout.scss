@@ -1,0 +1,66 @@
+@use 'breakpoints';
+@use 'internal/token-utils';
+@use 'tokens/page-layout' as *;
+
+$_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  box-sizing: border-box;
+  max-width: 100rem;
+  margin-inline: auto;
+  padding: 2.5rem 1.25rem;
+
+  .ang-page-layout--header,
+  .ang-page-layout--side-panel,
+  .ang-page-layout--main,
+  .ang-page-layout--end {
+    min-width: 0;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .ang-page-layout--body,
+  .ang-page-layout--main {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    min-width: 0;
+  }
+
+  @include breakpoints.breakpoint(medium) {
+    display: grid;
+    // The main column keeps a 45rem minimum, as in Figma, unless the side panel's minimum would no longer fit
+    grid-template:
+      'header side-panel' auto
+      'body side-panel' 1fr
+      / minmax(min(45rem, 100% - 15rem), 1fr) minmax(15rem, 18.75rem);
+    gap: 0;
+    padding: 0;
+
+    .ang-page-layout--header {
+      grid-area: header;
+      padding: 2.5rem 2.5rem 0;
+    }
+
+    .ang-page-layout--body {
+      grid-area: body;
+      padding: 2.5rem;
+    }
+
+    .ang-page-layout--side-panel {
+      grid-area: side-panel;
+      align-self: start;
+      position: sticky;
+      top: $_sticky-top;
+      box-sizing: border-box;
+      max-height: calc(100dvh - #{$_sticky-top});
+      padding: 2.5rem 1rem;
+      overflow-y: auto;
+    }
+  }
+}
