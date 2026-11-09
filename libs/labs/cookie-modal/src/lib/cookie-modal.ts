@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
+import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { CookiePermissions } from './cookie-permissions/cookie-permissions';
 import { CookiePermissionProvidersByCategory } from './provider-list/provider-list';
 
@@ -57,6 +58,7 @@ export type CookieModalResult = AnalyticsPermissions | undefined;
     MatTabsModule,
     CookiePermissions,
     EventScope,
+    ScrollArea,
     TrackClick,
   ],
   templateUrl: './cookie-modal.html',
