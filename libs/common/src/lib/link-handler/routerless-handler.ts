@@ -118,9 +118,6 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
   /**
    * Registers a callback that runs whenever the tracked browser URL changes.
    *
-   * Changes are detected on `popstate`, `hashchange`, the Navigation API's `currententrychange` event,
-   * and the handler's own navigations.
-   *
    * @param callback Function invoked with the new browser URL (`location.href`).
    * @returns A function that unregisters the callback.
    */

@@ -29,6 +29,7 @@ describe('RouterLinkHandler', () => {
   interface TestContext {
     activeUrl: WritableSignal<UrlTree>;
     angularLocation: {
+      onUrlChange: ReturnType<typeof vi.fn<(fn: (url: string, state: unknown) => void) => VoidFunction>>;
       path: ReturnType<typeof vi.fn<(includeHash?: boolean) => string>>;
       prepareExternalUrl: ReturnType<typeof vi.fn<(url: string) => string>>;
     };
@@ -56,6 +57,7 @@ describe('RouterLinkHandler', () => {
       serializeUrl: vi.fn((tree: UrlTree) => urlSerializer.serialize(tree)),
     };
     const angularLocation = {
+      onUrlChange: vi.fn(),
       path: vi.fn().mockReturnValue('/current/path?existing=1#old'),
       prepareExternalUrl: vi.fn((url: string) => `/base${url}`),
     };
@@ -340,6 +342,34 @@ describe('RouterLinkHandler', () => {
       await Promise.resolve();
 
       expect(errorHandler.handleError).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe('onUrlChange', () => {
+    it('notifies listeners with the external URL when Location reports a change', () => {
+      const { angularLocation, handler } = setup();
+      const unregister = vi.fn();
+      angularLocation.onUrlChange.mockReturnValue(unregister);
+      const callback = vi.fn();
+
+      expect(handler.onUrlChange(callback)).toBe(unregister);
+
+      const [[listener]] = angularLocation.onUrlChange.mock.calls;
+      angularLocation.path.mockReturnValue('/team/42');
+      listener('/base/team/42', null);
+
+      expect(callback).toHaveBeenCalledExactlyOnceWith('/base/team/42');
+    });
+
+    it('does not notify listeners when the URL is unchanged', () => {
+      const { angularLocation, handler } = setup();
+      const callback = vi.fn();
+      handler.onUrlChange(callback);
+
+      const [[listener]] = angularLocation.onUrlChange.mock.calls;
+      listener('/current/path?existing=1#old', null);
+
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 

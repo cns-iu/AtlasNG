@@ -67,6 +67,14 @@ export interface PreparedLink {
 })
 export abstract class LinkHandler<TLink extends PreparedLink = PreparedLink> {
   /**
+   * Registers a callback that runs whenever the handler observes a URL change, including browser back and forward.
+   *
+   * @param callback Function invoked with the new URL. The URL format is handler specific.
+   * @returns A function that unregisters the callback.
+   */
+  abstract onUrlChange(callback: (url: string) => void): () => void;
+
+  /**
    * Resolves command and element inputs into a navigable link descriptor.
    *
    * @param command Navigation command and URL creation options.

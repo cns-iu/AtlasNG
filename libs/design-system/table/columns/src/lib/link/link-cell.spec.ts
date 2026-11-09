@@ -12,6 +12,7 @@ import { cellContext, renderDefinition, ROW, type TestRow } from '../testing/ren
 import { LinkCellDefinition, type LinkCellConfig } from './link-cell';
 
 class MockLinkHandler implements LinkHandler {
+  readonly onUrlChange = vi.fn(() => () => undefined);
   readonly prepareLink = vi.fn((command: LinkCommand): PreparedLink => ({ href: String(command.command) }));
   readonly navigateTo = vi.fn((): boolean => false);
   readonly isActive = vi.fn(() => signal(false));

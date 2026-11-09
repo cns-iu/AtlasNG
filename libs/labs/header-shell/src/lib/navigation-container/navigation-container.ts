@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, input, model } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { RouterlessLinkHandler } from '@atlasng/common';
+import { LinkHandler } from '@atlasng/common';
 import { HeaderShellNavigationItem } from '../header-shell';
 import { NavigationMenu } from '../navigation-menu/navigation-menu';
 
@@ -29,12 +29,10 @@ export class NavigationContainer {
   readonly rightMenuOpen = model(false);
 
   /**
-   * Closes both drawers whenever the browser URL changes, including browser back and forward.
-   *
-   * Uses the routerless handler directly so this component never pulls in Angular Router.
+   * Closes both drawers whenever the link handler reports a URL change, including browser back and forward.
    */
   constructor() {
-    const unregister = inject(RouterlessLinkHandler).onUrlChange(() => {
+    const unregister = inject(LinkHandler).onUrlChange(() => {
       this.leftMenuOpen.set(false);
       this.rightMenuOpen.set(false);
     });

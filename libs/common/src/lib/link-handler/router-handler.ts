@@ -126,6 +126,25 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
   }
 
   /**
+   * Registers a callback that runs whenever Angular's `Location` reports a URL change.
+   *
+   * @param callback Function invoked with the new browser-visible URL, in the same format as prepared link hrefs.
+   * @returns A function that unregisters the callback.
+   */
+  onUrlChange(callback: (url: string) => void): () => void {
+    let previousUrl = this.#currentExternalUrl();
+    return this.#location.onUrlChange(() => {
+      // `Location` reports external URLs for `go`/`replaceState` but internal paths for popstate,
+      // so re-read the URL to report a consistent format.
+      const url = this.#currentExternalUrl();
+      if (url !== previousUrl) {
+        previousUrl = url;
+        callback(url);
+      }
+    });
+  }
+
+  /**
    * Checks if a prepared link is active based on the current state.
    *
    * @param link Prepared link metadata.
@@ -139,6 +158,15 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
     }
 
     return isActive(urlTree, this.#router, matchOptions);
+  }
+
+  /**
+   * Reads the current browser-visible URL, including query parameters, fragment, and base href.
+   *
+   * @returns The current external URL.
+   */
+  #currentExternalUrl(): string {
+    return this.#location.prepareExternalUrl(this.#location.path(true));
   }
 
   /**
