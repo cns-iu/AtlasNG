@@ -82,15 +82,15 @@ describe('NavigationMenu', () => {
 
   it('emits the selected item when a link is activated', async () => {
     const user = userEvent.setup();
-    const linkSelected = vi.fn();
+    const linkClick = vi.fn();
     const about = { id: 'about', label: 'About', link: 'https://example.com/about', external: true };
     await render(NavigationMenu, {
       inputs: { navigationItems: [about] },
-      on: { linkSelected },
+      on: { linkClick },
     });
 
     await user.click(screen.getByRole('link', { name: 'About' }));
 
-    expect(linkSelected).toHaveBeenCalledWith(about);
+    expect(linkClick).toHaveBeenCalledWith(about);
   });
 });

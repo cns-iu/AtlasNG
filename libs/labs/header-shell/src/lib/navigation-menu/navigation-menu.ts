@@ -39,5 +39,5 @@ export class NavigationMenu {
   readonly socialMediaIds = input<string[]>(SOCIAL_MEDIA_IDS);
 
   /** Emits the navigation item whose link was activated, including links to the current page. */
-  readonly linkSelected = output<HeaderShellNavigationItem>();
+  readonly linkClick = output<HeaderShellNavigationItem>();
 }

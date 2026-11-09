@@ -4,7 +4,7 @@
       [navigationItems]="navigationItems()"
       [email]="email()"
       [socialMediaIds]="socialMediaIds()"
-      (linkSelected)="leftMenuOpen.set(false)"
+      (linkClick)="leftMenuOpen.set(false)"
     />
   </mat-drawer>
 
@@ -19,7 +19,7 @@
       [navigationItems]="navRight()"
       [email]="email()"
       [socialMediaIds]="socialMediaIds()"
-      (linkSelected)="rightMenuOpen.set(false)"
+      (linkClick)="rightMenuOpen.set(false)"
     />
   </mat-drawer>
 

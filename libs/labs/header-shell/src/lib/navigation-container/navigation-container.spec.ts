@@ -1,4 +1,4 @@
-import { provideRouter, Router } from '@angular/router';
+import { RouterlessLinkHandler } from '@atlasng/common';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { NavigationContainer } from './navigation-container';
@@ -68,13 +68,24 @@ describe('NavigationContainer', () => {
     expect(fixture.componentInstance.rightMenuOpen()).toBe(false);
   });
 
-  it('closes both drawers after a router navigation', async () => {
+  it('stops listening for URL changes when destroyed', async () => {
+    const unregister = vi.fn();
     const { fixture } = await render(NavigationContainer, {
-      inputs: { leftMenuOpen: true, rightMenuOpen: true },
-      providers: [provideRouter([{ path: 'other', children: [] }])],
+      providers: [{ provide: RouterlessLinkHandler, useValue: { onUrlChange: () => unregister } }],
     });
 
-    await fixture.debugElement.injector.get(Router).navigateByUrl('/other');
+    fixture.destroy();
+
+    expect(unregister).toHaveBeenCalled();
+  });
+
+  it('closes both drawers after a browser history navigation', async () => {
+    const { fixture } = await render(NavigationContainer, {
+      inputs: { leftMenuOpen: true, rightMenuOpen: true },
+    });
+
+    history.pushState(null, '', '#drawer-test');
+    window.dispatchEvent(new PopStateEvent('popstate'));
 
     expect(fixture.componentInstance.leftMenuOpen()).toBe(false);
     expect(fixture.componentInstance.rightMenuOpen()).toBe(false);

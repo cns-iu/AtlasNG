@@ -246,6 +246,41 @@ describe('RouterlessLinkHandler', () => {
     });
   });
 
+  describe('onUrlChange', () => {
+    it('notifies listeners when the browser URL changes', () => {
+      const { browserLocation, handler } = setup('/current');
+      const callback = vi.fn();
+      handler.onUrlChange(callback);
+
+      browserLocation.href = '/other';
+      window.dispatchEvent(new Event('popstate'));
+
+      expect(callback).toHaveBeenCalledExactlyOnceWith('/other');
+    });
+
+    it('does not notify listeners when the URL is unchanged', () => {
+      const { handler } = setup('/current');
+      const callback = vi.fn();
+      handler.onUrlChange(callback);
+
+      window.dispatchEvent(new Event('popstate'));
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('stops notifying listeners after they unregister', () => {
+      const { browserLocation, handler } = setup('/current');
+      const callback = vi.fn();
+      const unregister = handler.onUrlChange(callback);
+
+      unregister();
+      browserLocation.href = '/other';
+      window.dispatchEvent(new Event('popstate'));
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+  });
+
   describe('isActive', () => {
     function preparedLink(href: string): RouterlessPreparedLink {
       return {

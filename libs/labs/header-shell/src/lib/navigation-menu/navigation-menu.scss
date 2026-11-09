@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/header-shell' as *;
+@use 'tokens/social-media-button';
 
 :host {
   @include mat.button-overrides(
@@ -67,7 +68,11 @@
   }
 
   .ang-navigation-menu-social {
-    --ang-social-media-button-color: #${token-utils.slot(icon-color, $config)};
+    @include social-media-button.overrides(
+      (
+        color: token-utils.slot(icon-color, $config),
+      )
+    );
 
     display: flex;
     align-items: center;

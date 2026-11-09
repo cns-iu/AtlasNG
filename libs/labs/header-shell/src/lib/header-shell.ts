@@ -1,5 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Component, Directive, inject, input, model, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -98,6 +99,7 @@ export class HeaderShell {
   constructor() {
     inject(BreakpointObserver)
       .observe('(min-width: 960px)')
+      .pipe(takeUntilDestroyed())
       .subscribe((state) => {
         if (state.matches && this.hasLocalNavigation()) {
           this.localNavigationExpanded.set(false);
