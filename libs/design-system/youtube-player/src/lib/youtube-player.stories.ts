@@ -29,7 +29,6 @@ import { YouTubePlayer } from './youtube-player';
       [disablePlaceholder]="disablePlaceholder()"
       [placeholderButtonLabel]="placeholderButtonLabel()"
       [placeholderImageQuality]="placeholderImageQuality()"
-      (enableRequest)="enablePermission()"
     />
   `,
 })
@@ -54,12 +53,6 @@ class YouTubePlayerPermissionStoryComponent {
   protected togglePermission(): void {
     this.#permissionsManager.updatePermissions((permissions) =>
       permissions.toggleCategory(AnalyticsEventCategory.Marketing),
-    );
-  }
-
-  protected enablePermission(): void {
-    this.#permissionsManager.updatePermissions((permissions) =>
-      permissions.enableCategory(AnalyticsEventCategory.Marketing),
     );
   }
 }
@@ -134,7 +127,7 @@ const meta: Meta<YouTubePlayer> = {
     },
     enableRequest: {
       control: false,
-      description: 'Emitted when the default enable-request button is clicked.',
+      description: 'Emitted when the default enable-request button is clicked, after it grants marketing permission.',
       table: { category: 'Outputs' },
     },
     ready: {

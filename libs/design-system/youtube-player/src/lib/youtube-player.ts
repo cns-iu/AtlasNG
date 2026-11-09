@@ -66,8 +66,9 @@ export class YouTubePlayerEnableRequest {}
  *
  * The underlying player is rendered only when marketing permission is enabled. Otherwise, the
  * component displays a privacy-preserving placeholder that links to the video on YouTube and an
- * enable-request area beneath it. Consumers can replace that area with content marked by
- * {@link YouTubePlayerEnableRequest}.
+ * enable-request area beneath it. The default area's button grants marketing permission, which
+ * loads the player. Consumers can replace that area with content marked by
+ * {@link YouTubePlayerEnableRequest}, which owns its own consent flow.
  *
  * `width` and `height` set the largest size and the aspect ratio. In containers narrower than
  * `width`, the player and placeholder shrink to the container's width and keep the aspect ratio.
@@ -130,7 +131,7 @@ export class YouTubePlayer {
   /** Observable form of {@link ngPlayer}, used to attach output forwarding lazily. */
   readonly #ngPlayer$ = toObservable(this.ngPlayer);
 
-  /** Emitted when the default enable-request button is clicked. */
+  /** Emitted when the default enable-request button is clicked, after it grants marketing permission. */
   readonly enableRequest = output<void>();
 
   /** Emits when the underlying YouTube player is initialized and ready to receive commands. */
@@ -209,6 +210,14 @@ export class YouTubePlayer {
         destroyRef.onDestroy(() => resizeObserver.disconnect());
       });
     }
+  }
+
+  /** Grants marketing permission from the default enable-request button, then emits {@link enableRequest}. */
+  protected requestEnable(): void {
+    this.#permissionsManager.updatePermissions((permissions) =>
+      permissions.enableCategory(AnalyticsEventCategory.Marketing),
+    );
+    this.enableRequest.emit();
   }
 
   /**
