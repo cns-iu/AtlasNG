@@ -1,0 +1,23 @@
+@use './breakpoints';
+@use './tokens/page-layout';
+
+/// Centers content at the page's maximum width with the page's side padding, so sections outside
+/// `ang-page-layout`, such as a hero or a footer, line up with page content.
+///
+/// The values come from the `page-layout` tokens: `max-width`, `side-padding` below the `medium`
+/// breakpoint, and `side-padding-medium` from it. Override them with `page-layout-overrides`.
+///
+/// @example scss
+///   .hero-content {
+///     @include ds.page-container();
+///   }
+@mixin page-container() {
+  box-sizing: border-box;
+  max-width: page-layout.slot(max-width);
+  margin-inline: auto;
+  padding-inline: page-layout.slot(side-padding);
+
+  @include breakpoints.breakpoint(medium) {
+    padding-inline: page-layout.slot(side-padding-medium);
+  }
+}

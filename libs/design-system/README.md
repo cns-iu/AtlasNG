@@ -69,7 +69,7 @@ A few components with notable options:
 
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
-- **Page layout:** lays out a page body with `angPageLayoutHeader`, `angPageLayoutSidePanel`, and `angPageLayoutEnd` slots, and puts unmarked content in the main slot. From the `medium` breakpoint, the side panel is a sticky column. Below it, the side panel follows the page header. The layout adds no landmarks, so wrap it in the application's `main` element. Under a sticky header, set the `side-panel-sticky-top` token to the header's height.
+- **Page layout:** lays out a page body with `angPageLayoutHeader`, `angPageLayoutIntro`, `angPageLayoutSidePanel`, and `angPageLayoutEnd` slots, and puts unmarked content in the main slot. From the `medium` breakpoint, the side panel is a sticky column. Below it, the side panel follows the page header and intro, so a metadata page can put its first section in the intro. The layout adds no landmarks, so wrap it in the application's `main` element. Under a sticky header, set the `side-panel-sticky-top` token to the header's height. The `max-width`, `side-padding`, and `side-padding-medium` tokens set the page width and side padding, which the [`page-container` mixin](#page-container) shares.
 
 ## Icons
 
@@ -179,6 +179,16 @@ The `breakpoint` mixin and function generate media queries from named widths (`x
 ```
 
 Named breakpoints up to `$print-breakpoint` (default `large`) also apply to print. Configure `$breakpoints` and `$print-breakpoint` with `@use '@atlasng/design-system' as ds with (...)`.
+
+### Page container
+
+The `page-container` mixin centers content at the page's maximum width (default 100rem, or 1600px) with the page's side padding (1.25rem, or 20px, and 2.5rem, or 40px, from the `medium` breakpoint). Use it for sections outside `ang-page-layout`, such as a hero or a footer, so they line up with page content. Change the values everywhere with `ds.page-layout-overrides((max-width: ..., side-padding: ..., side-padding-medium: ...))`.
+
+```scss
+.hero-content {
+  @include ds.page-container();
+}
+```
 
 ### Extended level colors
 

@@ -3,9 +3,18 @@ import { Breadcrumbs, type BreadcrumbItem } from '@atlasng/design-system/buttons
 import { ContentHeader } from '@atlasng/design-system/content/content-header';
 import { ContentParagraph } from '@atlasng/design-system/content/content-paragraph';
 import { ContentSection } from '@atlasng/design-system/content/content-section';
+import { LinkSnippet } from '@atlasng/design-system/links/link-snippet';
 import { TableOfContents, type TableOfContentsItem } from '@atlasng/design-system/table-of-contents';
+import {
+  CSV_FILE_FORMAT,
+  JSON_LD_GRAPH_DATA_FILE_FORMAT,
+  TURTLE_FILE_FORMAT,
+  VersionControl,
+  type VersionControlFileFormat,
+  type VersionControlItem,
+} from '@atlasng/design-system/version-control';
 import { type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
-import { PageLayout, PageLayoutEnd, PageLayoutHeader, PageLayoutSidePanel } from './page-layout';
+import { PageLayout, PageLayoutEnd, PageLayoutHeader, PageLayoutIntro, PageLayoutSidePanel } from './page-layout';
 
 /** Breadcrumb trail for the example page. */
 const CRUMBS: BreadcrumbItem[] = [{ name: 'Home', command: '/' }, { name: 'Label' }];
@@ -16,6 +25,12 @@ const SECTIONS: TableOfContentsItem[] = [
   { tagline: 'Section label', level: 3, anchor: 'section-2' },
   { tagline: 'Section label', level: 2, anchor: 'section-3' },
   { tagline: 'Section label', level: 3, anchor: 'section-4' },
+];
+
+/** Example versions for the metadata page's version control. */
+const VERSIONS: VersionControlItem<VersionControlFileFormat>[] = [
+  { label: '2.1.0', formats: [CSV_FILE_FORMAT, JSON_LD_GRAPH_DATA_FILE_FORMAT, TURTLE_FILE_FORMAT] },
+  { label: '2.0.0', formats: [CSV_FILE_FORMAT, TURTLE_FILE_FORMAT] },
 ];
 
 /** Placeholder section body text. */
@@ -72,13 +87,16 @@ const meta: Meta<PageLayout> = {
     moduleMetadata({
       imports: [
         PageLayoutHeader,
+        PageLayoutIntro,
         PageLayoutSidePanel,
         PageLayoutEnd,
         Breadcrumbs,
         ContentHeader,
         ContentParagraph,
         ContentSection,
+        LinkSnippet,
         TableOfContents,
+        VersionControl,
         MatButtonModule,
       ],
     }),
@@ -114,6 +132,38 @@ export const WithoutSidePanel: Story = {
     template: `
       <ang-page-layout>
         ${HEADER}
+        ${SECTIONS_TEMPLATE}
+        ${END}
+      </ang-page-layout>
+    `,
+  }),
+};
+
+/**
+ * A metadata page: breadcrumbs, the page label, and a copyable URL in the page header, the first section in the
+ * intro, and version control in the side panel. On narrow screens, version control follows the first section.
+ */
+export const MetadataPage: Story = {
+  render: () => ({
+    props: { crumbs: CRUMBS, sections: SECTIONS, lorem: LOREM, versions: VERSIONS, selectedVersion: VERSIONS[0] },
+    template: `
+      <ang-page-layout>
+        <div angPageLayoutHeader style="display: flex; flex-direction: column; gap: 2rem;">
+          <ang-breadcrumbs [items]="crumbs" />
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <ang-content-header tagline="Page label" level="1" />
+            <ang-link-snippet url="https://example.org/schema/page-label/2.1.0" />
+          </div>
+        </div>
+        <ang-content-section angPageLayoutIntro tagline="Summary" [level]="2">
+          <ang-content-paragraph>{{ lorem }}</ang-content-paragraph>
+        </ang-content-section>
+        <ang-version-control
+          angPageLayoutSidePanel
+          tagline="Download"
+          [versions]="versions"
+          [(selectedVersion)]="selectedVersion"
+        />
         ${SECTIONS_TEMPLATE}
         ${END}
       </ang-page-layout>

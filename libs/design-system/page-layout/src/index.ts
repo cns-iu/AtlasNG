@@ -1,1 +1,1 @@
-export { PageLayout, PageLayoutEnd, PageLayoutHeader, PageLayoutSidePanel } from './lib/page-layout';
+export { PageLayout, PageLayoutEnd, PageLayoutHeader, PageLayoutIntro, PageLayoutSidePanel } from './lib/page-layout';

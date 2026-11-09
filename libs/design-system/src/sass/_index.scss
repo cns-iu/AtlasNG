@@ -8,6 +8,7 @@
 // Utilities
 @forward './breakpoints' show $breakpoints, $print-breakpoint, breakpoint;
 @forward './ext-colors' show ext-level-colors;
+@forward './page-container' show page-container;
 @forward './internal/token-utils' show sys-token, sys-slot, ext-token, ext-slot, ext-sys-slot;
 
 // Component token overrides and slots

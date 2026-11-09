@@ -1,19 +1,20 @@
 @use 'breakpoints';
+@use 'page-container';
 @use 'internal/token-utils';
 @use 'tokens/page-layout' as *;
 
+$_side-padding-medium: token-utils.slot(side-padding-medium, $config);
 $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
 
 :host {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-  box-sizing: border-box;
-  max-width: 100rem;
-  margin-inline: auto;
-  padding: 2.5rem 1.25rem;
+  padding-block: 2.5rem;
+  @include page-container.page-container();
 
   .ang-page-layout--header,
+  .ang-page-layout--intro,
   .ang-page-layout--side-panel,
   .ang-page-layout--main,
   .ang-page-layout--end {
@@ -37,19 +38,26 @@ $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
     // The main column keeps a 45rem minimum, as in Figma, unless the side panel's minimum would no longer fit
     grid-template:
       'header side-panel' auto
+      'intro side-panel' auto
       'body side-panel' 1fr
       / minmax(min(45rem, 100% - 15rem), 1fr) minmax(15rem, 18.75rem);
     gap: 0;
+    // The side panel runs to the layout's edge, so the side padding moves onto the main column's regions
     padding: 0;
 
     .ang-page-layout--header {
       grid-area: header;
-      padding: 2.5rem 2.5rem 0;
+      padding: 2.5rem $_side-padding-medium 0;
+    }
+
+    .ang-page-layout--intro {
+      grid-area: intro;
+      padding: 2.5rem $_side-padding-medium 0;
     }
 
     .ang-page-layout--body {
       grid-area: body;
-      padding: 2.5rem;
+      padding: 2.5rem $_side-padding-medium;
     }
 
     .ang-page-layout--side-panel {
@@ -60,7 +68,7 @@ $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
       box-sizing: border-box;
       max-height: calc(100dvh - #{$_sticky-top});
       padding: 2.5rem 1rem;
-      overflow-y: auto;
+      overflow: hidden auto;
     }
   }
 }
