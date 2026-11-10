@@ -2,7 +2,8 @@ import { signal, Signal } from '@angular/core';
 import { DataLoader, DataLoaderContext } from '@atlasng/content-blocks/loaders';
 import { DataParser, DataParserContext } from '@atlasng/content-blocks/parsers';
 import { ContentDataSchema, ContentDataSource } from '@atlasng/content-blocks/types';
-import { ContentBlocksErrorCode, ContentValidationError, isContentDataSource } from '@atlasng/content-blocks/utils';
+import { ContentBlocksErrorCode } from '@atlasng/content-blocks/errors';
+import { ContentValidationError, isContentDataSource } from '@atlasng/content-blocks/utils';
 import { AngError } from '@atlasng/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import {

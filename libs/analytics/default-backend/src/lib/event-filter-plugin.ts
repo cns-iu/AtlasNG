@@ -1,7 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
 import { inject, PLATFORM_ID } from '@angular/core';
 import { AngError } from '@atlasng/core';
-import { AnalyticsErrorCode, AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
+import { AnalyticsErrorCode } from '@atlasng/analytics/errors';
+import { AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
 import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
 import { AnalyticsInstance, AnalyticsPlugin } from 'analytics';
 import { AbortResult, AnyPluginMethodArgs, IdentifyMethodArgs, PageMethodArgs, TrackMethodArgs } from './types';

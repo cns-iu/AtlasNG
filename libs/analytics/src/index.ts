@@ -1,3 +1,4 @@
+export { AnalyticsErrorCode } from '@atlasng/analytics/errors';
 export { Analytics, ANALYTICS_CONFIG, type AnalyticsConfig } from './lib/analytics';
 export { ANALYTICS_BACKEND, type AnalyticsBackend } from './lib/backend';
 export {

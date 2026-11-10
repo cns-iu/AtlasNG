@@ -1,9 +1,5 @@
-import {
-  AnalyticsErrorCode,
-  AnalyticsEvent,
-  AnalyticsEventCategory,
-  getAnalyticsEventCategory,
-} from '@atlasng/analytics/events';
+import { AnalyticsErrorCode } from '@atlasng/analytics/errors';
+import { AnalyticsEvent, AnalyticsEventCategory, getAnalyticsEventCategory } from '@atlasng/analytics/events';
 import { AngError } from '@atlasng/core';
 
 /** A mapping of analytics categories to their permission status. */

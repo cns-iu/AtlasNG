@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AnalyticsErrorCode, AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
+import { AnalyticsErrorCode } from '@atlasng/analytics/errors';
+import { AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
 import { AngError } from '@atlasng/core';
 import { AnalyticsPlugin } from 'analytics';
 import { ANONYMOUS_ID_KEY } from './anonymous-id';

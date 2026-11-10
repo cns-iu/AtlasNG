@@ -11,7 +11,7 @@ import {
   untracked,
 } from '@angular/core';
 import { ContentDefinition, ContentBlockNode, ContentNode, TypeRef } from '@atlasng/content-blocks/types';
-import { ContentBlocksErrorCode } from '@atlasng/content-blocks/utils';
+import { ContentBlocksErrorCode } from '@atlasng/content-blocks/errors';
 import { AngError } from '@atlasng/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Arrayable } from 'type-fest';

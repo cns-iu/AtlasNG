@@ -1,6 +1,6 @@
 import { ComponentMirror, reflectComponentType, Type } from '@angular/core';
 import { ContentDefinition, DefaultExport, TypeRef } from '@atlasng/content-blocks/types';
-import { ContentBlocksErrorCode } from '@atlasng/content-blocks/utils';
+import { ContentBlocksErrorCode } from '@atlasng/content-blocks/errors';
 import { AngError } from '@atlasng/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Promisable } from 'type-fest';
