@@ -2,6 +2,21 @@ import { setCompodocJson } from '@storybook/addon-docs/angular';
 import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview, StorybookConfig } from '@storybook/angular';
 
+/**
+ * Toolbar background options: the Material 3 surface roles of the selected theme.
+ * Each value reads the role's CSS variable, so the background follows the theme's brand and light or dark mode.
+ */
+const SURFACE_BACKGROUNDS = {
+  surface: { name: 'Surface', value: 'var(--mat-sys-surface)' },
+  'surface-dim': { name: 'Surface Dim', value: 'var(--mat-sys-surface-dim)' },
+  'surface-bright': { name: 'Surface Bright', value: 'var(--mat-sys-surface-bright)' },
+  'surface-container-lowest': { name: 'Surface Container Lowest', value: 'var(--mat-sys-surface-container-lowest)' },
+  'surface-container-low': { name: 'Surface Container Low', value: 'var(--mat-sys-surface-container-low)' },
+  'surface-container': { name: 'Surface Container', value: 'var(--mat-sys-surface-container)' },
+  'surface-container-high': { name: 'Surface Container High', value: 'var(--mat-sys-surface-container-high)' },
+  'surface-container-highest': { name: 'Surface Container Highest', value: 'var(--mat-sys-surface-container-highest)' },
+};
+
 /** Options used to configure the shared Storybook preview. */
 export interface StorybookPreviewOptions {
   /** Compodoc JSON generated for the consuming project. */
@@ -60,5 +75,11 @@ export function createStorybookPreview({ docJson }: StorybookPreviewOptions): Pr
         defaultTheme: 'HRA Light',
       }),
     ],
+    parameters: {
+      backgrounds: { options: SURFACE_BACKGROUNDS },
+    },
+    initialGlobals: {
+      backgrounds: { value: 'surface' },
+    },
   };
 }
