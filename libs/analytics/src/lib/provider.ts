@@ -138,9 +138,7 @@ export function withGlobalErrorHandler(): AnalyticsFeature {
  * @returns Environment providers for the analytics system.
  */
 export function provideAnalytics(config?: AnalyticsConfig, ...features: AnalyticsFeature[]): EnvironmentProviders {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    checkBackendConfiguration(features);
-  }
+  checkBackendConfiguration(features);
 
   return makeEnvironmentProviders([
     ANALYTICS_CONFIG.provide(config ?? {}),
@@ -150,12 +148,17 @@ export function provideAnalytics(config?: AnalyticsConfig, ...features: Analytic
 
 /**
  * Check the provided features for valid backend configuration.
- * Ensures that there is exactly one analytics backend provided, either custom or default, but not both.
+ * Ensures that there is exactly one analytics backend provided, either custom or default, but not both. Only runs in
+ * dev mode.
  *
  * @param features The features passed to {@link provideAnalytics}.
  * @throws Error when no backend, multiple custom backends, or both a custom and the default backend are provided.
  */
 function checkBackendConfiguration(features: AnalyticsFeature[]): void {
+  if (!(typeof ngDevMode === 'undefined' || ngDevMode)) {
+    return;
+  }
+
   const customBackends = features.filter((feature) => feature.kind === AnalyticsFeatureKind.CustomBackend);
   const hasDefaultBackend = features.some((feature) => feature.kind === AnalyticsFeatureKind.DefaultBackend);
 

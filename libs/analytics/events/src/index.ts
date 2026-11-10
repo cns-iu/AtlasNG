@@ -1,3 +1,4 @@
+export { AnalyticsErrorCode } from './lib/errors';
 export { CoreEvents, type ErrorAnalyticsEventPayload, type PageViewAnalyticsEventPayload } from './lib/core-events';
 export {
   AnalyticsEventCategory,

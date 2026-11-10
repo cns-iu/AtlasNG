@@ -11,6 +11,8 @@ import {
   untracked,
 } from '@angular/core';
 import { ContentDefinition, ContentBlockNode, ContentNode, TypeRef } from '@atlasng/content-blocks/types';
+import { ContentBlocksErrorCode } from '@atlasng/content-blocks/utils';
+import { AngError } from '@atlasng/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Arrayable } from 'type-fest';
 import {
@@ -222,11 +224,14 @@ export class Boundary {
    *
    * @returns Settles once the content or the error component is shown, or the boundary is destroyed, with how it
    *   settled. A rendered boundary can still fail later, e.g. on an invalid data emission.
-   * @throws {Error} When the boundary was already started.
+   * @throws {AngError} When the boundary was already started.
    */
   async start(): Promise<BoundaryOutcome> {
     if (this.#errorWatcher) {
-      throw new Error('Boundary already started.');
+      throw new AngError(
+        ContentBlocksErrorCode.BoundaryAlreadyStarted,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && 'Boundary already started.',
+      );
     }
 
     this.#initializeErrorWatcher();
@@ -689,7 +694,14 @@ function getResolved(node: RenderElementNode): Promise<ResolvedElement> {
  */
 function notStarted(node: RenderElementNode): Promise<never> {
   const { abortSignal } = node;
-  return Promise.reject(abortSignal.aborted ? abortSignal.reason : new Error(`Node '${node.path}' was not started.`));
+  return Promise.reject(
+    abortSignal.aborted
+      ? abortSignal.reason
+      : new AngError(
+          ContentBlocksErrorCode.NodeNotStarted,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && `Node '${node.path}' was not started.`,
+        ),
+  );
 }
 
 /** Suffix marking a style value as important. */

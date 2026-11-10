@@ -2,7 +2,8 @@ import { signal, Signal } from '@angular/core';
 import { DataLoader, DataLoaderContext } from '@atlasng/content-blocks/loaders';
 import { DataParser, DataParserContext } from '@atlasng/content-blocks/parsers';
 import { ContentDataSchema, ContentDataSource } from '@atlasng/content-blocks/types';
-import { ContentValidationError, isContentDataSource } from '@atlasng/content-blocks/utils';
+import { ContentBlocksErrorCode, ContentValidationError, isContentDataSource } from '@atlasng/content-blocks/utils';
+import { AngError } from '@atlasng/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import {
   concat,
@@ -258,7 +259,10 @@ function toDataSignal(
         if (!hasValue) {
           let reason = abortSignal.reason;
           if (!abortSignal.aborted) {
-            reason = new Error(`Data '${key}' completed without a value.`);
+            reason = new AngError(
+              ContentBlocksErrorCode.DataCompletedWithoutValue,
+              (typeof ngDevMode === 'undefined' || ngDevMode) && `Data '${key}' completed without a value.`,
+            );
           }
 
           reject(reason);

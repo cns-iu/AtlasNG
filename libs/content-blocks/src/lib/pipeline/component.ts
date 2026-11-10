@@ -1,5 +1,7 @@
 import { ComponentMirror, reflectComponentType, Type } from '@angular/core';
 import { ContentDefinition, DefaultExport, TypeRef } from '@atlasng/content-blocks/types';
+import { ContentBlocksErrorCode } from '@atlasng/content-blocks/utils';
+import { AngError } from '@atlasng/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { Promisable } from 'type-fest';
 
@@ -17,7 +19,10 @@ export async function loadComponent<T>(loadable: TypeRef<T>): Promise<Type<T>> {
   const result = await (loadable as () => Promisable<Type<T> | DefaultExport<Type<T>>>)();
   const type = typeof result === 'object' && result !== null && 'default' in result ? result.default : result;
   if (!reflectComponentType(type)) {
-    throw new Error('Component loader did not resolve to a component.');
+    throw new AngError(
+      ContentBlocksErrorCode.InvalidComponentLoader,
+      (typeof ngDevMode === 'undefined' || ngDevMode) && 'Component loader did not resolve to a component.',
+    );
   }
 
   return type;

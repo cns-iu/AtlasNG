@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { inject, PLATFORM_ID } from '@angular/core';
-import { AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
+import { AngError } from '@atlasng/core';
+import { AnalyticsErrorCode, AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
 import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
 import { AnalyticsInstance, AnalyticsPlugin } from 'analytics';
 import { AbortResult, AnyPluginMethodArgs, IdentifyMethodArgs, PageMethodArgs, TrackMethodArgs } from './types';
@@ -57,7 +58,7 @@ const ATLASNG_CALL_OPTION = '__atlasng__';
  *
  * @param config Event filter configuration.
  * @returns Analytics plugin implementation.
- * @throws Error when the backend does not expose an abort API.
+ * @throws AngError when the backend does not expose an abort API.
  */
 export function eventFilterPlugin(config: EventFilterPluginConfig): AnalyticsPlugin {
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -76,7 +77,11 @@ export function eventFilterPlugin(config: EventFilterPluginConfig): AnalyticsPlu
     const isEnabled = isBrowser || args.config.enableServerSideTracking;
     const { abort } = args;
     if (!abort) {
-      throw new Error('EventFilterPlugin requires analytics backend to support aborting events');
+      throw new AngError(
+        AnalyticsErrorCode.AbortNotSupported,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'EventFilterPlugin requires analytics backend to support aborting events',
+      );
     } else if (!isEnabled) {
       return abort('Event tracking is disabled on the server');
     } else if (args.payload.options?.[ATLASNG_CALL_OPTION] !== true) {
@@ -107,7 +112,7 @@ export function eventFilterPlugin(config: EventFilterPluginConfig): AnalyticsPlu
  *
  * @param instance Analytics instance created by the default backend.
  * @returns The event filter plugin methods.
- * @throws Error when the event filter plugin is not registered on the instance.
+ * @throws AngError when the event filter plugin is not registered on the instance.
  */
 export function getDefaultBackendEventFilterMethods(
   instance: Pick<AnalyticsInstance, 'plugins'>,
@@ -115,8 +120,10 @@ export function getDefaultBackendEventFilterMethods(
   const plugins = instance.plugins as unknown as Partial<Record<string, DefaultBackendEventFilterMethods>>;
   const methods = plugins[EVENT_FILTER_PLUGIN_NAME];
   if (!methods) {
-    throw new Error(
-      'The analytics instance is missing the event filter plugin; was it created by the default backend (withDefaultBackend())?',
+    throw new AngError(
+      AnalyticsErrorCode.MissingEventFilterPlugin,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        'The analytics instance is missing the event filter plugin; was it created by the default backend (withDefaultBackend())?',
     );
   }
 

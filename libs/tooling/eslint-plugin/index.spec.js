@@ -49,7 +49,7 @@ function ruleIds(code, config, filename) {
 describe('@atlasng/eslint-plugin', () => {
   it('exposes the package name and version as plugin metadata', () => {
     expect(plugin.meta).toEqual({ name: '@atlasng/eslint-plugin', version: packageJson.version });
-    expect(plugin.rules).toEqual({});
+    expect(Object.keys(plugin.rules)).toEqual(['no-unguarded-error-message']);
   });
 
   it('exposes the flat configurations under Nx-style keys', () => {
