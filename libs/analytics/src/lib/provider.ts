@@ -1,4 +1,5 @@
 import { EnvironmentProviders, ErrorHandler, makeEnvironmentProviders, Provider } from '@angular/core';
+import { AnalyticsErrorCode } from '@atlasng/analytics/errors';
 import {
   AnalyticsPermissionedStorageConfig,
   AnalyticsPermissionedStorageKeys,
@@ -9,6 +10,7 @@ import {
   provideAnalyticsPermissionsManagerConfig,
   provideInitialAnalyticsPermissions,
 } from '@atlasng/analytics/permissions';
+import { AngError } from '@atlasng/core';
 import { ANALYTICS_CONFIG, AnalyticsConfig } from './analytics';
 import { ANALYTICS_BACKEND, AnalyticsBackend } from './backend';
 import { AnalyticsErrorHandler } from './features/error-handler';
@@ -138,9 +140,7 @@ export function withGlobalErrorHandler(): AnalyticsFeature {
  * @returns Environment providers for the analytics system.
  */
 export function provideAnalytics(config?: AnalyticsConfig, ...features: AnalyticsFeature[]): EnvironmentProviders {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    checkBackendConfiguration(features);
-  }
+  checkBackendConfiguration(features);
 
   return makeEnvironmentProviders([
     ANALYTICS_CONFIG.provide(config ?? {}),
@@ -150,21 +150,33 @@ export function provideAnalytics(config?: AnalyticsConfig, ...features: Analytic
 
 /**
  * Check the provided features for valid backend configuration.
- * Ensures that there is exactly one analytics backend provided, either custom or default, but not both.
+ * Ensures that there is exactly one analytics backend provided, either custom or default, but not both. Only runs in
+ * dev mode.
  *
  * @param features The features passed to {@link provideAnalytics}.
- * @throws Error when no backend, multiple custom backends, or both a custom and the default backend are provided.
+ * @throws AngError when no backend, multiple custom backends, or both a custom and the default backend are provided.
  */
 function checkBackendConfiguration(features: AnalyticsFeature[]): void {
+  if (!(typeof ngDevMode === 'undefined' || ngDevMode)) {
+    return;
+  }
+
   const customBackends = features.filter((feature) => feature.kind === AnalyticsFeatureKind.CustomBackend);
   const hasDefaultBackend = features.some((feature) => feature.kind === AnalyticsFeatureKind.DefaultBackend);
 
   if (customBackends.length > 1) {
-    throw new Error('Multiple custom analytics backends were provided. Please provide only one custom backend.');
+    throw new AngError(
+      AnalyticsErrorCode.MultipleCustomBackends,
+      'Multiple custom analytics backends were provided. Please provide only one custom backend.',
+    );
   } else if (customBackends.length > 0 && hasDefaultBackend) {
-    throw new Error('Cannot provide both a custom analytics backend and the default backend. Please choose one.');
+    throw new AngError(
+      AnalyticsErrorCode.ConflictingBackends,
+      'Cannot provide both a custom analytics backend and the default backend. Please choose one.',
+    );
   } else if (customBackends.length === 0 && !hasDefaultBackend) {
-    throw new Error(
+    throw new AngError(
+      AnalyticsErrorCode.MissingBackend,
       'No analytics backend was provided. Please provide a backend using withDefaultBackend() from @atlasng/analytics/default-backend or withCustomBackend().',
     );
   }

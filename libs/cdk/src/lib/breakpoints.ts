@@ -1,6 +1,8 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { assertInInjectionContext, inject, InjectionToken, Injector, Provider, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { CdkErrorCode } from '@atlasng/cdk/errors';
+import { AngError } from '@atlasng/core';
 import { map } from 'rxjs';
 
 /** Direction modifiers supported in a breakpoint expression. */
@@ -77,12 +79,10 @@ interface Length {
  *
  * @param breakpoints Named breakpoint minimum widths.
  * @returns A provider for {@link BREAKPOINTS}.
- * @throws Error in dev mode if the breakpoints are empty, unordered, mix units, or do not begin at zero.
+ * @throws AngError in dev mode if the breakpoints are empty, unordered, mix units, or do not begin at zero.
  */
 export function provideBreakpoints(breakpoints: Breakpoints): Provider {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    validateBreakpoints(breakpoints);
-  }
+  validateBreakpoints(breakpoints);
   return { provide: BREAKPOINTS, useValue: breakpoints };
 }
 
@@ -98,7 +98,7 @@ export function provideBreakpoints(breakpoints: Breakpoints): Provider {
  * @param expression Breakpoint expression.
  * @param breakpoints Named breakpoints to resolve names against.
  * @returns A media query condition, or an empty string when the expression covers every width.
- * @throws Error if the expression is invalid.
+ * @throws AngError if the expression is invalid.
  */
 export function breakpointQuery(
   expression: BreakpointExpression,
@@ -106,25 +106,36 @@ export function breakpointQuery(
 ): string {
   const parts = String(expression).trim().split(/\s+/);
   if (parts.length > 2) {
-    throw new Error(
-      `Invalid breakpoint expression: ${expression}. Expected a breakpoint followed by up, down, or only.`,
+    throw new AngError(
+      CdkErrorCode.InvalidBreakpointExpression,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Invalid breakpoint expression: ${expression}. Expected a breakpoint followed by up, down, or only.`,
     );
   }
 
   const [bp, direction = 'up'] = parts as [string, BreakpointDirection | undefined];
   if (!BREAKPOINT_DIRECTIONS.includes(direction)) {
-    throw new Error(
-      `Invalid breakpoint direction: ${direction}. Valid directions are ${BREAKPOINT_DIRECTIONS.join(', ')}.`,
+    throw new AngError(
+      CdkErrorCode.InvalidBreakpointDirection,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Invalid breakpoint direction: ${direction}. Valid directions are ${BREAKPOINT_DIRECTIONS.join(', ')}.`,
     );
   }
 
   const names = Object.keys(breakpoints);
   const isNamed = !LENGTH_PATTERN.test(bp);
   if (isNamed && !(bp in breakpoints)) {
-    throw new Error(`Invalid breakpoint: ${bp}. Valid breakpoints are ${names.join(', ')}.`);
+    throw new AngError(
+      CdkErrorCode.UnknownBreakpoint,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Invalid breakpoint: ${bp}. Valid breakpoints are ${names.join(', ')}.`,
+    );
   }
   if (!isNamed && direction === 'only') {
-    throw new Error('Only named breakpoints can use the only direction.');
+    throw new AngError(
+      CdkErrorCode.OnlyDirectionWithLength,
+      (typeof ngDevMode === 'undefined' || ngDevMode) && 'Only named breakpoints can use the only direction.',
+    );
   }
 
   const width = parseWidth(isNamed ? breakpoints[bp] : bp);
@@ -156,7 +167,7 @@ export function breakpointQuery(
  * @param expressions A breakpoint expression or a list of expressions.
  * @param options Watcher options.
  * @returns A signal that is true while any of the expressions match the viewport.
- * @throws Error if no expressions are given or an expression is invalid.
+ * @throws AngError if no expressions are given or an expression is invalid.
  * @example
  * readonly isDesktop = watchBreakpoint('medium');
  * readonly isCompact = watchBreakpoint(['small down', 'x-large']);
@@ -170,7 +181,11 @@ export function watchBreakpoint(
   const queries = [expressions].flat().map((expression) => breakpointQuery(expression, breakpoints));
 
   if (queries.length === 0) {
-    throw new Error('watchBreakpoint() requires at least one breakpoint expression.');
+    throw new AngError(
+      CdkErrorCode.MissingBreakpointExpression,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        'watchBreakpoint() requires at least one breakpoint expression.',
+    );
   }
   if (queries.includes('')) {
     return signal(true).asReadonly();
@@ -230,7 +245,7 @@ function resolveInjector(fn: (...args: never[]) => unknown, options: WatchBreakp
  *
  * @param width A number of pixels or a length string.
  * @returns The parsed length.
- * @throws Error if the width is not a supported length.
+ * @throws AngError if the width is not a supported length.
  */
 function parseWidth(width: BreakpointWidth | string): Length {
   const match = LENGTH_PATTERN.exec(String(width));
@@ -238,7 +253,10 @@ function parseWidth(width: BreakpointWidth | string): Length {
     return { value: Number(match[1]), unit: (match[2] as BreakpointUnit | undefined) ?? 'px' };
   }
 
-  throw new Error(`Breakpoint widths must use px, em, or rem; received ${width}.`);
+  throw new AngError(
+    CdkErrorCode.InvalidBreakpointWidth,
+    (typeof ngDevMode === 'undefined' || ngDevMode) && `Breakpoint widths must use px, em, or rem; received ${width}.`,
+  );
 }
 
 /**
@@ -263,28 +281,41 @@ function formatLength(length: Length): string {
 }
 
 /**
- * Validates a breakpoints configuration, mirroring the design-system Sass validation.
+ * Validates a breakpoints configuration in dev mode, mirroring the design-system Sass validation.
  *
  * @param breakpoints Named breakpoint minimum widths.
- * @throws Error if the configuration is invalid.
+ * @throws AngError if the configuration is invalid.
  */
 function validateBreakpoints(breakpoints: Breakpoints): void {
+  if (!(typeof ngDevMode === 'undefined' || ngDevMode)) {
+    return;
+  }
+
   const entries = Object.entries(breakpoints);
   if (entries.length === 0) {
-    throw new Error('Breakpoints must contain at least one breakpoint.');
+    throw new AngError(CdkErrorCode.EmptyBreakpoints, 'Breakpoints must contain at least one breakpoint.');
   }
 
   let previous: Length | undefined;
   for (const [name, configured] of entries) {
     const width = parseWidth(configured);
     if (!previous && width.value !== 0) {
-      throw new Error(`The first breakpoint must begin at 0; ${name} begins at ${configured}.`);
+      throw new AngError(
+        CdkErrorCode.FirstBreakpointNotZero,
+        `The first breakpoint must begin at 0; ${name} begins at ${configured}.`,
+      );
     }
     if (previous && previous.value !== 0 && width.unit !== previous.unit) {
-      throw new Error(`Breakpoint widths must use mutually comparable units; ${name} is ${configured}.`);
+      throw new AngError(
+        CdkErrorCode.IncomparableBreakpointUnits,
+        `Breakpoint widths must use mutually comparable units; ${name} is ${configured}.`,
+      );
     }
     if (previous && width.value <= previous.value) {
-      throw new Error(`Breakpoints must be ordered by ascending width; ${name} is ${configured}.`);
+      throw new AngError(
+        CdkErrorCode.UnorderedBreakpoints,
+        `Breakpoints must be ordered by ascending width; ${name} is ${configured}.`,
+      );
     }
     previous = width;
   }

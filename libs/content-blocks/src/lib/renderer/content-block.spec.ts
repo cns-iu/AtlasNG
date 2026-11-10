@@ -303,7 +303,9 @@ describe('ContentBlock', () => {
       ]),
     );
 
-    expect(await screen.findByRole('alert')).toHaveTextContent("list: Invalid content at 'content.@default[1]'");
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      "list: ANG5005: Invalid content at 'content.@default[1]'",
+    );
     expect(screen.getByRole('heading', { name: 'Still here' })).toBeInTheDocument();
     expect(errorHandler.handleError).toHaveBeenCalledTimes(1);
   });

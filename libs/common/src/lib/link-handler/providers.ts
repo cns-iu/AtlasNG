@@ -1,4 +1,6 @@
 import { EnvironmentProviders, makeEnvironmentProviders, Provider } from '@angular/core';
+import { CommonErrorCode } from '@atlasng/common/errors';
+import { AngError } from '@atlasng/core';
 import { LinkHandler } from './handler';
 import { RouterLinkHandler } from './router-handler';
 
@@ -83,24 +85,26 @@ export function withRouterlessHandler(): LinkHandlerFeature {
  * @throws When more than one handler feature is configured in development mode.
  */
 export function provideLinkHandler(...features: LinkHandlerFeature[]): EnvironmentProviders {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    checkHandlerConfiguration(features);
-  }
+  checkHandlerConfiguration(features);
 
   return makeEnvironmentProviders(features.flatMap((feature) => feature.providers));
 }
 
 /**
- * Validates that only one link handler strategy is configured.
+ * Validates that only one link handler strategy is configured. Only runs in dev mode.
  *
  * @param features Features passed to {@link provideLinkHandler}.
  * @throws When multiple handler strategy features are present.
  */
 function checkHandlerConfiguration(features: LinkHandlerFeature[]): void {
+  if (!(typeof ngDevMode === 'undefined' || ngDevMode)) {
+    return;
+  }
+
   const kinds = [LinkHandlerFeatureKind.Custom, LinkHandlerFeatureKind.Router, LinkHandlerFeatureKind.Routerless];
   const handlerFeatures = features.filter((feature) => kinds.includes(feature.kind));
 
   if (handlerFeatures.length > 1) {
-    throw new Error('Only one link handler can be provided.');
+    throw new AngError(CommonErrorCode.MultipleLinkHandlers, 'Only one link handler can be provided.');
   }
 }

@@ -6,5 +6,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["*.js", "configs/*.js"]
+  "include": ["*.js", "configs/*.js", "rules/*.js"]
 }
