@@ -1,6 +1,6 @@
 # @atlasng/nx-plugin
 
-[Nx](https://nx.dev/) plugin for AtlasNG and other Nx Angular workspaces. It sets up the shared tooling packages, infers Compodoc targets, provides release executors and ships an `nx.json` preset.
+[Nx](https://nx.dev/) plugin for AtlasNG and other Nx Angular workspaces. It sets up the shared tooling packages, infers Compodoc targets, provides release and Figma token SCSS executors and ships an `nx.json` preset.
 
 ## Installation
 
@@ -166,6 +166,92 @@ npm trusted publishing can only be configured for packages that already exist on
 npm login
 npx nx run @atlasng/monorepo:bootstrap-npm-packages --dryRun
 npx nx run @atlasng/monorepo:bootstrap-npm-packages
+```
+
+### `generate-palettes-scss`
+
+Generates Angular Material core palette maps (`$_palettes`, `$primary-palette` and `$tertiary-palette`) from the `palettes` group of a Figma palette tokens JSON export and, when the tokens have an `ext` group, an `$ext-palettes` map of extension palettes. Palette and group names match case-insensitively, ignoring separators, and both flat (`Primary 40`) and nested (`Primary.40`) exports work. The executor fails when a required tone is missing or is not a six-digit hex color. The file starts with a banner naming the Nx target that regenerates it.
+
+| Option   | Default                                      | Description                                              |
+| -------- | -------------------------------------------- | -------------------------------------------------------- |
+| `input`  | (required)                                   | Palette tokens JSON file, relative to the workspace root |
+| `output` | `<input name>.palettes.scss` next to `input` | Output SCSS file, relative to the workspace root         |
+
+```json
+{
+  "targets": {
+    "generate-palettes-scss": {
+      "executor": "@atlasng/nx-plugin:generate-palettes-scss",
+      "options": {
+        "input": "{projectRoot}/src/theme/palette.tokens.json",
+        "output": "{projectRoot}/src/theme/_palettes.scss"
+      }
+    }
+  }
+}
+```
+
+```bash
+npx nx run my-theme:generate-palettes-scss
+```
+
+### `generate-shape-scss`
+
+Generates a `$shape-overrides` SCSS map from the `Corner` group of a Figma shape tokens JSON export. Each supported key (`none`, `extra-small`, `extra-small-top`, `small`, `medium`, `large`, `large-top`, `large-start`, `large-end`, `extra-large`, `extra-large-top`, `full`) becomes a `corner-<key>` entry; `-top`, `-start` and `-end` keys only round those corners. Other keys are ignored, and a supported key without a numeric `$value` fails the executor. The file starts with a banner naming the Nx target that regenerates it.
+
+| Option   | Default                                   | Description                                            |
+| -------- | ----------------------------------------- | ------------------------------------------------------ |
+| `input`  | (required)                                | Shape tokens JSON file, relative to the workspace root |
+| `output` | `<input name>.shape.scss` next to `input` | Output SCSS file, relative to the workspace root       |
+
+```json
+{
+  "targets": {
+    "generate-shape-scss": {
+      "executor": "@atlasng/nx-plugin:generate-shape-scss",
+      "options": {
+        "input": "{projectRoot}/src/theme/shape.tokens.json",
+        "output": "{projectRoot}/src/theme/_shape.scss"
+      }
+    }
+  }
+}
+```
+
+```bash
+npx nx run my-theme:generate-shape-scss
+```
+
+### `generate-typography-scss`
+
+Generates a `$typography` map of font families and weights from the `Static` group of a Figma font tokens JSON export, and a `$typography-overrides` map of the Angular Material typescale styles from the `Static` group of a typescale tokens JSON export. The file starts with a banner naming the Nx target that regenerates it.
+
+| Option          | Default                                        | Description                                                                         |
+| --------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `input`         | (required)                                     | Font tokens JSON file, relative to the workspace root                               |
+| `typescale`     | (required)                                     | Typescale tokens JSON file, relative to the workspace root                          |
+| `output`        | `<input name>.typography.scss` next to `input` | Output SCSS file, relative to the workspace root                                    |
+| `plainVariable` | `false`                                        | Append ` Variable` to the plain font family name (and the matching typescale fonts) |
+| `brandVariable` | `false`                                        | Append ` Variable` to the brand font family name (and the matching typescale fonts) |
+
+```json
+{
+  "targets": {
+    "generate-typography-scss": {
+      "executor": "@atlasng/nx-plugin:generate-typography-scss",
+      "options": {
+        "input": "{projectRoot}/src/theme/font.tokens.json",
+        "typescale": "{projectRoot}/src/theme/typescale.tokens.json",
+        "output": "{projectRoot}/src/theme/_typography.scss",
+        "plainVariable": true
+      }
+    }
+  }
+}
+```
+
+```bash
+npx nx run my-theme:generate-typography-scss
 ```
 
 ### `last-modified-dates`
