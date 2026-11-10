@@ -146,3 +146,15 @@ export const ThreeLine: Story = {
     styles: ['ang-search-list { max-height: 22.25rem; width: 22.5rem; }'],
   }),
 };
+
+export const WithSearchTerm: Story = {
+  args: {
+    options: FILTER_OPTIONS_MULTI,
+    selected: preselect(FILTER_OPTIONS_MULTI),
+    search: 'ab',
+  },
+  render: (args) => ({
+    props: args,
+    styles: ['ang-search-list { max-height: 22.25rem; width: 22.5rem; }'],
+  }),
+};

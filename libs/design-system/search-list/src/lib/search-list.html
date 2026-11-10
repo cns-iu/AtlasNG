@@ -11,12 +11,21 @@
     <mat-list-option togglePosition="before" [value]="option" [selected]="selected().includes(option)">
       <div matListItemTitle>
         <div class="ang-search-list--label-count">
-          <span class="ang-search-list--label">{{ option.label }}</span>
+          <span
+            class="ang-search-list--label"
+            [angSearchHighlight]="option.label"
+            [angSearchHighlightRanges]="getLabelRanges(option)"
+          ></span>
           <span class="ang-search-list--count">{{ option.count | number }}</span>
         </div>
       </div>
       @for (line of normalizeDescription(option.description); track $index) {
-        <span class="ang-search-list--description" matListItemLine>{{ line }}</span>
+        <span
+          class="ang-search-list--description"
+          matListItemLine
+          [angSearchHighlight]="line"
+          [angSearchHighlightRanges]="getDescriptionRanges(option, line)"
+        ></span>
       }
     </mat-list-option>
   }

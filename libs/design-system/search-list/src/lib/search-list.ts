@@ -4,6 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
+import { injectSearch, SearchFieldDefinition, SearchHighlight, SearchRange } from '@atlasng/cdk/search';
+
+/** Name of the search field holding the option label */
+const LABEL_FIELD = 'label';
+
+/** Name of the search field holding the option description lines */
+const DESCRIPTION_FIELD = 'description';
 
 /** Search list option interface */
 export interface SearchListOption {
@@ -19,12 +26,16 @@ export interface SearchListOption {
  * Searchable multi-select list of options, each showing a label, an optional
  * result count and optional description lines.
  *
+ * Options are filtered with the injected `SEARCH_ENGINE` and `SEARCH_CONFIG`,
+ * so consumers can swap the engine with `provideSearch`. Matching options keep
+ * their original order and matched text is highlighted.
+ *
  * Selections are matched by option object identity and are kept while the
  * search filter hides the selected options.
  */
 @Component({
   selector: 'ang-search-list',
-  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule],
+  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule, SearchHighlight],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
   host: {
@@ -44,8 +55,25 @@ export class SearchList<T extends SearchListOption> {
   /** Whether to hide the search field */
   readonly searchDisabled = input(false, { transform: booleanAttribute });
 
-  /** Filtered options (after typing in search bar) */
-  protected readonly filteredOptions = computed(() => this.#getFilteredOptions());
+  /** Fields searched by the engine: the label and each description line */
+  readonly #searchFields: SearchFieldDefinition<T>[] = [
+    { name: LABEL_FIELD, get: (option) => option.label },
+    { name: DESCRIPTION_FIELD, get: (option) => this.normalizeDescription(option.description) },
+  ];
+
+  /** Search over the options with the injected engine and configuration */
+  readonly #search = injectSearch({ items: this.options, term: this.search, fields: this.#searchFields });
+
+  /** Matches of each option in the current search results, keyed by option */
+  readonly #matches = computed(
+    () => new Map(this.#search.results().map((result) => [result.item, result.matches ?? []] as const)),
+  );
+
+  /** Options matching the search term, in their original order */
+  protected readonly filteredOptions = computed(() => {
+    const matches = this.#matches();
+    return this.options().filter((option) => matches.has(option));
+  });
 
   /**
    * Merges the options toggled by the user into the current selection.
@@ -80,27 +108,35 @@ export class SearchList<T extends SearchListOption> {
   }
 
   /**
-   * Filters options according to the search field value
-   * @returns Options whose label or description matches the search term
+   * Gets the ranges of an option label that matched the search term
+   * @param option Option to look up
+   * @returns Matched ranges, or undefined when the label did not match
    */
-  #getFilteredOptions(): T[] {
-    const searchTerm = this.search().toLowerCase().trim();
-    if (searchTerm === '') {
-      return this.options();
-    }
-    return this.options().filter((option) => this.#matchesSearch(option, searchTerm));
+  protected getLabelRanges(option: T): readonly SearchRange[] | undefined {
+    return this.#getMatchRanges(option, LABEL_FIELD, option.label);
   }
 
   /**
-   * Checks whether an option's label or description contains the search term
-   * @param option Option to check
-   * @param searchTerm Lowercased, trimmed search term
-   * @returns True when the label or any description line matches
+   * Gets the ranges of an option description line that matched the search term
+   * @param option Option to look up
+   * @param line Description line of the option
+   * @returns Matched ranges, or undefined when the line did not match
    */
-  #matchesSearch(option: T, searchTerm: string): boolean {
-    return (
-      option.label.toLowerCase().includes(searchTerm) ||
-      this.normalizeDescription(option.description).some((line) => line.toLowerCase().includes(searchTerm))
-    );
+  protected getDescriptionRanges(option: T, line: string): readonly SearchRange[] | undefined {
+    return this.#getMatchRanges(option, DESCRIPTION_FIELD, line);
+  }
+
+  /**
+   * Gets the ranges of an option's field value that matched the search term.
+   * Identical values of the same field share their ranges.
+   * @param option Option to look up
+   * @param field Name of the matched field
+   * @param value Field value the ranges index into
+   * @returns Matched ranges, or undefined when the value did not match
+   */
+  #getMatchRanges(option: T, field: string, value: string): readonly SearchRange[] | undefined {
+    return this.#matches()
+      .get(option)
+      ?.find((match) => match.field === field && match.value === value)?.ranges;
   }
 }

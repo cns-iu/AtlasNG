@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { provideSearch, SearchEngine, SearchResult, withCustomEngine } from '@atlasng/cdk/search';
 import { SearchList, SearchListOption } from './search-list';
 
 const OPTIONS: SearchListOption[] = [
@@ -69,6 +70,67 @@ describe('SearchList', () => {
 
     expect(screen.getByRole('option', { name: /^Beta/ })).toBeVisible();
     expect(screen.queryByRole('option', { name: /^Alpha/ })).not.toBeInTheDocument();
+  });
+
+  it('keeps matching options in their original order', async () => {
+    const user = userEvent.setup();
+    await render(SearchList<SearchListOption>, {
+      inputs: { options: [{ label: 'Alphabet' }, { label: 'Gamma' }, { label: 'Bet' }] },
+    });
+
+    await user.type(screen.getByRole('textbox', { name: 'Search' }), 'bet');
+
+    expect(screen.getAllByRole('option').map((option) => option.textContent?.trim())).toEqual(['Alphabet', 'Bet']);
+  });
+
+  it('highlights matched text in labels and descriptions', async () => {
+    const user = userEvent.setup();
+    await setup();
+
+    await user.type(screen.getByRole('textbox', { name: 'Search' }), 'alp');
+
+    const alpha = screen.getByRole('option', { name: /^Alpha/ });
+    const marks = within(alpha).getAllByText(/^alp$/i, { selector: 'mark' });
+    expect(marks.map((mark) => mark.textContent)).toEqual(['Alp', 'alp']);
+    for (const mark of marks) {
+      expect(mark).toHaveClass('ang-search-highlight--match');
+    }
+    expect(within(alpha).getByText('First description')).toBeVisible();
+  });
+
+  it('removes highlights when the search is cleared', async () => {
+    const user = userEvent.setup();
+    await setup();
+    const search = screen.getByRole('textbox', { name: 'Search' });
+
+    await user.type(search, 'beta');
+    expect(screen.getByText('Beta', { selector: 'mark' })).toBeVisible();
+
+    await user.clear(search);
+    expect(screen.queryByText('Beta', { selector: 'mark' })).not.toBeInTheDocument();
+    expect(screen.getByText('Beta')).toBeVisible();
+  });
+
+  it('searches with an engine provided at component level', async () => {
+    const user = userEvent.setup();
+    const engine: SearchEngine = {
+      createIndex: <T>(items: readonly T[]) => ({
+        search: ({ term }): SearchResult<T>[] =>
+          items
+            .filter((item) => String((item as SearchListOption).count ?? '') === term)
+            .map((item) => ({ item, matches: [] })),
+      }),
+    };
+    await render(SearchList<SearchListOption>, {
+      inputs: { options: OPTIONS },
+      componentProviders: [provideSearch(withCustomEngine(() => engine))],
+    });
+
+    await user.type(screen.getByRole('textbox', { name: 'Search' }), '4');
+
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    expect(screen.getByRole('option', { name: /^Beta/ })).toBeVisible();
+    expect(screen.queryByRole('mark')).not.toBeInTheDocument();
   });
 
   it('hides the search field when search is disabled', async () => {
