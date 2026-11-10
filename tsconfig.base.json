@@ -10,7 +10,9 @@
       "@atlasng/analytics/events": ["./libs/analytics/events/src/index.ts"],
       "@atlasng/analytics/permissions": ["./libs/analytics/permissions/src/index.ts"],
       "@atlasng/cdk": ["./libs/cdk/src/index.ts"],
+      "@atlasng/cdk/errors": ["./libs/cdk/errors/src/index.ts"],
       "@atlasng/common": ["./libs/common/src/index.ts"],
+      "@atlasng/common/errors": ["./libs/common/errors/src/index.ts"],
       "@atlasng/content-blocks": ["./libs/content-blocks/src/index.ts"],
       "@atlasng/content-blocks/definitions": ["./libs/content-blocks/definitions/src/index.ts"],
       "@atlasng/content-blocks/definitions/design-system": [
@@ -43,11 +45,11 @@
       "@atlasng/design-system/content/content-paragraph": [
         "./libs/design-system/content/content-paragraph/src/index.ts"
       ],
-      "@atlasng/design-system/content/heading": ["./libs/design-system/content/heading/src/index.ts"],
       "@atlasng/design-system/content/content-section": ["./libs/design-system/content/content-section/src/index.ts"],
+      "@atlasng/design-system/content/heading": ["./libs/design-system/content/heading/src/index.ts"],
       "@atlasng/design-system/cookie-banner": ["./libs/design-system/cookie-banner/src/index.ts"],
       "@atlasng/design-system/error-page": ["./libs/design-system/error-page/src/index.ts"],
-      "@atlasng/design-system/multi-select-filter": ["./libs/design-system/multi-select-filter/src/index.ts"],
+      "@atlasng/design-system/errors": ["./libs/design-system/errors/src/index.ts"],
       "@atlasng/design-system/footer": ["./libs/design-system/footer/src/index.ts"],
       "@atlasng/design-system/icons": ["./libs/design-system/icons/src/index.ts"],
       "@atlasng/design-system/indicators": ["./libs/design-system/indicators/src/index.ts"],
@@ -64,13 +66,14 @@
       "@atlasng/design-system/links": ["./libs/design-system/links/src/index.ts"],
       "@atlasng/design-system/links/link-snippet": ["./libs/design-system/links/link-snippet/src/index.ts"],
       "@atlasng/design-system/links/text-link": ["./libs/design-system/links/text-link/src/index.ts"],
+      "@atlasng/design-system/multi-select-filter": ["./libs/design-system/multi-select-filter/src/index.ts"],
       "@atlasng/design-system/rich-tooltip": ["./libs/design-system/rich-tooltip/src/index.ts"],
       "@atlasng/design-system/scroll-area": ["./libs/design-system/scroll-area/src/index.ts"],
       "@atlasng/design-system/search-list": ["./libs/design-system/search-list/src/index.ts"],
       "@atlasng/design-system/snackbar": ["./libs/design-system/snackbar/src/index.ts"],
       "@atlasng/design-system/table": ["./libs/design-system/table/src/index.ts"],
-      "@atlasng/design-system/table/columns": ["./libs/design-system/table/columns/src/index.ts"],
       "@atlasng/design-system/table-of-contents": ["./libs/design-system/table-of-contents/src/index.ts"],
+      "@atlasng/design-system/table/columns": ["./libs/design-system/table/columns/src/index.ts"],
       "@atlasng/design-system/version-control": ["./libs/design-system/version-control/src/index.ts"],
       "@atlasng/design-system/youtube-player": ["./libs/design-system/youtube-player/src/index.ts"],
       "@atlasng/internal/storybook": ["./libs/internal/storybook/src/index.ts"],
@@ -80,9 +83,7 @@
       "@atlasng/labs/grid-container": ["./libs/labs/grid-container/src/index.ts"],
       "@atlasng/labs/header-shell": ["./libs/labs/header-shell/src/index.ts"],
       "@atlasng/labs/skip-to-content-button": ["./libs/labs/skip-to-content-button/src/index.ts"],
-      "@atlasng/nx-plugin": ["./libs/tooling/nx-plugin/src/index.ts"],
-      "@atlasng/common/errors": ["./libs/common/errors/src/index.ts"],
-      "@atlasng/design-system/errors": ["./libs/design-system/errors/src/index.ts"]
+      "@atlasng/nx-plugin": ["./libs/tooling/nx-plugin/src/index.ts"]
     },
     "types": ["*"]
   },

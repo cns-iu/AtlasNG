@@ -112,7 +112,7 @@ Each library declares its codes in an enum within its own range, exported from i
 | ----------- | ------------------------- | ------------------------ |
 | `0000–0999` | `@atlasng/core`           |                          |
 | `1000–1999` | `@atlasng/common`         | `CommonErrorCode`        |
-| `2000–2999` | `@atlasng/cdk`            |                          |
+| `2000–2999` | `@atlasng/cdk`            | `CdkErrorCode`           |
 | `3000–3999` | `@atlasng/analytics`      | `AnalyticsErrorCode`     |
 | `4000–4999` | `@atlasng/design-system`  | `DesignSystemErrorCode`  |
 | `5000–5999` | `@atlasng/content-blocks` | `ContentBlocksErrorCode` |
