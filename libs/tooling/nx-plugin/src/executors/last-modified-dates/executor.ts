@@ -1,7 +1,7 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
 import { execFileSync } from 'node:child_process';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, parse, resolve } from 'node:path';
+import { parse, resolve } from 'node:path';
+import { type ExecutorResult, runExecutorTask, writeFile } from '../../utils/executor.ts';
 
 /** A page and the source file or files it is generated from. */
 export interface LastModifiedPage {
@@ -42,18 +42,12 @@ const ROUTE_PARAM_PATTERN = /:[^/]+/g;
 export default async function lastModifiedDatesExecutor(
   options: LastModifiedDatesExecutorOptions,
   context: ExecutorContext,
-): Promise<{ success: boolean }> {
-  try {
+): Promise<ExecutorResult> {
+  return runExecutorTask(async () => {
     const dates = collectLastModifiedDates(options.pages, context.root);
-    const outputPath = resolve(context.root, options.outputFile);
-    await mkdir(dirname(outputPath), { recursive: true });
-    await writeFile(outputPath, `${JSON.stringify(dates, null, 2)}\n`, 'utf8');
+    await writeFile(resolve(context.root, options.outputFile), `${JSON.stringify(dates, null, 2)}\n`);
     logger.info(`Wrote last modified dates for ${Object.keys(dates).length} pages to ${options.outputFile}`);
-    return { success: true };
-  } catch (error) {
-    logger.error(error instanceof Error ? error.message : String(error));
-    return { success: false };
-  }
+  });
 }
 
 /**
