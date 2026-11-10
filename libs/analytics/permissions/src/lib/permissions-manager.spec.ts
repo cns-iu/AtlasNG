@@ -2,10 +2,13 @@ import { computed } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { LOCAL_STORAGE, WINDOW } from '@atlasng/core';
+import { of, Subject } from 'rxjs';
 import { AnalyticsPermissions } from './permissions';
 import {
   AnalyticsPermissionsManager,
+  AnalyticsPermissionsRequestHandler,
   provideAnalyticsPermissionsManagerConfig,
+  provideAnalyticsPermissionsRequestHandler,
   provideInitialAnalyticsPermissions,
 } from './permissions-manager';
 
@@ -38,8 +41,10 @@ describe('PermissionsManager', () => {
     storage?: Storage | false;
     config?: Parameters<typeof provideAnalyticsPermissionsManagerConfig>[0];
     initialPermissions?: AnalyticsPermissions;
+    requestHandler?: AnalyticsPermissionsRequestHandler;
   }) {
     const storage = options?.storage ?? createStorage();
+    const requestHandler = options?.requestHandler;
     const fakeWindow = new EventTarget() as Window;
 
     TestBed.configureTestingModule({
@@ -48,6 +53,7 @@ describe('PermissionsManager', () => {
         { provide: LOCAL_STORAGE, useValue: storage === false ? undefined : storage },
         ...(options?.config ? [provideAnalyticsPermissionsManagerConfig(options.config)] : []),
         ...(options?.initialPermissions ? [provideInitialAnalyticsPermissions(options.initialPermissions)] : []),
+        ...(requestHandler ? [provideAnalyticsPermissionsRequestHandler(() => requestHandler)] : []),
       ],
     });
 
@@ -200,6 +206,91 @@ describe('PermissionsManager', () => {
 
     manager.setDefaultPermissions();
     expect(manager.permissions().equals(AnalyticsPermissions.DEFAULT)).toBe(true);
+  });
+
+  it('grants requested categories directly without a request handler', () => {
+    const { manager } = setup();
+
+    manager.requestCategories(AnalyticsEventCategory.Marketing, AnalyticsEventCategory.Statistics);
+
+    expect(manager.permissions().isCategoryEnabled(AnalyticsEventCategory.Marketing)).toBe(true);
+    expect(manager.permissions().isCategoryEnabled(AnalyticsEventCategory.Statistics)).toBe(true);
+    expect(manager.permissionsSource()).toBe('local');
+  });
+
+  it('applies the decision returned by the request handler', () => {
+    const decision = new Subject<AnalyticsPermissions | undefined>();
+    const requestHandler = vi.fn(() => decision);
+    const { manager } = setup({
+      initialPermissions: AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Statistics),
+      requestHandler,
+    });
+
+    manager.requestCategories(AnalyticsEventCategory.Marketing);
+
+    expect(requestHandler).toHaveBeenCalledWith(
+      AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Statistics).enableCategory(
+        AnalyticsEventCategory.Marketing,
+      ),
+      [AnalyticsEventCategory.Marketing],
+    );
+    expect(manager.hasDecision()).toBe(false);
+
+    decision.next(AnalyticsPermissions.FULL);
+
+    expect(manager.permissions().equals(AnalyticsPermissions.FULL)).toBe(true);
+    expect(manager.permissionsSource()).toBe('local');
+    expect(decision.observed).toBe(false);
+  });
+
+  it('keeps permissions unchanged when the request is dismissed', () => {
+    const decision = new Subject<AnalyticsPermissions | undefined>();
+    const { manager } = setup({ requestHandler: () => decision });
+
+    manager.requestCategories(AnalyticsEventCategory.Marketing);
+    decision.next(undefined);
+
+    expect(manager.permissions().equals(AnalyticsPermissions.DEFAULT)).toBe(true);
+    expect(manager.hasDecision()).toBe(false);
+    expect(decision.observed).toBe(false);
+  });
+
+  it('ignores requests while an earlier request is pending', () => {
+    const decision = new Subject<AnalyticsPermissions | undefined>();
+    const requestHandler = vi.fn(() => decision);
+    const { manager } = setup({ requestHandler });
+
+    manager.requestCategories(AnalyticsEventCategory.Marketing);
+    manager.requestCategories(AnalyticsEventCategory.Marketing);
+
+    expect(requestHandler).toHaveBeenCalledOnce();
+
+    decision.next(undefined);
+    manager.requestCategories(AnalyticsEventCategory.Marketing);
+
+    expect(requestHandler).toHaveBeenCalledTimes(2);
+  });
+
+  it('accepts a new request after the handler settles synchronously', () => {
+    const requestHandler = vi.fn((requested: AnalyticsPermissions) => of(requested));
+    const { manager } = setup({ requestHandler });
+
+    manager.requestCategories(AnalyticsEventCategory.Marketing);
+    manager.requestCategories(AnalyticsEventCategory.Statistics);
+
+    expect(requestHandler).toHaveBeenCalledTimes(2);
+  });
+
+  it('unsubscribes from a pending request when the manager is destroyed', () => {
+    const decision = new Subject<AnalyticsPermissions | undefined>();
+    const { manager } = setup({ requestHandler: () => decision });
+
+    manager.requestCategories(AnalyticsEventCategory.Marketing);
+    expect(decision.observed).toBe(true);
+
+    TestBed.resetTestingModule();
+
+    expect(decision.observed).toBe(false);
   });
 
   it('returns false when syncing to storage is disabled', () => {

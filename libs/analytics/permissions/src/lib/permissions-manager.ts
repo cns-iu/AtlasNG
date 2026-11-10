@@ -1,5 +1,8 @@
 import { computed, DestroyRef, inject, InjectionToken, Provider, Service, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { createConfigurationToken, LOCAL_STORAGE, SafeStorage, type, WINDOW } from '@atlasng/core';
+import { Observable, of, Subscription, take } from 'rxjs';
 import { AnalyticsPermissions } from './permissions';
 
 /**
@@ -104,6 +107,44 @@ export function provideInitialAnalyticsPermissions(permissions: AnalyticsPermiss
 }
 
 /**
+ * Asks the user to approve requested permissions, for example in a consent dialog.
+ *
+ * @param requested Current permissions with the requested categories enabled.
+ * @param categories The requested categories, for example to point them out in the dialog.
+ * @returns An observable whose first value is the user's decision, or `undefined` when the user dismisses the request.
+ */
+export type AnalyticsPermissionsRequestHandler = (
+  requested: AnalyticsPermissions,
+  categories: AnalyticsEventCategory[],
+) => Observable<AnalyticsPermissions | undefined>;
+
+/**
+ * Handler used by {@link AnalyticsPermissionsManager.requestCategories}.
+ * Grants the requested permissions directly unless an application provides its own handler.
+ */
+const ANALYTICS_PERMISSIONS_REQUEST_HANDLER = new InjectionToken<AnalyticsPermissionsRequestHandler>(
+  'ANALYTICS_PERMISSIONS_REQUEST_HANDLER',
+  {
+    providedIn: 'root',
+    factory: () => (requested) => of(requested),
+  },
+);
+
+/**
+ * Provides the handler {@link AnalyticsPermissionsManager.requestCategories} uses to ask the user for consent.
+ * Add it to the application's root providers, where the manager is created.
+ *
+ * @param factory Creates the handler. Runs in an injection context.
+ * @returns Provider entry for the request handler.
+ */
+export function provideAnalyticsPermissionsRequestHandler(factory: () => AnalyticsPermissionsRequestHandler): Provider {
+  return {
+    provide: ANALYTICS_PERMISSIONS_REQUEST_HANDLER,
+    useFactory: factory,
+  };
+}
+
+/**
  * Manages active analytics permissions.
  *
  * By default permissions are persisted to {@link localStorage} and
@@ -135,6 +176,15 @@ export class AnalyticsPermissionsManager {
 
   /** Identifies change events dispatched by this manager so it can ignore its own broadcasts. */
   readonly #sender = Symbol('AnalyticsPermissionsManager');
+
+  /** Destroy hook used to remove browser listeners and cancel a pending permissions request. */
+  readonly #destroyRef = inject(DestroyRef);
+
+  /** Asks the user to approve the permissions passed to {@link requestCategories}. */
+  readonly #requestHandler = inject(ANALYTICS_PERMISSIONS_REQUEST_HANDLER);
+
+  /** Subscription to the request started by {@link requestCategories}, cleared once it settles. */
+  #pendingRequest?: Subscription;
 
   /** Current permissions. */
   readonly permissions = this.#permissions.asReadonly();
@@ -198,6 +248,37 @@ export class AnalyticsPermissionsManager {
   }
 
   /**
+   * Asks the user to enable the given categories through the provided request handler, and applies the decision.
+   * Without a handler, the categories are enabled directly. A dismissed request leaves the permissions unchanged.
+   *
+   * Only the handler's first value is used. Calls made while an earlier request is pending are ignored,
+   * so repeated clicks don't open a second dialog.
+   *
+   * @param categories Categories to request.
+   */
+  requestCategories(...categories: AnalyticsEventCategory[]): void {
+    if (this.#pendingRequest) {
+      return;
+    }
+
+    const requested = categories.reduce(
+      (permissions, category) => permissions.enableCategory(category),
+      this.#permissions(),
+    );
+    const request = this.#requestHandler(requested, categories)
+      .pipe(take(1), takeUntilDestroyed(this.#destroyRef))
+      .subscribe((permissions) => {
+        if (permissions) {
+          this.setPermissions(permissions);
+        }
+      });
+
+    // Teardowns added to a closed subscription run immediately, so this also clears a request that settled synchronously
+    this.#pendingRequest = request;
+    request.add(() => (this.#pendingRequest = undefined));
+  }
+
+  /**
    * Persists current permissions to the configured storage backend.
    *
    * @returns `true` when permissions were written, otherwise `false`.
@@ -237,7 +318,7 @@ export class AnalyticsPermissionsManager {
 
     const { changeEventName, storage, storageEvents } = this.config;
     const handler = this.#onPermissionsChange.bind(this);
-    const destroyRef = inject(DestroyRef);
+    const destroyRef = this.#destroyRef;
 
     if (changeEventName) {
       window.addEventListener(changeEventName, handler);
