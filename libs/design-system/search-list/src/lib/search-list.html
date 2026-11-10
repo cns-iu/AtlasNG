@@ -7,14 +7,15 @@
 }
 
 <mat-selection-list class="ang-search-list--list" (selectionChange)="updateSelection($event)">
-  @for (option of filteredOptions(); track option) {
+  @for (result of results(); track result.item) {
+    @let option = result.item;
     <mat-list-option togglePosition="before" [value]="option" [selected]="selected().includes(option)">
       <div matListItemTitle>
         <div class="ang-search-list--label-count">
           <span
             class="ang-search-list--label"
             [angSearchHighlight]="option.label"
-            [angSearchHighlightRanges]="getLabelRanges(option)"
+            [angSearchHighlightRanges]="getRanges(result, 'label')"
           ></span>
           <span class="ang-search-list--count">{{ option.count | number }}</span>
         </div>
@@ -24,7 +25,7 @@
           class="ang-search-list--description"
           matListItemLine
           [angSearchHighlight]="line"
-          [angSearchHighlightRanges]="getDescriptionRanges(option, line)"
+          [angSearchHighlightRanges]="getRanges(result, 'description', $index)"
         ></span>
       }
     </mat-list-option>

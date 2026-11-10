@@ -1,16 +1,10 @@
 import { DecimalPipe } from '@angular/common';
-import { booleanAttribute, Component, computed, input, model } from '@angular/core';
+import { booleanAttribute, Component, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
-import { injectSearch, SearchFieldDefinition, SearchHighlight, SearchRange } from '@atlasng/cdk/search';
-
-/** Name of the search field holding the option label */
-const LABEL_FIELD = 'label';
-
-/** Name of the search field holding the option description lines */
-const DESCRIPTION_FIELD = 'description';
+import { injectSearch, SearchHighlight, SearchRange, SearchResult } from '@atlasng/cdk/search';
 
 /** Search list option interface */
 export interface SearchListOption {
@@ -55,25 +49,13 @@ export class SearchList<T extends SearchListOption> {
   /** Whether to hide the search field */
   readonly searchDisabled = input(false, { transform: booleanAttribute });
 
-  /** Fields searched by the engine: the label and each description line */
-  readonly #searchFields: SearchFieldDefinition<T>[] = [
-    { name: LABEL_FIELD, get: (option) => option.label },
-    { name: DESCRIPTION_FIELD, get: (option) => this.normalizeDescription(option.description) },
-  ];
-
-  /** Search over the options with the injected engine and configuration */
-  readonly #search = injectSearch({ items: this.options, term: this.search, fields: this.#searchFields });
-
-  /** Matches of each option in the current search results, keyed by option */
-  readonly #matches = computed(
-    () => new Map(this.#search.results().map((result) => [result.item, result.matches ?? []] as const)),
-  );
-
-  /** Options matching the search term, in their original order */
-  protected readonly filteredOptions = computed(() => {
-    const matches = this.#matches();
-    return this.options().filter((option) => matches.has(option));
-  });
+  /** Options matching the search term, in their original order, with their matches */
+  protected readonly results = injectSearch({
+    items: this.options,
+    term: this.search,
+    fields: ['label', 'description'],
+    order: 'source',
+  }).results;
 
   /**
    * Merges the options toggled by the user into the current selection.
@@ -108,35 +90,17 @@ export class SearchList<T extends SearchListOption> {
   }
 
   /**
-   * Gets the ranges of an option label that matched the search term
-   * @param option Option to look up
-   * @returns Matched ranges, or undefined when the label did not match
-   */
-  protected getLabelRanges(option: T): readonly SearchRange[] | undefined {
-    return this.#getMatchRanges(option, LABEL_FIELD, option.label);
-  }
-
-  /**
-   * Gets the ranges of an option description line that matched the search term
-   * @param option Option to look up
-   * @param line Description line of the option
-   * @returns Matched ranges, or undefined when the line did not match
-   */
-  protected getDescriptionRanges(option: T, line: string): readonly SearchRange[] | undefined {
-    return this.#getMatchRanges(option, DESCRIPTION_FIELD, line);
-  }
-
-  /**
-   * Gets the ranges of an option's field value that matched the search term.
-   * Identical values of the same field share their ranges.
-   * @param option Option to look up
+   * Gets the ranges of an option field value that matched the search term
+   * @param result Search result of the option
    * @param field Name of the matched field
-   * @param value Field value the ranges index into
+   * @param index Position of the value among the description lines; `0` for single values
    * @returns Matched ranges, or undefined when the value did not match
    */
-  #getMatchRanges(option: T, field: string, value: string): readonly SearchRange[] | undefined {
-    return this.#matches()
-      .get(option)
-      ?.find((match) => match.field === field && match.value === value)?.ranges;
+  protected getRanges(
+    result: SearchResult<T>,
+    field: 'label' | 'description',
+    index = 0,
+  ): readonly SearchRange[] | undefined {
+    return result.matches?.find((match) => match.field === field && (match.index ?? 0) === index)?.ranges;
   }
 }
