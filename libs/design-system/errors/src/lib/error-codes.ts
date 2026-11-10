@@ -9,4 +9,6 @@ export enum DesignSystemErrorCode {
   MissingSocialMediaButtonInput = 4002,
   /** No social media button definition matches the given `id`. */
   UnknownSocialMediaButtonId = 4003,
+  /** A date passed to `LastModifiedDates.set` is invalid. */
+  InvalidLastModifiedDate = 4004,
 }

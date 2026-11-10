@@ -136,8 +136,8 @@ describe('LastModifiedDates', () => {
   it('rejects invalid dates', async () => {
     const { dates } = await setup('/');
 
-    expect(() => dates.set('/about', new Date(Number.NaN))).toThrow(
-      new RangeError('Invalid last modified date for route /about.'),
+    expect(() => dates.set('/about', new Date(Number.NaN))).toThrowErrorMatchingInlineSnapshot(
+      `[AngError: ANG4004: Invalid last modified date for route /about.]`,
     );
   });
 });

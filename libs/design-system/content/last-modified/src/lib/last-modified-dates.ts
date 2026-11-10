@@ -1,6 +1,8 @@
 import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { computed, DestroyRef, inject, Service, signal } from '@angular/core';
+import { AngError } from '@atlasng/core';
+import { DesignSystemErrorCode } from '@atlasng/design-system/errors';
 import { firstValueFrom } from 'rxjs';
 
 /** Matches a date-only ISO 8601 string such as `2026-06-16`. */
@@ -50,11 +52,14 @@ export class LastModifiedDates {
    *
    * @param route Route or path, for example `/dataset/heart`. The query, fragment, and trailing slash are ignored.
    * @param date The date.
-   * @throws {RangeError} When the date is invalid.
+   * @throws {AngError} When the date is invalid.
    */
   set(route: string, date: Date): void {
     if (Number.isNaN(date.getTime())) {
-      throw new RangeError(`Invalid last modified date for route ${route}.`);
+      throw new AngError(
+        DesignSystemErrorCode.InvalidLastModifiedDate,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && `Invalid last modified date for route ${route}.`,
+      );
     }
 
     this.#dates.update((dates) => new Map(dates).set(normalizeRoute(route), date));
