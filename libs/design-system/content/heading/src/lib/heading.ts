@@ -1,5 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, input, numberAttribute } from '@angular/core';
+import { AngError } from '@atlasng/core';
+import { DesignSystemErrorCode } from '@atlasng/design-system/errors';
 
 /** Valid native HTML heading levels. */
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
@@ -16,7 +18,10 @@ export function headingLevelAttribute(value: number | string): HeadingLevel {
 
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (!Number.isInteger(level) || level < 1 || level > 6) {
-      throw new Error(`Invalid heading level: ${value}. Level must be an integer between 1 and 6.`);
+      throw new AngError(
+        DesignSystemErrorCode.InvalidHeadingLevel,
+        `Invalid heading level: ${value}. Level must be an integer between 1 and 6.`,
+      );
     }
   }
 

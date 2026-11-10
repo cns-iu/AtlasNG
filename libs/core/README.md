@@ -95,7 +95,7 @@ function greet(config: ConfigurationOf<typeof GREETER_CONFIG>): string {
 
 ### Coded errors
 
-`AngError` carries a numeric code, modelled on Angular's `RuntimeError`. Pass the message only in dev mode: Angular production builds define `ngDevMode` as `false`, so the string is dropped and the error message is just the code, e.g. `ANG3301`.
+`AngError` carries a numeric code, modelled on Angular's `RuntimeError`. Pass the message only in dev mode: Angular production builds define `ngDevMode` as `false`, so the string is dropped and the error message is just the code, e.g. `ANG3201`.
 
 ```ts
 import { AngError } from '@atlasng/core';
@@ -111,10 +111,10 @@ Each library declares its codes in an enum within its own range, exported from i
 | Range       | Library                   | Enum                     |
 | ----------- | ------------------------- | ------------------------ |
 | `0000–0999` | `@atlasng/core`           |                          |
-| `1000–1999` | `@atlasng/common`         |                          |
+| `1000–1999` | `@atlasng/common`         | `CommonErrorCode`        |
 | `2000–2999` | `@atlasng/cdk`            |                          |
 | `3000–3999` | `@atlasng/analytics`      | `AnalyticsErrorCode`     |
-| `4000–4999` | `@atlasng/design-system`  |                          |
+| `4000–4999` | `@atlasng/design-system`  | `DesignSystemErrorCode`  |
 | `5000–5999` | `@atlasng/content-blocks` | `ContentBlocksErrorCode` |
 | `6000–6999` | `@atlasng/labs`           |                          |
 

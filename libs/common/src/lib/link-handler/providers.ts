@@ -1,4 +1,6 @@
 import { EnvironmentProviders, makeEnvironmentProviders, Provider } from '@angular/core';
+import { CommonErrorCode } from '@atlasng/common/errors';
+import { AngError } from '@atlasng/core';
 import { LinkHandler } from './handler';
 import { RouterLinkHandler } from './router-handler';
 
@@ -103,6 +105,6 @@ function checkHandlerConfiguration(features: LinkHandlerFeature[]): void {
   const handlerFeatures = features.filter((feature) => kinds.includes(feature.kind));
 
   if (handlerFeatures.length > 1) {
-    throw new Error('Only one link handler can be provided.');
+    throw new AngError(CommonErrorCode.MultipleLinkHandlers, 'Only one link handler can be provided.');
   }
 }

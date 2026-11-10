@@ -11,4 +11,8 @@ export enum ContentBlocksErrorCode {
   DataCompletedWithoutValue = 5003,
   /** A node's definition or result was read before the pipeline started it. */
   NodeNotStarted = 5004,
+  /** A content node does not match its definition. Thrown as `ContentValidationError`. */
+  ContentValidation = 5005,
+  /** The content blocks config names a default loader or parser that is not registered. */
+  UnregisteredConfigEntry = 5006,
 }

@@ -34,7 +34,7 @@ describe('reportRecoverableIssues', () => {
     global['ngDevMode'] = false;
     try {
       reportRecoverableIssues('content', issues);
-      expect(warn).toHaveBeenCalledWith("Invalid content at 'content': data.x: Unknown data key 'x'.");
+      expect(warn).toHaveBeenCalledWith("ANG5005: Invalid content at 'content': data.x: Unknown data key 'x'.");
     } finally {
       global['ngDevMode'] = original;
       warn.mockRestore();

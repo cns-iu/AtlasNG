@@ -80,7 +80,9 @@
       "@atlasng/labs/grid-container": ["./libs/labs/grid-container/src/index.ts"],
       "@atlasng/labs/header-shell": ["./libs/labs/header-shell/src/index.ts"],
       "@atlasng/labs/skip-to-content-button": ["./libs/labs/skip-to-content-button/src/index.ts"],
-      "@atlasng/nx-plugin": ["./libs/tooling/nx-plugin/src/index.ts"]
+      "@atlasng/nx-plugin": ["./libs/tooling/nx-plugin/src/index.ts"],
+      "@atlasng/common/errors": ["./libs/common/errors/src/index.ts"],
+      "@atlasng/design-system/errors": ["./libs/design-system/errors/src/index.ts"]
     },
     "types": ["*"]
   },

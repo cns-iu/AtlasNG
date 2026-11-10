@@ -147,7 +147,7 @@ describe('SocialMediaButton', () => {
   describe('in development mode', () => {
     it('throws when neither id nor definition are provided', async () => {
       await expect(setup()).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: SocialMediaButton requires an id or definition input]`,
+        `[AngError: ANG4002: SocialMediaButton requires an id or definition input]`,
       );
     });
 
@@ -159,7 +159,7 @@ describe('SocialMediaButton', () => {
           },
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: No definition found for SocialMediaButton with id "not-a-real-platform"]`,
+        `[AngError: ANG4003: No definition found for SocialMediaButton with id "not-a-real-platform"]`,
       );
     });
   });

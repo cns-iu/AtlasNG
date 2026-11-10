@@ -2,6 +2,8 @@ import { Component, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
+import { AngError } from '@atlasng/core';
+import { DesignSystemErrorCode } from '@atlasng/design-system/errors';
 import {
   DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS,
   FALLBACK_SOCIAL_MEDIA_BUTTON_DEFINITION,
@@ -60,7 +62,10 @@ export class SocialMediaButton {
     const id = this.id();
     if (!id) {
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        throw new Error('SocialMediaButton requires an id or definition input');
+        throw new AngError(
+          DesignSystemErrorCode.MissingSocialMediaButtonInput,
+          'SocialMediaButton requires an id or definition input',
+        );
       }
 
       return;
@@ -72,7 +77,10 @@ export class SocialMediaButton {
     yield DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS.find((definition) => definition.id === id);
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      throw new Error(`No definition found for SocialMediaButton with id "${id}"`);
+      throw new AngError(
+        DesignSystemErrorCode.UnknownSocialMediaButtonId,
+        `No definition found for SocialMediaButton with id "${id}"`,
+      );
     }
   }
 }
