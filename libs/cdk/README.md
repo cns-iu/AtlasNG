@@ -37,3 +37,22 @@ export class Highlight {
   }
 }
 ```
+
+### Breakpoints
+
+`watchBreakpoint` returns a signal that tracks the same expressions as the design-system Sass `breakpoint()` mixin: a breakpoint name or length, optionally followed by `up`, `down`, or `only`. Pass a list to match any of several expressions. `watchActiveBreakpoint` returns the name of the active breakpoint. Both are built on the Angular CDK `BreakpointObserver` and must be called in an injection context or given an `injector` option.
+
+```ts
+import { computed, Component } from '@angular/core';
+import { watchActiveBreakpoint, watchBreakpoint } from '@atlasng/cdk';
+
+@Component({/* ... */})
+export class Gallery {
+  readonly isDesktop = watchBreakpoint('medium');
+  readonly isCompact = watchBreakpoint(['small down', 'x-large']);
+  readonly breakpoint = watchActiveBreakpoint();
+  readonly columns = computed(() => (this.breakpoint() === 'x-small' ? 1 : 3));
+}
+```
+
+The defaults match the design-system `$breakpoints` map. If an application reconfigures that map, provide the same values with `provideBreakpoints({ ... })`. Use `breakpointQuery` to get the media condition for an expression directly.
