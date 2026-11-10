@@ -190,7 +190,7 @@ export const TEXT_LINK_DEFINITION = {
  * Config: `videoId`, and optional `width` and `height` (largest size in pixels, and aspect ratio), `startSeconds`,
  * `endSeconds`, `suggestedQuality`, `playerVars` (a subset of `YT.PlayerVars`, e.g. `{ "autoplay": 1, "mute": 1 }`),
  * `disablePlaceholder`, `placeholderButtonLabel`, and `placeholderImageQuality` (`high`, `standard`, or `low`).
- * Content: `enableRequest` replaces the default request to enable cookies.
+ * Content: `enableRequest` replaces the default request to enable cookies, whose button requests marketing permission.
  */
 export const YOUTUBE_PLAYER_DEFINITION = {
   name: 'YouTubePlayer',
