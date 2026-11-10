@@ -93,6 +93,13 @@ const meta: Meta<KgExplorer<KgExplorerSampleItem>> = {
   render: (args) => ({
     props: filterProps(args),
     template: explorerTemplate(args),
+    styles: [
+      `
+        .ang-kg-explorer {
+          height: 100vh;
+        }
+      `,
+    ],
   }),
 };
 
@@ -100,7 +107,9 @@ export default meta;
 
 type Story = StoryObj<KgExplorer<KgExplorerSampleItem>>;
 
-export const Default: Story = {
+export const Default: Story = {};
+
+export const Demo: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByText('Viewing 15 of 15')).toBeVisible();
 

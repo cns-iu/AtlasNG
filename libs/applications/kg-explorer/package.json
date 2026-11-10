@@ -15,12 +15,11 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/cdk": "^22.1.5",
     "@angular/common": "^22.1.5",
     "@angular/core": "^22.1.5",
     "@angular/material": "^22.1.5",
-    "@atlasng/design-system": "^0.0.11",
-    "rxjs": "^7.8.2"
+    "@atlasng/cdk": "^0.0.11",
+    "@atlasng/design-system": "^0.0.11"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",

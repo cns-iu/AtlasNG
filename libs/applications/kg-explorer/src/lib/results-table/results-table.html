@@ -1,6 +1,6 @@
 @let results = filteredRows();
 
-@if (!searchDisabled() || resultsCounterDisabled()) {
+@if (!searchDisabled() || !resultsCounterDisabled()) {
   <div class="ang-kg-explorer-results-table--navigation">
     @if (!searchDisabled()) {
       <mat-form-field class="ang-kg-explorer-results-table--search" subscriptSizing="dynamic">
@@ -31,7 +31,6 @@
       <ang-results-indicator
         class="ang-kg-explorer-results-table--counter"
         prefix="Viewing"
-        aria-live="polite"
         [value]="results.length"
         [total]="rows().length"
       />

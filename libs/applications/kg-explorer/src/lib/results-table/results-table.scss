@@ -5,7 +5,7 @@
 @mixin table-padding() {
   padding: 1.25rem;
 
-  @media (min-width: 740px) {
+  @media (min-width: 960px) {
     padding: 2rem;
   }
 }
@@ -28,7 +28,11 @@
     justify-content: space-between;
     gap: 1rem;
     background-color: token-utils.sys-slot(surface);
-    width: calc(100% - 4rem);
+    width: calc(100% - 2.5rem);
+
+    @media (min-width: 960px) {
+      width: calc(100% - 4rem);
+    }
 
     @include table-padding;
   }
@@ -73,7 +77,6 @@
 
     .datatable-body-row {
       border-bottom: 1px solid token-utils.sys-slot(outline-variant);
-      min-height: 3rem;
 
       .datatable-body-cell-label {
         white-space: normal;

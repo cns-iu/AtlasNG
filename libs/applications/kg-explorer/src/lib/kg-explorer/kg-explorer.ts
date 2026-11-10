@@ -1,23 +1,20 @@
-import { BreakpointObserver } from '@angular/cdk/layout';
 import {
   booleanAttribute,
   Component,
   computed,
   contentChild,
   effect,
-  inject,
   input,
   model,
   output,
   untracked,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
+import { watchBreakpoint } from '@atlasng/cdk';
 import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-system/version-control';
-import { map } from 'rxjs';
 import { DownloadCellDefinition, type DownloadCellConfig } from '../download-cell/download-cell';
 import type { KgExplorerDownload, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { defaultKgExplorerSearch, KgExplorerResultsTable } from '../results-table/results-table';
@@ -25,9 +22,6 @@ import { KgExplorerTableEndSlot } from '../slots';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
-
-/** Media query matching the Angular Material large and extra-large breakpoints. */
-export const KG_EXPLORER_SIDE_MENU_QUERY = '(min-width: 1280px)';
 
 /**
  * Derives the autocomplete suggestion for a row from its `title` property.
@@ -120,12 +114,7 @@ export class KgExplorer<TRow extends Row = Row> {
   protected readonly tableEndSlot = contentChild(KgExplorerTableEndSlot);
 
   /** Whether the filter menu is docked beside the table. */
-  protected readonly docked = toSignal(
-    inject(BreakpointObserver)
-      .observe(KG_EXPLORER_SIDE_MENU_QUERY)
-      .pipe(map((state) => state.matches)),
-    { initialValue: false },
-  );
+  protected readonly docked = watchBreakpoint('large');
 
   /** Opens the filter menu when it is or becomes docked and closes the drawer when it undocks. */
   constructor() {
