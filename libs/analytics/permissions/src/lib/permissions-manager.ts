@@ -183,7 +183,7 @@ export class AnalyticsPermissionsManager {
   /** Asks the user to approve the permissions passed to {@link requestCategories}. */
   readonly #requestHandler = inject(ANALYTICS_PERMISSIONS_REQUEST_HANDLER);
 
-  /** Subscription to the request started by {@link requestCategories}, closed once it settles. */
+  /** Subscription to the request started by {@link requestCategories}, cleared once it settles. */
   #pendingRequest?: Subscription;
 
   /** Current permissions. */
@@ -257,7 +257,7 @@ export class AnalyticsPermissionsManager {
    * @param categories Categories to request.
    */
   requestCategories(...categories: AnalyticsEventCategory[]): void {
-    if (this.#pendingRequest && !this.#pendingRequest.closed) {
+    if (this.#pendingRequest) {
       return;
     }
 
@@ -265,13 +265,17 @@ export class AnalyticsPermissionsManager {
       (permissions, category) => permissions.enableCategory(category),
       this.#permissions(),
     );
-    this.#pendingRequest = this.#requestHandler(requested, categories)
+    const request = this.#requestHandler(requested, categories)
       .pipe(take(1), takeUntilDestroyed(this.#destroyRef))
       .subscribe((permissions) => {
         if (permissions) {
           this.setPermissions(permissions);
         }
       });
+
+    // Teardowns added to a closed subscription run immediately, so this also clears a request that settled synchronously
+    this.#pendingRequest = request;
+    request.add(() => (this.#pendingRequest = undefined));
   }
 
   /**

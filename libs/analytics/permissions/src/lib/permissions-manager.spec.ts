@@ -2,7 +2,7 @@ import { computed } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { LOCAL_STORAGE, WINDOW } from '@atlasng/core';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { AnalyticsPermissions } from './permissions';
 import {
   AnalyticsPermissionsManager,
@@ -267,6 +267,16 @@ describe('PermissionsManager', () => {
 
     decision.next(undefined);
     manager.requestCategories(AnalyticsEventCategory.Marketing);
+
+    expect(requestHandler).toHaveBeenCalledTimes(2);
+  });
+
+  it('accepts a new request after the handler settles synchronously', () => {
+    const requestHandler = vi.fn((requested: AnalyticsPermissions) => of(requested));
+    const { manager } = setup({ requestHandler });
+
+    manager.requestCategories(AnalyticsEventCategory.Marketing);
+    manager.requestCategories(AnalyticsEventCategory.Statistics);
 
     expect(requestHandler).toHaveBeenCalledTimes(2);
   });
