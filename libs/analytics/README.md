@@ -24,6 +24,7 @@ Apps that only use `withCustomBackend()` don't need them.
 | `@atlasng/analytics/events`          | Event definitions, categories, and the built-in `CoreEvents`             |
 | `@atlasng/analytics/permissions`     | `AnalyticsPermissions` and `AnalyticsPermissionsManager`                 |
 | `@atlasng/analytics/default-backend` | `withDefaultBackend` and related types. Requires `analytics` and `qs`    |
+| `@atlasng/analytics/errors`          | `AnalyticsErrorCode`, also re-exported from `@atlasng/analytics`         |
 
 ## Usage
 
@@ -137,6 +138,8 @@ const statisticsAllowed = manager.permissions().isCategoryEnabled(AnalyticsEvent
 By default, consent is saved to `localStorage` and kept in sync across tabs and across Angular applications on the same page. Use `withPermissionsConfig()` to change the `storage`, `storageKey`, `storageEvents`, or `changeEventName` settings, or set `storage: false` to disable persistence. Use `withInitialPermissions()` (or `provideInitialAnalyticsPermissions()`) to set the permissions used before any stored value is found. If another tab removes the stored value or clears the storage, the manager returns to these initial permissions.
 
 `manager.hasDecision()` is a signal that is `false` until the user has made a choice, either in this session or in a stored value, so a cookie banner can show itself while it is `false`. `manager.permissionsSource()` tells where the current permissions came from: `'initial'` (no decision yet), `'storage'` (loaded from storage), `'local'` (set through the manager in this context), or `'external'` (received from another tab or application). Every call to `setPermissions()`, `setDefaultPermissions()`, `setFullPermissions()`, or `updatePermissions()` counts as a decision and is saved, even when the permissions don't change.
+
+To ask for a category when a feature needs it, such as `marketing` for embedded videos, call `manager.requestCategories(AnalyticsEventCategory.Marketing)`. The manager passes the requested categories, and the current permissions with them enabled, to the handler set with `provideAnalyticsPermissionsRequestHandler()`, and saves the first permissions the handler's observable emits. When it emits `undefined`, the permissions don't change. Without a handler, the categories are granted directly. `provideCookieModalPermissionsRequest()` from `@atlasng/labs/cookie-modal` provides a handler that opens the cookie modal.
 
 #### Consent-gated storage
 

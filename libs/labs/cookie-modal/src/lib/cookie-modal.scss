@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/cookie-modal' as *;
+@use 'tokens/scroll-area' as scroll;
 
 .ang-cookie-modal--panel {
   @include mat.dialog-overrides(
@@ -42,10 +43,33 @@
     }
   }
 
+  // The tab content scrolls in the scroll area, so the dialog content and tab body don't scroll themselves.
+  // The tab body shrinks to fit the dialog content's max height, and the scroll area fills it.
   .ang-cookie-modal--tabs {
+    overflow: hidden;
+
     @include mat.tabs-overrides(
       (
         divider-color: token-utils.slot(divider-color, $config),
+      )
+    );
+
+    .mat-mdc-tab-body-wrapper {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .mat-mdc-tab-body-content {
+      overflow: hidden;
+    }
+  }
+
+  .ang-cookie-modal--scroll-area {
+    height: 100%;
+
+    @include scroll.overrides(
+      (
+        container-color: token-utils.slot(container-color, $config),
       )
     );
   }

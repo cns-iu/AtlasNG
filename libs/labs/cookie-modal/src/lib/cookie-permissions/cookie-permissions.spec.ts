@@ -5,15 +5,29 @@ import userEvent from '@testing-library/user-event';
 import { CookiePermissions } from './cookie-permissions';
 
 describe('CookiePermissions', () => {
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+  const scrollIntoView = vi.fn();
+
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = scrollIntoView;
+  });
+
+  afterEach(() => {
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+    scrollIntoView.mockClear();
+  });
+
   async function setup(options?: {
     permissions?: AnalyticsPermissions;
     providers?: Partial<Record<AnalyticsEventCategory, { label: string; href: string }[]>>;
+    scrollToCategory?: AnalyticsEventCategory;
   }) {
     const user = userEvent.setup();
     const result = await render(CookiePermissions, {
       inputs: {
         permissions: options?.permissions ?? AnalyticsPermissions.DEFAULT,
         providers: options?.providers ?? {},
+        scrollToCategory: options?.scrollToCategory,
       },
     });
 
@@ -30,6 +44,22 @@ describe('CookiePermissions', () => {
     expect(screen.getByRole('button', { name: 'Preferences' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Statistics' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Marketing' })).toBeVisible();
+  });
+
+  it('scrolls the given category into view after rendering', async () => {
+    await setup({ scrollToCategory: AnalyticsEventCategory.Marketing });
+
+    expect(scrollIntoView).toHaveBeenCalledOnce();
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
+    expect(scrollIntoView.mock.contexts[0]).toBe(
+      screen.getByRole('button', { name: 'Marketing' }).closest('ang-cookie-permission-item'),
+    );
+  });
+
+  it('does not scroll without a category to scroll to', async () => {
+    await setup();
+
+    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 
   it('updates permissions when a category switch is toggled', async () => {
