@@ -57,6 +57,30 @@ export class Gallery {
 
 The defaults match the design-system `$breakpoints` map. If an application reconfigures that map, provide the same values with `provideBreakpoints({ ... })`. Use `breakpointQuery` to get the media condition for an expression directly.
 
+### Search
+
+`@atlasng/cdk/search` is a headless search layer. `injectSearch` searches a list with the injected `SEARCH_ENGINE` and returns `results`, `items`, `suggestions`, and `loading` signals. The default engine ignores case and accents, requires every word of the term to match, and ranks exact matches, then prefixes, then word prefixes, then other matches. Each result carries match ranges that the `angSearchHighlight` directive renders with `<mark>`.
+
+```ts
+import { Component, signal } from '@angular/core';
+import { injectSearch, SearchHighlight } from '@atlasng/cdk/search';
+
+@Component({
+  imports: [SearchHighlight],
+  template: `
+    @for (result of search.results(); track result.item.id) {
+      <span [angSearchHighlight]="result.item.label" [angSearchHighlightRanges]="result.matches?.[0]?.ranges"></span>
+    }
+  `,
+})
+export class OrganList {
+  readonly term = signal('');
+  readonly search = injectSearch({ items: ORGANS, term: this.term, fields: ['label'] });
+}
+```
+
+Use `provideSearch(withCustomEngine(...), withSearchConfig({ debounce, minLength, limit }))` in application, route, or component providers to swap the engine or change the defaults. Engines implement `SearchEngine` and may return results synchronously or as a promise. See the JSDoc in [libs/cdk/search/src](search/src) for the full API.
+
 ### Error codes
 
 Error codes are exported from `@atlasng/cdk/errors` as `CdkErrorCode` and re-exported from `@atlasng/cdk`.
