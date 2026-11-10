@@ -5,6 +5,7 @@ import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
+import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { CookiePermissions } from './cookie-permissions/cookie-permissions';
@@ -38,6 +39,11 @@ export interface CookieModalData {
    * Optional providers grouped by category for display in the details tab.
    */
   providers?: CookiePermissionProvidersByCategory;
+
+  /**
+   * Category scrolled into view when the details tab opens, for example the category the user is asked to allow.
+   */
+  scrollToCategory?: AnalyticsEventCategory;
 }
 
 /**
@@ -104,6 +110,11 @@ export class CookieModal {
    * Providers grouped by category for the permissions view.
    */
   protected readonly providers = this.data.providers ?? {};
+
+  /**
+   * Category scrolled into view when the details tab opens.
+   */
+  protected readonly scrollToCategory = this.data.scrollToCategory;
 
   /**
    * Predefined permission state that enables every category.

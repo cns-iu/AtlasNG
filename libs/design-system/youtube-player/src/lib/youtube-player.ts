@@ -7,7 +7,6 @@ import {
   ElementRef,
   inject,
   input,
-  output,
   Provider,
   signal,
   viewChild,
@@ -52,8 +51,8 @@ export function provideYouTubePlayerConfig(config: YouTubePlayerConfig): Provide
  * Marks custom content to display beneath the disabled YouTube player placeholder.
  *
  * Project marked content into {@link YouTubePlayer} to replace its default enable-request
- * message. The consumer owns the custom content's interaction and can enable the required
- * marketing permission through its application-specific consent flow.
+ * message. The consumer owns the custom content's interaction. To use the same consent flow as the
+ * default button, call `AnalyticsPermissionsManager.requestCategories(AnalyticsEventCategory.Marketing)`.
  */
 @Directive({
   selector: '[angYouTubePlayerEnableRequest]',
@@ -66,8 +65,10 @@ export class YouTubePlayerEnableRequest {}
  *
  * The underlying player is rendered only when marketing permission is enabled. Otherwise, the
  * component displays a privacy-preserving placeholder that links to the video on YouTube and an
- * enable-request area beneath it. Consumers can replace that area with content marked by
- * {@link YouTubePlayerEnableRequest}.
+ * enable-request area beneath it. The default area's button requests marketing permission through
+ * `AnalyticsPermissionsManager.requestCategories()`, which opens the application's consent dialog
+ * when one is provided and otherwise grants the permission directly. Consumers can replace that area
+ * with content marked by {@link YouTubePlayerEnableRequest}.
  *
  * `width` and `height` set the largest size and the aspect ratio. In containers narrower than
  * `width`, the player and placeholder shrink to the container's width and keep the aspect ratio.
@@ -129,9 +130,6 @@ export class YouTubePlayer {
 
   /** Observable form of {@link ngPlayer}, used to attach output forwarding lazily. */
   readonly #ngPlayer$ = toObservable(this.ngPlayer);
-
-  /** Emitted when the default enable-request button is clicked. */
-  readonly enableRequest = output<void>();
 
   /** Emits when the underlying YouTube player is initialized and ready to receive commands. */
   readonly ready = outputFromObservable<YT.PlayerEvent>(this.#getLazyOutputForwarding('ready'));
@@ -209,6 +207,11 @@ export class YouTubePlayer {
         destroyRef.onDestroy(() => resizeObserver.disconnect());
       });
     }
+  }
+
+  /** Requests marketing permission from the default enable-request button. The player loads once it's granted. */
+  protected requestMarketing(): void {
+    this.#permissionsManager.requestCategories(AnalyticsEventCategory.Marketing);
   }
 
   /**

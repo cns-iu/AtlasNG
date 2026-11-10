@@ -29,7 +29,12 @@
 
   <mat-tab label="Details" angEventScope="details-tab">
     <ang-scroll-area class="ang-cookie-modal--scroll-area">
-      <ang-cookie-permissions class="ang-cookie-modal--content" [providers]="providers" [(permissions)]="permissions" />
+      <ang-cookie-permissions
+        class="ang-cookie-modal--content"
+        [providers]="providers"
+        [scrollToCategory]="scrollToCategory"
+        [(permissions)]="permissions"
+      />
     </ang-scroll-area>
   </mat-tab>
 </mat-tab-group>
