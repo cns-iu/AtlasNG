@@ -4,14 +4,15 @@ import { AngError, createConfigurationToken, type } from '@atlasng/core';
 import { DefaultSearchEngine } from './default-engine';
 import { SearchEngine } from './types';
 
-/** Search defaults used by `injectSearch`. */
+/**
+ * Search defaults used by `injectSearch`. There is deliberately no result limit: a global limit would silently
+ * truncate filter lists, so limits are set per call.
+ */
 export interface SearchConfig {
   /** Milliseconds to wait after the term stops changing before searching. Defaults to `0` (no debounce). */
   debounce?: number;
   /** Minimum trimmed term length that triggers a search; shorter terms return every item. Defaults to `1`. */
   minLength?: number;
-  /** Maximum number of results. Defaults to no limit. */
-  limit?: number;
   /** Maximum number of suggestions. Defaults to `10`. */
   suggestionLimit?: number;
 }

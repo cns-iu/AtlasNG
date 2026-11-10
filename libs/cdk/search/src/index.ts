@@ -24,16 +24,18 @@ export {
 } from './lib/providers';
 export type {
   SearchEngine,
-  SearchField,
   SearchFieldDefinition,
   SearchFieldName,
+  SearchFieldSpec,
   SearchFieldValue,
   SearchIndex,
   SearchKey,
   SearchMatch,
+  SearchOrder,
   SearchPrimitive,
   SearchQuery,
   SearchRange,
   SearchResponse,
   SearchResult,
+  SearchSuggestion,
 } from './lib/types';

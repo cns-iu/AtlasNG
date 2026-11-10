@@ -108,8 +108,8 @@ describe('DefaultSearchEngine', () => {
       expect(result.matches).toEqual([{ field: 'description', value: 'Paired organ', ranges: [[7, 12]] }]);
       const heart = engine.createIndex([ORGANS[1]], ['description']).search({ term: 'o' });
       expect(heart[0].matches).toEqual([
-        { field: 'description', value: 'Pumps blood', ranges: [[8, 10]] },
-        { field: 'description', value: 'Muscular organ', ranges: [[9, 10]] },
+        { field: 'description', value: 'Pumps blood', ranges: [[8, 10]], index: 0 },
+        { field: 'description', value: 'Muscular organ', ranges: [[9, 10]], index: 1 },
       ]);
     });
 
@@ -127,6 +127,28 @@ describe('DefaultSearchEngine', () => {
       const index = engine.createIndex(ORGANS, ['label', 'description']);
       expect(labels(index.search({ term: 'kidney blood', fields: ['label'] }))).toEqual([]);
       expect(labels(index.search({ term: 'heart', fields: ['label'] }))).toEqual(['Heart', 'Heartwood', 'Café Heart']);
+    });
+
+    it('reports the position of matches in array values', () => {
+      const [result] = engine.createIndex([{ tags: [null, 'heart', 'heart'] }], ['tags']).search({ term: 'heart' });
+      expect(result.matches?.map((match) => match.index)).toEqual([1, 2]);
+    });
+
+    it('returns matches in item order for source order', () => {
+      const items = [{ label: 'xheartx' }, { label: 'Heart' }, { label: 'heartbeat' }];
+      const results = engine.createIndex(items, ['label']).search({ term: 'heart', order: 'source', limit: 2 });
+      expect(results.map((result) => result.item.label)).toEqual(['xheartx', 'Heart']);
+      expect(results[1]).toEqual({
+        item: items[1],
+        score: SearchMatchTier.Exact,
+        matches: [{ field: 'label', value: 'Heart', ranges: [[0, 5]] }],
+      });
+    });
+
+    it('ignores keys of items that are not objects', () => {
+      const items: unknown[] = [null, 'label', { label: 'Label' }];
+      const results = engine.createIndex(items, ['label' as never]).search({ term: 'label' });
+      expect(results.map((result) => result.item)).toEqual([items[2]]);
     });
 
     it('limits results after ranking', () => {
@@ -165,11 +187,39 @@ describe('DefaultSearchEngine', () => {
 
     it('returns unique matching values ordered by relevance', () => {
       const duplicates = engine.createIndex([...ORGANS, { label: 'Heart' }], ['label']);
-      expect(duplicates.suggest('heart')).toEqual(['Heart', 'Heartwood', 'Café Heart']);
+      expect(duplicates.suggest('heart').map((suggestion) => suggestion.value)).toEqual([
+        'Heart',
+        'Heartwood',
+        'Café Heart',
+      ]);
     });
 
     it('requires every word to appear in the suggested value', () => {
-      expect(index.suggest('kid left')).toEqual(['Left Kidney']);
+      expect(index.suggest('kid left')).toEqual([
+        {
+          value: 'Left Kidney',
+          ranges: [
+            [0, 4],
+            [5, 8],
+          ],
+        },
+      ]);
+    });
+
+    it('reports the match ranges of the original values', () => {
+      expect(index.suggest('cafe')).toEqual([{ value: 'Café Heart', ranges: [[0, 4]] }]);
+    });
+
+    it('keeps the best score of repeated values', () => {
+      const items = [{ label: 'my heart' }, { label: 'Heartwood' }, { label: 'my heart', boost: true }];
+      const repeated = engine.createIndex(items, [
+        'label',
+        { name: 'boosted', get: (item) => (item.boost ? item.label : null), weight: 10 },
+      ]);
+      expect(repeated.suggest('heart')).toEqual([
+        { value: 'my heart', ranges: [[3, 8]] },
+        { value: 'Heartwood', ranges: [[0, 5]] },
+      ]);
     });
 
     it('limits suggestions', () => {

@@ -22,7 +22,7 @@ describe('search providers', () => {
       providers: [
         provideSearch(
           withCustomEngine(() => customEngine),
-          withSearchConfig({ debounce: 200, limit: 5 }),
+          withSearchConfig({ debounce: 200, suggestionLimit: 5 }),
         ),
       ],
     });
@@ -30,8 +30,7 @@ describe('search providers', () => {
     expect(TestBed.runInInjectionContext(() => SEARCH_CONFIG.inject())).toEqual({
       debounce: 200,
       minLength: 1,
-      limit: 5,
-      suggestionLimit: 10,
+      suggestionLimit: 5,
     });
   });
 

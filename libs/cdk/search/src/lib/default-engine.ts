@@ -2,13 +2,14 @@ import { Service } from '@angular/core';
 import { mergeRanges, NormalizedText, normalizeSearchText, normalizeWithOffsets, toOriginalRange } from './normalize';
 import {
   SearchEngine,
-  SearchField,
-  SearchFieldValue,
+  SearchFieldSpec,
   SearchIndex,
   SearchMatch,
+  SearchPrimitive,
   SearchQuery,
   SearchRange,
   SearchResult,
+  SearchSuggestion,
 } from './types';
 
 /** Score of a match, by tier. Higher tiers rank first. */
@@ -33,6 +34,8 @@ const WORD_CHAR = /[\p{L}\p{N}]/u;
 interface IndexedValue extends NormalizedText {
   /** The original value. */
   readonly original: string;
+  /** Position of the value in the field value when the field value is an array. */
+  readonly index?: number;
   /** Number of leading whitespace units in the normalized text. */
   readonly lead: number;
   /** Length of the normalized text without surrounding whitespace. */
@@ -101,7 +104,7 @@ export class DefaultSearchEngine implements SearchEngine {
    * @param fields Fields to search. Defaults to every string and number value of each item.
    * @returns A synchronous index of the items.
    */
-  createIndex<T>(items: readonly T[], fields?: readonly SearchField<T>[]): DefaultSearchIndex<T> {
+  createIndex<T>(items: readonly T[], fields?: readonly SearchFieldSpec<T>[]): DefaultSearchIndex<T> {
     return new DefaultSearchIndex(items, fields);
   }
 }
@@ -115,7 +118,7 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
    * @param items Items to index.
    * @param fields Fields to search; defaults to every string and number value of each item.
    */
-  constructor(items: readonly T[], fields?: readonly SearchField<T>[]) {
+  constructor(items: readonly T[], fields?: readonly SearchFieldSpec<T>[]) {
     const resolved = fields?.map(resolveField);
     this.#items = items.map((item) => ({
       item,
@@ -127,7 +130,7 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
    * Searches the indexed items.
    *
    * @param query Search request.
-   * @returns Matching results ordered by relevance.
+   * @returns Matching results ordered by relevance, or in item order when `query.order` is `'source'`.
    */
   search(query: SearchQuery<T>): SearchResult<T>[] {
     const term = normalizeSearchText(query.term);
@@ -153,8 +156,13 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
           match.wordScores.forEach((score, i) => (wordScores[i] = Math.max(wordScores[i], score)));
           phraseScore = Math.max(phraseScore, match.phraseScore);
           if (match.ranges.length > 0) {
-            const ranges = mergeRanges(match.ranges.map(([start, end]) => toOriginalRange(value, start, end)));
-            matches.push({ field: field.name, value: value.original, ranges });
+            const ranges = toOriginalRanges(value, match.ranges);
+            matches.push({
+              field: field.name,
+              value: value.original,
+              ranges,
+              ...(value.index === undefined ? {} : { index: value.index }),
+            });
           }
         }
       }
@@ -164,10 +172,10 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
       }
     });
 
-    return results
-      .sort((a, b) => b.score - a.score || a.index - b.index)
-      .slice(0, query.limit)
-      .map(({ item, score, matches }) => ({ item, score, matches }));
+    if (query.order !== 'source') {
+      results.sort((a, b) => b.score - a.score || a.index - b.index);
+    }
+    return results.slice(0, query.limit).map(({ item, score, matches }) => ({ item, score, matches }));
   }
 
   /**
@@ -175,33 +183,38 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
    *
    * @param term Search term.
    * @param limit Maximum number of suggestions.
-   * @returns Suggested values ordered by relevance, then by first appearance.
+   * @returns Suggested values with their match ranges, ordered by relevance, then by first appearance.
    */
-  suggest(term: string, limit?: number): string[] {
+  suggest(term: string, limit?: number): SearchSuggestion[] {
     const normalized = normalizeSearchText(term);
     if (normalized === '') {
       return [];
     }
 
     const words = normalized.split(/\s+/);
-    const scores = new Map<string, number>();
+    const suggestions = new Map<string, SearchSuggestion & { score: number }>();
     for (const { fields } of this.#items) {
       for (const field of fields) {
         for (const value of field.values) {
           const match = matchValue(value, normalized, words, field.weight);
           if (match.wordScores.every((score) => score > 0)) {
             const score = combineScores(match.wordScores, match.phraseScore);
-            scores.set(value.original, Math.max(scores.get(value.original) ?? 0, score));
+            const previous = suggestions.get(value.original);
+            if (!previous || score > previous.score) {
+              // Equal values have equal ranges, so only the score can change
+              const ranges = previous?.ranges ?? toOriginalRanges(value, match.ranges);
+              suggestions.set(value.original, { value: value.original, ranges, score });
+            }
           }
         }
       }
     }
 
     // Map iteration keeps insertion order and the sort is stable, so ties keep their first appearance
-    return [...scores]
-      .sort((a, b) => b[1] - a[1])
+    return [...suggestions.values()]
+      .sort((a, b) => b.score - a.score)
       .slice(0, limit)
-      .map(([value]) => value);
+      .map(({ value, ranges }) => ({ value, ranges }));
   }
 }
 
@@ -211,9 +224,9 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
  * @param field A key or field definition.
  * @returns The resolved field.
  */
-function resolveField<T>(field: SearchField<T>): ResolvedField<T> {
+function resolveField<T>(field: SearchFieldSpec<T>): ResolvedField<T> {
   if (typeof field === 'string') {
-    return { name: field, weight: 1, get: (item) => (item as Record<string, unknown>)[field] };
+    return { name: field, weight: 1, get: (item) => readKey(item, field) };
   }
   return { name: field.name, weight: field.weight ?? 1, get: (item) => field.get(item) };
 }
@@ -226,17 +239,25 @@ function resolveField<T>(field: SearchField<T>): ResolvedField<T> {
  * @returns The item's default fields.
  */
 function defaultFields<T>(item: T): ResolvedField<T>[] {
-  if (isPrimitive(item)) {
+  if (isSearchPrimitive(item)) {
     return [{ name: DEFAULT_SEARCH_VALUE_FIELD, weight: 1, get: (value) => value }];
   }
   if (typeof item !== 'object' || item === null) {
     return [];
   }
-  return Object.keys(item).map((key) => ({
-    name: key,
-    weight: 1,
-    get: (value) => (value as Record<string, unknown>)[key],
-  }));
+  return Object.keys(item).map((key) => ({ name: key, weight: 1, get: (value) => readKey(value, key) }));
+}
+
+/**
+ * Reads a property of an item. Keys are not type-checked against the item's values, so anything that is not an
+ * object yields `undefined`.
+ *
+ * @param item Item to read.
+ * @param key Property name.
+ * @returns The property value, or `undefined`.
+ */
+function readKey(item: unknown, key: string): unknown {
+  return typeof item === 'object' && item !== null ? (item as Record<string, unknown>)[key] : undefined;
 }
 
 /**
@@ -247,10 +268,10 @@ function defaultFields<T>(item: T): ResolvedField<T>[] {
  * @returns The indexed field.
  */
 function indexField<T>(field: ResolvedField<T>, item: T): IndexedField {
-  const values = toStrings(field.get(item) as SearchFieldValue).map((original) => {
+  const values = toStrings(field.get(item)).map(({ original, index }): IndexedValue => {
     const normalized = normalizeWithOffsets(original);
     const lead = normalized.text.length - normalized.text.trimStart().length;
-    return { ...normalized, original, lead, trimmedLength: normalized.text.trim().length };
+    return { ...normalized, original, index, lead, trimmedLength: normalized.text.trim().length };
   });
   return { name: field.name, weight: field.weight, values };
 }
@@ -260,11 +281,26 @@ function indexField<T>(field: ResolvedField<T>, item: T): IndexedField {
  * ignored.
  *
  * @param value Field value.
- * @returns Searchable strings.
+ * @returns Searchable strings, with their position when the value is an array.
  */
-function toStrings(value: unknown): string[] {
-  const values: unknown[] = Array.isArray(value) ? value : [value];
-  return values.filter(isPrimitive).map(String);
+function toStrings(value: unknown): { original: string; index?: number }[] {
+  if (!Array.isArray(value)) {
+    return isSearchPrimitive(value) ? [{ original: String(value) }] : [];
+  }
+  return value.flatMap((entry: unknown, index) =>
+    isSearchPrimitive(entry) ? [{ original: String(entry), index }] : [],
+  );
+}
+
+/**
+ * Maps normalized ranges of a value onto its original text and merges them.
+ *
+ * @param value Indexed value.
+ * @param ranges Normalized ranges.
+ * @returns Sorted, non-overlapping ranges of the original value.
+ */
+function toOriginalRanges(value: IndexedValue, ranges: readonly SearchRange[]): SearchRange[] {
+  return mergeRanges(ranges.map(([start, end]) => toOriginalRange(value, start, end)));
 }
 
 /**
@@ -273,7 +309,7 @@ function toStrings(value: unknown): string[] {
  * @param value Value to check.
  * @returns True for strings and numbers.
  */
-function isPrimitive(value: unknown): value is string | number {
+export function isSearchPrimitive(value: unknown): value is SearchPrimitive {
   return typeof value === 'string' || typeof value === 'number';
 }
 

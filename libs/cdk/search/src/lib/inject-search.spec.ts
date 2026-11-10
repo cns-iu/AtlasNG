@@ -1,10 +1,10 @@
-import { Component, Injector, signal } from '@angular/core';
+import { Component, Injector, input, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { render } from '@testing-library/angular';
 import { DefaultSearchEngine } from './default-engine';
 import { injectSearch, InjectSearchOptions } from './inject-search';
 import { provideSearch, withCustomEngine, withSearchConfig } from './providers';
-import { SearchEngine, SearchIndex, SearchResult } from './types';
+import { SearchEngine, SearchFieldSpec, SearchIndex, SearchResult, SearchSuggestion } from './types';
 
 interface Organ {
   label: string;
@@ -29,16 +29,33 @@ class DeferredEngine implements SearchEngine {
   readonly #engine = new DefaultSearchEngine();
   readonly pending: { resolve: () => void; reject: (error: unknown) => void }[] = [];
 
-  createIndex<T>(items: readonly T[]): SearchIndex<T> {
-    const index = this.#engine.createIndex(items);
+  createIndex<T>(items: readonly T[], fields?: readonly SearchFieldSpec<T>[]): SearchIndex<T> {
+    const index = this.#engine.createIndex(items, fields);
     return {
       search: (query) =>
         new Promise<readonly SearchResult<T>[]>((resolve, reject) => {
           this.pending.push({ resolve: () => resolve(index.search(query)), reject });
         }),
-      suggest: (term, limit) => Promise.resolve(index.suggest?.(term, limit) ?? []),
+      suggest: (term, limit) => Promise.resolve(index.suggest(term, limit)),
     };
   }
+}
+
+function values(suggestions: readonly SearchSuggestion[]): string[] {
+  return suggestions.map((suggestion) => suggestion.value);
+}
+
+@Component({ selector: 'ang-generic-list', template: '' })
+class GenericList<T extends { label: string }> {
+  readonly options = input<readonly T[]>([]);
+  readonly term = input('');
+  readonly search = injectSearch({
+    items: this.options,
+    term: this.term,
+    fields: ['label'],
+    suggestionField: 'label',
+    order: 'source',
+  });
 }
 
 async function settle(): Promise<void> {
@@ -91,22 +108,95 @@ describe('injectSearch', () => {
     expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
   });
 
-  it('applies the result limit from the options or configuration', () => {
-    TestBed.configureTestingModule({ providers: [provideSearch(withSearchConfig({ limit: 1 }))] });
-    expect(setup({ items: ORGANS, term: 'blood' }).items()).toHaveLength(1);
-    expect(setup({ items: ORGANS, term: 'blood', limit: 5 }).items()).toHaveLength(2);
+  it('applies the result limit and order from the options', () => {
+    const limit = signal<number | undefined>(1);
+    const order = signal<'rank' | 'source' | undefined>(undefined);
+    const items = [{ label: 'Heartwood' }, { label: 'Heart' }];
+    const search = setup({ items, term: 'heart', limit, order });
+    expect(search.items()).toEqual([items[1]]);
+
+    order.set('source');
+    expect(search.items()).toEqual([items[0]]);
+    limit.set(undefined);
+    expect(search.results()).toEqual([
+      expect.objectContaining({ item: items[0] }),
+      expect.objectContaining({ item: items[1], matches: [{ field: 'label', value: 'Heart', ranges: [[0, 5]] }] }),
+    ]);
   });
 
-  it('suggests values of the suggestion field', () => {
+  it('suggests values of the suggestion field with their ranges', () => {
     const term = signal('heart');
     const search = setup({ items: ORGANS, term, suggestionField: 'label', suggestionLimit: 1 });
-    expect(search.suggestions()).toEqual(['Heart']);
+    expect(search.suggestions()).toEqual([{ value: 'Heart', ranges: [[0, 5]] }]);
     expect(setup({ items: ORGANS, term }).suggestions()).toEqual([]);
+  });
+
+  it('suggests primitive items without a suggestion field', () => {
+    expect(setup({ items: ['Heart', 42, 'Kidney'], term: 'e' }).suggestions()).toEqual([
+      { value: 'Heart', ranges: [[1, 2]] },
+      { value: 'Kidney', ranges: [[4, 5]] },
+    ]);
+  });
+
+  it('reads every option reactively', () => {
+    const minLength = signal<number | undefined>(3);
+    const suggestionLimit = signal<number | undefined>(1);
+    const suggestionField = signal<'label' | undefined>('label');
+    const engine = signal<SearchEngine | undefined>(undefined);
+    const term = signal('he');
+    const search = setup({ items: ORGANS, term, minLength, suggestionLimit, suggestionField, engine });
+    expect(search.items()).toEqual(ORGANS);
+
+    minLength.set(undefined);
+    expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
+    expect(values(search.suggestions())).toEqual(['Heart']);
+    suggestionLimit.set(undefined);
+    expect(values(search.suggestions())).toEqual(['Heart', 'Heartwood']);
+    suggestionField.set(undefined);
+    expect(search.suggestions()).toEqual([]);
+
+    engine.set({ createIndex: <T>(items: readonly T[]) => ({ search: () => [{ item: items[0] }] }) });
+    expect(search.items()).toEqual([ORGANS[0]]);
+  });
+
+  it('type-checks keys inside generic components', async () => {
+    const options = [
+      { label: 'Heartwood', id: 1 },
+      { label: 'Heart', id: 2 },
+    ];
+    const { fixture } = await render(GenericList<{ label: string; id: number }>, {
+      inputs: { options, term: 'heart' },
+    });
+    const { search } = fixture.componentInstance;
+    expect(search.items()).toEqual(options);
+    expect(values(search.suggestions())).toEqual(['Heart', 'Heartwood']);
   });
 
   it('returns no suggestions when the index cannot suggest', () => {
     const engine: SearchEngine = { createIndex: () => ({ search: () => [] }) };
     expect(setup({ items: ORGANS, term: 'heart', suggestionField: 'label', engine }).suggestions()).toEqual([]);
+  });
+
+  it('reads the debounce reactively', () => {
+    vi.useFakeTimers();
+    try {
+      const debounce = signal<number | undefined>(undefined);
+      const term = signal('');
+      const search = setup({ items: ORGANS, term, debounce });
+
+      term.set('heart');
+      expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
+
+      debounce.set(200);
+      TestBed.tick();
+      term.set('kidney');
+      TestBed.tick();
+      expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
+      vi.advanceTimersByTime(200);
+      expect(labels(search.items())).toEqual(['Left Kidney']);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('debounces the term but applies short terms immediately', () => {
@@ -146,7 +236,7 @@ describe('injectSearch', () => {
     engine.pending.shift()?.resolve();
     await settle();
     expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
-    expect(search.suggestions()).toEqual(['Heart', 'Heartwood']);
+    expect(values(search.suggestions())).toEqual(['Heart', 'Heartwood']);
     expect(search.loading()).toBe(false);
 
     term.set('kidney');
@@ -156,6 +246,24 @@ describe('injectSearch', () => {
     engine.pending.shift()?.resolve();
     await settle();
     expect(labels(search.items())).toEqual(['Left Kidney']);
+  });
+
+  it('drops results for previous items while an asynchronous request is pending', async () => {
+    const engine = new DeferredEngine();
+    const items = signal(ORGANS);
+    const search = setup({ items, term: 'heart', engine });
+    await settle();
+    engine.pending.shift()?.resolve();
+    await settle();
+    expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
+
+    items.set(ORGANS.slice(2));
+    expect(search.items()).toEqual([]);
+    expect(search.loading()).toBe(true);
+    await settle();
+    engine.pending.shift()?.resolve();
+    await settle();
+    expect(labels(search.items())).toEqual(['Heartwood']);
   });
 
   it('exposes errors of asynchronous engines', async () => {

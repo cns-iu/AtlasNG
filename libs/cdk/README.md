@@ -59,7 +59,7 @@ The defaults match the design-system `$breakpoints` map. If an application recon
 
 ### Search
 
-`@atlasng/cdk/search` is a headless search layer. `injectSearch` searches a list with the injected `SEARCH_ENGINE` and returns `results`, `items`, `suggestions`, and `loading` signals. The default engine ignores case and accents, requires every word of the term to match, and ranks exact matches, then prefixes, then word prefixes, then other matches. Each result carries match ranges that the `angSearchHighlight` directive renders with `<mark>`.
+`@atlasng/cdk/search` is a headless search layer. `injectSearch` searches a list with the injected `SEARCH_ENGINE` and returns `results`, `items`, `suggestions`, `loading`, and `error` signals. The default engine ignores case and accents, requires every word of the term to match, and ranks exact matches, then prefixes, then word prefixes, then other matches. Each result carries match ranges that the `angSearchHighlight` directive renders with `<mark>`.
 
 ```ts
 import { Component, signal } from '@angular/core';
@@ -79,7 +79,9 @@ export class OrganList {
 }
 ```
 
-Use `provideSearch(withCustomEngine(...), withSearchConfig({ debounce, minLength, limit }))` in application, route, or component providers to swap the engine or change the defaults. Engines implement `SearchEngine` and may return results synchronously or as a promise. See the JSDoc in [libs/cdk/search/src](search/src) for the full API.
+Every `injectSearch` option accepts a value or a signal, so options can come from component inputs. Pass `order: 'source'` to keep matches in item order, for example in a filter list. `suggestions` holds values of `suggestionField` (or the items themselves when they are strings or numbers) with their match ranges, ready for `angSearchHighlight`.
+
+Use `provideSearch(withCustomEngine(...), withSearchConfig({ debounce, minLength, suggestionLimit }))` in application, route, or component providers to swap the engine or change the defaults. Result limits are set per call only, so a global default never truncates a filter list. Engines implement `SearchEngine` and may return results synchronously or as a promise. See the JSDoc in [libs/cdk/search/src](search/src) for the full API.
 
 ### Error codes
 
