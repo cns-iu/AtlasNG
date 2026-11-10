@@ -1,3 +1,4 @@
+export { CdkErrorCode } from '@atlasng/cdk/errors';
 export {
   BREAKPOINTS,
   breakpointQuery,

@@ -9,7 +9,7 @@ export default defineConfig({
     coverage: {
       enabled: true,
       provider: 'v8',
-      include: ['*.js', 'configs/*.js'],
+      include: ['*.js', 'configs/*.js', 'rules/*.js'],
       reportsDirectory: '../../../coverage/libs/tooling/eslint-plugin',
       reporter: ['html', 'lcovonly', 'json-summary', 'text-summary'],
       thresholds: {
