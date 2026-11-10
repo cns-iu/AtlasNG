@@ -29,7 +29,6 @@ import { YouTubePlayer } from './youtube-player';
       [disablePlaceholder]="disablePlaceholder()"
       [placeholderButtonLabel]="placeholderButtonLabel()"
       [placeholderImageQuality]="placeholderImageQuality()"
-      (enableRequest)="enablePermission()"
     />
   `,
 })
@@ -54,12 +53,6 @@ class YouTubePlayerPermissionStoryComponent {
   protected togglePermission(): void {
     this.#permissionsManager.updatePermissions((permissions) =>
       permissions.toggleCategory(AnalyticsEventCategory.Marketing),
-    );
-  }
-
-  protected enablePermission(): void {
-    this.#permissionsManager.updatePermissions((permissions) =>
-      permissions.enableCategory(AnalyticsEventCategory.Marketing),
     );
   }
 }
@@ -131,11 +124,6 @@ const meta: Meta<YouTubePlayer> = {
       description: 'Thumbnail quality used by the disabled and enabled player placeholders.',
       options: ['low', 'standard', 'high'],
       table: { category: 'Inputs' },
-    },
-    enableRequest: {
-      control: false,
-      description: 'Emitted when the default enable-request button is clicked.',
-      table: { category: 'Outputs' },
     },
     ready: {
       control: false,

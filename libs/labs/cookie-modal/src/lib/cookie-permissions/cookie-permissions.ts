@@ -1,5 +1,5 @@
 import { CdkAccordionModule } from '@angular/cdk/accordion';
-import { Component, input, model } from '@angular/core';
+import { afterNextRender, Component, ElementRef, input, model, viewChildren } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { EventScope } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
@@ -67,6 +67,28 @@ export class CookiePermissions {
    * Providers grouped by cookie category.
    */
   readonly providers = input<CookiePermissionProvidersByCategory>({});
+
+  /**
+   * Category scrolled into view after the list first renders, for example the category the user is asked to allow.
+   */
+  readonly scrollToCategory = input<AnalyticsEventCategory>();
+
+  /**
+   * Host elements of the rendered items, in the same order as {@link info}.
+   */
+  private readonly itemElements = viewChildren<CookiePermissionItem, ElementRef<HTMLElement>>(CookiePermissionItem, {
+    read: ElementRef,
+  });
+
+  /**
+   * Scrolls {@link scrollToCategory} into view once the items have rendered.
+   */
+  constructor() {
+    afterNextRender(() => {
+      const index = this.info().findIndex((item) => item.category === this.scrollToCategory());
+      this.itemElements()[index]?.nativeElement.scrollIntoView({ block: 'nearest' });
+    });
+  }
 
   /**
    * Updates a single cookie category permission in the current state.
