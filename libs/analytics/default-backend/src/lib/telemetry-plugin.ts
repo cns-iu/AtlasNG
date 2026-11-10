@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { AnalyticsErrorCode } from '@atlasng/analytics/errors';
 import { AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
+import { AngError } from '@atlasng/core';
 import { AnalyticsPlugin } from 'analytics';
 import { ANONYMOUS_ID_KEY } from './anonymous-id';
 import { serializeTelemetryData, stripQueryAndFragment, TelemetrySerializerOptions } from './telemetry-serializer';
@@ -58,7 +60,7 @@ export function telemetryPlugin(config: TelemetryPluginConfig): AnalyticsPlugin 
  *
  * @param args Plugin invocation arguments.
  * @returns Plain object suitable for telemetry serialization.
- * @throws Error when the payload type is unsupported.
+ * @throws AngError when the payload type is unsupported.
  */
 function prepareTelemetryData(args: AnyPluginMethodArgs<TelemetryPluginConfig>): object {
   const { config, instance, payload } = args;
@@ -83,7 +85,10 @@ function prepareTelemetryData(args: AnyPluginMethodArgs<TelemetryPluginConfig>):
       ({ path, trigger, triggerData, ...props } = payload.properties);
       break;
     default:
-      throw new Error(`Unsupported telemetry payload type: ${args.payload.type}`);
+      throw new AngError(
+        AnalyticsErrorCode.UnsupportedTelemetryPayload,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && `Unsupported telemetry payload type: ${args.payload.type}`,
+      );
   }
 
   return {
@@ -146,8 +151,10 @@ function sendTelemetry(url: string, http: HttpClient | null): void {
    * @param error Error object emitted by the transport layer.
    */
   const onError = (error: unknown): void => {
-    // eslint-disable-next-line no-console
-    console.error('Failed to send telemetry data', error);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to send telemetry data', error);
+    }
   };
 
   if (http) {

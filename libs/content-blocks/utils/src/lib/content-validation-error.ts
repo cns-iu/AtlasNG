@@ -1,11 +1,14 @@
+import { ContentBlocksErrorCode } from '@atlasng/content-blocks/errors';
+import { AngError } from '@atlasng/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 
 /**
- * Thrown when a node does not match its definition.
+ * Thrown when a node does not match its definition. The message keeps the issues in production builds, since they
+ * describe the content rather than the code.
  *
  * Issue paths are relative to the node and start with `config`, `data`, or `content`, e.g. `['data', 'rows', 0]`.
  */
-export class ContentValidationError extends Error {
+export class ContentValidationError extends AngError<ContentBlocksErrorCode.ContentValidation> {
   /** Error name used in messages and stack traces. */
   override readonly name = 'ContentValidationError';
   /** Path of the invalid node in the document, e.g. `content.@default[2].content.title`. */
@@ -18,7 +21,7 @@ export class ContentValidationError extends Error {
    * @param issues Standard Schema issues describing the failures.
    */
   constructor(path: string, issues: readonly StandardSchemaV1.Issue[]) {
-    super(formatIssues(path, issues));
+    super(ContentBlocksErrorCode.ContentValidation, formatIssues(path, issues));
     this.path = path;
     this.issues = issues;
   }

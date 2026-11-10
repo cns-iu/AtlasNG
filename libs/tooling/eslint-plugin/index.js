@@ -1,6 +1,7 @@
 // @ts-check
 import { createRequire } from 'node:module';
 import base from './configs/base.js';
+import noUnguardedErrorMessage from './rules/no-unguarded-error-message.js';
 
 /**
  * CommonJS-style loader used by the lazy configuration getters. Node.js loads the ES module
@@ -62,7 +63,7 @@ const configs = {
  * @typedef {object} AtlasngEslintPlugin
  * @property {{ name: string, version: string }} meta Package name and version.
  * @property {typeof configs} configs Flat configurations keyed like `@nx/eslint-plugin`.
- * @property {Record<string, import('eslint').Rule.RuleModule>} rules Reserved for future `@atlasng/*` rules.
+ * @property {Record<string, import('eslint').Rule.RuleModule>} rules Custom `@atlasng/*` rules.
  */
 
 /**
@@ -73,7 +74,9 @@ const configs = {
 const plugin = {
   meta: { name: packageJson.name, version: packageJson.version },
   configs,
-  rules: {},
+  rules: {
+    'no-unguarded-error-message': noUnguardedErrorMessage,
+  },
 };
 
 export default plugin;
