@@ -16,9 +16,10 @@ Render AtlasNG components dynamically from deserialized JSON content documents.
 | `@atlasng/content-blocks/definitions/design-system` | Definitions for design-system components and `provideDesignSystemDefinitions`                         |
 | `@atlasng/content-blocks/loaders`                   | Built-in data loaders and the data loader registry                                                    |
 | `@atlasng/content-blocks/parsers`                   | Built-in data parsers and the data parser registry                                                    |
+| `@atlasng/content-blocks/errors`                    | `ContentBlocksErrorCode`, also re-exported from `@atlasng/content-blocks`                             |
 | `@atlasng/content-blocks/utils`                     | `ContentValidationError`, document guards, `createSchema`, `passthroughSchema`, `LazyChainedRegistry` |
 
-The primary entry point does not re-export the secondary entry points; import shared types from `/types` and built-in
+The primary entry point does not re-export the secondary entry points, except for the error codes; import shared types from `/types` and built-in
 loaders and parsers from `/loaders` and `/parsers`.
 
 ## Usage

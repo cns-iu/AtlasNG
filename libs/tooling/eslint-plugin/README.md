@@ -79,3 +79,24 @@ export default [
   ...angular.configs['angular-template'],
 ];
 ```
+
+## Rules
+
+Rules are not enabled by any configuration; register the plugin and turn them on where they apply.
+
+### `no-unguarded-error-message`
+
+Reports string messages passed to error constructors (`Error`, `TypeError`, `AngError`, …) unless an `ngDevMode` check guards them. Angular production builds define `ngDevMode` as `false`, so guarded strings are dropped from the bundle. A string counts as guarded inside `if (ngDevMode) { … }`, on the right of `ngDevMode && …`, in the consequent of `ngDevMode ? … : …`, or after `if (!ngDevMode) { return; }` in the same block.
+
+```js
+import atlasng from '@atlasng/eslint-plugin';
+
+export default [
+  {
+    files: ['**/*.ts'],
+    ignores: ['**/*.spec.ts', '**/*.stories.ts'],
+    plugins: { '@atlasng': atlasng },
+    rules: { '@atlasng/no-unguarded-error-message': 'error' },
+  },
+];
+```

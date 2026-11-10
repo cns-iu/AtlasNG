@@ -56,3 +56,7 @@ export class Gallery {
 ```
 
 The defaults match the design-system `$breakpoints` map. If an application reconfigures that map, provide the same values with `provideBreakpoints({ ... })`. Use `breakpointQuery` to get the media condition for an expression directly.
+
+### Error codes
+
+Error codes are exported from `@atlasng/cdk/errors` as `CdkErrorCode` and re-exported from `@atlasng/cdk`.

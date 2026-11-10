@@ -10,7 +10,8 @@ import {
   input,
 } from '@angular/core';
 import type { ActivatedRoute, Params, QueryParamsHandling, UrlTree } from '@angular/router';
-import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
+import { CommonErrorCode } from '@atlasng/common/errors';
+import { AngError, CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
 import { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from '../link-handler/handler';
 import { isAnchorLikeElement } from '../link-handler/utils/anchor-element';
 import { isUrlTree } from '../link-handler/utils/url';
@@ -169,7 +170,8 @@ export class AnyLink {
             this.preserveFragment() ||
             this.relativeTo())
         ) {
-          throw new Error(
+          throw new AngError(
+            CommonErrorCode.UrlTreeWithNavigationOptions,
             'Cannot configure queryParams or fragment when using a UrlTree as the angAnyLink input value.',
           );
         }

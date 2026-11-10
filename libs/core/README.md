@@ -1,6 +1,6 @@
 # @atlasng/core
 
-The foundation layer of AtlasNG. It provides injection tokens for browser globals and a small helper for building typed, defaults-aware configuration tokens. Most AtlasNG libraries build on it, and it has no dependencies on other `@atlasng/*` packages.
+The foundation layer of AtlasNG. It provides injection tokens for browser globals, a small helper for building typed, defaults-aware configuration tokens, and a coded error class. Most AtlasNG libraries build on it, and it has no dependencies on other `@atlasng/*` packages.
 
 ## Installation
 
@@ -92,3 +92,30 @@ function greet(config: ConfigurationOf<typeof GREETER_CONFIG>): string {
   return `${config.greeting}, ${config.name ?? 'world'}!`;
 }
 ```
+
+### Coded errors
+
+`AngError` carries a numeric code, modelled on Angular's `RuntimeError`. Pass the message only in dev mode: Angular production builds define `ngDevMode` as `false`, so the string is dropped and the error message is just the code, e.g. `ANG3201`.
+
+```ts
+import { AngError } from '@atlasng/core';
+
+throw new AngError(
+  AnalyticsErrorCode.InvalidPermissionsJson,
+  (typeof ngDevMode === 'undefined' || ngDevMode) && 'Invalid AnalyticsPermissions JSON',
+);
+```
+
+Each library declares its codes in an enum within its own range, exported from its `errors` entry point and re-exported from its main entry point:
+
+| Range       | Library                   | Enum                     |
+| ----------- | ------------------------- | ------------------------ |
+| `0000–0999` | `@atlasng/core`           |                          |
+| `1000–1999` | `@atlasng/common`         | `CommonErrorCode`        |
+| `2000–2999` | `@atlasng/cdk`            | `CdkErrorCode`           |
+| `3000–3999` | `@atlasng/analytics`      | `AnalyticsErrorCode`     |
+| `4000–4999` | `@atlasng/design-system`  | `DesignSystemErrorCode`  |
+| `5000–5999` | `@atlasng/content-blocks` | `ContentBlocksErrorCode` |
+| `6000–6999` | `@atlasng/labs`           |                          |
+
+The `@atlasng/no-unguarded-error-message` rule from `@atlasng/eslint-plugin` reports error messages that are not guarded by `ngDevMode`.

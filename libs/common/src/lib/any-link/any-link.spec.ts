@@ -90,7 +90,7 @@ describe('AnyLink', () => {
     });
 
     await expect(result).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Cannot configure queryParams or fragment when using a UrlTree as the angAnyLink input value.]`,
+      `[AngError: ANG1002: Cannot configure queryParams or fragment when using a UrlTree as the angAnyLink input value.]`,
     );
   });
 
