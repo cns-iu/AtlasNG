@@ -24,6 +24,7 @@ Apps that only use `withCustomBackend()` don't need them.
 | `@atlasng/analytics/events`          | Event definitions, categories, and the built-in `CoreEvents`             |
 | `@atlasng/analytics/permissions`     | `AnalyticsPermissions` and `AnalyticsPermissionsManager`                 |
 | `@atlasng/analytics/default-backend` | `withDefaultBackend` and related types. Requires `analytics` and `qs`    |
+| `@atlasng/analytics/errors`          | `AnalyticsErrorCode`, also re-exported from `@atlasng/analytics`         |
 
 ## Usage
 

@@ -8,10 +8,12 @@ import {
   Type,
 } from '@angular/core';
 import { DefinitionRegistry } from '@atlasng/content-blocks/definitions';
+import { ContentBlocksErrorCode } from '@atlasng/content-blocks/errors';
 import { DataLoaderRegistry } from '@atlasng/content-blocks/loaders';
 import { DataParserRegistry } from '@atlasng/content-blocks/parsers';
 import { ContentDefinition, ContentNode, TypeRef } from '@atlasng/content-blocks/types';
 import { LazyChainedRegistry } from '@atlasng/content-blocks/utils';
+import { AngError } from '@atlasng/core';
 import { Arrayable } from 'type-fest';
 import { CONTENT_BLOCKS_CONFIG } from '../config';
 import { loadComponent } from '../pipeline/component';
@@ -102,7 +104,7 @@ function createTextComponentLoader(
  * Checks that `defaultLoader`, `defaultInlineLoader`, and `defaultParser` name registered entries.
  *
  * @param context Render context.
- * @throws {Error} In dev mode, when a name is not registered. In prod mode a warning is logged instead.
+ * @throws {AngError} In dev mode, when a name is not registered. In prod mode a warning is logged instead.
  */
 function checkDefaultNames({ config, loaders, parsers }: PipelineContext): void {
   const missing = [
@@ -116,7 +118,7 @@ function checkDefaultNames({ config, loaders, parsers }: PipelineContext): void 
 
   const message = `Content blocks config names unregistered entries: ${missing.join(', ')}.`;
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    throw new Error(message);
+    throw new AngError(ContentBlocksErrorCode.UnregisteredConfigEntry, message);
   }
 
   // eslint-disable-next-line no-console

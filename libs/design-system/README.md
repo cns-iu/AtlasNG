@@ -52,6 +52,8 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/table-of-contents`                   | `TableOfContents`                                                         |
 | `@atlasng/design-system/youtube-player`                      | `YouTubePlayer`, `provideYouTubePlayerConfig`                             |
 
+Error codes are exported from `@atlasng/design-system/errors` as `DesignSystemErrorCode` and re-exported from `@atlasng/design-system`.
+
 ```ts
 import { Component } from '@angular/core';
 import { Notice } from '@atlasng/design-system/indicators/notice';
