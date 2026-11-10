@@ -31,9 +31,9 @@
     (optionSelected)="select($event.option.value)"
     #autocomplete="matAutocomplete"
   >
-    @for (suggestion of options(); track suggestion) {
-      <mat-option class="ang-search-field--option" [value]="suggestion">
-        <span [angSearchHighlight]="suggestion" [angSearchHighlightRanges]="ranges().get(suggestion)"></span>
+    @for (suggestion of options(); track suggestion.value) {
+      <mat-option class="ang-search-field--option" [value]="suggestion.value">
+        <span [angSearchHighlight]="suggestion.value" [angSearchHighlightRanges]="suggestion.ranges"></span>
       </mat-option>
     }
   </mat-autocomplete>

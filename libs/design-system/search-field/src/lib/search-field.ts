@@ -1,34 +1,10 @@
-import {
-  booleanAttribute,
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  input,
-  model,
-  output,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
 import { MatIconButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
-import {
-  injectSearch,
-  SEARCH_CONFIG,
-  SearchHighlight,
-  type SearchField as SearchFieldOf,
-  type SearchFieldDefinition,
-  type SearchRange,
-} from '@atlasng/cdk/search';
-
-/** Suggests the items themselves when they are strings or numbers. Used when no `suggestionField` is set. */
-const PRIMITIVE_ITEM_FIELD: SearchFieldDefinition<unknown> = {
-  name: 'value',
-  get: (item) => (typeof item === 'string' || typeof item === 'number' ? item : undefined),
-};
+import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggestion } from '@atlasng/cdk/search';
 
 /**
  * Search input with a search icon, a clear button, and autocomplete suggestions whose matched text is highlighted.
@@ -65,10 +41,13 @@ export class SearchField<T = string> {
   readonly items = input<readonly T[]>();
 
   /** Field of `items` to suggest. Defaults to the items themselves when they are strings or numbers. */
-  readonly suggestionField = input<SearchFieldOf<T>>();
+  readonly suggestionField = input<SearchFieldSpec<T>>();
 
-  /** Suggestions to show as they are, for example from a remote service. Takes precedence over `items`. */
-  readonly suggestions = input<readonly string[]>();
+  /**
+   * Suggestions to show as they are, for example from a remote service. Takes precedence over `items`. Suggestions
+   * with ranges, such as those returned by `SearchIndex.suggest`, are highlighted; plain strings are not.
+   */
+  readonly suggestions = input<readonly (string | SearchSuggestion)[]>();
 
   /** Label of the search field. */
   readonly label = input('Search');
@@ -100,63 +79,21 @@ export class SearchField<T = string> {
   /** Autocomplete trigger of the search input. */
   private readonly trigger = viewChild.required(MatAutocompleteTrigger);
 
-  /** Injected search defaults. */
-  readonly #config = SEARCH_CONFIG.inject();
-
-  /** Debounce in milliseconds applied to the term. */
-  readonly #delay = computed(() => this.debounce() ?? this.#config.debounce);
-
-  /** The latest term after the debounce. */
-  readonly #debouncedValue = signal('');
-
-  /** Term used to compute suggestions. Empty terms and terms without debounce apply immediately. */
-  readonly #term = computed(() =>
-    this.#delay() <= 0 || this.value().trim() === '' ? this.value() : this.#debouncedValue(),
-  );
-
-  /** Suggestions computed from the items. Debounced by {@link #term}, so the search itself does not debounce. */
+  /** Suggestions computed from the items. */
   readonly #search = injectSearch<T>({
     items: computed(() => (this.suggestions() ? [] : (this.items() ?? []))),
-    term: this.#term,
-    suggestionField: computed(() => this.suggestionField() ?? (PRIMITIVE_ITEM_FIELD as SearchFieldDefinition<T>)),
-    debounce: 0,
-  });
-
-  /** Displayed suggestions. */
-  protected readonly options = computed(() => this.suggestions() ?? this.#search.suggestions());
-
-  /** Searches the displayed suggestions for the term to find the ranges to highlight. */
-  readonly #highlight = injectSearch<string>({
-    items: this.options,
     term: this.value,
-    limit: Number.POSITIVE_INFINITY,
-    debounce: 0,
+    suggestionField: this.suggestionField,
+    debounce: this.debounce,
   });
 
-  /** Highlighted ranges of each displayed suggestion. */
-  protected readonly ranges = computed(() => {
-    const ranges = new Map<string, SearchRange[]>();
-    for (const { item, matches = [] } of this.#highlight.results()) {
-      ranges.set(
-        item,
-        matches.filter((match) => match.value === item).flatMap((match) => match.ranges),
-      );
-    }
-    return ranges;
-  });
-
-  /** Debounces the term. */
-  constructor() {
-    effect((onCleanup) => {
-      const value = this.value();
-      const delay = this.#delay();
-      if (delay <= 0) {
-        return;
-      }
-      const timeout = setTimeout(() => this.#debouncedValue.set(value), delay);
-      onCleanup(() => clearTimeout(timeout));
-    });
-  }
+  /** Displayed suggestions with the ranges to highlight. */
+  protected readonly options = computed(
+    (): readonly SearchSuggestion[] =>
+      this.suggestions()?.map((suggestion) =>
+        typeof suggestion === 'string' ? { value: suggestion, ranges: [] } : suggestion,
+      ) ?? this.#search.suggestions(),
+  );
 
   /**
    * Updates the term from the input.

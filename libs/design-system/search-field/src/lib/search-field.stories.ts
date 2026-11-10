@@ -46,7 +46,11 @@ class StartsWithSearchEngine implements SearchEngine {
               ]
             : [],
         ),
-      suggest: (term, limit) => values.filter((value) => matches(value, term)).slice(0, limit),
+      suggest: (term, limit) =>
+        values
+          .filter((value) => matches(value, term))
+          .slice(0, limit)
+          .map((value) => ({ value, ranges: [[0, term.trim().length] as const] })),
     };
   }
 }

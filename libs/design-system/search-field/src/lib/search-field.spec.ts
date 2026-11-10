@@ -20,7 +20,10 @@ class StartsWithEngine implements SearchEngine {
             ? [{ item, matches: [{ field: 'value', value: values[index], ranges: [[0, term.length] as const] }] }]
             : [],
         ),
-      suggest: (term) => values.filter((value) => value.toLowerCase().startsWith(term.toLowerCase())),
+      suggest: (term) =>
+        values
+          .filter((value) => value.toLowerCase().startsWith(term.toLowerCase()))
+          .map((value) => ({ value, ranges: [[0, term.length] as const] })),
     };
   }
 }
@@ -84,6 +87,17 @@ describe('SearchField', () => {
 
     const options = await screen.findAllByRole('option');
     expect(options.map((option) => option.textContent?.trim())).toEqual(['Remote lung', 'Remote liver']);
+  });
+
+  it('highlights explicit suggestions with ranges', async () => {
+    const user = userEvent.setup();
+    await setup({ suggestions: [{ value: 'Remote lung', ranges: [[7, 9]] }, 'Remote liver'] });
+
+    await user.type(getInput(), 'lu');
+
+    const options = await screen.findAllByRole('option');
+    expect(within(options[0]).getByText('lu')).toHaveClass('ang-search-highlight--match');
+    expect(within(options[1]).queryByText((_, element) => element?.tagName === 'MARK')).not.toBeInTheDocument();
   });
 
   it('updates the value and emits the selected suggestion', async () => {
