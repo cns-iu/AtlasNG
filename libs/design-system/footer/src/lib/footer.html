@@ -30,12 +30,27 @@
     </div>
   }
 
-  <div class="ang-footer--actions">
-    <ng-content select="ang-footer-action, [angFooterAction]">
-      <button matButton class="ang-footer--action" (click)="openPrivacyPreferences.emit()">Privacy Preferences</button>
-      <button matButton class="ang-footer--action" (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
-    </ng-content>
-  </div>
+  @if (hasActionGroups()) {
+    <nav class="ang-footer--action-groups" aria-label="Footer">
+      <ng-content select="ang-footer-action-group" />
+
+      <ang-footer-action-group category="Privacy">
+        <button angFooterActionGroupLink type="button" (click)="openPrivacyPreferences.emit()">
+          Privacy Preferences
+        </button>
+        <button angFooterActionGroupLink type="button" (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
+      </ang-footer-action-group>
+    </nav>
+  } @else {
+    <div class="ang-footer--actions">
+      <ng-content select="ang-footer-action, [angFooterAction]">
+        <button matButton class="ang-footer--action" (click)="openPrivacyPreferences.emit()">
+          Privacy Preferences
+        </button>
+        <button matButton class="ang-footer--action" (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
+      </ng-content>
+    </div>
+  }
 
   <span class="ang-footer--copyright">
     © {{ copyrightYear() }} Copyright {{ organization() }}. All rights reserved.
