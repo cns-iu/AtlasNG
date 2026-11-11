@@ -68,13 +68,13 @@ describe('injectSearch', () => {
   it('returns every item for an empty term and ranked matches otherwise', () => {
     const term = signal('');
     const search = setup({ items: ORGANS, term });
-    expect(search.results()).toEqual(ORGANS.map((item) => ({ item })));
-    expect(search.suggestions()).toEqual([]);
-    expect(search.loading()).toBe(false);
+    expect(search.value()).toEqual(ORGANS.map((item) => ({ item })));
+    expect(search.suggestions.value()).toEqual([]);
+    expect(search.isLoading()).toBe(false);
 
     term.set('heart');
     expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
-    expect(search.results()[0].matches).toEqual([{ field: 'label', value: 'Heart', ranges: [[0, 5]] }]);
+    expect(search.value()[0].matches).toEqual([{ field: 'label', value: 'Heart', ranges: [[0, 5]] }]);
   });
 
   it('rebuilds the index only when the items or fields change', () => {
@@ -103,7 +103,7 @@ describe('injectSearch', () => {
     const term = signal('he');
     const search = setup({ items: ORGANS, term, suggestionField: 'label' });
     expect(search.items()).toEqual(ORGANS);
-    expect(search.suggestions()).toEqual([]);
+    expect(search.suggestions.value()).toEqual([]);
 
     term.set('hea');
     expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
@@ -119,7 +119,7 @@ describe('injectSearch', () => {
     order.set('source');
     expect(search.items()).toEqual([items[0]]);
     limit.set(undefined);
-    expect(search.results()).toEqual([
+    expect(search.value()).toEqual([
       expect.objectContaining({ item: items[0] }),
       expect.objectContaining({ item: items[1], matches: [{ field: 'label', value: 'Heart', ranges: [[0, 5]] }] }),
     ]);
@@ -128,12 +128,12 @@ describe('injectSearch', () => {
   it('suggests values of the suggestion field with their ranges', () => {
     const term = signal('heart');
     const search = setup({ items: ORGANS, term, suggestionField: 'label', suggestionLimit: 1 });
-    expect(search.suggestions()).toEqual([{ value: 'Heart', ranges: [[0, 5]] }]);
-    expect(setup({ items: ORGANS, term }).suggestions()).toEqual([]);
+    expect(search.suggestions.value()).toEqual([{ value: 'Heart', ranges: [[0, 5]] }]);
+    expect(setup({ items: ORGANS, term }).suggestions.value()).toEqual([]);
   });
 
   it('suggests primitive items without a suggestion field', () => {
-    expect(setup({ items: ['Heart', 42, 'Kidney'], term: 'e' }).suggestions()).toEqual([
+    expect(setup({ items: ['Heart', 42, 'Kidney'], term: 'e' }).suggestions.value()).toEqual([
       { value: 'Heart', ranges: [[1, 2]] },
       { value: 'Kidney', ranges: [[4, 5]] },
     ]);
@@ -150,11 +150,11 @@ describe('injectSearch', () => {
 
     minLength.set(undefined);
     expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
-    expect(values(search.suggestions())).toEqual(['Heart']);
+    expect(values(search.suggestions.value())).toEqual(['Heart']);
     suggestionLimit.set(undefined);
-    expect(values(search.suggestions())).toEqual(['Heart', 'Heartwood']);
+    expect(values(search.suggestions.value())).toEqual(['Heart', 'Heartwood']);
     suggestionField.set(undefined);
-    expect(search.suggestions()).toEqual([]);
+    expect(search.suggestions.value()).toEqual([]);
 
     engine.set({ createIndex: <T>(items: readonly T[]) => ({ search: () => [{ item: items[0] }] }) });
     expect(search.items()).toEqual([ORGANS[0]]);
@@ -170,12 +170,12 @@ describe('injectSearch', () => {
     });
     const { search } = fixture.componentInstance;
     expect(search.items()).toEqual(options);
-    expect(values(search.suggestions())).toEqual(['Heart', 'Heartwood']);
+    expect(values(search.suggestions.value())).toEqual(['Heart', 'Heartwood']);
   });
 
   it('returns no suggestions when the index cannot suggest', () => {
     const engine: SearchEngine = { createIndex: () => ({ search: () => [] }) };
-    expect(setup({ items: ORGANS, term: 'heart', suggestionField: 'label', engine }).suggestions()).toEqual([]);
+    expect(setup({ items: ORGANS, term: 'heart', suggestionField: 'label', engine }).suggestions.value()).toEqual([]);
   });
 
   it('reads the debounce reactively', () => {
@@ -232,16 +232,16 @@ describe('injectSearch', () => {
     const search = setup({ items: ORGANS, term, engine, suggestionField: 'label' });
 
     expect(search.items()).toEqual([]);
-    expect(search.loading()).toBe(true);
+    expect(search.isLoading()).toBe(true);
     await settle();
     engine.pending.shift()?.resolve();
     await settle();
     expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
-    expect(values(search.suggestions())).toEqual(['Heart', 'Heartwood']);
-    expect(search.loading()).toBe(false);
+    expect(values(search.suggestions.value())).toEqual(['Heart', 'Heartwood']);
+    expect(search.isLoading()).toBe(false);
 
     term.set('kidney');
-    expect(search.loading()).toBe(true);
+    expect(search.isLoading()).toBe(true);
     expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
     await settle();
     engine.pending.shift()?.resolve();
@@ -260,22 +260,124 @@ describe('injectSearch', () => {
 
     items.set(ORGANS.slice(2));
     expect(search.items()).toEqual([]);
-    expect(search.loading()).toBe(true);
+    expect(search.isLoading()).toBe(true);
     await settle();
     engine.pending.shift()?.resolve();
     await settle();
     expect(labels(search.items())).toEqual(['Heartwood']);
   });
 
-  it('exposes errors of asynchronous engines', async () => {
+  it('reports the status of synchronous and asynchronous searches', async () => {
+    const sync = setup({ items: ORGANS, term: 'heart' });
+    expect(sync.status()).toBe('resolved');
+    expect(sync.hasValue()).toBe(true);
+    expect(sync.snapshot()).toEqual({ status: 'resolved', value: sync.value() });
+    expect(sync.suggestions.status()).toBe('resolved');
+
     const engine = new DeferredEngine();
     const search = setup({ items: ORGANS, term: 'heart', engine });
+    expect(search.status()).toBe('loading');
+    expect(search.snapshot()).toEqual({ status: 'loading', value: [] });
+    await settle();
+    engine.pending.shift()?.resolve();
+    await settle();
+    expect(search.status()).toBe('resolved');
+    expect(search.error()).toBeUndefined();
+  });
+
+  it('exposes errors of asynchronous engines', async () => {
+    const engine = new DeferredEngine();
+    const term = signal('heart');
+    const search = setup({ items: ORGANS, term, engine });
     await settle();
     engine.pending.shift()?.reject(new Error('offline'));
     await settle();
-    expect(search.items()).toEqual([]);
+    expect(search.status()).toBe('error');
     expect(search.error()).toEqual(new Error('offline'));
-    expect(search.loading()).toBe(false);
+    expect(search.hasValue()).toBe(false);
+    expect(() => search.value()).toThrow();
+    expect(search.items()).toEqual([]);
+    expect(search.isLoading()).toBe(false);
+    expect(search.suggestions.status()).toBe('resolved');
+
+    term.set('kidney');
+    await settle();
+    engine.pending.shift()?.resolve();
+    await settle();
+    expect(search.status()).toBe('resolved');
+    expect(labels(search.items())).toEqual(['Left Kidney']);
+  });
+
+  it('wraps errors that are not Error instances', async () => {
+    const engine = new DeferredEngine();
+    const search = setup({ items: ORGANS, term: 'heart', engine });
+    await settle();
+    engine.pending.shift()?.reject('offline');
+    await settle();
+    expect(search.error()).toBeInstanceOf(Error);
+  });
+
+  it('reports suggestion errors separately from the results', async () => {
+    const engine: SearchEngine = {
+      createIndex: <T>(items: readonly T[]) => ({
+        search: () => items.map((item) => ({ item })),
+        suggest: () => Promise.reject(new Error('no suggestions')),
+      }),
+    };
+    const search = setup({ items: ORGANS, term: 'heart', suggestionField: 'label', engine });
+    expect(search.suggestions.isLoading()).toBe(true);
+    await settle();
+    expect(search.suggestions.status()).toBe('error');
+    expect(search.suggestions.error()).toEqual(new Error('no suggestions'));
+    expect(search.status()).toBe('resolved');
+    expect(search.items()).toEqual(ORGANS);
+  });
+
+  it('reloads synchronous searches', () => {
+    let calls = 0;
+    const engine: SearchEngine = {
+      createIndex: <T>(items: readonly T[]) => ({ search: () => [{ item: items[calls++] }] }),
+    };
+    const search = setup({ items: ORGANS, term: 'heart', engine });
+    expect(search.items()).toEqual([ORGANS[0]]);
+    expect(search.reload()).toBe(true);
+    expect(search.items()).toEqual([ORGANS[1]]);
+  });
+
+  it('reloads asynchronous searches and keeps the results while loading', async () => {
+    const engine = new DeferredEngine();
+    const search = setup({ items: ORGANS, term: 'heart', engine });
+    await settle();
+    engine.pending.shift()?.resolve();
+    await settle();
+    expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
+
+    expect(search.reload()).toBe(true);
+    expect(search.isLoading()).toBe(true);
+    expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
+    await settle();
+    engine.pending.shift()?.resolve();
+    await settle();
+    expect(search.isLoading()).toBe(false);
+    expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
+  });
+
+  it('stops debouncing and reloading when destroyed', () => {
+    vi.useFakeTimers();
+    try {
+      const term = signal('');
+      const search = setup({ items: ORGANS, term, debounce: 100 });
+      search.destroy();
+      search.destroy();
+
+      term.set('heart');
+      TestBed.tick();
+      vi.advanceTimersByTime(100);
+      expect(search.items()).toEqual(ORGANS);
+      expect(search.reload()).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('uses the engine provided by a component', async () => {

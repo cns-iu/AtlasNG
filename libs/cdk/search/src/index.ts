@@ -7,7 +7,8 @@ export {
   SearchHighlight,
   type HighlightSegment,
 } from './lib/highlight/highlight';
-export { injectSearch, type InjectSearchOptions, type MaybeSignal, type SearchRef } from './lib/resource/inject-search';
+export { injectSearch, type InjectSearchOptions, type MaybeSignal } from './lib/resource/inject-search';
+export type { SearchResourceRef } from './lib/resource/search-resource';
 export { SearchEngine } from './lib/engine/search-engine';
 export { DEFAULT_SEARCH_VALUE_FIELD } from './lib/engine/values';
 export { normalizeSearchText } from './lib/text/normalize';

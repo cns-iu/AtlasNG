@@ -59,7 +59,7 @@ The defaults match the design-system `$breakpoints` map. If an application recon
 
 ### Search
 
-`@atlasng/cdk/search` is a headless search layer. `injectSearch` searches a list with the injected `SearchEngine` and returns `results`, `items`, `suggestions`, `loading`, and `error` signals. The default engine ignores case and accents, requires every word of the term to match, and ranks exact matches, then prefixes, then word prefixes, then other matches. Each result carries match ranges that the `angSearchHighlight` directive renders with `<mark>`.
+`@atlasng/cdk/search` is a headless search layer. `injectSearch` searches a list with the injected `SearchEngine` and returns a read-only Angular `Resource` of the results (`value`, `status`, `error`, `isLoading`, `hasValue()`), plus an `items` signal, a `suggestions` resource, and `reload()` and `destroy()`. The default engine ignores case and accents, requires every word of the term to match, and ranks exact matches, then prefixes, then word prefixes, then other matches. Each result carries match ranges that the `angSearchHighlight` directive renders with `<mark>`.
 
 ```ts
 import { Component, signal } from '@angular/core';
@@ -68,7 +68,7 @@ import { injectSearch, SearchHighlight } from '@atlasng/cdk/search';
 @Component({
   imports: [SearchHighlight],
   template: `
-    @for (result of search.results(); track result.item.id) {
+    @for (result of search.value(); track result.item.id) {
       <span [angSearchHighlight]="result.item.label" [angSearchHighlightRanges]="result.matches?.[0]?.ranges"></span>
     }
   `,
@@ -79,9 +79,9 @@ export class OrganList {
 }
 ```
 
-Every `injectSearch` option accepts a value or a signal, so options can come from component inputs. Pass `order: 'source'` to keep matches in item order, for example in a filter list. `suggestions` holds values of `suggestionField` (or the items themselves when they are strings or numbers) with their match ranges, ready for `angSearchHighlight`.
+Every `injectSearch` option accepts a value or a signal, so options can come from component inputs. Pass `order: 'source'` to keep matches in item order, for example in a filter list. `suggestions.value()` holds values of `suggestionField` (or the items themselves when they are strings or numbers) with their match ranges, ready for `angSearchHighlight`.
 
-Use `provideSearch({ debounce, minLength, suggestionLimit }, withCustomEngine(...))` in application, route, or component providers to change the defaults or swap the engine. A nested configuration is merged over its parent's, and `withDefaultEngine()` restores the built-in engine below a custom one. Result limits are set per call only, so a global default never truncates a filter list. Engines implement `SearchEngine` and may return results synchronously or as a promise. See the JSDoc in [libs/cdk/search/src](search/src) for the full API.
+Use `provideSearch({ debounce, minLength, suggestionLimit }, withCustomEngine(...))` in application, route, or component providers to change the defaults or swap the engine. A nested configuration is merged over its parent's, and `withDefaultEngine()` restores the built-in engine below a custom one. Result limits are set per call only, so a global default never truncates a filter list. Engines implement `SearchEngine` and may return results synchronously or as a promise. As with every resource, `value()` throws while an asynchronous search is in the `'error'` status, so check `hasValue()` first or read `items()`, which is empty in that case. See the JSDoc in [libs/cdk/search/src](search/src) for the full API.
 
 ### Error codes
 

@@ -1,4 +1,4 @@
-import { computed, Injector, linkedSignal, resource, Signal } from '@angular/core';
+import { computed, Injector, linkedSignal, resource, ResourceSnapshot, Signal } from '@angular/core';
 import { SearchResponse } from '../engine/types';
 
 /** A response together with the inputs, other than the term, that produced it. */
@@ -11,42 +11,45 @@ export interface ContextualResponse<T> {
 
 /** The state of a response that may be asynchronous. */
 export interface ResolvedResponse<T> {
-  /** The latest resolved value. Keeps the previous value while a request for a new term is pending. */
-  readonly value: Signal<readonly T[]>;
-  /** True while a request is pending. */
-  readonly loading: Signal<boolean>;
-  /** The error of the last failed request. */
-  readonly error: Signal<unknown>;
+  /**
+   * The state of the latest response, for `resourceFromSnapshots`. A loading snapshot keeps the previous value while
+   * a request for a new term is pending.
+   */
+  readonly snapshot: Signal<ResourceSnapshot<readonly T[]>>;
+  /** Stops resolving asynchronous responses. */
+  destroy(): void;
 }
 
 /**
- * Resolves a response that may be synchronous or asynchronous. Synchronous values pass through immediately;
- * promises are resolved with a resource, which ignores stale responses. While a promise is pending, the previous
- * value is kept only if it was produced in the same context.
+ * Resolves a response that may be synchronous or asynchronous. Synchronous values resolve immediately; promises are
+ * resolved with a resource, which ignores stale responses. While a promise is pending, the previous value is kept
+ * only if it was produced in the same context.
  *
  * @param response Signal of the latest response and its context.
  * @param injector Injector for the resource.
- * @returns The resolved value, loading state, and error.
+ * @returns The snapshot of the response and a function that stops resolving it.
  */
 export function resolveResponse<T>(response: Signal<ContextualResponse<T>>, injector: Injector): ResolvedResponse<T> {
   const pending = computed(() => {
     const { response: value } = response();
-    return isPromiseLike(value) ? { promise: value } : undefined;
+    if (!isPromiseLike(value)) {
+      return undefined;
+    }
+    // The resource only subscribes once its effect runs; until then a rejection would be reported as unhandled
+    value.then(undefined, () => undefined);
+    return { promise: value };
   });
   const request = resource({
     params: pending,
     loader: ({ params }) => Promise.resolve(params.promise),
     injector,
   });
-  const failed = computed(() => pending() !== undefined && request.status() === 'error');
 
   const value = linkedSignal<{ value: readonly T[] | undefined; context: object }, readonly T[]>({
     source: () => {
       const { response: current, context } = response();
       if (!isPromiseLike(current)) {
         return { value: current, context };
-      } else if (failed()) {
-        return { value: [], context };
       }
       return { value: request.hasValue() ? request.value() : undefined, context };
     },
@@ -58,11 +61,18 @@ export function resolveResponse<T>(response: Signal<ContextualResponse<T>>, inje
     },
   });
 
-  return {
-    value: value.asReadonly(),
-    loading: computed(() => pending() !== undefined && request.isLoading()),
-    error: computed(() => (failed() ? request.error() : undefined)),
-  };
+  const snapshot = computed((): ResourceSnapshot<readonly T[]> => {
+    if (pending() === undefined) {
+      return { status: 'resolved', value: value() };
+    }
+    const error = request.error();
+    if (error) {
+      return { status: 'error', error };
+    }
+    return { status: request.isLoading() ? 'loading' : 'resolved', value: value() };
+  });
+
+  return { snapshot, destroy: () => request.destroy() };
 }
 
 /**
