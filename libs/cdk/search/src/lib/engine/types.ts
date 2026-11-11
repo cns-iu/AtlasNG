@@ -14,7 +14,7 @@ export type SearchFieldValue = SearchPrimitive | null | undefined | readonly (Se
  */
 export type SearchKey<T> = keyof T & string;
 
-/** A computed field searched by a {@link SearchEngine}. */
+/** A computed field searched by a `SearchEngine`. */
 export interface SearchFieldDefinition<T> {
   /** Field name, reported in {@link SearchMatch.field} and used by {@link SearchQuery.fields}. */
   readonly name: string;
@@ -30,7 +30,7 @@ export interface SearchFieldDefinition<T> {
 }
 
 /**
- * A field searched by a {@link SearchEngine}: either a key of the item or a computed field. When no fields are given,
+ * A field searched by a `SearchEngine`: either a key of the item or a computed field. When no fields are given,
  * engines search every string, number, and array of strings or numbers of an item, or the item itself if it is a
  * string or number.
  */
@@ -87,7 +87,7 @@ export interface SearchQuery<T> {
 /** Search results, returned synchronously or asynchronously. */
 export type SearchResponse<T> = readonly T[] | PromiseLike<readonly T[]>;
 
-/** A searchable collection created by {@link SearchEngine.createIndex}. */
+/** A searchable collection created by `SearchEngine.createIndex`. */
 export interface SearchIndex<T> {
   /**
    * Searches the indexed items.
@@ -104,16 +104,4 @@ export interface SearchIndex<T> {
    * @returns Suggested values with their match ranges, ordered by relevance, synchronously or as a promise.
    */
   suggest?(term: string, limit?: number): SearchResponse<SearchSuggestion>;
-}
-
-/** Creates search indexes. Provide a custom engine with `withCustomEngine` to swap the search implementation. */
-export interface SearchEngine {
-  /**
-   * Indexes a list of items.
-   *
-   * @param items Items to index.
-   * @param fields Fields to search. Defaults to every string and number value of each item.
-   * @returns An index of the items.
-   */
-  createIndex<T>(items: readonly T[], fields?: readonly SearchFieldSpec<T>[]): SearchIndex<T>;
 }

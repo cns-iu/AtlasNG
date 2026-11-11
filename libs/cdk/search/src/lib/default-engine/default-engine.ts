@@ -1,9 +1,10 @@
 import { Service } from '@angular/core';
-import { SearchEngine, SearchFieldSpec } from '../engine/types';
+import type { SearchEngine } from '../engine/search-engine';
+import { SearchFieldSpec } from '../engine/types';
 import { DefaultSearchIndex } from './default-index';
 
 /**
- * The built-in, dependency-free {@link SearchEngine} and the default value of `SEARCH_ENGINE`.
+ * The built-in, dependency-free {@link SearchEngine}, injected as `SearchEngine` by default.
  *
  * Text is decomposed, stripped of diacritics, lowercased, and trimmed. The term is split into words and an item
  * matches when every word appears in at least one field. Results are ranked by {@link SearchMatchTier}: an exact

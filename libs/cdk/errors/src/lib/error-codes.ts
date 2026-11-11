@@ -23,6 +23,6 @@ export enum CdkErrorCode {
   IncomparableBreakpointUnits = 2009,
   /** Configured breakpoints are not ordered by ascending width. */
   UnorderedBreakpoints = 2010,
-  /** `provideSearch` was given more than one custom search engine. */
+  /** `provideSearch` was given more than one search engine. */
   MultipleSearchEngines = 2011,
 }

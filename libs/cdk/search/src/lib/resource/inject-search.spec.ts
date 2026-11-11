@@ -3,8 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { render } from '@testing-library/angular';
 import { DefaultSearchEngine } from '../default-engine/default-engine';
 import { injectSearch, InjectSearchOptions } from './inject-search';
-import { provideSearch, withCustomEngine, withSearchConfig } from '../providers';
-import { SearchEngine, SearchFieldSpec, SearchIndex, SearchResult, SearchSuggestion } from '../engine/types';
+import { SearchEngine } from '../engine/search-engine';
+import { provideSearch, withCustomEngine } from '../providers';
+import { SearchFieldSpec, SearchIndex, SearchResult, SearchSuggestion } from '../engine/types';
 
 interface Organ {
   label: string;
@@ -98,7 +99,7 @@ describe('injectSearch', () => {
   });
 
   it('returns every item for terms shorter than the minimum length', () => {
-    TestBed.configureTestingModule({ providers: [provideSearch(withSearchConfig({ minLength: 3 }))] });
+    TestBed.configureTestingModule({ providers: [provideSearch({ minLength: 3 })] });
     const term = signal('he');
     const search = setup({ items: ORGANS, term, suggestionField: 'label' });
     expect(search.items()).toEqual(ORGANS);
@@ -202,7 +203,7 @@ describe('injectSearch', () => {
   it('debounces the term but applies short terms immediately', () => {
     vi.useFakeTimers();
     try {
-      TestBed.configureTestingModule({ providers: [provideSearch(withSearchConfig({ debounce: 300 }))] });
+      TestBed.configureTestingModule({ providers: [provideSearch({ debounce: 300 })] });
       const term = signal('');
       const search = setup({ items: ORGANS, term });
 
@@ -280,7 +281,15 @@ describe('injectSearch', () => {
   it('uses the engine provided by a component', async () => {
     const engine: SearchEngine = { createIndex: <T>(items: readonly T[]) => ({ search: () => [{ item: items[1] }] }) };
 
-    @Component({ template: '', providers: [provideSearch(withCustomEngine(() => engine))] })
+    @Component({
+      template: '',
+      providers: [
+        provideSearch(
+          {},
+          withCustomEngine(() => engine),
+        ),
+      ],
+    })
     class Host {
       readonly search = injectSearch({ items: ORGANS, term: 'x' });
     }

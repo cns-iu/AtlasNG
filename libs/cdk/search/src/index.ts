@@ -8,20 +8,19 @@ export {
   type HighlightSegment,
 } from './lib/highlight/highlight';
 export { injectSearch, type InjectSearchOptions, type MaybeSignal, type SearchRef } from './lib/resource/inject-search';
+export { SearchEngine } from './lib/engine/search-engine';
 export { DEFAULT_SEARCH_VALUE_FIELD } from './lib/engine/values';
 export { normalizeSearchText } from './lib/text/normalize';
 export {
   provideSearch,
   SEARCH_CONFIG,
-  SEARCH_ENGINE,
   SearchFeatureKind,
   withCustomEngine,
-  withSearchConfig,
+  withDefaultEngine,
   type SearchConfig,
   type SearchFeature,
 } from './lib/providers';
 export type {
-  SearchEngine,
   SearchFieldDefinition,
   SearchFieldName,
   SearchFieldSpec,

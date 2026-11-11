@@ -11,16 +11,10 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import {
-  SearchEngine,
-  SearchFieldDefinition,
-  SearchFieldSpec,
-  SearchOrder,
-  SearchResult,
-  SearchSuggestion,
-} from '../engine/types';
+import { SearchEngine } from '../engine/search-engine';
+import { SearchFieldDefinition, SearchFieldSpec, SearchOrder, SearchResult, SearchSuggestion } from '../engine/types';
 import { DEFAULT_SEARCH_VALUE_FIELD, isSearchPrimitive } from '../engine/values';
-import { SEARCH_CONFIG, SEARCH_ENGINE } from '../providers';
+import { SEARCH_CONFIG } from '../providers';
 import { ContextualResponse, resolveResponse } from './resolve-response';
 
 /** A value or a signal of a value. */
@@ -52,7 +46,7 @@ export interface InjectSearchOptions<T> {
   suggestionField?: MaybeSignal<SearchFieldSpec<T> | undefined>;
   /** Maximum number of suggestions. Defaults to the configured `suggestionLimit`. */
   suggestionLimit?: MaybeSignal<number | undefined>;
-  /** Engine to use instead of the injected `SEARCH_ENGINE`. */
+  /** Engine to use instead of the injected {@link SearchEngine}. */
   engine?: MaybeSignal<SearchEngine | undefined>;
   /** Injector used outside an injection context. */
   injector?: Injector;
@@ -79,7 +73,7 @@ const PRIMITIVE_SUGGESTION_FIELD: SearchFieldDefinition<unknown> = {
 };
 
 /**
- * Searches a list of items with the injected `SEARCH_ENGINE` and exposes the results as signals. Must be called in an
+ * Searches a list of items with the injected {@link SearchEngine} and exposes the results as signals. Must be called in an
  * injection context unless an injector is provided.
  *
  * The index is rebuilt only when the items, fields, or engine change. Synchronous engines update the results
@@ -105,7 +99,7 @@ export function injectSearch<T>(options: InjectSearchOptions<T>): SearchRef<T> {
   const order = toSignal(options.order);
   const suggestionField = toSignal(options.suggestionField);
   const engineOption = toSignal(options.engine);
-  const engine = computed(() => engineOption() ?? injector.get(SEARCH_ENGINE));
+  const engine = computed(() => engineOption() ?? injector.get(SearchEngine));
   const minLength = withDefault(options.minLength, config.minLength ?? 1);
   const suggestionLimit = withDefault(options.suggestionLimit, config.suggestionLimit);
   const debounce = withDefault(options.debounce, config.debounce ?? 0);

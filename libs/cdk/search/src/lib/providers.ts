@@ -1,8 +1,8 @@
-import { inject, InjectionToken, Provider } from '@angular/core';
+import { Provider } from '@angular/core';
 import { CdkErrorCode } from '@atlasng/cdk/errors';
 import { AngError, createConfigurationToken, type } from '@atlasng/core';
 import { DefaultSearchEngine } from './default-engine/default-engine';
-import { SearchEngine } from './engine/types';
+import { SearchEngine } from './engine/search-engine';
 
 /**
  * Search defaults used by `injectSearch`. There is deliberately no result limit: a global limit would silently
@@ -17,17 +17,15 @@ export interface SearchConfig {
   suggestionLimit?: number;
 }
 
-/** Search engine used by `injectSearch`. Defaults to {@link DefaultSearchEngine}. */
-export const SEARCH_ENGINE = new InjectionToken<SearchEngine>('SEARCH_ENGINE', {
-  providedIn: 'root',
-  factory: () => inject(DefaultSearchEngine),
-});
-
-/** Configuration token for {@link SearchConfig}. Provided by {@link withSearchConfig}. */
+/**
+ * Configuration token for {@link SearchConfig}. Provided by {@link provideSearch}. A provided configuration is merged
+ * over the configuration of its parent injector.
+ */
 export const SEARCH_CONFIG = createConfigurationToken({
   name: 'SEARCH_CONFIG',
   config: type<SearchConfig>(),
   defaults: () => ({ debounce: 0, minLength: 1, suggestionLimit: 10 }),
+  inherit: true,
 });
 
 /** A feature passed to {@link provideSearch}. */
@@ -42,8 +40,8 @@ export interface SearchFeature {
 export enum SearchFeatureKind {
   /** A custom engine added with {@link withCustomEngine}. */
   CustomEngine,
-  /** Configuration added with {@link withSearchConfig}. */
-  Configuration,
+  /** The default engine selected with {@link withDefaultEngine}. */
+  DefaultEngine,
 }
 
 /**
@@ -55,29 +53,20 @@ export enum SearchFeatureKind {
 export function withCustomEngine(engineFactory: () => SearchEngine): SearchFeature {
   return {
     kind: SearchFeatureKind.CustomEngine,
-    providers: [{ provide: SEARCH_ENGINE, useFactory: engineFactory }],
+    providers: [{ provide: SearchEngine, useFactory: engineFactory }],
   };
 }
 
 /**
- * Sets search defaults. The configuration is merged over any configuration provided by a parent injector, so a
- * component or route only needs to set the options it changes.
+ * Explicitly selects the {@link DefaultSearchEngine}. The default engine is used when no engine is provided, so this
+ * is only needed to restore it below an injector that provides a custom engine.
  *
- * @param config Search defaults.
- * @returns The configuration feature.
+ * @returns The default engine feature.
  */
-export function withSearchConfig(config: SearchConfig): SearchFeature {
+export function withDefaultEngine(): SearchFeature {
   return {
-    kind: SearchFeatureKind.Configuration,
-    providers: [
-      {
-        provide: SEARCH_CONFIG.token,
-        useFactory: (): SearchConfig => ({
-          ...inject(SEARCH_CONFIG.token, { optional: true, skipSelf: true }),
-          ...withoutUndefined(config),
-        }),
-      },
-    ],
+    kind: SearchFeatureKind.DefaultEngine,
+    providers: [{ provide: SearchEngine, useExisting: DefaultSearchEngine }],
   };
 }
 
@@ -85,32 +74,37 @@ export function withSearchConfig(config: SearchConfig): SearchFeature {
  * Configures search. Returns plain providers so it can be used in application, route, and component providers; a
  * nested provider overrides the engine and merges its configuration over its parent's.
  *
+ * @param config Search defaults. Only the options that are set override those of a parent injector.
  * @param features Search features.
- * @returns Providers for the features.
- * @throws AngError in dev mode if more than one custom engine is provided.
+ * @returns Providers for the configuration and features.
+ * @throws AngError in dev mode if more than one engine is provided.
  * @example
- * providers: [provideSearch(withCustomEngine(() => new RemoteSearchEngine()), withSearchConfig({ debounce: 300 }))]
+ * providers: [provideSearch({ debounce: 300 }, withCustomEngine(() => new RemoteSearchEngine()))]
  */
-export function provideSearch(...features: SearchFeature[]): Provider[] {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    const engines = features.filter((feature) => feature.kind === SearchFeatureKind.CustomEngine);
-    if (engines.length > 1) {
-      throw new AngError(
-        CdkErrorCode.MultipleSearchEngines,
-        'Multiple custom search engines were provided. Please provide only one custom engine.',
-      );
-    }
-  }
+export function provideSearch(config?: SearchConfig, ...features: SearchFeature[]): Provider[] {
+  checkEngineConfiguration(features);
 
-  return features.flatMap((feature) => feature.providers);
+  return [...(config ? [SEARCH_CONFIG.provide(config)] : []), ...features.flatMap((feature) => feature.providers)];
 }
 
 /**
- * Removes properties whose value is `undefined`, so they do not override a parent configuration.
+ * Validates that at most one engine is configured. Only runs in dev mode.
  *
- * @param config Configuration to filter.
- * @returns The configuration without undefined properties.
+ * @param features Features passed to {@link provideSearch}.
+ * @throws AngError when more than one engine feature is present.
  */
-function withoutUndefined(config: SearchConfig): SearchConfig {
-  return Object.fromEntries(Object.entries(config).filter(([, value]) => value !== undefined));
+function checkEngineConfiguration(features: SearchFeature[]): void {
+  if (!(typeof ngDevMode === 'undefined' || ngDevMode)) {
+    return;
+  }
+
+  const kinds = [SearchFeatureKind.CustomEngine, SearchFeatureKind.DefaultEngine];
+  const engines = features.filter((feature) => kinds.includes(feature.kind));
+
+  if (engines.length > 1) {
+    throw new AngError(
+      CdkErrorCode.MultipleSearchEngines,
+      'Multiple search engines were provided. Please provide only one engine.',
+    );
+  }
 }
