@@ -49,11 +49,20 @@ on:
         default: true
       deploy-preview:
         description: >-
-          Deploy a Netlify preview of dist/ for pull requests with the caller's
-          ./.github/actions/deploy-preview; skipped for fork pull requests or when NETLIFY_AUTH_TOKEN is empty
+          Deploy a Netlify preview for pull requests, of preview-dir when set and otherwise with the
+          caller's ./.github/actions/deploy-preview; skipped for fork pull requests or when
+          NETLIFY_AUTH_TOKEN is empty
         type: boolean
         required: false
         default: false
+      preview-dir:
+        description: >-
+          Build output deployed at the root of the preview URL (for example dist/apps/<app>/browser),
+          with a catch-all rewrite to index.html for client-side routing. Skipped when the directory
+          has no index.html, such as when the app is not affected.
+        type: string
+        required: false
+        default: ''
       netlify-filter:
         description: Netlify monorepo filter (site package name) for the preview deploy; empty passes no filter
         type: string
@@ -174,7 +183,7 @@ jobs:
           fi
 
       - name: Deploy preview
-        if: steps.preview.outputs.deploy == 'true' && !cancelled()
+        if: steps.preview.outputs.deploy == 'true' && inputs.preview-dir == '' && !cancelled()
         uses: ./.github/actions/deploy-preview
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -182,3 +191,66 @@ jobs:
           netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
           netlify-filter: ${{ inputs.netlify-filter }}
+
+      - name: Deploy single-app preview
+        id: app-preview
+        if: steps.preview.outputs.deploy == 'true' && inputs.preview-dir != '' && !cancelled()
+        env:
+          PREVIEW_DIR: ${{ inputs.preview-dir }}
+          ISSUE_NUMBER: ${{ github.event.pull_request.number }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_FILTER: ${{ inputs.netlify-filter }}
+        run: |
+          if [[ ! -f "$PREVIEW_DIR/index.html" ]]; then
+            echo "::notice title=Preview deploy skipped::$PREVIEW_DIR/index.html does not exist."
+            exit 0
+          fi
+          # Netlify reads _redirects; the catch-all rewrite lets a client-side router handle deep links.
+          if [[ ! -f "$PREVIEW_DIR/_redirects" ]]; then
+            echo '/* /index.html 200' > "$PREVIEW_DIR/_redirects"
+          fi
+          # With --json the CLI reports failures on stdout, so print the output before failing.
+          status=0
+          response=$(npx -y netlify-cli@26.0.0 deploy \
+            --dir="$PREVIEW_DIR" \
+            ${NETLIFY_FILTER:+--filter="$NETLIFY_FILTER"} \
+            --alias="pr-$ISSUE_NUMBER" \
+            --no-build \
+            --json \
+            --auth="$NETLIFY_AUTH_TOKEN" \
+            --site="$NETLIFY_SITE_ID") || status=$?
+          echo "$response"
+          if [[ $status -ne 0 ]]; then
+            echo "::error title=Netlify deploy failed::netlify deploy exited with code $status."
+            exit "$status"
+          fi
+          {
+            echo "url=$(jq -r '.deploy_url' <<< "$response")"
+            echo "sha=$(git rev-parse --short "$COMMIT_SHA")"
+            echo "message=$(git log -1 --pretty=%s "$COMMIT_SHA")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Find existing preview comment
+        id: preview-comment
+        if: steps.app-preview.outputs.url != '' && !cancelled()
+        uses: peter-evans/find-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Preview Deploy Report'
+
+      - name: Create or update preview comment
+        if: steps.app-preview.outputs.url != '' && !cancelled()
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ steps.preview-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            # :rocket: Preview Deploy Report
+
+            ✅ Successfully deployed preview [here](${{ steps.app-preview.outputs.url }})
+
+            Commit: `${{ steps.app-preview.outputs.sha }}` ${{ steps.app-preview.outputs.message }}
