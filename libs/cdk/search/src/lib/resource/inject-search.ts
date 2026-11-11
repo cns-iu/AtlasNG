@@ -1,40 +1,43 @@
-import { assertInInjectionContext, inject, Injector, Signal } from '@angular/core';
+import { assertInInjectionContext, inject, Injector } from '@angular/core';
 import { SearchEngine } from '../engine/search-engine';
 import { SearchFieldSpec, SearchOrder } from '../engine/types';
 import { SEARCH_CONFIG } from '../providers';
 import { SearchResourceImpl, SearchResourceRef } from './search-resource';
 
-/** A value or a signal of a value. */
-export type MaybeSignal<T> = T | Signal<T>;
+/**
+ * A value, or a signal or other function that returns it. Functions are read in a reactive context, so signals they
+ * read are tracked.
+ */
+export type MaybeSignalLike<T> = T | (() => T);
 
 /**
- * Options for {@link injectSearch}. Every option accepts a signal and is read reactively, so options can come from
+ * Options for {@link injectSearch}. Every option accepts a signal or function and is read reactively, so options can come from
  * component inputs even though `injectSearch` runs in a field initializer, before the inputs are set.
  */
 export interface InjectSearchOptions<T> {
   /** Items to search. The index is rebuilt when the items change. */
-  items: MaybeSignal<readonly T[]>;
+  items: MaybeSignalLike<readonly T[]>;
   /** Search term. */
-  term: MaybeSignal<string>;
+  term: MaybeSignalLike<string>;
   /** Fields to search. The index is rebuilt when the fields change. Defaults to every string and number value. */
-  fields?: MaybeSignal<readonly SearchFieldSpec<T>[] | undefined>;
+  fields?: MaybeSignalLike<readonly SearchFieldSpec<T>[] | undefined>;
   /** Maximum number of results. Defaults to no limit. */
-  limit?: MaybeSignal<number | undefined>;
+  limit?: MaybeSignalLike<number | undefined>;
   /** Order of the results. Defaults to `'rank'`; `'source'` keeps the order of the items. */
-  order?: MaybeSignal<SearchOrder | undefined>;
+  order?: MaybeSignalLike<SearchOrder | undefined>;
   /** Milliseconds to wait after the term stops changing before searching. Defaults to the configured `debounce`. */
-  debounce?: MaybeSignal<number | undefined>;
+  debounce?: MaybeSignalLike<number | undefined>;
   /** Minimum trimmed term length that triggers a search. Defaults to the configured `minLength`. */
-  minLength?: MaybeSignal<number | undefined>;
+  minLength?: MaybeSignalLike<number | undefined>;
   /**
    * Field whose values are suggested. When omitted, string and number items are suggested themselves and other items
    * produce no suggestions.
    */
-  suggestionField?: MaybeSignal<SearchFieldSpec<T> | undefined>;
+  suggestionField?: MaybeSignalLike<SearchFieldSpec<T> | undefined>;
   /** Maximum number of suggestions. Defaults to the configured `suggestionLimit`. */
-  suggestionLimit?: MaybeSignal<number | undefined>;
+  suggestionLimit?: MaybeSignalLike<number | undefined>;
   /** Engine to use instead of the injected {@link SearchEngine}. */
-  engine?: MaybeSignal<SearchEngine | undefined>;
+  engine?: MaybeSignalLike<SearchEngine | undefined>;
   /** Injector used outside an injection context. */
   injector?: Injector;
 }

@@ -160,6 +160,15 @@ describe('injectSearch', () => {
     expect(search.items()).toEqual([ORGANS[0]]);
   });
 
+  it('reads options from functions reactively', () => {
+    const state = signal({ term: 'he', limit: 1 });
+    const search = setup({ items: ORGANS, term: () => state().term, limit: () => state().limit, minLength: () => 3 });
+    expect(search.items()).toEqual(ORGANS);
+
+    state.set({ term: 'heart', limit: 1 });
+    expect(labels(search.items())).toEqual(['Heart']);
+  });
+
   it('type-checks keys inside generic components', async () => {
     const options = [
       { label: 'Heartwood', id: 1 },

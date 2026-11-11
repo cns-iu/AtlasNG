@@ -79,7 +79,7 @@ export class OrganList {
 }
 ```
 
-Every `injectSearch` option accepts a value or a signal, so options can come from component inputs. Pass `order: 'source'` to keep matches in item order, for example in a filter list. `suggestions.value()` holds values of `suggestionField` (or the items themselves when they are strings or numbers) with their match ranges, ready for `angSearchHighlight`.
+Every `injectSearch` option accepts a value, a signal, or a function such as `() => this.filter().term`, so options can come from component inputs. Pass `order: 'source'` to keep matches in item order, for example in a filter list. `suggestions.value()` holds values of `suggestionField` (or the items themselves when they are strings or numbers) with their match ranges, ready for `angSearchHighlight`.
 
 Without a text, `angSearchHighlight` highlights the host's own content instead, which may contain elements and bindings:
 

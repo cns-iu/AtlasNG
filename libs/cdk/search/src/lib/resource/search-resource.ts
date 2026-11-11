@@ -1,7 +1,7 @@
 import {
   computed,
-  Injector,
   isSignal,
+  Injector,
   Resource,
   resourceFromSnapshots,
   ResourceSnapshot,
@@ -16,7 +16,7 @@ import { SearchFieldDefinition, SearchFieldSpec, SearchResult, SearchSuggestion 
 import { DEFAULT_SEARCH_VALUE_FIELD, isSearchPrimitive } from '../engine/values';
 import { SEARCH_CONFIG } from '../providers';
 import { debounceTerm } from './debounce-term';
-import type { InjectSearchOptions, MaybeSignal } from './inject-search';
+import type { InjectSearchOptions, MaybeSignalLike } from './inject-search';
 import { ContextualResponse, ResolvedResponse, resolveResponse } from './resolve-response';
 
 /**
@@ -226,21 +226,24 @@ function defaultSuggestionField<T>(items: readonly T[]): SearchFieldSpec<T> | un
 /**
  * Wraps an optional value or signal in a signal that falls back to a default when the value is `undefined`.
  *
- * @param value An optional value or signal.
+ * @param value An optional value, signal, or function.
  * @param fallback Value used while `value` is `undefined`.
  * @returns A signal of the value or the fallback.
  */
-function withDefault<T>(value: MaybeSignal<T | undefined>, fallback: T): Signal<T> {
+function withDefault<T>(value: MaybeSignalLike<T | undefined>, fallback: T): Signal<T> {
   const source = toSignal(value);
   return computed(() => source() ?? fallback);
 }
 
 /**
- * Wraps a value in a signal unless it already is one.
+ * Wraps a value in a signal. Signals are returned as they are and other functions are wrapped in a computed signal.
  *
- * @param value A value or signal.
+ * @param value A value, signal, or function.
  * @returns A signal of the value.
  */
-function toSignal<T>(value: MaybeSignal<T>): Signal<T> {
-  return isSignal(value) ? value : signal(value).asReadonly();
+function toSignal<T>(value: MaybeSignalLike<T>): Signal<T> {
+  if (isSignal(value)) {
+    return value as Signal<T>;
+  }
+  return typeof value === 'function' ? computed(value as () => T) : signal(value).asReadonly();
 }
