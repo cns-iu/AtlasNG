@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { booleanAttribute, Component, input, model } from '@angular/core';
+import { booleanAttribute, Component, computed, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -20,7 +20,7 @@ export interface SearchListOption {
  * Searchable multi-select list of options, each showing a label, an optional
  * result count and optional description lines.
  *
- * Options are filtered with the injected `SEARCH_ENGINE` and `SEARCH_CONFIG`,
+ * Options are filtered with the injected `SearchEngine` and `SEARCH_CONFIG`,
  * so consumers can swap the engine with `provideSearch`. Matching options keep
  * their original order and matched text is highlighted.
  *
@@ -49,13 +49,16 @@ export class SearchList<T extends SearchListOption> {
   /** Whether to hide the search field */
   readonly searchDisabled = input(false, { transform: booleanAttribute });
 
-  /** Options matching the search term, in their original order, with their matches */
-  protected readonly results = injectSearch({
+  /** Search over the options, in their original order */
+  readonly #search = injectSearch({
     items: this.options,
     term: this.search,
     fields: ['label', 'description'],
     order: 'source',
-  }).results;
+  });
+
+  /** Options matching the search term with their matches; empty if an asynchronous engine fails */
+  protected readonly results = computed(() => (this.#search.hasValue() ? this.#search.value() : []));
 
   /**
    * Merges the options toggled by the user into the current selection.

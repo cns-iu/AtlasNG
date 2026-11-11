@@ -123,7 +123,12 @@ describe('SearchList', () => {
     };
     await render(SearchList<SearchListOption>, {
       inputs: { options: OPTIONS },
-      componentProviders: [provideSearch(withCustomEngine(() => engine))],
+      componentProviders: [
+        provideSearch(
+          {},
+          withCustomEngine(() => engine),
+        ),
+      ],
     });
 
     await user.type(screen.getByRole('textbox', { name: 'Search' }), '4');
