@@ -10,6 +10,15 @@ export type SkeletonShape = 'text' | 'circle' | 'rect';
  * of the surrounding type, so a text skeleton is as tall as the text it stands in for. Circles and
  * rectangles fill the host's width and height. The skeleton is hidden from assistive technology, so mark
  * the loading region with `aria-busy` instead.
+ *
+ * Use skeletons while a page, or a region with several elements, loads: cards, lists, tables, and charts.
+ * Replace each section with its content as soon as its data is ready. Don't use a skeleton:
+ *
+ * - For content that loads in under a second. It needs no loading state.
+ * - For a single control, an inline action, or a background task. Use a progress spinner.
+ * - For uploads, downloads, and waits longer than about 10 seconds. Use a progress bar that shows how much
+ *   is left.
+ * - Together with a spinner for the same content. Use one or the other.
  */
 @Component({
   selector: 'ang-skeleton',
