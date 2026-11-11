@@ -87,6 +87,13 @@ describe('createConfigurationToken', () => {
     expect(TestBed.inject(TEST_CONFIG.token)).toBe(config);
   });
 
+  it('injects from a given injector outside an injection context', () => {
+    setup({ foo: 'custom-foo' });
+
+    expect(TEST_CONFIG.inject({ injector: TestBed.inject(Injector) })).toEqual({ foo: 'custom-foo', bar: 42 });
+    expect(() => TEST_CONFIG.inject()).toThrow();
+  });
+
   describe('with inherit', () => {
     function createChild(config: TestConfig, parent: Injector = TestBed.inject(Injector)) {
       return Injector.create({ providers: [INHERITED_CONFIG.provide(config)], parent });

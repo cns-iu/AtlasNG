@@ -1,4 +1,4 @@
-import { assertInInjectionContext, inject, Injector, runInInjectionContext, Signal, untracked } from '@angular/core';
+import { assertInInjectionContext, inject, Injector, Signal } from '@angular/core';
 import { SearchEngine } from '../engine/search-engine';
 import { SearchFieldSpec, SearchOrder } from '../engine/types';
 import { SEARCH_CONFIG } from '../providers';
@@ -58,7 +58,7 @@ export function injectSearch<T>(options: InjectSearchOptions<T>): SearchResource
     assertInInjectionContext(injectSearch);
   }
   const injector = options.injector ?? inject(Injector);
-  const config = untracked(() => runInInjectionContext(injector, () => SEARCH_CONFIG.inject()));
+  const config = SEARCH_CONFIG.inject({ injector });
 
   return new SearchResourceImpl(options, injector, config);
 }

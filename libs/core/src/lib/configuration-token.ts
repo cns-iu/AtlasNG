@@ -1,4 +1,4 @@
-import { assertInInjectionContext, inject, InjectionToken, Provider } from '@angular/core';
+import { assertInInjectionContext, inject, InjectionToken, Injector, Provider } from '@angular/core';
 import { Simplify } from 'type-fest';
 
 /**
@@ -31,8 +31,8 @@ export interface ConfigurationTokenOptions<TConfig extends object, TDefaults ext
 export interface ConfigurationToken<TConfig extends object, TDefaults extends Partial<TConfig>> {
   /** Underlying Angular injection token. */
   token: InjectionToken<TConfig>;
-  /** Injects the configuration with defaults applied. */
-  inject: () => ConfigurationWithDefaults<TConfig, TDefaults>;
+  /** Injects the configuration with defaults applied, from the given injector or the current injection context. */
+  inject: (options?: { injector?: Injector }) => ConfigurationWithDefaults<TConfig, TDefaults>;
   /** Creates a provider for configuration overrides. */
   provide: (config: TConfig) => Provider;
 }
@@ -70,11 +70,19 @@ export function createConfigurationToken<TConfig extends object, const TDefaults
 ): ConfigurationToken<TConfig, TDefaults> {
   const token = new InjectionToken<TConfig>(options.name);
 
-  /** Injects and resolves the configuration associated with this token. */
-  function injectConfiguration(): ConfigurationWithDefaults<TConfig, TDefaults> {
-    assertInInjectionContext(injectConfiguration);
+  /**
+   * Injects and resolves the configuration associated with this token.
+   *
+   * @param injectOptions Injector to read the configuration from. Required outside an injection context.
+   * @returns The configuration with defaults applied.
+   */
+  function injectConfiguration(injectOptions?: { injector?: Injector }): ConfigurationWithDefaults<TConfig, TDefaults> {
+    if (!injectOptions?.injector) {
+      assertInInjectionContext(injectConfiguration);
+    }
 
-    const config = inject(token, { optional: true });
+    const injector = injectOptions?.injector ?? inject(Injector);
+    const config = injector.get(token, null);
     const result = mergeDefined<Partial<TConfig>>(options.defaults(), config);
 
     return result as ConfigurationWithDefaults<TConfig, TDefaults>;
