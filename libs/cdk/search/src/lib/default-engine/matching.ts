@@ -1,4 +1,5 @@
 import { SearchRange } from '../engine/types';
+import { occurrences } from '../text/match-ranges';
 import { IndexedValue } from './fields';
 
 /** Score of a match, by tier. Higher tiers rank first. */
@@ -54,21 +55,6 @@ export function matchValue(value: IndexedValue, term: string, words: readonly st
   }
 
   return { wordScores, phraseScore, ranges };
-}
-
-/**
- * Finds the non-overlapping occurrences of a needle.
- *
- * @param haystack Text to search.
- * @param needle Non-empty text to find.
- * @returns Start offsets of each occurrence.
- */
-function occurrences(haystack: string, needle: string): number[] {
-  const indices: number[] = [];
-  for (let index = haystack.indexOf(needle); index !== -1; index = haystack.indexOf(needle, index + needle.length)) {
-    indices.push(index);
-  }
-  return indices;
 }
 
 /**

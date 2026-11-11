@@ -81,6 +81,14 @@ export class OrganList {
 
 Every `injectSearch` option accepts a value or a signal, so options can come from component inputs. Pass `order: 'source'` to keep matches in item order, for example in a filter list. `suggestions.value()` holds values of `suggestionField` (or the items themselves when they are strings or numbers) with their match ranges, ready for `angSearchHighlight`.
 
+Without a text, `angSearchHighlight` highlights the host's own content instead, which may contain elements and bindings:
+
+```html
+<span angSearchHighlight [angSearchHighlightTerm]="term()">{{ label }} <em>{{ note }}</em></span>
+```
+
+This mode uses the [CSS Custom Highlight API](https://developer.mozilla.org/docs/Web/API/CSS_Custom_Highlight_API) rather than `<mark>`, so the content is not modified. Style the matches in a global stylesheet with `::highlight(ang-search-highlight)`, which accepts colors, text decorations, and text shadows only. The highlight is purely visual (it is not exposed to assistive technology like `<mark>`) and nothing is highlighted in browsers without the API or on the server. Both modes take either ranges or `angSearchHighlightTerm`; `findMatchRanges(text, term)` computes the ranges of a term directly.
+
 Use `provideSearch({ debounce, minLength, suggestionLimit }, withCustomEngine(...))` in application, route, or component providers to change the defaults or swap the engine. A nested configuration is merged over its parent's, and `withDefaultEngine()` restores the built-in engine below a custom one. Result limits are set per call only, so a global default never truncates a filter list. Engines implement `SearchEngine` and may return results synchronously or as a promise. As with every resource, `value()` throws while an asynchronous search is in the `'error'` status, so check `hasValue()` first or read `items()`, which is empty in that case. See the JSDoc in [libs/cdk/search/src](search/src) for the full API.
 
 ### Error codes
