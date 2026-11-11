@@ -1,0 +1,55 @@
+@use 'internal/token-utils';
+@use 'tokens/skeleton' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+
+  .ang-skeleton--placeholder {
+    position: relative;
+    overflow: hidden;
+    background-color: token-utils.slot(container-color, $config);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, token-utils.slot(shimmer-color, $config), transparent);
+      transform: translateX(-100%);
+      animation: ang-skeleton-shimmer 1.5s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  // Each bar is centered in one line of the surrounding type, so it takes the same height as the text it stands in for
+  &.ang-skeleton--shape-text .ang-skeleton--placeholder {
+    height: 0.75em;
+    margin-block: calc((1lh - 0.75em) / 2);
+    border-radius: token-utils.slot(text-shape, $config);
+
+    &:last-child:not(:first-child) {
+      width: 60%;
+    }
+  }
+
+  &.ang-skeleton--shape-circle .ang-skeleton--placeholder {
+    flex: 1;
+    border-radius: token-utils.slot(circle-shape, $config);
+  }
+
+  &.ang-skeleton--shape-rect .ang-skeleton--placeholder {
+    flex: 1;
+    border-radius: token-utils.slot(rect-shape, $config);
+  }
+}
+
+@keyframes ang-skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
