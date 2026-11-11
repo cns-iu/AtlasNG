@@ -18,6 +18,11 @@ export interface ConfigurationTokenOptions<TConfig extends object, TDefaults ext
   config: TConfig;
   /** Factory for the default configuration subset. */
   defaults: () => TDefaults;
+  /**
+   * Whether a provided configuration is merged over the configuration provided by a parent injector, so that a nested
+   * provider only sets the properties it changes. Defaults to `false`: a provided configuration replaces its parent's.
+   */
+  inherit?: boolean;
 }
 
 /**
@@ -70,22 +75,20 @@ export function createConfigurationToken<TConfig extends object, const TDefaults
     assertInInjectionContext(injectConfiguration);
 
     const config = inject(token, { optional: true });
-    const result: Partial<TConfig> = { ...options.defaults() };
-
-    if (config) {
-      for (const key in config) {
-        const value = config[key];
-        if (value !== undefined) {
-          result[key] = value;
-        }
-      }
-    }
+    const result = mergeDefined<Partial<TConfig>>(options.defaults(), config);
 
     return result as ConfigurationWithDefaults<TConfig, TDefaults>;
   }
 
   /** Creates a provider for this token. */
   function provideConfiguration(config: TConfig): Provider {
+    if (options.inherit) {
+      return {
+        provide: token,
+        useFactory: () => mergeDefined(inject(token, { optional: true, skipSelf: true }) ?? {}, config) as TConfig,
+      };
+    }
+
     return {
       provide: token,
       useValue: config,
@@ -97,4 +100,27 @@ export function createConfigurationToken<TConfig extends object, const TDefaults
     inject: injectConfiguration,
     provide: provideConfiguration,
   };
+}
+
+/**
+ * Merges the defined properties of an object over a copy of another. Properties whose value is `undefined` do not
+ * override the base value.
+ *
+ * @param base Object providing the initial values. It is not mutated.
+ * @param overrides Object whose defined properties replace the base values.
+ * @returns A new object with the merged properties.
+ */
+function mergeDefined<T extends object>(base: T, overrides: Partial<T> | null | undefined): T {
+  const result = { ...base };
+
+  if (overrides) {
+    for (const key in overrides) {
+      const value = overrides[key];
+      if (value !== undefined) {
+        result[key] = value as T[typeof key];
+      }
+    }
+  }
+
+  return result;
 }
