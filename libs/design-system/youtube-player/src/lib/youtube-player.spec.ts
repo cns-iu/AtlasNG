@@ -1,15 +1,19 @@
 import { EventEmitter } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { YouTubePlayer as NgYouTubePlayer } from '@angular/youtube-player';
+import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import {
   AnalyticsPermissions,
   AnalyticsPermissionsManager,
+  AnalyticsPermissionsRequestHandler,
   provideAnalyticsPermissionsManagerConfig,
+  provideAnalyticsPermissionsRequestHandler,
   provideInitialAnalyticsPermissions,
 } from '@atlasng/analytics/permissions';
 import { RESIZE_OBSERVER } from '@atlasng/core';
 import { ComponentInput, render, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { Subject } from 'rxjs';
 import { provideYouTubePlayerConfig, YouTubePlayer, YouTubePlayerEnableRequest } from './youtube-player';
 
 describe('YouTubePlayer', () => {
@@ -23,11 +27,11 @@ describe('YouTubePlayer', () => {
     options: {
       enabled?: boolean;
       inputs?: ComponentInput<YouTubePlayer>;
-      onEnableRequest?: () => void;
+      requestHandler?: AnalyticsPermissionsRequestHandler;
       resizeObserver?: boolean;
     } = {},
   ) {
-    const { enabled = false, inputs = {}, onEnableRequest, resizeObserver: withResizeObserver = true } = options;
+    const { enabled = false, inputs = {}, requestHandler, resizeObserver: withResizeObserver = true } = options;
     let resizeObserverCallback: ResizeObserverCallback | undefined;
     const resizeObserver = {
       observe: vi.fn(),
@@ -47,10 +51,10 @@ describe('YouTubePlayer', () => {
         videoId: 'pzUFmDhQEO8',
         ...inputs,
       },
-      on: onEnableRequest ? { enableRequest: onEnableRequest } : undefined,
       providers: [
         provideInitialAnalyticsPermissions(enabled ? AnalyticsPermissions.FULL : AnalyticsPermissions.DEFAULT),
         permissionsConfig,
+        ...(requestHandler ? [provideAnalyticsPermissionsRequestHandler(() => requestHandler)] : []),
         { provide: RESIZE_OBSERVER, useValue: withResizeObserver ? ResizeObserverMock : undefined },
       ],
     });
@@ -95,13 +99,34 @@ describe('YouTubePlayer', () => {
     expect(fixture.componentInstance.ngPlayer()).toBeUndefined();
   });
 
-  it('emits enableRequest when the default request button is clicked', async () => {
-    const enableRequest = vi.fn();
-    const { user } = await setup({ onEnableRequest: enableRequest });
+  it('grants marketing permission and loads the player when the default request button is clicked', async () => {
+    const { fixture, permissionsManager, user } = await setup();
 
     await user.click(screen.getByRole('button', { name: 'Enable cookies' }));
 
-    expect(enableRequest).toHaveBeenCalledOnce();
+    expect(permissionsManager.permissions().isCategoryEnabled(AnalyticsEventCategory.Marketing)).toBe(true);
+    expect(fixture.componentInstance.ngPlayer()).toBe(getNgPlayer(fixture));
+    expect(screen.queryByRole('button', { name: 'Enable cookies' })).not.toBeInTheDocument();
+  });
+
+  it('requests marketing permission through the provided request handler', async () => {
+    const decision = new Subject<AnalyticsPermissions | undefined>();
+    const requestHandler = vi.fn(() => decision);
+    const { fixture, user } = await setup({ requestHandler });
+
+    await user.click(screen.getByRole('button', { name: 'Enable cookies' }));
+
+    expect(requestHandler).toHaveBeenCalledWith(
+      AnalyticsPermissions.DEFAULT.enableCategory(AnalyticsEventCategory.Marketing),
+      [AnalyticsEventCategory.Marketing],
+    );
+    expect(fixture.componentInstance.ngPlayer()).toBeUndefined();
+
+    decision.next(AnalyticsPermissions.FULL);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.ngPlayer()).toBe(getNgPlayer(fixture));
   });
 
   it('projects custom enable-request content instead of the default message', async () => {

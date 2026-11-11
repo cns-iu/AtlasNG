@@ -1,7 +1,8 @@
 # Reusable workflow (workflow_call): CI for Nx workspaces. Reusable workflows are prefixed with
 # `nx-`; AtlasNG's own entry points (ci.yml, publish.yml, storybook-gh-pages.yml) are thin callers.
 # Callers own triggers, concurrency, and permissions (grant actions: read, contents: read, and
-# pull-requests: write). Local `./.github/actions/*` refs resolve against the caller's checkout.
+# pull-requests: write). The status check is named `<caller job> / main`, so a caller job named
+# `ci` produces `ci / main`. See README.md in this directory for setup.
 name: Nx CI
 
 on:
@@ -20,7 +21,9 @@ on:
         required: false
         default: ''
       distribute-on:
-        description: Nx Cloud distribution config (file path or agent spec); empty disables task distribution
+        description: >-
+          Nx Cloud distribution config (file path or agent spec); empty disables task distribution.
+          When left at the default and that file doesn't exist, all tasks run on the CI runner.
         type: string
         required: false
         default: .nx/workflows/distribution-config.yaml
@@ -45,15 +48,26 @@ on:
         required: false
         default: true
       deploy-preview:
-        description: Deploy a Netlify preview of dist/ for pull requests (uses the caller's .github/actions/deploy-preview)
+        description: >-
+          Deploy a Netlify preview for pull requests, of preview-dir when set and otherwise with the
+          caller's ./.github/actions/deploy-preview; skipped for fork pull requests or when
+          NETLIFY_AUTH_TOKEN is empty
         type: boolean
         required: false
         default: false
-      netlify-filter:
-        description: Netlify monorepo filter for the preview deploy
+      preview-dir:
+        description: >-
+          Build output deployed at the root of the preview URL (for example dist/apps/<app>/browser),
+          with a catch-all rewrite to index.html for client-side routing. Skipped when the directory
+          has no index.html, such as when the app is not affected.
         type: string
         required: false
-        default: AtlasNG
+        default: ''
+      netlify-filter:
+        description: Netlify monorepo filter (site package name) for the preview deploy; empty passes no filter
+        type: string
+        required: false
+        default: ''
     secrets:
       NX_CLOUD_ACCESS_TOKEN:
         description: Nx Cloud access token
@@ -91,6 +105,10 @@ jobs:
           STOP_AGENTS_AFTER: ${{ inputs.stop-agents-after }}
           TARGETS: ${{ inputs.targets }}
         run: |
+          if [[ "$DISTRIBUTE_ON" == .nx/workflows/distribution-config.yaml && ! -f "$DISTRIBUTE_ON" ]]; then
+            echo "::notice::$DISTRIBUTE_ON not found; running all tasks on the CI runner without Nx Agents"
+            exit 0
+          fi
           if [[ -z "$STOP_AGENTS_AFTER" ]]; then
             read -ra targets <<< "$TARGETS"
             STOP_AGENTS_AFTER=$(IFS=,; echo "${targets[*]}")
@@ -100,11 +118,17 @@ jobs:
             --with-env-vars="VITEST_MAX_WORKERS" \
             --stop-agents-after="$STOP_AGENTS_AFTER"
 
-      - name: Set up Nx workspace
-        uses: ./.github/actions/setup-nx-workspace
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
           node-version-file: ${{ inputs.node-version-file }}
-          set-shas: 'true'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - name: Set Nx SHAs
+        uses: nrwl/nx-set-shas@v5
 
       - name: Validate commit message format
         if: inputs.commitlint && github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
@@ -136,8 +160,30 @@ jobs:
         if: failure()
         run: npx nx fix-ci
 
-      - name: Deploy preview
+      # Fork PRs get no secrets and a read-only token, so the deploy and its PR comment would fail.
+      - name: Check preview deploy eligibility
+        id: preview
         if: inputs.deploy-preview && github.event_name == 'pull_request' && !cancelled()
+        env:
+          IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          reason=''
+          if [[ "$IS_FORK" == 'true' ]]; then
+            reason='pull requests from forks do not receive repository secrets'
+          elif [[ -z "$NETLIFY_AUTH_TOKEN" ]]; then
+            reason='the NETLIFY_AUTH_TOKEN secret is not set'
+          fi
+          if [[ -n "$reason" ]]; then
+            echo "::notice title=Preview deploy skipped::Skipped because $reason."
+            printf '### :warning: Preview deploy skipped\n\nSkipped because %s.\n' "$reason" >> "$GITHUB_STEP_SUMMARY"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy preview
+        if: steps.preview.outputs.deploy == 'true' && inputs.preview-dir == '' && !cancelled()
         uses: ./.github/actions/deploy-preview
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -145,3 +191,66 @@ jobs:
           netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
           netlify-filter: ${{ inputs.netlify-filter }}
+
+      - name: Deploy single-app preview
+        id: app-preview
+        if: steps.preview.outputs.deploy == 'true' && inputs.preview-dir != '' && !cancelled()
+        env:
+          PREVIEW_DIR: ${{ inputs.preview-dir }}
+          ISSUE_NUMBER: ${{ github.event.pull_request.number }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_FILTER: ${{ inputs.netlify-filter }}
+        run: |
+          if [[ ! -f "$PREVIEW_DIR/index.html" ]]; then
+            echo "::notice title=Preview deploy skipped::$PREVIEW_DIR/index.html does not exist."
+            exit 0
+          fi
+          # Netlify reads _redirects; the catch-all rewrite lets a client-side router handle deep links.
+          if [[ ! -f "$PREVIEW_DIR/_redirects" ]]; then
+            echo '/* /index.html 200' > "$PREVIEW_DIR/_redirects"
+          fi
+          # With --json the CLI reports failures on stdout, so print the output before failing.
+          status=0
+          response=$(npx -y netlify-cli@26.0.0 deploy \
+            --dir="$PREVIEW_DIR" \
+            ${NETLIFY_FILTER:+--filter="$NETLIFY_FILTER"} \
+            --alias="pr-$ISSUE_NUMBER" \
+            --no-build \
+            --json \
+            --auth="$NETLIFY_AUTH_TOKEN" \
+            --site="$NETLIFY_SITE_ID") || status=$?
+          echo "$response"
+          if [[ $status -ne 0 ]]; then
+            echo "::error title=Netlify deploy failed::netlify deploy exited with code $status."
+            exit "$status"
+          fi
+          {
+            echo "url=$(jq -r '.deploy_url' <<< "$response")"
+            echo "sha=$(git rev-parse --short "$COMMIT_SHA")"
+            echo "message=$(git log -1 --pretty=%s "$COMMIT_SHA")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Find existing preview comment
+        id: preview-comment
+        if: steps.app-preview.outputs.url != '' && !cancelled()
+        uses: peter-evans/find-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Preview Deploy Report'
+
+      - name: Create or update preview comment
+        if: steps.app-preview.outputs.url != '' && !cancelled()
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ steps.preview-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            # :rocket: Preview Deploy Report
+
+            ✅ Successfully deployed preview [here](${{ steps.app-preview.outputs.url }})
+
+            Commit: `${{ steps.app-preview.outputs.sha }}` ${{ steps.app-preview.outputs.message }}
