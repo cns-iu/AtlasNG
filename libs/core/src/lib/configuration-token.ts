@@ -1,4 +1,4 @@
-import { assertInInjectionContext, inject, InjectionToken, Provider } from '@angular/core';
+import { assertInInjectionContext, inject, InjectionToken, Injector, Provider } from '@angular/core';
 import { Simplify } from 'type-fest';
 
 /**
@@ -18,6 +18,11 @@ export interface ConfigurationTokenOptions<TConfig extends object, TDefaults ext
   config: TConfig;
   /** Factory for the default configuration subset. */
   defaults: () => TDefaults;
+  /**
+   * Whether a provided configuration is merged over the configuration provided by a parent injector, so that a nested
+   * provider only sets the properties it changes. Defaults to `false`: a provided configuration replaces its parent's.
+   */
+  inherit?: boolean;
 }
 
 /**
@@ -26,8 +31,8 @@ export interface ConfigurationTokenOptions<TConfig extends object, TDefaults ext
 export interface ConfigurationToken<TConfig extends object, TDefaults extends Partial<TConfig>> {
   /** Underlying Angular injection token. */
   token: InjectionToken<TConfig>;
-  /** Injects the configuration with defaults applied. */
-  inject: () => ConfigurationWithDefaults<TConfig, TDefaults>;
+  /** Injects the configuration with defaults applied, from the given injector or the current injection context. */
+  inject: (options?: { injector?: Injector }) => ConfigurationWithDefaults<TConfig, TDefaults>;
   /** Creates a provider for configuration overrides. */
   provide: (config: TConfig) => Provider;
 }
@@ -65,27 +70,33 @@ export function createConfigurationToken<TConfig extends object, const TDefaults
 ): ConfigurationToken<TConfig, TDefaults> {
   const token = new InjectionToken<TConfig>(options.name);
 
-  /** Injects and resolves the configuration associated with this token. */
-  function injectConfiguration(): ConfigurationWithDefaults<TConfig, TDefaults> {
-    assertInInjectionContext(injectConfiguration);
-
-    const config = inject(token, { optional: true });
-    const result: Partial<TConfig> = { ...options.defaults() };
-
-    if (config) {
-      for (const key in config) {
-        const value = config[key];
-        if (value !== undefined) {
-          result[key] = value;
-        }
-      }
+  /**
+   * Injects and resolves the configuration associated with this token.
+   *
+   * @param injectOptions Injector to read the configuration from. Required outside an injection context.
+   * @returns The configuration with defaults applied.
+   */
+  function injectConfiguration(injectOptions?: { injector?: Injector }): ConfigurationWithDefaults<TConfig, TDefaults> {
+    if (!injectOptions?.injector) {
+      assertInInjectionContext(injectConfiguration);
     }
+
+    const injector = injectOptions?.injector ?? inject(Injector);
+    const config = injector.get(token, null);
+    const result = mergeDefined<Partial<TConfig>>(options.defaults(), config);
 
     return result as ConfigurationWithDefaults<TConfig, TDefaults>;
   }
 
   /** Creates a provider for this token. */
   function provideConfiguration(config: TConfig): Provider {
+    if (options.inherit) {
+      return {
+        provide: token,
+        useFactory: () => mergeDefined(inject(token, { optional: true, skipSelf: true }) ?? {}, config) as TConfig,
+      };
+    }
+
     return {
       provide: token,
       useValue: config,
@@ -97,4 +108,27 @@ export function createConfigurationToken<TConfig extends object, const TDefaults
     inject: injectConfiguration,
     provide: provideConfiguration,
   };
+}
+
+/**
+ * Merges the defined properties of an object over a copy of another. Properties whose value is `undefined` do not
+ * override the base value.
+ *
+ * @param base Object providing the initial values. It is not mutated.
+ * @param overrides Object whose defined properties replace the base values.
+ * @returns A new object with the merged properties.
+ */
+function mergeDefined<T extends object>(base: T, overrides: Partial<T> | null | undefined): T {
+  const result = { ...base };
+
+  if (overrides) {
+    for (const key in overrides) {
+      const value = overrides[key];
+      if (value !== undefined) {
+        result[key] = value as T[typeof key];
+      }
+    }
+  }
+
+  return result;
 }

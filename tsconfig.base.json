@@ -11,6 +11,7 @@
       "@atlasng/analytics/permissions": ["./libs/analytics/permissions/src/index.ts"],
       "@atlasng/cdk": ["./libs/cdk/src/index.ts"],
       "@atlasng/cdk/errors": ["./libs/cdk/errors/src/index.ts"],
+      "@atlasng/cdk/search": ["./libs/cdk/search/src/index.ts"],
       "@atlasng/common": ["./libs/common/src/index.ts"],
       "@atlasng/common/errors": ["./libs/common/errors/src/index.ts"],
       "@atlasng/content-blocks": ["./libs/content-blocks/src/index.ts"],
