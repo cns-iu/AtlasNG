@@ -1,17 +1,15 @@
-export {
-  DEFAULT_SEARCH_VALUE_FIELD,
-  DefaultSearchEngine,
-  DefaultSearchIndex,
-  SearchMatchTier,
-} from './lib/default-engine';
+export { DefaultSearchEngine } from './lib/default-engine/default-engine';
+export { DefaultSearchIndex } from './lib/default-engine/default-index';
+export { SearchMatchTier } from './lib/default-engine/matching';
 export {
   highlightSegments,
   SEARCH_HIGHLIGHT_MATCH_CLASS,
   SearchHighlight,
   type HighlightSegment,
-} from './lib/highlight';
-export { injectSearch, type InjectSearchOptions, type MaybeSignal, type SearchRef } from './lib/inject-search';
-export { normalizeSearchText } from './lib/normalize';
+} from './lib/highlight/highlight';
+export { injectSearch, type InjectSearchOptions, type MaybeSignal, type SearchRef } from './lib/resource/inject-search';
+export { DEFAULT_SEARCH_VALUE_FIELD } from './lib/engine/values';
+export { normalizeSearchText } from './lib/text/normalize';
 export {
   provideSearch,
   SEARCH_CONFIG,
@@ -38,4 +36,4 @@ export type {
   SearchResponse,
   SearchResult,
   SearchSuggestion,
-} from './lib/types';
+} from './lib/engine/types';

@@ -1,9 +1,9 @@
 import { Component, inject, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { render } from '@testing-library/angular';
-import { DefaultSearchEngine } from './default-engine';
+import { DefaultSearchEngine } from './default-engine/default-engine';
 import { provideSearch, SEARCH_CONFIG, SEARCH_ENGINE, withCustomEngine, withSearchConfig } from './providers';
-import { SearchEngine } from './types';
+import { SearchEngine } from './engine/types';
 
 const customEngine: SearchEngine = { createIndex: () => ({ search: () => [] }) };
 

@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { DEFAULT_SEARCH_VALUE_FIELD, DefaultSearchEngine, SearchMatchTier } from './default-engine';
-import { SearchResult } from './types';
+import { SearchResult } from '../engine/types';
+import { DEFAULT_SEARCH_VALUE_FIELD } from '../engine/values';
+import { DefaultSearchEngine } from './default-engine';
+import { SearchMatchTier } from './matching';
 
 interface Organ {
   label: string;

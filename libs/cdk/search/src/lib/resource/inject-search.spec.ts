@@ -1,10 +1,10 @@
 import { Component, Injector, input, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { render } from '@testing-library/angular';
-import { DefaultSearchEngine } from './default-engine';
+import { DefaultSearchEngine } from '../default-engine/default-engine';
 import { injectSearch, InjectSearchOptions } from './inject-search';
-import { provideSearch, withCustomEngine, withSearchConfig } from './providers';
-import { SearchEngine, SearchFieldSpec, SearchIndex, SearchResult, SearchSuggestion } from './types';
+import { provideSearch, withCustomEngine, withSearchConfig } from '../providers';
+import { SearchEngine, SearchFieldSpec, SearchIndex, SearchResult, SearchSuggestion } from '../engine/types';
 
 interface Organ {
   label: string;

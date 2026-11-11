@@ -1,6 +1,6 @@
 import { Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
-import { mergeRanges } from './normalize';
-import { SearchRange } from './types';
+import { mergeRanges } from '../text/ranges';
+import { SearchRange } from '../engine/types';
 
 /** A run of text that either matched a search term or did not. */
 export interface HighlightSegment {

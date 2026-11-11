@@ -1,8 +1,8 @@
 import { inject, InjectionToken, Provider } from '@angular/core';
 import { CdkErrorCode } from '@atlasng/cdk/errors';
 import { AngError, createConfigurationToken, type } from '@atlasng/core';
-import { DefaultSearchEngine } from './default-engine';
-import { SearchEngine } from './types';
+import { DefaultSearchEngine } from './default-engine/default-engine';
+import { SearchEngine } from './engine/types';
 
 /**
  * Search defaults used by `injectSearch`. There is deliberately no result limit: a global limit would silently

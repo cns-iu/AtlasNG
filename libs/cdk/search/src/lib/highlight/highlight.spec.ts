@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/angular';
 import { highlightSegments, SearchHighlight } from './highlight';
-import { SearchRange } from './types';
+import { SearchRange } from '../engine/types';
 
 describe('highlightSegments', () => {
   it('splits text into matched and unmatched segments', () => {
