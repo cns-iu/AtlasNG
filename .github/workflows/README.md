@@ -1,6 +1,6 @@
 # Using these workflows
 
-AtlasNG's reusable workflows (`nx-*.yml` in this directory) run CI, npm publishing, and a Storybook deploy for any Nx workspace that uses npm. Each file documents its inputs and secrets in its `on.workflow_call` block. This guide covers the setup around them.
+AtlasNG's reusable workflows (`nx-*.yml` in this directory) run CI, npm publishing, and GitHub Pages deploys of apps and Storybooks for any Nx workspace that uses npm. Each file documents its inputs and secrets in its `on.workflow_call` block. This guide covers the setup around them.
 
 ## Pin a version
 
@@ -50,6 +50,7 @@ AtlasNG's own [ci.yml](ci.yml), [publish.yml](publish.yml), and [storybook-gh-pa
 | [nx-ci.yml](nx-ci.yml)                                 | `actions: read`, `contents: read`, `pull-requests: write` | `NX_CLOUD_ACCESS_TOKEN`; `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` for previews | `<caller job> / main`                                                        |
 | [nx-release-publish.yml](nx-release-publish.yml)       | `contents: write`, `id-token: write`                      | `NX_CLOUD_ACCESS_TOKEN`                                                          | `<caller job> / Publish`, `<caller job> / Create fixed group GitHub Release` |
 | [nx-storybook-gh-pages.yml](nx-storybook-gh-pages.yml) | `contents: write`                                         | `NX_CLOUD_ACCESS_TOKEN`                                                          | `<caller job> / Build and deploy Storybook`                                  |
+| [nx-app-gh-pages.yml](nx-app-gh-pages.yml)             | `contents: read`, `pages: write`, `id-token: write`       | `NX_CLOUD_ACCESS_TOKEN`                                                          | `<caller job> / Build app`, `<caller job> / Deploy to GitHub Pages`          |
 
 Pass secrets by name as in the example, or with `secrets: inherit`.
 
@@ -119,3 +120,36 @@ runs:
 ```
 
 Otherwise, write an action with the same inputs that deploys the caller's own build output.
+
+## GitHub Pages apps
+
+`nx-app-gh-pages.yml` builds one app and deploys it with `actions/deploy-pages`. Set the repository's Pages source to GitHub Actions. The workflow copies `index.html` to `404.html` so a client-side router handles deep links, and adds `.nojekyll`. Use `prepare-command` for extra steps in the output directory, such as copying `index.html` to known routes so Pages serves them with a 200 status.
+
+```yaml
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: cns-iu/AtlasNG/.github/workflows/nx-app-gh-pages.yml@workflows/v1
+    with:
+      project: my-app
+      output-dir: dist/apps/my-app/browser
+      prepare-command: cp index.html privacy-policy.html
+```
+
+A project site is served from `/<repository>/`, so build it with a matching base href unless the repository is `<owner>.github.io` or uses a custom domain.
