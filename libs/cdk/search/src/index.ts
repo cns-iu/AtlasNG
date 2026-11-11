@@ -4,7 +4,6 @@ export { SearchMatchTier } from './lib/default-engine/matching';
 export {
   highlightSegments,
   SEARCH_HIGHLIGHT_MATCH_CLASS,
-  SEARCH_HIGHLIGHT_NAME,
   SearchHighlight,
   type HighlightSegment,
 } from './lib/highlight/highlight';
@@ -12,7 +11,6 @@ export { injectSearch, type InjectSearchOptions, type MaybeSignalLike } from './
 export type { SearchResourceRef } from './lib/resource/search-resource';
 export { SearchEngine } from './lib/engine/search-engine';
 export { DEFAULT_SEARCH_VALUE_FIELD } from './lib/engine/values';
-export { findMatchRanges } from './lib/text/match-ranges';
 export { normalizeSearchText } from './lib/text/normalize';
 export {
   provideSearch,
