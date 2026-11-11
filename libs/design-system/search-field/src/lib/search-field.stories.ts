@@ -111,7 +111,12 @@ export const CustomEngine: Story = {
   },
   decorators: [
     applicationConfig({
-      providers: [provideSearch(withCustomEngine(() => new StartsWithSearchEngine()))],
+      providers: [
+        provideSearch(
+          {},
+          withCustomEngine(() => new StartsWithSearchEngine()),
+        ),
+      ],
     }),
   ],
 };

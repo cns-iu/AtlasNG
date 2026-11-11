@@ -10,8 +10,8 @@ import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggest
  * Search input with a search icon, a clear button, and autocomplete suggestions whose matched text is highlighted.
  *
  * Suggestions come from `suggestions` when it is set, for example from a remote service, and otherwise from the
- * values of `suggestionField` in `items`, searched with the injected `SEARCH_ENGINE`. Provide
- * `provideSearch(withCustomEngine(...))` in a parent or in the component providers to swap the engine.
+ * values of `suggestionField` in `items`, searched with the injected `SearchEngine`. Provide
+ * `provideSearch({}, withCustomEngine(...))` in a parent or in the component providers to swap the engine.
  *
  * Escape clears the term and closes the suggestions. The arrow keys and Enter select suggestions.
  */
@@ -79,7 +79,7 @@ export class SearchField<T = string> {
   /** Autocomplete trigger of the search input. */
   private readonly trigger = viewChild.required(MatAutocompleteTrigger);
 
-  /** Suggestions computed from the items. */
+  /** Search over the items. */
   readonly #search = injectSearch<T>({
     items: computed(() => (this.suggestions() ? [] : (this.items() ?? []))),
     term: this.value,
@@ -87,12 +87,18 @@ export class SearchField<T = string> {
     debounce: this.debounce,
   });
 
+  /** Suggestions computed from the items; empty if an asynchronous engine fails. */
+  readonly #itemSuggestions = computed(() => {
+    const { suggestions } = this.#search;
+    return suggestions.hasValue() ? suggestions.value() : [];
+  });
+
   /** Displayed suggestions with the ranges to highlight. */
   protected readonly options = computed(
     (): readonly SearchSuggestion[] =>
       this.suggestions()?.map((suggestion) =>
         typeof suggestion === 'string' ? { value: suggestion, ranges: [] } : suggestion,
-      ) ?? this.#search.suggestions(),
+      ) ?? this.#itemSuggestions(),
   );
 
   /**

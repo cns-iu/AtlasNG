@@ -1,4 +1,4 @@
-import { provideSearch, SearchEngine, SearchIndex, withCustomEngine, withSearchConfig } from '@atlasng/cdk/search';
+import { provideSearch, SearchEngine, SearchIndex, withCustomEngine } from '@atlasng/cdk/search';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { SearchField } from './search-field';
@@ -178,7 +178,7 @@ describe('SearchField', () => {
 
   it('uses the configured debounce by default', async () => {
     const user = userEvent.setup();
-    await setup({}, [provideSearch(withSearchConfig({ debounce: 50 }))]);
+    await setup({}, [provideSearch({ debounce: 50 })]);
 
     await user.type(getInput(), 'hea');
 
@@ -188,7 +188,12 @@ describe('SearchField', () => {
 
   it('uses a custom engine provided to the component', async () => {
     const user = userEvent.setup();
-    await setup({}, [provideSearch(withCustomEngine(() => new StartsWithEngine()))]);
+    await setup({}, [
+      provideSearch(
+        {},
+        withCustomEngine(() => new StartsWithEngine()),
+      ),
+    ]);
 
     await user.type(getInput(), 'l');
 
