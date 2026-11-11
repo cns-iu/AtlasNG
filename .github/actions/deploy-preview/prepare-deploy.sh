@@ -79,7 +79,7 @@ mkdir -p "$DEPLOY_DIR"
 cp -r "${DIST_DIR}"/!(libs) "${DEPLOY_DIR}/"
 cp -r "${ACTION_PATH}/assets"/* "${DEPLOY_DIR}/"
 
-# -- step 2: write preview metadata and SPA redirects ------------------------
+# -- step 2: write preview metadata, app base hrefs, and SPA redirects -------
 # A project's output root is the outermost directory containing an index.html.
 # Nested output roots (for example composed Storybooks or Compodoc demos) are not listed.
 echo "preview.setIssueNumber(\"${ISSUE_NUMBER}\");" >>"$METADATA_FILE"
@@ -93,6 +93,10 @@ for section in apps compodoc storybook; do
     echo "preview.addDirectory(\"${section}\", \"${rel_path}\");" >>"$METADATA_FILE"
 
     if [[ "$section" == "apps" ]]; then
+      # Apps are usually built for the site root, so point <base href> at the served path
+      base_href="/${rel_path}/"
+      sed -E -i "s#<base([^>]*)href=(\"[^\"]*\"|'[^']*')#<base\\1href=\"${base_href//&/\\&}\"#I" \
+        "${project_dir}/index.html"
       echo "/${rel_path}/* /${rel_path}/index.html 200" >>"${DEPLOY_DIR}/_redirects"
     fi
   done < <(find "$section_dir" -type d -exec test -f '{}/index.html' \; -print0 -prune)

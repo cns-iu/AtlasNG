@@ -1,0 +1,21 @@
+@use 'internal/token-utils';
+@use 'tokens/search-field' as *;
+
+:host {
+  display: block;
+
+  .ang-search-field--form-field {
+    width: 100%;
+  }
+
+  // The clear button replaces the browser's own clear control of search inputs
+  .ang-search-field--input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}
+
+.ang-search-field--option .ang-search-highlight--match {
+  background: token-utils.slot(highlight-background, $config);
+  color: token-utils.slot(highlight-color, $config);
+  font-weight: token-utils.slot(highlight-weight, $config);
+}
