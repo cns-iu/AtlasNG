@@ -45,6 +45,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/indicators/results-indicator`        | `ResultsIndicator`                                                        |
 | `@atlasng/design-system/links/link-snippet`                  | `LinkSnippet`                                                             |
 | `@atlasng/design-system/links/text-link`                     | `TextLink`                                                                |
+| `@atlasng/design-system/search-field`                        | `SearchField`                                                             |
 | `@atlasng/design-system/search-list`                         | `SearchList`, `SearchListOption`                                          |
 | `@atlasng/design-system/snackbar`                            | `Snackbar`, `createSnackBarConfig`, `SnackBarConfig`, `SnackBarData`      |
 | `@atlasng/design-system/table`                               | `Table` and its column and template APIs                                  |
