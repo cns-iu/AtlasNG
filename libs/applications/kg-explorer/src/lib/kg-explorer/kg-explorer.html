@@ -1,9 +1,7 @@
-@let isDocked = docked();
-
 <mat-sidenav-container class="ang-kg-explorer--container">
   <mat-sidenav
     class="ang-kg-explorer--sidenav"
-    [mode]="isDocked ? 'side' : 'over'"
+    [mode]="docked() ? 'side' : 'over'"
     [opened]="filtersOpen()"
     (openedChange)="this.filtersOpen.set($event)"
   >

@@ -2,7 +2,7 @@ import type { Type } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { Footer, FooterAction, FooterLogo } from '@atlasng/design-system/footer';
 import { type Args, argsToTemplate, type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import type { KgExplorerFilterSelections } from '../models';
 import {
   KG_EXPLORER_SAMPLE_COLUMNS,
@@ -10,8 +10,7 @@ import {
   KG_EXPLORER_SAMPLE_ITEMS,
   type KgExplorerSampleItem,
 } from '../sample-data';
-import { KgExplorerTableEndSlot } from '../slots';
-import { KgExplorer } from './kg-explorer';
+import { KgExplorer, KgExplorerTableEndSlot } from './kg-explorer';
 
 /**
  * Builds story props that narrow the rows down to the selected Type and Organ filter options. The
@@ -115,8 +114,9 @@ export const Demo: Story = {
 
     await userEvent.type(canvas.getByRole('combobox', { name: 'Search' }), 'consectetur');
     // Give viewers time to see the filtered results and suggestions.
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    await expect(canvas.getByText(/^Viewing \d+ of 15$/)).not.toHaveTextContent('Viewing 15 of 15');
+    waitFor(() => expect(canvas.getByText(/^Viewing \d+ of 15$/)).not.toHaveTextContent('Viewing 15 of 15'), {
+      timeout: 2000,
+    });
 
     const [downloadButton] = canvas.getAllByRole('button', { name: 'Choose download format' });
     await userEvent.click(downloadButton);

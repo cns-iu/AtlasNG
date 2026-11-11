@@ -3,10 +3,13 @@ import {
   Component,
   computed,
   contentChild,
+  Directive,
   effect,
+  inject,
   input,
   model,
   output,
+  TemplateRef,
   untracked,
 } from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
@@ -18,7 +21,18 @@ import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-sys
 import { DownloadCellDefinition, type DownloadCellConfig } from '../download-cell/download-cell';
 import type { KgExplorerDownload, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { defaultKgExplorerSearch, KgExplorerResultsTable } from '../results-table/results-table';
-import { KgExplorerTableEndSlot } from '../slots';
+
+/**
+ * Marks an `ng-template` rendered after the explorer table and its
+ * end-of-results indicator, such as a footer. It scrolls with the table.
+ */
+@Directive({
+  selector: 'ng-template[angKgExplorerTableEnd]',
+})
+export class KgExplorerTableEndSlot {
+  /** Template rendered at the end of the table. */
+  readonly template = inject(TemplateRef);
+}
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
@@ -135,8 +149,6 @@ export class KgExplorer<TRow extends Row = Row> {
     name: '',
     prop: '$$download',
     width: 40,
-    minWidth: 40,
-    maxWidth: 40,
     flexGrow: 0,
     sortable: false,
     cellTemplate: DownloadCellDefinition,

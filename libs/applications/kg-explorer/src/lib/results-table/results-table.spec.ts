@@ -3,7 +3,8 @@ import type { TableColumn } from '@atlasng/design-system/table';
 import { TextCellDefinition } from '@atlasng/design-system/table/columns';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { KgExplorerTableEndSlot } from '../slots';
+
+import { provideKgExplorerConfig } from '../config';
 import { defaultKgExplorerSearch, KgExplorerResultsTable } from './results-table';
 
 interface TestRow {
@@ -20,16 +21,16 @@ const ROWS: TestRow[] = [
 const COLUMNS: TableColumn<TestRow>[] = [{ name: 'Title', prop: 'title', cellTemplate: TextCellDefinition }];
 
 @Component({
-  imports: [KgExplorerResultsTable, KgExplorerTableEndSlot],
+  imports: [KgExplorerResultsTable],
   template: `
     <ang-kg-explorer-results-table
       [rows]="rows"
       [columns]="columns"
       [search]="search"
       [endOfResultsDisabled]="!showEnd"
-    >
-      <ng-template angKgExplorerTableEnd><footer>Table footer</footer></ng-template>
-    </ang-kg-explorer-results-table>
+      [tableEndTemplate]="tableEnd"
+    />
+    <ng-template #tableEnd><footer>Table footer</footer></ng-template>
   `,
 })
 class TableEndHost {
@@ -78,6 +79,18 @@ describe('KgExplorerResultsTable', () => {
 
     expect(screen.getByRole('combobox', { name: 'Search' })).toHaveValue('Heart atlas');
     expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
+  });
+
+  it('limits the suggestions to the configured maximum', async () => {
+    const user = userEvent.setup();
+    await render(KgExplorerResultsTable<TestRow>, {
+      inputs: { rows: ROWS, columns: COLUMNS, searchLabelFn: (row: TestRow) => row.title },
+      providers: [provideKgExplorerConfig({ maxSuggestions: 1 })],
+    });
+
+    await user.type(screen.getByRole('combobox', { name: 'Search' }), 'atlas');
+
+    expect(await screen.findAllByRole('option')).toHaveLength(1);
   });
 
   it('clears the search with the clear button', async () => {

@@ -69,7 +69,6 @@ export function kgExplorerTextColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    // flexGrow: 0,
     minWidth: 140,
     cellTemplate: TextCellDefinition,
     ...START_HEADER,
@@ -121,7 +120,6 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
     name,
     prop,
     minWidth: 96,
-    // flexGrow: 0,
     cellTemplate: NumberCellDefinition,
     ...END_HEADER,
     ...overrides,
@@ -146,7 +144,6 @@ export function kgExplorerDateColumn<TRow extends Row = Row>(
     name,
     prop,
     minWidth: 136,
-    // flexGrow: 0,
     cellTemplate: TextCellDefinition,
     cellConfig: { align: 'end' },
     ...END_HEADER,

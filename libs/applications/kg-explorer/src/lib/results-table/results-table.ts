@@ -3,27 +3,19 @@ import {
   booleanAttribute,
   Component,
   computed,
-  contentChild,
+  inject,
   input,
   model,
   output,
   TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
-import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
-import { MatIconButton } from '@angular/material/button';
-import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
-import { MatIcon } from '@angular/material/icon';
-import { MatInput } from '@angular/material/input';
 import { EndOfResultsIndicator } from '@atlasng/design-system/indicators/end-of-results-indicator';
 import { NoResultsIndicator } from '@atlasng/design-system/indicators/no-results-indicator';
-import { ResultsIndicator } from '@atlasng/design-system/indicators/results-indicator';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
-import { KgExplorerTableEndSlot } from '../slots';
-
-/** Maximum number of autocomplete suggestions shown below the search field. */
-const MAX_SUGGESTIONS = 8;
+import { KG_EXPLORER_CONFIG } from '../config';
+import { KgExplorerResultsNavigation } from '../results-navigation/results-navigation';
 
 /**
  * Matches a row when any of its primitive or array values contains the search term.
@@ -47,25 +39,14 @@ export function defaultKgExplorerSearch(row: Row, term: string): boolean {
  * container's height; the table, indicator, and table end content scroll
  * below the search bar.
  *
- * Project an `<ng-template angKgExplorerTableEnd>`, or pass `tableEndTemplate`,
- * to add content such as a footer at the end of the table.
+ * Pass `tableEndTemplate` to add content such as a footer at the end of the table.
  */
 @Component({
   selector: 'ang-kg-explorer-results-table',
   imports: [
     EndOfResultsIndicator,
-    MatAutocomplete,
-    MatAutocompleteTrigger,
-    MatFormField,
-    MatIcon,
-    MatIconButton,
-    MatInput,
-    MatLabel,
-    MatOption,
-    MatPrefix,
-    MatSuffix,
+    KgExplorerResultsNavigation,
     NoResultsIndicator,
-    ResultsIndicator,
     ScrollArea,
     Table,
     NgTemplateOutlet,
@@ -114,14 +95,11 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Emits when the user clears the results from the no-results indicator. */
   readonly clearResults = output<void>();
 
-  /** Template rendered at the end of the table; takes precedence over projected content. */
+  /** Template rendered at the end of the table, such as a footer. */
   readonly tableEndTemplate = input<TemplateRef<unknown>>();
 
-  /** Projected template rendered at the end of the table. */
-  protected readonly tableEndSlot = contentChild(KgExplorerTableEndSlot);
-
-  /** Content rendered at the end of the table, if any. */
-  protected readonly tableEnd = computed(() => this.tableEndTemplate() ?? this.tableEndSlot()?.template);
+  /** Explorer configuration. */
+  private readonly config = inject(KG_EXPLORER_CONFIG);
 
   /** Normalized search term. */
   protected readonly term = computed(() => this.search().trim().toLowerCase());
@@ -149,7 +127,7 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
     const labels = this.rows()
       .map(labelFn)
       .filter((label) => label.toLowerCase().includes(term));
-    return [...new Set(labels)].slice(0, MAX_SUGGESTIONS);
+    return [...new Set(labels)].slice(0, this.config.maxSuggestions);
   });
 
   /** Clears the search term and notifies listeners. */

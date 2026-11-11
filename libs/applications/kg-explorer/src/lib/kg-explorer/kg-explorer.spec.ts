@@ -6,13 +6,12 @@ import userEvent from '@testing-library/user-event';
 import { BehaviorSubject } from 'rxjs';
 import {
   KG_EXPLORER_SAMPLE_COLUMNS,
-  KG_EXPLORER_SAMPLE_ITEMS,
   KG_EXPLORER_SAMPLE_FILTERS,
+  KG_EXPLORER_SAMPLE_ITEMS,
   KG_EXPLORER_SAMPLE_TYPE_OPTIONS,
   type KgExplorerSampleItem,
 } from '../sample-data';
-import { KgExplorerTableEndSlot } from '../slots';
-import { KgExplorer } from './kg-explorer';
+import { KgExplorer, KgExplorerTableEndSlot } from './kg-explorer';
 
 @Component({
   imports: [KgExplorer, KgExplorerTableEndSlot],

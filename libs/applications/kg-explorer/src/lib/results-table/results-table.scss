@@ -15,35 +15,16 @@
   flex-direction: column;
   height: 100%;
 
-  .ang-kg-explorer-results-table--navigation,
-  .ang-kg-explorer-results-table--table {
+  .ang-kg-explorer-results-table--container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    @include table-padding;
     max-width: 96rem;
     margin: 0 auto;
   }
 
-  .ang-kg-explorer-results-table--navigation {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    background-color: token-utils.sys-slot(surface);
-    width: calc(100% - 2.5rem);
-
-    @media (min-width: 960px) {
-      width: calc(100% - 4rem);
-    }
-
-    @include table-padding;
-  }
-
-  .ang-kg-explorer-results-table--search {
-    flex: 1 1 18rem;
-    max-width: 36.25rem;
-  }
-
   .ang-kg-explorer-results-table--table {
-    @include table-padding;
     padding-top: 0;
 
     @include table.overrides(
@@ -82,9 +63,13 @@
         white-space: normal;
       }
 
-      .datatable-body-cell:has(.ang-kg-explorer--download-cell) {
+      .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
         padding: 0;
       }
+    }
+
+    &.no-results {
+      --ngx-datatable-grid-template-columns: 2.5rem 1fr 1fr 1fr 1fr 1fr 1fr;
     }
   }
 
@@ -95,7 +80,6 @@
       )
     );
 
-    @include table-padding;
     padding-top: 0;
 
     .mat-divider {

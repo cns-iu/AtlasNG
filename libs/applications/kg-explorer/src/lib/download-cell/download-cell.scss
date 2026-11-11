@@ -1,6 +1,6 @@
 @use 'internal/token-utils';
 
-.ang-kg-explorer--download-menu {
+.ang-kg-explorer-download-cell--menu {
   max-width: 20rem;
 
   .mat-mdc-menu-item {
@@ -12,19 +12,19 @@
     }
   }
 
-  .ang-kg-explorer--download-option {
+  .ang-kg-explorer-download-cell--option {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
   }
 
-  .ang-kg-explorer--download-option-label {
+  .ang-kg-explorer-download-cell--option-label {
     font: token-utils.sys-slot(label-large);
     letter-spacing: token-utils.sys-slot(label-large-tracking);
     color: token-utils.sys-slot(on-surface);
   }
 
-  .ang-kg-explorer--download-option-description {
+  .ang-kg-explorer-download-cell--option-description {
     font: token-utils.sys-slot(body-small);
     letter-spacing: token-utils.sys-slot(body-small-tracking);
     color: token-utils.sys-slot(on-surface-variant);

@@ -2,7 +2,7 @@
   <button
     matIconButton
     type="button"
-    class="ang-kg-explorer--download-cell"
+    class="ang-kg-explorer-download-cell--button"
     matTooltip="Choose download format"
     aria-label="Choose download format"
     [matMenuTriggerFor]="menu"
@@ -10,14 +10,14 @@
     <mat-icon fontIcon="download" />
   </button>
 
-  <mat-menu class="ang-kg-explorer--download-menu" #menu="matMenu">
+  <mat-menu class="ang-kg-explorer-download-cell--menu" #menu="matMenu">
     @for (format of config.formats; track format) {
       <button mat-menu-item type="button" (click)="config.download(row, format)">
         <mat-icon fontIcon="download" />
-        <span class="ang-kg-explorer--download-option">
-          <span class="ang-kg-explorer--download-option-label">{{ format.label }}</span>
+        <span class="ang-kg-explorer-download-cell--option">
+          <span class="ang-kg-explorer-download-cell--option-label">{{ format.label }}</span>
           @if (format.description) {
-            <span class="ang-kg-explorer--download-option-description">{{ format.description }}</span>
+            <span class="ang-kg-explorer-download-cell--option-description">{{ format.description }}</span>
           }
         </span>
       </button>

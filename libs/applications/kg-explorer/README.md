@@ -46,11 +46,11 @@ Give the explorer a height (for example, fill the page below your header) and ap
 
 ## Layout
 
-| Area          | Behavior                                                                                                                                                                                                                                                               |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Filter menu   | Shows an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from the Angular Material large breakpoint (1280px) up; below that it is a drawer opened and closed through `[(filtersOpen)]`.                                                      |
-| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`. Below the search bar, an `ang-scroll-area` scrolls the table, the end-of-results indicator that follows it, and any table end content. The no-results indicator replaces empty rows. |
-| Padding       | Around the search bar and the table: 16px below 600px, 24px below 960px, and 32px above.                                                                                                                                                                               |
+| Area          | Behavior                                                                                                                                                                                                                              |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Filter menu   | Shows an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from the Angular Material large breakpoint (1280px) up; below that it is a drawer opened and closed through `[(filtersOpen)]`.                     |
+| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows. |
+| Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                        |
 
 ## Data and columns
 
@@ -59,21 +59,31 @@ Give the explorer a height (for example, fill the page below your header) and ap
 - `KG_EXPLORER_SAMPLE_ITEMS` and `KG_EXPLORER_SAMPLE_COLUMNS` (with the `KgExplorerSampleItem` row type) are white-label demo data used by the stories.
 - `filters` takes `KgExplorerFilter` definitions (`id`, `label`, `options`, and optional `searchDisabled` and `count`). `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections before `(clearFilters)` emits.
 - The explorer does not filter `items` itself: pass only the rows that match `filterSelections`. `KG_EXPLORER_SAMPLE_FILTERS` defines Type and Organ filters for the sample data.
-- `searchFn` decides which rows match the search term (defaults to matching any string, number, or array value). `searchLabelFn` provides autocomplete suggestions (defaults to the row `title`).
+- `searchFn` decides which rows match the search term (defaults to matching any string, number, or array value). `searchLabelFn` provides autocomplete suggestions (defaults to the row `title`); at most `maxSuggestions` are shown (see [Configuration](#configuration)).
 - `downloadFormats` sets the file formats in the per-row download menu (defaults to `FILE_FORMATS` from `@atlasng/design-system/version-control`). Picking a format emits `download` with `{ item, format }`. `DownloadCellDefinition` can also be used on its own in any `ang-table` column.
 
 ## Inputs and outputs
 
-| Name                           | Description                                                          |
-| ------------------------------ | -------------------------------------------------------------------- |
-| `[(search)]`, `[(sorts)]`      | Current search term and column sorts.                                |
-| `[(filtersOpen)]`              | Whether the filter drawer is open below the large breakpoint.        |
-| `rowHeight`                    | Height of the table rows in pixels (defaults to 96).                 |
-| `(download)`, `(clearFilters)` | Download requests, and clear requests from the no-results indicator. |
+| Name                              | Description                                                          |
+| --------------------------------- | -------------------------------------------------------------------- |
+| `items`, `columns`                | Rows to display and the columns that show them.                      |
+| `filters`, `[(filterSelections)]` | Filter definitions and the selected options of each filter.          |
+| `[(search)]`, `[(sorts)]`         | Current search term and column sorts.                                |
+| `searchFn`, `searchLabelFn`       | Search matching and autocomplete labels.                             |
+| `downloadFormats`                 | File formats in the per-row download menu.                           |
+| `[(filtersOpen)]`                 | Whether the filter drawer is open below the large breakpoint.        |
+| `(download)`, `(clearFilters)`    | Download requests, and clear requests from the no-results indicator. |
 
 ## Show and hide features
 
-Boolean inputs that default to `false`: `downloadDisabled`, `endOfResultsDisabled`, `resultsCounterDisabled`, `searchDisabled`,
+Boolean inputs that default to `false`:
+
+| Input                    | Effect                             |
+| ------------------------ | ---------------------------------- |
+| `downloadDisabled`       | Hides the download column          |
+| `endOfResultsDisabled`   | Hides the end-of-results indicator |
+| `resultsCounterDisabled` | Hides the "Viewing X of Y" counter |
+| `searchDisabled`         | Hides the search field             |
 
 ## Slots
 
@@ -89,11 +99,29 @@ Project a template to add content, such as a footer, at the end of the table:
 
 `angKgExplorerTableEnd` content renders after the table and the end-of-results indicator, and scrolls with them.
 
-`KgExplorerResultsTable` is exported too, so you can build your own layout from it. It fills its container's height, so give the container one.
+## Building blocks
+
+The parts of the explorer are exported too, so you can build your own layout:
+
+- `KgExplorerResultsTable` (`ang-kg-explorer-results-table`) is the search bar, counter, and table. It fills its container's height, so give the container one. Pass content for the end of its table through its `tableEndTemplate` input.
+- `KgExplorerResultsNavigation` (`ang-kg-explorer-results-navigation`) is only the search field and counter. It displays the `suggestions`, `count`, and `total` you pass in and two-way binds `search`.
+- `DownloadCellDefinition` is the per-row download menu as an `ang-table` cell definition.
+
+## Configuration
+
+Provide `provideKgExplorerConfig` to change the explorer's defaults. Omitted values keep their defaults.
+
+```ts
+providers: [provideKgExplorerConfig({ maxSuggestions: 5 })];
+```
+
+| Option           | Default | Description                                                     |
+| ---------------- | ------- | --------------------------------------------------------------- |
+| `maxSuggestions` | `8`     | Maximum number of autocomplete suggestions below the search bar |
 
 ## Known limitations
 
-`ang-table` uses a fixed row height, so long titles are cut off after three lines instead of making the row taller. The table grows to fit all rows inside the scroll area below the search bar, so its column headers scroll out of view.
+The search bar, counter, and table share one scroll area, and the table grows to fit all of its rows. The search bar and the column headers are not sticky, so they scroll out of view in long result lists.
 
 ## Development
 
