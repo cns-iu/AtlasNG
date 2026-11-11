@@ -1,14 +1,10 @@
 @use 'breakpoints';
 @use 'internal/token-utils';
 @use 'tokens/text-link' as text-link;
+@use './../../sass/tokens/metadata-page' as *;
 
 :host {
-  --ang-metadata-page--gap: 2.5rem;
-  --ang-metadata-page--padding: 2.5rem;
-
   display: block;
-  background: token-utils.sys-slot(background);
-  color: token-utils.sys-slot(on-background);
 
   .ang-metadata-page--layout {
     display: grid;
@@ -18,7 +14,7 @@
       'first'
       'version'
       'rest';
-    row-gap: var(--ang-metadata-page--gap);
+    row-gap: token-utils.slot(section-gap, $config);
     max-width: 100rem;
     margin-inline: auto;
     padding: 2.5rem 1.25rem;
@@ -32,7 +28,7 @@
         'first version'
         'rest version';
       column-gap: 2.5rem;
-      padding: var(--ang-metadata-page--padding);
+      padding: token-utils.slot(padding, $config);
     }
   }
 
@@ -93,9 +89,11 @@
     align-self: start;
 
     @include breakpoints.breakpoint(medium) {
-      max-height: calc(100vh - var(--ang-metadata-page--padding) * 2);
       position: sticky;
-      top: var(--ang-metadata-page--padding);
+      max-height: calc(
+        100dvh - (token-utils.slot(padding, $config) * 2) - token-utils.slot(version-control-offset, $config)
+      );
+      top: token-utils.slot(padding, $config);
     }
   }
 
@@ -103,7 +101,7 @@
     grid-area: rest;
     display: flex;
     flex-direction: column;
-    gap: var(--ang-metadata-page--gap);
+    gap: token-utils.slot(section-gap, $config);
     min-width: 0;
   }
 

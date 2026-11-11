@@ -1,20 +1,21 @@
 @use '@angular/material' as mat;
+@use 'internal/token-utils';
 
-:host {
+.ang-metadata-chips {
   display: block;
 
   .ang-metadata-chips--set {
     @include mat.chips-overrides(
       (
         outline-width: 0,
-        elevated-container-color: var(--mat-sys-tertiary-container),
-        label-text-color: var(--mat-sys-tertiary),
+        elevated-container-color: token-utils.sys-slot(tertiary-container),
+        label-text-color: token-utils.sys-slot(on-tertiary-container),
         hover-state-layer-opacity: 0,
       )
     );
   }
 
-  ::ng-deep .ang-metadata-chips--chip span {
+  .ang-metadata-chips--chip span {
     user-select: text;
   }
 }

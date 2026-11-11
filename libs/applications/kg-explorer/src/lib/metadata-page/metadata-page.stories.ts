@@ -180,6 +180,9 @@ export const WithHeader: Story = {
         </main>
       </ang-navigation-container>
     `,
-    styles: [`ang-header-shell {img{height: 100%;}}`],
+    styles: [
+      `ang-header-shell {img{height: 100%;}}`,
+      `ang-metadata-page {--ang-metadata-page-version-control-offset: 3.5rem;}`,
+    ],
   }),
 };

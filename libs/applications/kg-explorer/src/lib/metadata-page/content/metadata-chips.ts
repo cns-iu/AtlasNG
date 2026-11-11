@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ViewEncapsulation } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
 
 /** Renders a group of non-interactive chips, for example tags, for a `MetadataChips` content node. */
@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [MatChipsModule],
   templateUrl: './metadata-chips.html',
   styleUrl: './metadata-chips.scss',
+  encapsulation: ViewEncapsulation.None,
   host: { class: 'ang-metadata-chips' },
 })
 export class MetadataChips {

@@ -1,5 +1,5 @@
-<mat-chip-set class="ang-metadata-chips--set">
+<mat-chip-set class="ang-metadata-chips--set" role="list">
   @for (label of labels(); track $index) {
-    <mat-chip class="ang-metadata-chips--chip" disableRipple>{{ label }}</mat-chip>
+    <mat-chip class="ang-metadata-chips--chip" role="listitem" disableRipple>{{ label }}</mat-chip>
   }
 </mat-chip-set>

@@ -43,33 +43,38 @@ The version control panel is always displayed; with no versions its selector is 
 
 ### Section content
 
-A section is `{ title, blocks }`. Each block is one of:
+A section is `{ title, content }`. `content` is one content-block node or a list of them, rendered with `ang-content-block` from `@atlasng/content-blocks`. The page registers these definitions:
 
-| Block                         | Renders                                                            |
-| ----------------------------- | ------------------------------------------------------------------ |
-| `{ type: 'text', content }`   | A paragraph. `content` is a string or a list of strings and links. |
-| `{ type: 'image', src, alt }` | An image spanning the full content width.                          |
-| `{ type: 'chips', labels }`   | A group of non-interactive chips, for example tags.                |
+| Component          | Source                                       | Renders                                             |
+| ------------------ | -------------------------------------------- | --------------------------------------------------- |
+| `ContentParagraph` | design-system definitions                    | A paragraph of text and inline nodes.               |
+| `TextLink`         | design-system definitions                    | A link. `config.href` is the destination.           |
+| `MetadataImage`    | `METADATA_PAGE_DEFINITIONS` (`{ src, alt }`) | An image spanning the full content width.           |
+| `MetadataChips`    | `METADATA_PAGE_DEFINITIONS` (`{ labels }`)   | A group of non-interactive chips, for example tags. |
 
-A link inside a text block is `{ text, link, external? }`. `link` accepts any `AnyLinkCommand`, and `external: true` opens it in a new tab.
+The other design-system definitions are available too.
 
 ```ts
 const sections: MetadataSection[] = [
-  { title: 'Description', blocks: [{ type: 'text', content: 'A description of the entry.' }] },
   {
-    title: 'License',
-    blocks: [
-      {
-        type: 'text',
-        content: [
-          'CC BY 4.0 (',
-          { text: 'license', link: 'https://creativecommons.org/licenses/by/4.0/', external: true },
-          ')',
-        ],
-      },
+    title: 'Description',
+    content: [
+      { component: 'ContentParagraph', content: 'A description of the entry.' },
+      { component: 'MetadataImage', config: { src: 'assets/illustration.svg', alt: 'Illustration of the entry' } },
     ],
   },
-  { title: 'Tags', blocks: [{ type: 'chips', labels: ['Heart', 'Kidney'] }] },
+  {
+    title: 'License',
+    content: {
+      component: 'ContentParagraph',
+      content: [
+        'CC BY 4.0 (',
+        { component: 'TextLink', config: { href: 'https://creativecommons.org/licenses/by/4.0/' }, content: 'license' },
+        ')',
+      ],
+    },
+  },
+  { title: 'Tags', content: { component: 'MetadataChips', config: { labels: ['Heart', 'Kidney'] } } },
 ];
 ```
 
@@ -81,6 +86,14 @@ The page does not download files. Choosing a download option emits `download` wi
 
 - Below the `medium` breakpoint (960px), the page is a single column with 20px side padding, and the version control panel follows the first section.
 - From `medium` up, the version control panel is a 400px column beside the sections, with 40px padding. The layout is centered and at most 1600px wide.
+
+Spacing can be customized with these CSS variables:
+
+| Variable                                     | Default  | Effect                                                                  |
+| -------------------------------------------- | -------- | ----------------------------------------------------------------------- |
+| `--ang-metadata-page-section-gap`            | `2.5rem` | Space between sections                                                  |
+| `--ang-metadata-page-padding`                | `2.5rem` | Page padding from `medium` up                                           |
+| `--ang-metadata-page-version-control-offset` | `0rem`   | Extra space kept clear above the sticky panel, e.g. for a sticky header |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 
