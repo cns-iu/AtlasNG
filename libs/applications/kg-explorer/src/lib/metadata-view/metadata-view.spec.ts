@@ -4,12 +4,14 @@ import {
   VersionControlFileFormat,
   VersionControlItem,
 } from '@atlasng/design-system/version-control';
+import type { Provider } from '@angular/core';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { MetadataPage, MetadataSection } from './metadata-page';
+import { provideKgExplorerMetadataView } from './config';
+import { KgExplorerMetadataView, KgExplorerMetadataSection } from './metadata-view';
 
-describe('MetadataPage', () => {
-  const sections: MetadataSection[] = [
+describe('KgExplorerMetadataView', () => {
+  const sections: KgExplorerMetadataSection[] = [
     { title: 'Description', content: { component: 'ContentParagraph', content: 'A description of the entry.' } },
     {
       title: 'License',
@@ -40,10 +42,10 @@ describe('MetadataPage', () => {
     { label: 'v1.0', formats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT] },
   ];
 
-  async function setup(inputs: Record<string, unknown> = {}) {
+  async function setup(inputs: Record<string, unknown> = {}, providers: Provider[] = []) {
     const user = userEvent.setup();
     const download = vi.fn();
-    const result = await render(MetadataPage, {
+    const result = await render(KgExplorerMetadataView, {
       inputs: {
         title: 'Metadata title',
         sections,
@@ -54,6 +56,7 @@ describe('MetadataPage', () => {
         ...inputs,
       },
       on: { download },
+      providers,
     });
 
     return { ...result, download, user };
@@ -83,7 +86,7 @@ describe('MetadataPage', () => {
   });
 
   it('uses the configured section heading level', async () => {
-    await setup({ sectionHeadingLevel: 3 });
+    await setup({ config: { sectionHeadingLevel: 3 } });
 
     expect(screen.getByRole('heading', { level: 3, name: 'Description' })).toBeVisible();
   });
@@ -147,7 +150,7 @@ describe('MetadataPage', () => {
   });
 
   it('hides parts that are turned off', async () => {
-    await setup({ breadcrumbsDisabled: true, iconsDisabled: true, urlDisabled: true });
+    await setup({ config: { breadcrumbsDisabled: true, iconsDisabled: true, urlDisabled: true } });
 
     expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument();
     expect(screen.queryByRole('img', { name: 'Organ icon' })).not.toBeInTheDocument();
@@ -165,7 +168,7 @@ describe('MetadataPage', () => {
   });
 
   it('uses the configured version control tagline', async () => {
-    await setup({ versionControlTagline: 'Release' });
+    await setup({ config: { versionControlTagline: 'Release' } });
 
     expect(screen.getByText('Release')).toBeVisible();
   });
@@ -177,5 +180,14 @@ describe('MetadataPage', () => {
     await user.click(within(options).getByRole('button', { name: /CSV/ }));
 
     expect(download).toHaveBeenCalledWith({ item: versions[0], format: CSV_FILE_FORMAT });
+  });
+
+  it('uses the provided configuration as defaults and merges the config input over it', async () => {
+    await setup({ config: { urlDisabled: false, versionControlTagline: undefined } }, [
+      provideKgExplorerMetadataView({ urlDisabled: true, versionControlTagline: 'Release' }),
+    ]);
+
+    expect(screen.getByText('example.com/entry')).toBeInTheDocument();
+    expect(screen.getByText('Release')).toBeInTheDocument();
   });
 });

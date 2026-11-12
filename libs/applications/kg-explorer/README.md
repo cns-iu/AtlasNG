@@ -2,60 +2,72 @@
 
 Application library for the AtlasNG knowledge graph explorer. It is in early development and does not yet have a stable public API.
 
-## Metadata page
+## Metadata view
 
-`ang-metadata-page` is a page layout template that displays the metadata of a single data entry, such as a knowledge graph digital object. It accepts plain data, so it works with any data source, and renders only the page body. Compose it with a header (for example `ang-header-shell` from `@atlasng/labs/header-shell`) and `ang-footer` from `@atlasng/design-system/footer`.
+`ang-kg-explorer-metadata-view` is a page layout template that displays the metadata of a single data entry, such as a knowledge graph digital object. It accepts plain data, so it works with any data source, and renders only the page body. Compose it with a header (for example `ang-header-shell` from `@atlasng/labs/header-shell`) and `ang-footer` from `@atlasng/design-system/footer`.
 
 ```html
-<ang-metadata-page
+<ang-kg-explorer-metadata-view
   [title]="entry.title"
   [breadcrumbs]="breadcrumbs"
   [icons]="icons"
   [url]="entry.purl"
   [sections]="sections"
   [versions]="versions"
+  [config]="{ versionControlTagline: 'Dataset version' }"
   (download)="downloadFile($event)"
 />
 ```
 
 ### Inputs
 
-| Input                   | Default                    | Description                                                              |
-| ----------------------- | -------------------------- | ------------------------------------------------------------------------ |
-| `title`                 | required                   | Page title, rendered as the `h1`.                                        |
-| `sections`              | required                   | `MetadataSection[]` rendered in order below the title.                   |
-| `breadcrumbs`           | `[]`                       | `BreadcrumbItem[]` from `@atlasng/design-system/buttons/breadcrumbs`.    |
-| `icons`                 | `[]`                       | `MetadataIcon[]` (`{ src, alt }`) shown as 64px circles above the title. |
-| `url`                   | `undefined`                | URL shown in a copyable link snippet.                                    |
-| `versions`              | required                   | `VersionControlItem[]` from `@atlasng/design-system/version-control`.    |
-| `versionControlTagline` | `'Digital object version'` | Heading of the version control panel.                                    |
-| `sectionHeadingLevel`   | `2`                        | Heading level of the section titles.                                     |
-| `selectedVersion`       | first version              | Two-way bindable selected version.                                       |
+| Input             | Default       | Description                                                                        |
+| ----------------- | ------------- | ---------------------------------------------------------------------------------- |
+| `title`           | required      | Page title, rendered as the `h1`.                                                  |
+| `sections`        | required      | `KgExplorerMetadataSection[]` rendered in order below the title.                   |
+| `versions`        | required      | `VersionControlItem[]` from `@atlasng/design-system/version-control`.              |
+| `breadcrumbs`     | `[]`          | `BreadcrumbItem[]` from `@atlasng/design-system/buttons/breadcrumbs`.              |
+| `icons`           | `[]`          | `KgExplorerMetadataIcon[]` (`{ src, alt }`) shown as 64px circles above the title. |
+| `url`             | `undefined`   | URL shown in a copyable link snippet.                                              |
+| `config`          | `{}`          | `KgExplorerMetadataViewConfig` options (see below).                                |
+| `selectedVersion` | first version | Two-way bindable selected version.                                                 |
 
-The version control panel is always displayed; with no versions its selector is disabled. Other parts of the page can be changed with a boolean input. A part is also hidden when it has no data.
+The version control panel is always displayed; with no versions its selector is disabled. Breadcrumbs, icons, and the URL are hidden when they have no data.
 
-| Input                 | Default | Effect                                     |
-| --------------------- | ------- | ------------------------------------------ |
-| `breadcrumbsDisabled` | `false` | Hides the breadcrumbs                      |
-| `iconsDisabled`       | `false` | Hides the icons above the title            |
-| `urlDisabled`         | `false` | Hides the URL link snippet                 |
-| `underlinedSections`  | `true`  | Shows a divider beneath each section title |
+### Configuration
+
+`config` takes a `KgExplorerMetadataViewConfig`. Every option is optional.
+
+| Option                  | Default                    | Description                                 |
+| ----------------------- | -------------------------- | ------------------------------------------- |
+| `versionControlTagline` | `'Digital object version'` | Heading of the version control panel.       |
+| `sectionHeadingLevel`   | `2`                        | Heading level of the section titles.        |
+| `underlinedSections`    | `true`                     | Shows a divider beneath each section title. |
+| `breadcrumbsDisabled`   | `false`                    | Hides the breadcrumbs.                      |
+| `iconsDisabled`         | `false`                    | Hides the icons above the title.            |
+| `urlDisabled`           | `false`                    | Hides the URL link snippet.                 |
+
+Set defaults for every metadata view below an injector with `provideKgExplorerMetadataView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
+
+```ts
+providers: [provideKgExplorerMetadataView({ sectionHeadingLevel: 3 })];
+```
 
 ### Section content
 
 A section is `{ title, content }`. `content` is one content-block node or a list of them, rendered with `ang-content-block` from `@atlasng/content-blocks`. The page registers these definitions:
 
-| Component          | Source                                       | Renders                                             |
-| ------------------ | -------------------------------------------- | --------------------------------------------------- |
-| `ContentParagraph` | design-system definitions                    | A paragraph of text and inline nodes.               |
-| `TextLink`         | design-system definitions                    | A link. `config.href` is the destination.           |
-| `MetadataImage`    | `METADATA_PAGE_DEFINITIONS` (`{ src, alt }`) | An image spanning the full content width.           |
-| `MetadataChips`    | `METADATA_PAGE_DEFINITIONS` (`{ labels }`)   | A group of non-interactive chips, for example tags. |
+| Component          | Source                                              | Renders                                             |
+| ------------------ | --------------------------------------------------- | --------------------------------------------------- |
+| `ContentParagraph` | design-system definitions                           | A paragraph of text and inline nodes.               |
+| `TextLink`         | design-system definitions                           | A link. `config.href` is the destination.           |
+| `MetadataImage`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ src, alt }`) | An image spanning the full content width.           |
+| `MetadataChips`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ labels }`)   | A group of non-interactive chips, for example tags. |
 
 The other design-system definitions are available too.
 
 ```ts
-const sections: MetadataSection[] = [
+const sections: KgExplorerMetadataSection[] = [
   {
     title: 'Description',
     content: [
@@ -89,11 +101,11 @@ The page does not download files. Choosing a download option emits `download` wi
 
 Spacing can be customized with these CSS variables:
 
-| Variable                                     | Default  | Effect                                                                  |
-| -------------------------------------------- | -------- | ----------------------------------------------------------------------- |
-| `--ang-metadata-page-section-gap`            | `2.5rem` | Space between sections                                                  |
-| `--ang-metadata-page-padding`                | `2.5rem` | Page padding from `medium` up                                           |
-| `--ang-metadata-page-version-control-offset` | `0rem`   | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+| Variable                                                 | Default  | Effect                                                                  |
+| -------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
+| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem` | Space between sections                                                  |
+| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem` | Page padding from `medium` up                                           |
+| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`   | Extra space kept clear above the sticky panel, e.g. for a sticky header |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 

@@ -1,5 +1,5 @@
 import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
-import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
 import { ContentBlock } from '@atlasng/content-blocks';
 import { provideDefinitions } from '@atlasng/content-blocks/definitions';
 import { provideDesignSystemDefinitions } from '@atlasng/content-blocks/definitions/design-system';
@@ -14,15 +14,17 @@ import {
   VersionControlItem,
   VersionDownload,
 } from '@atlasng/design-system/version-control';
-import { METADATA_PAGE_DEFINITIONS } from './content/definitions';
+import { pickDefined } from '../utils/pick-defined';
+import { KG_EXPLORER_METADATA_VIEW_CONFIG, type KgExplorerMetadataViewConfig } from './config';
+import { KG_EXPLORER_METADATA_DEFINITIONS } from './definitions';
 
 /**
  * A titled section of the metadata page.
  *
  * The content is rendered with content blocks. Besides the design-system definitions, e.g. `ContentParagraph`, it can
- * use the {@link METADATA_PAGE_DEFINITIONS}: `MetadataImage` and `MetadataChips`.
+ * use the {@link KG_EXPLORER_METADATA_DEFINITIONS}: `MetadataImage` and `MetadataChips`.
  */
-export interface MetadataSection {
+export interface KgExplorerMetadataSection {
   /** Section heading. */
   title: string;
   /** Section content nodes, in display order. */
@@ -30,7 +32,7 @@ export interface MetadataSection {
 }
 
 /** A section prepared for rendering, with its content wrapped in a content document. */
-interface MetadataSectionView {
+interface KgExplorerMetadataSectionView {
   /** Section heading. */
   title: string;
   /** Content document rendered in the section body. */
@@ -38,7 +40,7 @@ interface MetadataSectionView {
 }
 
 /** An icon displayed above the page title, for example a product or organ icon. */
-export interface MetadataIcon {
+export interface KgExplorerMetadataIcon {
   /** Icon image source URL. */
   src: string;
   /** Alternative text describing the icon. */
@@ -53,11 +55,14 @@ export interface MetadataIcon {
  * On narrow screens the version control panel follows the first section; from the medium breakpoint up it is
  * displayed in a column beside the sections.
  *
- * The page does not download files itself. Choosing a download option emits {@link MetadataPage.download},
+ * Headings and visibility options are set through {@link KgExplorerMetadataView.config}, which is merged over the
+ * defaults provided with `provideKgExplorerMetadataView`.
+ *
+ * The page does not download files itself. Choosing a download option emits {@link KgExplorerMetadataView.download},
  * and the consumer performs the download.
  */
 @Component({
-  selector: 'ang-metadata-page',
+  selector: 'ang-kg-explorer-metadata-view',
   imports: [
     Breadcrumbs,
     ContentBlock,
@@ -68,49 +73,47 @@ export interface MetadataIcon {
     NgTemplateOutlet,
     VersionControl,
   ],
-  templateUrl: './metadata-page.html',
-  styleUrl: './metadata-page.scss',
-  providers: [provideDesignSystemDefinitions(), provideDefinitions(METADATA_PAGE_DEFINITIONS)],
+  templateUrl: './metadata-view.html',
+  styleUrl: './metadata-view.scss',
+  providers: [provideDesignSystemDefinitions(), provideDefinitions(KG_EXPLORER_METADATA_DEFINITIONS)],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'ang-metadata-page',
+    class: 'ang-kg-explorer-metadata-view',
   },
 })
-export class MetadataPage<T extends VersionControlFileFormat = VersionControlFileFormat> {
+export class KgExplorerMetadataView<T extends VersionControlFileFormat = VersionControlFileFormat> {
   /** Page title. */
   readonly title = input.required<string>();
   /** Sections displayed below the title, in display order. */
-  readonly sections = input.required<readonly MetadataSection[]>();
+  readonly sections = input.required<readonly KgExplorerMetadataSection[]>();
   /** Breadcrumb trail displayed above the icons and title. */
   readonly breadcrumbs = input<BreadcrumbItem[]>([]);
   /** Icons displayed above the title. */
-  readonly icons = input<readonly MetadataIcon[]>([]);
+  readonly icons = input<readonly KgExplorerMetadataIcon[]>([]);
   /** URL displayed in a copyable link snippet below the title. */
   readonly url = input<string>();
   /** Versions and their downloadable file formats. */
   readonly versions = input.required<readonly VersionControlItem<T>[]>();
-  /** Heading of the version control panel. */
-  readonly versionControlTagline = input('Digital object version');
-  /** Heading level of the section titles. */
-  readonly sectionHeadingLevel = input<number | string>(2);
-
-  /** Whether to hide the breadcrumbs. */
-  readonly breadcrumbsDisabled = input(false, { transform: booleanAttribute });
-  /** Whether to hide the icons. */
-  readonly iconsDisabled = input(false, { transform: booleanAttribute });
-  /** Whether to hide the URL link snippet. */
-  readonly urlDisabled = input(false, { transform: booleanAttribute });
-  /** Whether to display a divider beneath each section title. */
-  readonly underlinedSections = input(true, { transform: booleanAttribute });
+  /**
+   * Headings and visibility options. Omitted options use the values provided
+   * with `provideKgExplorerMetadataView` and then the built-in defaults.
+   */
+  readonly config = input<KgExplorerMetadataViewConfig>({});
 
   /** Selected version. Defaults to the first version. */
   readonly selectedVersion = model<VersionControlItem<T> | undefined>();
   /** Emits the version and file format whenever a download option is chosen. */
   readonly download = output<VersionDownload<T>>();
 
+  /** Defaults provided with `provideKgExplorerMetadataView`, with the built-in defaults applied. */
+  private readonly defaults = KG_EXPLORER_METADATA_VIEW_CONFIG.inject();
+
+  /** The {@link config} input merged over the provided defaults. */
+  protected readonly resolvedConfig = computed(() => ({ ...this.defaults, ...pickDefined(this.config()) }));
+
   /** Sections with their content wrapped in content documents, created once per sections change. */
   protected readonly sectionViews = computed(() =>
-    this.sections().map((section): MetadataSectionView => ({
+    this.sections().map((section): KgExplorerMetadataSectionView => ({
       title: section.title,
       document: { version: CONTENT_DOCUMENT_VERSION, content: section.content },
     })),

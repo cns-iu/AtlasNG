@@ -3,14 +3,14 @@ import { MatChipsModule } from '@angular/material/chips';
 
 /** Renders a group of non-interactive chips, for example tags, for a `MetadataChips` content node. */
 @Component({
-  selector: 'ang-metadata-chips',
+  selector: 'ang-kg-explorer-metadata-chips',
   imports: [MatChipsModule],
   templateUrl: './metadata-chips.html',
   styleUrl: './metadata-chips.scss',
   encapsulation: ViewEncapsulation.None,
-  host: { class: 'ang-metadata-chips' },
+  host: { class: 'ang-kg-explorer-metadata-chips' },
 })
-export class MetadataChips {
+export class KgExplorerMetadataChips {
   /** Chip labels, in display order. */
   readonly labels = input.required<readonly string[]>();
 }

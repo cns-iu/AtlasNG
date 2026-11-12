@@ -1,16 +1,16 @@
 import { ContentDefinition } from '@atlasng/content-blocks/types';
 import { passthroughSchema } from '@atlasng/content-blocks/utils';
-import { MetadataChips } from './metadata-chips';
-import { MetadataImage } from './metadata-image';
+import { KgExplorerMetadataChips } from '../metadata-chips/metadata-chips';
+import { KgExplorerMetadataImage } from '../metadata-image/metadata-image';
 
 /**
  * `MetadataImage`: a full-width image.
  *
  * Config: `src` and `alt`. Use an empty `alt` for decorative images.
  */
-export const METADATA_IMAGE_DEFINITION = {
+export const KG_EXPLORER_METADATA_IMAGE_DEFINITION = {
   name: 'MetadataImage',
-  component: MetadataImage,
+  component: KgExplorerMetadataImage,
   config: {
     src: passthroughSchema<string>(),
     alt: passthroughSchema<string>(),
@@ -22,13 +22,16 @@ export const METADATA_IMAGE_DEFINITION = {
  *
  * Config: `labels`, in display order.
  */
-export const METADATA_CHIPS_DEFINITION = {
+export const KG_EXPLORER_METADATA_CHIPS_DEFINITION = {
   name: 'MetadataChips',
-  component: MetadataChips,
+  component: KgExplorerMetadataChips,
   config: {
     labels: passthroughSchema<string[]>(),
   },
 } satisfies ContentDefinition;
 
 /** Every metadata page definition. The page registers them together with the design-system definitions. */
-export const METADATA_PAGE_DEFINITIONS: ContentDefinition[] = [METADATA_IMAGE_DEFINITION, METADATA_CHIPS_DEFINITION];
+export const KG_EXPLORER_METADATA_DEFINITIONS: ContentDefinition[] = [
+  KG_EXPLORER_METADATA_IMAGE_DEFINITION,
+  KG_EXPLORER_METADATA_CHIPS_DEFINITION,
+];

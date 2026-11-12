@@ -1,12 +1,12 @@
 @use 'breakpoints';
 @use 'internal/token-utils';
 @use 'tokens/text-link' as text-link;
-@use './../../sass/tokens/metadata-page' as *;
+@use './../../sass/tokens/metadata-view' as *;
 
 :host {
   display: block;
 
-  .ang-metadata-page--layout {
+  .ang-kg-explorer-metadata-view--layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
@@ -32,7 +32,7 @@
     }
   }
 
-  .ang-metadata-page--header {
+  .ang-kg-explorer-metadata-view--header {
     grid-area: header;
     display: flex;
     flex-direction: column;
@@ -40,7 +40,7 @@
     min-width: 0;
   }
 
-  .ang-metadata-page--breadcrumbs {
+  .ang-kg-explorer-metadata-view--breadcrumbs {
     @include text-link.overrides(
       (
         color: token-utils.sys-slot(primary),
@@ -50,41 +50,41 @@
     margin-bottom: 2rem;
   }
 
-  .ang-metadata-page--icons {
+  .ang-kg-explorer-metadata-view--icons {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-bottom: 0.75rem;
   }
 
-  .ang-metadata-page--icon-wrapper {
+  .ang-kg-explorer-metadata-view--icon-wrapper {
     position: relative;
     width: 4rem;
     height: 4rem;
   }
 
-  .ang-metadata-page--icon {
+  .ang-kg-explorer-metadata-view--icon {
     border-radius: 50%;
     object-fit: cover;
   }
 
-  .ang-metadata-page--title {
+  .ang-kg-explorer-metadata-view--title {
     color: token-utils.sys-slot(on-surface);
     font: token-utils.sys-slot(display-medium);
     letter-spacing: token-utils.sys-slot(display-medium-tracking);
     text-wrap: balance;
   }
 
-  .ang-metadata-page--url {
+  .ang-kg-explorer-metadata-view--url {
     margin-top: 1rem;
   }
 
-  .ang-metadata-page--first-section {
+  .ang-kg-explorer-metadata-view--first-section {
     grid-area: first;
     min-width: 0;
   }
 
-  .ang-metadata-page--version-control {
+  .ang-kg-explorer-metadata-view--version-control {
     grid-area: version;
     align-self: start;
 
@@ -97,7 +97,7 @@
     }
   }
 
-  .ang-metadata-page--sections {
+  .ang-kg-explorer-metadata-view--sections {
     grid-area: rest;
     display: flex;
     flex-direction: column;
@@ -105,7 +105,7 @@
     min-width: 0;
   }
 
-  .ang-metadata-page--section-content {
+  .ang-kg-explorer-metadata-view--section-content {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;

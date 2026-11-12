@@ -13,7 +13,7 @@ import {
 import { HeaderShell, HeaderShellNavigationItem, NavigationContainer } from '@atlasng/labs/header-shell';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { expect } from 'storybook/test';
-import { MetadataPage, MetadataSection } from './metadata-page';
+import { KgExplorerMetadataView, KgExplorerMetadataSection } from './metadata-view';
 
 const DESCRIPTION =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore ' +
@@ -43,7 +43,7 @@ function link(text: string, href: string): ContentNode {
   return { component: 'TextLink', config: { href }, content: text };
 }
 
-const SECTIONS: MetadataSection[] = [
+const SECTIONS: KgExplorerMetadataSection[] = [
   {
     title: 'Description',
     content: [
@@ -90,9 +90,9 @@ const VERSIONS: VersionControlItem<VersionControlFileFormat>[] = [
   },
 ];
 
-const meta: Meta<MetadataPage> = {
+const meta: Meta<KgExplorerMetadataView> = {
   title: 'Applications/KG Explorer/Metadata Page',
-  component: MetadataPage,
+  component: KgExplorerMetadataView,
   parameters: {
     design: {
       type: 'figma',
@@ -117,21 +117,16 @@ const meta: Meta<MetadataPage> = {
     url: 'https://purl.wholepersonphysiome.org/wpp/cardiovascular-system',
     sections: SECTIONS,
     versions: VERSIONS,
-    versionControlTagline: 'Digital object version',
-    sectionHeadingLevel: 2,
-    breadcrumbsDisabled: false,
-    iconsDisabled: false,
-    urlDisabled: false,
-    underlinedSections: true,
+    config: {},
   },
   render: (args) => ({
     props: args,
-    template: `<ang-metadata-page ${argsToTemplate(args, { exclude: ['download'] })} />`,
+    template: `<ang-kg-explorer-metadata-view ${argsToTemplate(args, { exclude: ['download'] })} />`,
   }),
 };
 
 export default meta;
-type Story = StoryObj<MetadataPage>;
+type Story = StoryObj<KgExplorerMetadataView>;
 
 /** Metadata page with sample WPP data. */
 export const Default: Story = {
@@ -176,13 +171,13 @@ export const WithHeader: Story = {
         #navigation
       >
         <main id="main-content">
-          <ang-metadata-page ${argsToTemplate(args, { exclude: ['download'] })} />
+          <ang-kg-explorer-metadata-view ${argsToTemplate(args, { exclude: ['download'] })} />
         </main>
       </ang-navigation-container>
     `,
     styles: [
       `ang-header-shell {img{height: 100%;}}`,
-      `ang-metadata-page {--ang-metadata-page-version-control-offset: 3.5rem;}`,
+      `ang-kg-explorer-metadata-view {--ang-kg-explorer-metadata-view-version-control-offset: 3.5rem;}`,
     ],
   }),
 };

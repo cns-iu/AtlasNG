@@ -1,0 +1,55 @@
+@let options = resolvedConfig();
+
+<div class="ang-kg-explorer-metadata-view--layout">
+  <header class="ang-kg-explorer-metadata-view--header">
+    @if (!options.breadcrumbsDisabled && breadcrumbs().length > 0) {
+      <ang-breadcrumbs class="ang-kg-explorer-metadata-view--breadcrumbs" [items]="breadcrumbs()" />
+    }
+    @if (!options.iconsDisabled && icons().length > 0) {
+      <div class="ang-kg-explorer-metadata-view--icons">
+        @for (icon of icons(); track $index) {
+          <div class="ang-kg-explorer-metadata-view--icon-wrapper">
+            <img class="ang-kg-explorer-metadata-view--icon" fill [ngSrc]="icon.src" [alt]="icon.alt" />
+          </div>
+        }
+      </div>
+    }
+    <ang-heading class="ang-kg-explorer-metadata-view--title" level="1">{{ title() }}</ang-heading>
+    @if (!options.urlDisabled && url(); as url) {
+      <ang-link-snippet class="ang-kg-explorer-metadata-view--url" [url]="url" />
+    }
+  </header>
+
+  @if (firstSection(); as section) {
+    <div class="ang-kg-explorer-metadata-view--first-section">
+      <ng-container *ngTemplateOutlet="sectionTemplate; context: { $implicit: section }" />
+    </div>
+  }
+
+  <ang-version-control
+    class="ang-kg-explorer-metadata-view--version-control"
+    [tagline]="options.versionControlTagline"
+    [versions]="versions()"
+    [(selectedVersion)]="selectedVersion"
+    (download)="download.emit($event)"
+  />
+
+  @if (remainingSections().length > 0) {
+    <div class="ang-kg-explorer-metadata-view--sections">
+      @for (section of remainingSections(); track section) {
+        <ng-container *ngTemplateOutlet="sectionTemplate; context: { $implicit: section }" />
+      }
+    </div>
+  }
+</div>
+
+<ng-template let-section #sectionTemplate>
+  <ang-content-section
+    class="ang-kg-explorer-metadata-view--section"
+    [tagline]="section.title"
+    [level]="options.sectionHeadingLevel"
+    [underlined]="options.underlinedSections"
+  >
+    <ang-content-block class="ang-kg-explorer-metadata-view--section-content" [document]="section.document" />
+  </ang-content-section>
+</ng-template>

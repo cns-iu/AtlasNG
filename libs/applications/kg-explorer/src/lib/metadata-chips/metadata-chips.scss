@@ -1,10 +1,10 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 
-.ang-metadata-chips {
+.ang-kg-explorer-metadata-chips {
   display: block;
 
-  .ang-metadata-chips--set {
+  .ang-kg-explorer-metadata-chips--set {
     @include mat.chips-overrides(
       (
         outline-width: 0,
@@ -15,7 +15,7 @@
     );
   }
 
-  .ang-metadata-chips--chip span {
+  .ang-kg-explorer-metadata-chips--chip span {
     user-select: text;
   }
 }
