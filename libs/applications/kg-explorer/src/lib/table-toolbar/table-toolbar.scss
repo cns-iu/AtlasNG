@@ -1,0 +1,17 @@
+@use 'internal/token-utils';
+
+.ang-kg-explorer-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: token-utils.sys-slot(surface);
+  width: 100%;
+
+  .ang-kg-explorer-table-toolbar--search {
+    flex: 1;
+    min-width: 18rem;
+    max-width: 36.25rem;
+  }
+}

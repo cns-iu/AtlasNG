@@ -1,0 +1,32 @@
+@use 'internal/token-utils';
+
+:host {
+  display: block;
+  background-color: token-utils.sys-slot(surface);
+  color: token-utils.sys-slot(on-surface);
+
+  .ang-kg-explorer-table-view--container {
+    height: 100%;
+    background-color: inherit;
+  }
+
+  .ang-kg-explorer-table-view--sidenav {
+    width: 20rem;
+    max-width: 100%;
+    border-radius: 0;
+    border-right: 1px solid token-utils.sys-slot(outline-variant);
+    background-color: token-utils.sys-slot(surface-container-low);
+  }
+
+  .ang-kg-explorer-table-view--filters {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .ang-kg-explorer-table-view--content {
+    min-width: 0;
+    overflow: hidden;
+  }
+}

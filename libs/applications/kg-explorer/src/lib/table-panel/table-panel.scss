@@ -1,0 +1,96 @@
+@use 'internal/token-utils';
+@use 'tokens/end-of-results-indicator' as end-of-results-indicator;
+@use 'tokens/table' as table;
+
+@mixin table-padding() {
+  padding: 1.25rem;
+
+  @media (min-width: 960px) {
+    padding: 2rem;
+  }
+}
+
+.ang-kg-explorer-table-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .ang-kg-explorer-table-panel--container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    @include table-padding;
+    max-width: 96rem;
+    margin: 0 auto;
+  }
+
+  .ang-kg-explorer-table-panel--table {
+    padding-top: 0;
+
+    @include table.overrides(
+      (
+        chip-cell-container-color: token-utils.sys-slot(tertiary-container),
+        chip-cell-container-height: 1.75rem,
+        chip-cell-text-color: token-utils.sys-slot(on-tertiary-container),
+        chip-cell-text-font: token-utils.sys-slot(label-medium-font),
+        chip-cell-text-line-height: token-utils.sys-slot(label-medium-line-height),
+        chip-cell-text-size: token-utils.sys-slot(label-medium-size),
+        chip-cell-text-tracking: token-utils.sys-slot(label-medium-tracking),
+        chip-cell-text-weight: token-utils.sys-slot(label-medium-weight),
+        chip-cell-outline-width: 0,
+      )
+    );
+
+    .ang-kg-explorer-table-panel--empty {
+      grid-column: 1 / -1;
+      padding-block: 2.5rem;
+    }
+
+    .datatable-header {
+      @include table.overrides(
+        (
+          header-background-color: token-utils.sys-slot(surface),
+        )
+      );
+
+      border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+    }
+
+    .datatable-body-row {
+      border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+
+      .datatable-body-cell-label {
+        white-space: normal;
+      }
+
+      .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
+        padding: 0;
+      }
+    }
+
+    &.no-results {
+      --ngx-datatable-grid-template-columns: 2.5rem 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+  }
+
+  .ang-kg-explorer-table-panel--end {
+    @include end-of-results-indicator.overrides(
+      (
+        background-color: token-utils.sys-slot(surface-container-low),
+      )
+    );
+
+    padding-top: 0;
+
+    .mat-divider {
+      display: none;
+    }
+
+    .ang-end-of-results-indicator--container {
+      grid-auto-flow: column;
+      width: fit-content;
+      margin: 0 auto;
+      margin-top: 0rem !important;
+    }
+  }
+}
