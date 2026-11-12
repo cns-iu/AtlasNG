@@ -8,6 +8,7 @@ import {
   KG_EXPLORER_SAMPLE_COLUMNS,
   KG_EXPLORER_SAMPLE_FILTERS,
   KG_EXPLORER_SAMPLE_ITEMS,
+  kgExplorerSampleFormats,
   type KgExplorerSampleItem,
 } from '../sample-data';
 import { KgExplorerTableView } from './table-view';
@@ -80,10 +81,7 @@ const meta: Meta<KgExplorerTableView<KgExplorerSampleItem>> = {
     columns: KG_EXPLORER_SAMPLE_COLUMNS,
     filters: KG_EXPLORER_SAMPLE_FILTERS,
     filtersOpen: false,
-    searchDisabled: false,
-    resultsCounterDisabled: false,
-    endOfResultsDisabled: false,
-    downloadDisabled: false,
+    config: { downloadFormats: kgExplorerSampleFormats },
   },
   argTypes: {
     download: { action: 'download' },
@@ -157,7 +155,7 @@ export const FewResults: Story = {
 
 export const WithoutDownload: Story = {
   args: {
-    downloadDisabled: true,
+    config: {},
   },
 };
 

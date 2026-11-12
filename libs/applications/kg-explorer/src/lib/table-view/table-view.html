@@ -1,3 +1,5 @@
+@let options = resolvedConfig();
+
 <mat-sidenav-container class="ang-kg-explorer-table-view--container">
   <mat-sidenav
     class="ang-kg-explorer-table-view--sidenav"
@@ -23,11 +25,11 @@
     <ang-kg-explorer-results-table
       [rows]="items()"
       [columns]="resolvedColumns()"
-      [searchFields]="searchFields()"
+      [searchFields]="options.searchFields"
       [searchSuggestionField]="searchSuggestionField()"
-      [searchDisabled]="searchDisabled()"
-      [resultsCounterDisabled]="resultsCounterDisabled()"
-      [endOfResultsDisabled]="endOfResultsDisabled()"
+      [searchDisabled]="options.searchDisabled ?? false"
+      [resultsCounterDisabled]="options.resultsCounterDisabled ?? false"
+      [endOfResultsDisabled]="options.endOfResultsDisabled ?? false"
       [(search)]="search"
       [(sorts)]="sorts"
       (clearResults)="clearAllFilters()"

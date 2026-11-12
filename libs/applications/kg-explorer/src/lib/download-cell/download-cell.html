@@ -1,26 +1,57 @@
 <ng-template let-row="row" [angCellTemplateContext]="rowType">
-  <button
-    matIconButton
-    type="button"
-    class="ang-kg-explorer-download-cell--button"
-    matTooltip="Choose download format"
-    aria-label="Choose download format"
-    [matMenuTriggerFor]="menu"
-  >
-    <mat-icon fontIcon="download" />
-  </button>
+  @let formats = formatsOf(row);
 
-  <mat-menu class="ang-kg-explorer-download-cell--menu" #menu="matMenu">
-    @for (format of config.formats; track format) {
-      <button mat-menu-item type="button" (click)="config.download(row, format)">
-        <mat-icon fontIcon="download" />
-        <span class="ang-kg-explorer-download-cell--option">
-          <span class="ang-kg-explorer-download-cell--option-label">{{ format.label }}</span>
-          @if (format.description) {
-            <span class="ang-kg-explorer-download-cell--option-description">{{ format.description }}</span>
-          }
-        </span>
-      </button>
-    }
-  </mat-menu>
+  @if (formats.length === 0) {
+    <button
+      matIconButton
+      type="button"
+      class="ang-kg-explorer-download-cell--button"
+      matTooltip="No downloads available"
+      aria-label="No downloads available"
+      disabled
+      disabledInteractive
+    >
+      <mat-icon fontIcon="download" />
+    </button>
+  } @else if (formats.length === 1) {
+    @let format = formats[0];
+    @let label = `Download ${format.label}`;
+    <button
+      matIconButton
+      type="button"
+      class="ang-kg-explorer-download-cell--button"
+      [matTooltip]="label"
+      [attr.aria-label]="label"
+      (click)="config.download(row, format)"
+    >
+      <mat-icon fontIcon="download" />
+    </button>
+  } @else {
+    <button
+      matIconButton
+      type="button"
+      class="ang-kg-explorer-download-cell--button"
+      matTooltip="Choose download format"
+      aria-label="Choose download format"
+      [matMenuTriggerFor]="menu"
+    >
+      <mat-icon fontIcon="download" />
+    </button>
+
+    <mat-menu class="ang-kg-explorer-download-cell--menu" #menu="matMenu">
+      <ng-template matMenuContent>
+        @for (format of formats; track format) {
+          <button mat-menu-item type="button" (click)="config.download(row, format)">
+            <mat-icon fontIcon="download" />
+            <span class="ang-kg-explorer-download-cell--option">
+              <span class="ang-kg-explorer-download-cell--option-label">{{ format.label }}</span>
+              @if (format.description) {
+                <span class="ang-kg-explorer-download-cell--option-description">{{ format.description }}</span>
+              }
+            </span>
+          </button>
+        }
+      </ng-template>
+    </mat-menu>
+  }
 </ng-template>

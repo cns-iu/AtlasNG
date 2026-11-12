@@ -3,11 +3,14 @@ import type { VersionControlFileFormat } from '@atlasng/design-system/version-co
 import type { Row } from '@atlasng/design-system/table';
 
 /** Download request emitted when a user picks a file format for a row. */
-export interface KgExplorerDownloadRequest<TRow extends Row = Row> {
+export interface KgExplorerDownloadRequest<
+  TRow extends Row = Row,
+  TFormat extends VersionControlFileFormat = VersionControlFileFormat,
+> {
   /** Row the user chose to download. */
   item: TRow;
   /** File format the user picked. */
-  format: VersionControlFileFormat;
+  format: TFormat;
 }
 
 /** A filter displayed in the explorer filter menu as a multi-select filter. */

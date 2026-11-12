@@ -1,11 +1,11 @@
-import { booleanAttribute, Component, computed, effect, input, model, output, untracked } from '@angular/core';
+import { Component, computed, effect, input, model, output, untracked } from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import { watchBreakpoint } from '@atlasng/cdk';
-import type { SearchFieldDefinition, SearchFieldSpec } from '@atlasng/cdk/search';
 import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
-import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-system/version-control';
+import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
+import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from '../config';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { KgExplorerResultsTable } from '../results-table/results-table';
@@ -13,14 +13,15 @@ import { KgExplorerResultsTable } from '../results-table/results-table';
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
 
-/** Suggests the `title` of each row when it is a string. */
-const TITLE_SUGGESTION_FIELD: SearchFieldDefinition<Row> = {
-  name: 'title',
-  get: (row) => {
-    const title: unknown = row['title'];
-    return typeof title === 'string' ? title : undefined;
-  },
-};
+/**
+ * Copies the defined properties of an object, so that `undefined` values do not mask defaults when spread.
+ *
+ * @param value Object to copy.
+ * @returns The properties of the object whose value is not `undefined`.
+ */
+function definedValuesOf<T extends object>(value: T): Partial<T> {
+  return Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== undefined)) as Partial<T>;
+}
 
 /**
  * White-label knowledge graph explorer in table view with a filter menu, a
@@ -33,6 +34,9 @@ const TITLE_SUGGESTION_FIELD: SearchFieldDefinition<Row> = {
  * on smaller screens.
  * Projected content, such as a footer, is rendered at the end of the table and
  * scrolls with it.
+ *
+ * Search, download, and visibility options are set through {@link config},
+ * which is merged over the defaults provided with `provideKgExplorerTableView`.
  */
 @Component({
   selector: 'ang-kg-explorer-table-view',
@@ -43,7 +47,10 @@ const TITLE_SUGGESTION_FIELD: SearchFieldDefinition<Row> = {
     class: 'ang-kg-explorer-table-view',
   },
 })
-export class KgExplorerTableView<TRow extends Row = Row> {
+export class KgExplorerTableView<
+  TRow extends Row = Row,
+  TFormat extends VersionControlFileFormat = VersionControlFileFormat,
+> {
   /** Digital objects listed in the table. */
   readonly items = input<TRow[]>([]);
 
@@ -52,9 +59,6 @@ export class KgExplorerTableView<TRow extends Row = Row> {
    * the array between changes so cell templates stay cached.
    */
   readonly columns = input.required<TableColumn<TRow>[]>();
-
-  /** File formats offered by the per-row download menu. */
-  readonly downloadFormats = input<readonly VersionControlFileFormat[]>(FILE_FORMATS);
 
   /** Filters displayed in the filter menu, in display order. */
   readonly filters = input<readonly KgExplorerFilter[]>([]);
@@ -74,26 +78,32 @@ export class KgExplorerTableView<TRow extends Row = Row> {
    */
   readonly filtersOpen = model(false);
 
-  /** Fields to search. Defaults to every string, number, and array of strings or numbers of a row. */
-  readonly searchFields = input<readonly SearchFieldSpec<TRow>[]>();
-
-  /** Field whose values are suggested below the search field. Defaults to the row's `title`; `undefined` disables suggestions. */
-  readonly searchSuggestionField = input<SearchFieldSpec<TRow> | undefined>(TITLE_SUGGESTION_FIELD);
-
-  /** Disables the table search field. */
-  readonly searchDisabled = input(false, { transform: booleanAttribute });
-
-  /** Disables the "Viewing X of Y" results counter. */
-  readonly resultsCounterDisabled = input(false, { transform: booleanAttribute });
-
-  /** Disables the end-of-results indicator below the table. */
-  readonly endOfResultsDisabled = input(false, { transform: booleanAttribute });
-
-  /** Disables the download column. */
-  readonly downloadDisabled = input(false, { transform: booleanAttribute });
+  /**
+   * Search, download, and visibility options. Omitted options use the values
+   * provided with `provideKgExplorerTableView` and then the built-in defaults.
+   */
+  readonly config = input<KgExplorerTableViewConfig<TRow, TFormat>>({});
 
   /** Emits when a user picks a download format for a row. */
-  readonly download = output<KgExplorerDownloadRequest<TRow>>();
+  readonly download = output<KgExplorerDownloadRequest<TRow, TFormat>>();
+
+  /** Defaults provided with `provideKgExplorerTableView`, with the built-in defaults applied. */
+  private readonly defaults = KG_EXPLORER_TABLE_VIEW_CONFIG.inject() as KgExplorerTableViewConfig<TRow, TFormat>;
+
+  /** The {@link config} input merged over the provided defaults. */
+  protected readonly resolvedConfig = computed((): KgExplorerTableViewConfig<TRow, TFormat> => ({
+    ...this.defaults,
+    ...definedValuesOf(this.config()),
+  }));
+
+  /** Field suggested below the search field, or `undefined` when suggestions are disabled. */
+  protected readonly searchSuggestionField = computed(() => {
+    const { searchSuggestionField, searchSuggestionsDisabled } = this.resolvedConfig();
+    return searchSuggestionsDisabled ? undefined : searchSuggestionField;
+  });
+
+  /** File formats of the download column, or `undefined` when there is no download column. */
+  private readonly downloadFormats = computed(() => this.resolvedConfig().downloadFormats);
 
   /** Whether the filter menu is docked beside the table. */
   protected readonly docked = watchBreakpoint('large');
@@ -112,24 +122,32 @@ export class KgExplorerTableView<TRow extends Row = Row> {
     });
   }
 
-  /** Download column, recreated only when the download formats change. */
-  protected readonly downloadColumn = computed<TableColumn<TRow>>(() => ({
-    name: '',
-    prop: '$$download',
-    width: 40,
-    flexGrow: 0,
-    sortable: false,
-    cellTemplate: KgExplorerDownloadCellDefinition,
-    cellConfig: {
-      formats: this.downloadFormats(),
-      download: (item, format) => this.download.emit({ item, format }),
-    } satisfies KgExplorerDownloadCellConfig<TRow>,
-  }));
+  /** Download column, recreated only when the download formats change; `undefined` without download formats. */
+  private readonly downloadColumn = computed((): TableColumn<TRow> | undefined => {
+    const formats = this.downloadFormats();
+    if (formats === undefined) {
+      return undefined;
+    }
+
+    return {
+      name: '',
+      prop: '$$download',
+      width: 40,
+      flexGrow: 0,
+      sortable: false,
+      cellTemplate: KgExplorerDownloadCellDefinition,
+      cellConfig: {
+        formats,
+        download: (item, format) => this.download.emit({ item, format }),
+      } satisfies KgExplorerDownloadCellConfig<TRow, TFormat>,
+    };
+  });
 
   /** Columns displayed by the table, including the optional download column. */
-  protected readonly resolvedColumns = computed(() =>
-    this.downloadDisabled() ? this.columns() : [this.downloadColumn(), ...this.columns()],
-  );
+  protected readonly resolvedColumns = computed(() => {
+    const downloadColumn = this.downloadColumn();
+    return downloadColumn ? [downloadColumn, ...this.columns()] : this.columns();
+  });
 
   /**
    * Looks up the selected options of a filter.

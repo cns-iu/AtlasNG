@@ -2,6 +2,12 @@ import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { KgExplorerFilter } from './models';
 import type { Row, TableColumn } from '@atlasng/design-system/table';
 import {
+  CSV_FILE_FORMAT,
+  JSON_FILE_FORMAT,
+  JSON_LD_FILE_FORMAT,
+  type VersionControlFileFormat,
+} from '@atlasng/design-system/version-control';
+import {
   kgExplorerChipColumn,
   kgExplorerDateColumn,
   kgExplorerLinkColumn,
@@ -27,6 +33,8 @@ export interface KgExplorerSampleItem extends Row {
   biomarkerCount: number;
   /** Date the digital object was last modified, formatted as `YYYY-MM`. */
   lastModified: string;
+  /** File formats the digital object can be downloaded in. */
+  formats: VersionControlFileFormat[];
 }
 
 /** Titles used to generate the white-label sample rows. */
@@ -54,6 +62,9 @@ const SAMPLE_TYPES = ['Dataset', 'Reference organ', 'Collection', 'Illustration'
 /** Tag sets cycled through the sample rows. */
 const SAMPLE_TAGS = [['Kidney', 'Heart', 'Lung'], ['Skin'], ['Liver', 'Spleen'], ['Brain', 'Eye', 'Lung', 'Pancreas']];
 
+/** Download format sets cycled through the sample rows: several formats, one format, and none. */
+const SAMPLE_FORMATS = [[CSV_FILE_FORMAT, JSON_FILE_FORMAT, JSON_LD_FILE_FORMAT], [CSV_FILE_FORMAT], []];
+
 /** White-label sample rows that mirror the Figma content of the table view. */
 export const KG_EXPLORER_SAMPLE_ITEMS: KgExplorerSampleItem[] = SAMPLE_TITLES.map((title, index) => ({
   id: `digital-object-${index + 1}`,
@@ -64,6 +75,7 @@ export const KG_EXPLORER_SAMPLE_ITEMS: KgExplorerSampleItem[] = SAMPLE_TITLES.ma
   cellTypeCount: (index * 37 + 12) % 1000,
   biomarkerCount: (index * 53 + 7) % 1000,
   lastModified: `2026-${String((index % 12) + 1).padStart(2, '0')}`,
+  formats: SAMPLE_FORMATS[index % SAMPLE_FORMATS.length],
 }));
 
 /** Columns for {@link KG_EXPLORER_SAMPLE_ITEMS} that mirror the Figma table view. */
@@ -105,3 +117,13 @@ export const KG_EXPLORER_SAMPLE_FILTERS: KgExplorerFilter[] = [
   { id: 'type', label: 'Type', options: KG_EXPLORER_SAMPLE_TYPE_OPTIONS, searchDisabled: true },
   { id: 'organ', label: 'Organ', options: KG_EXPLORER_SAMPLE_ORGAN_OPTIONS },
 ];
+
+/**
+ * Reads the download formats of a sample row.
+ *
+ * @param item Sample row.
+ * @returns The file formats the row can be downloaded in.
+ */
+export function kgExplorerSampleFormats(item: KgExplorerSampleItem): readonly VersionControlFileFormat[] {
+  return item.formats;
+}
