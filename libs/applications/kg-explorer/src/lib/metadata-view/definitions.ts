@@ -8,7 +8,7 @@ import { KgExplorerMetadataImage } from '../metadata-image/metadata-image';
  *
  * Config: `src` and `alt`. Use an empty `alt` for decorative images.
  */
-export const KG_EXPLORER_METADATA_IMAGE_DEFINITION = {
+const KG_EXPLORER_METADATA_IMAGE_DEFINITION = {
   name: 'MetadataImage',
   component: KgExplorerMetadataImage,
   config: {
@@ -22,7 +22,7 @@ export const KG_EXPLORER_METADATA_IMAGE_DEFINITION = {
  *
  * Config: `labels`, in display order.
  */
-export const KG_EXPLORER_METADATA_CHIPS_DEFINITION = {
+const KG_EXPLORER_METADATA_CHIPS_DEFINITION = {
   name: 'MetadataChips',
   component: KgExplorerMetadataChips,
   config: {

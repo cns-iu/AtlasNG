@@ -11,14 +11,8 @@ export interface KgExplorerMetadataViewConfig {
   versionControlTagline?: string;
   /** Heading level of the section titles. Defaults to `2`. */
   sectionHeadingLevel?: number;
-  /** Whether to display a divider beneath each section title. Defaults to `true`. */
-  underlinedSections?: boolean;
-  /** Hides the breadcrumbs. Defaults to `false`. */
-  breadcrumbsDisabled?: boolean;
-  /** Hides the icons. Defaults to `false`. */
-  iconsDisabled?: boolean;
-  /** Hides the URL link snippet. Defaults to `false`. */
-  urlDisabled?: boolean;
+  /** Hides the divider beneath each section title. Defaults to `false`. */
+  sectionDividersDisabled?: boolean;
 }
 
 /**
@@ -33,10 +27,7 @@ export const KG_EXPLORER_METADATA_VIEW_CONFIG = createConfigurationToken({
   defaults: () => ({
     versionControlTagline: 'Digital object version',
     sectionHeadingLevel: 2,
-    underlinedSections: true,
-    breadcrumbsDisabled: false,
-    iconsDisabled: false,
-    urlDisabled: false,
+    sectionDividersDisabled: false,
   }),
   inherit: true,
 });

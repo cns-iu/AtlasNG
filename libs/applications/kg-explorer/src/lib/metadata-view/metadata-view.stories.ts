@@ -91,7 +91,7 @@ const VERSIONS: VersionControlItem<VersionControlFileFormat>[] = [
 ];
 
 const meta: Meta<KgExplorerMetadataView> = {
-  title: 'Applications/KG Explorer/Metadata Page',
+  title: 'Applications/KG Explorer/Metadata View',
   component: KgExplorerMetadataView,
   parameters: {
     design: {
@@ -104,19 +104,21 @@ const meta: Meta<KgExplorerMetadataView> = {
     download: { table: { disable: true } },
   },
   args: {
-    title: 'Whole Person Physiome (WPP) table for cardiovascular system',
+    metadata: {
+      title: 'Whole Person Physiome (WPP) table for cardiovascular system',
+      icons: [
+        { src: 'assets/product-icon-placeholder.svg', alt: 'Knowledge graph' },
+        { src: 'assets/organ-icon-placeholder.svg', alt: 'Heart' },
+      ],
+      url: 'https://purl.wholepersonphysiome.org/wpp/cardiovascular-system',
+      sections: SECTIONS,
+      versions: VERSIONS,
+    },
     breadcrumbs: [
       { name: 'Home', command: '/' },
       { name: 'Knowledge Graph Explorer', command: '/kg-explorer' },
       { name: 'Whole Person Physiome (WPP) table for cardiovascular system' },
     ],
-    icons: [
-      { src: 'assets/product-icon-placeholder.svg', alt: 'Knowledge graph' },
-      { src: 'assets/organ-icon-placeholder.svg', alt: 'Heart' },
-    ],
-    url: 'https://purl.wholepersonphysiome.org/wpp/cardiovascular-system',
-    sections: SECTIONS,
-    versions: VERSIONS,
     config: {},
   },
   render: (args) => ({

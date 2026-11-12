@@ -8,7 +8,7 @@ import type { Provider } from '@angular/core';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { provideKgExplorerMetadataView } from './config';
-import { KgExplorerMetadataView, KgExplorerMetadataSection } from './metadata-view';
+import { KgExplorerMetadataView, type KgExplorerMetadata, type KgExplorerMetadataSection } from './metadata-view';
 
 describe('KgExplorerMetadataView', () => {
   const sections: KgExplorerMetadataSection[] = [
@@ -42,17 +42,21 @@ describe('KgExplorerMetadataView', () => {
     { label: 'v1.0', formats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT] },
   ];
 
+  const metadata: KgExplorerMetadata = {
+    title: 'Metadata title',
+    sections,
+    icons: [{ src: 'icon.svg', alt: 'Organ icon' }],
+    url: 'https://example.com/entry',
+    versions,
+  };
+
   async function setup(inputs: Record<string, unknown> = {}, providers: Provider[] = []) {
     const user = userEvent.setup();
     const download = vi.fn();
     const result = await render(KgExplorerMetadataView, {
       inputs: {
-        title: 'Metadata title',
-        sections,
+        metadata,
         breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Metadata title' }],
-        icons: [{ src: 'icon.svg', alt: 'Organ icon' }],
-        url: 'https://example.com/entry',
-        versions,
         ...inputs,
       },
       on: { download },
@@ -120,12 +124,15 @@ describe('KgExplorerMetadataView', () => {
 
   it('renders images', async () => {
     await setup({
-      sections: [
-        {
-          title: 'Description',
-          content: { component: 'MetadataImage', config: { src: 'figure.png', alt: 'Figure of the entry' } },
-        },
-      ],
+      metadata: {
+        ...metadata,
+        sections: [
+          {
+            title: 'Description',
+            content: { component: 'MetadataImage', config: { src: 'figure.png', alt: 'Figure of the entry' } },
+          },
+        ],
+      },
     });
 
     expect(await screen.findByRole('img', { name: 'Figure of the entry' })).toHaveAttribute('src', 'figure.png');
@@ -149,22 +156,23 @@ describe('KgExplorerMetadataView', () => {
     expect(screen.queryByRole('button', { name: 'Heart' })).not.toBeInTheDocument();
   });
 
-  it('hides parts that are turned off', async () => {
-    await setup({ config: { breadcrumbsDisabled: true, iconsDisabled: true, urlDisabled: true } });
-
-    expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('img', { name: 'Organ icon' })).not.toBeInTheDocument();
-    expect(screen.queryByText('example.com/entry')).not.toBeInTheDocument();
-    expect(screen.getByText('Digital object version')).toBeVisible();
-  });
-
   it('hides parts without data but keeps the version control', async () => {
-    await setup({ breadcrumbs: [], icons: [], url: undefined, versions: [], sections: [] });
+    await setup({ breadcrumbs: [], metadata: { title: 'Metadata title', sections: [] } });
 
     expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(screen.queryByText('example.com/entry')).not.toBeInTheDocument();
     expect(screen.getByText('Digital object version')).toBeVisible();
     expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
+  });
+
+  it('hides the section dividers when they are disabled', async () => {
+    const { rerender } = await setup();
+    const dividers = screen.getAllByRole('separator').length;
+
+    await rerender({ inputs: { config: { sectionDividersDisabled: true } }, partialUpdate: true });
+
+    expect(screen.queryAllByRole('separator').length).toBeLessThan(dividers);
   });
 
   it('uses the configured version control tagline', async () => {
@@ -183,11 +191,11 @@ describe('KgExplorerMetadataView', () => {
   });
 
   it('uses the provided configuration as defaults and merges the config input over it', async () => {
-    await setup({ config: { urlDisabled: false, versionControlTagline: undefined } }, [
-      provideKgExplorerMetadataView({ urlDisabled: true, versionControlTagline: 'Release' }),
+    await setup({ config: { sectionHeadingLevel: 3, versionControlTagline: undefined } }, [
+      provideKgExplorerMetadataView({ sectionHeadingLevel: 4, versionControlTagline: 'Release' }),
     ]);
 
-    expect(screen.getByText('example.com/entry')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'Description' })).toBeInTheDocument();
     expect(screen.getByText('Release')).toBeInTheDocument();
   });
 });

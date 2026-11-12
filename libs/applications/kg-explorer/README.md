@@ -8,44 +8,44 @@ Application library for the AtlasNG knowledge graph explorer. It is in early dev
 
 ```html
 <ang-kg-explorer-metadata-view
-  [title]="entry.title"
+  [metadata]="entry"
   [breadcrumbs]="breadcrumbs"
-  [icons]="icons"
-  [url]="entry.purl"
-  [sections]="sections"
-  [versions]="versions"
   [config]="{ versionControlTagline: 'Dataset version' }"
   (download)="downloadFile($event)"
 />
 ```
 
-### Inputs
+### Inputs and outputs
 
-| Input             | Default       | Description                                                                        |
-| ----------------- | ------------- | ---------------------------------------------------------------------------------- |
-| `title`           | required      | Page title, rendered as the `h1`.                                                  |
-| `sections`        | required      | `KgExplorerMetadataSection[]` rendered in order below the title.                   |
-| `versions`        | required      | `VersionControlItem[]` from `@atlasng/design-system/version-control`.              |
-| `breadcrumbs`     | `[]`          | `BreadcrumbItem[]` from `@atlasng/design-system/buttons/breadcrumbs`.              |
-| `icons`           | `[]`          | `KgExplorerMetadataIcon[]` (`{ src, alt }`) shown as 64px circles above the title. |
-| `url`             | `undefined`   | URL shown in a copyable link snippet.                                              |
-| `config`          | `{}`          | `KgExplorerMetadataViewConfig` options (see below).                                |
-| `selectedVersion` | first version | Two-way bindable selected version.                                                 |
+| Name                  | Default       | Description                                                           |
+| --------------------- | ------------- | --------------------------------------------------------------------- |
+| `metadata`            | required      | `KgExplorerMetadata`: the entry to display (see below).               |
+| `breadcrumbs`         | `[]`          | `BreadcrumbItem[]` from `@atlasng/design-system/buttons/breadcrumbs`. |
+| `config`              | `{}`          | `KgExplorerMetadataViewConfig` options (see below).                   |
+| `[(selectedVersion)]` | first version | Two-way bindable selected version.                                    |
+| `(download)`          |               | Emits `{ item, format }` when a download option is chosen.            |
 
-The version control panel is always displayed; with no versions its selector is disabled. Breadcrumbs, icons, and the URL are hidden when they have no data.
+`KgExplorerMetadata` describes one entry:
+
+| Property   | Required | Description                                                                        |
+| ---------- | -------- | ---------------------------------------------------------------------------------- |
+| `title`    | yes      | Page title, rendered as the `h1`.                                                  |
+| `sections` | yes      | `KgExplorerMetadataSection[]` rendered in order below the title.                   |
+| `url`      | no       | URL shown in a copyable link snippet.                                              |
+| `icons`    | no       | `KgExplorerMetadataIcon[]` (`{ src, alt }`) shown as 64px circles above the title. |
+| `versions` | no       | `VersionControlItem[]` from `@atlasng/design-system/version-control`.              |
+
+Breadcrumbs, icons, and the URL are hidden when they have no data; leave them out to hide them. The version control panel is always displayed; without versions its selector is disabled.
 
 ### Configuration
 
 `config` takes a `KgExplorerMetadataViewConfig`. Every option is optional.
 
-| Option                  | Default                    | Description                                 |
-| ----------------------- | -------------------------- | ------------------------------------------- |
-| `versionControlTagline` | `'Digital object version'` | Heading of the version control panel.       |
-| `sectionHeadingLevel`   | `2`                        | Heading level of the section titles.        |
-| `underlinedSections`    | `true`                     | Shows a divider beneath each section title. |
-| `breadcrumbsDisabled`   | `false`                    | Hides the breadcrumbs.                      |
-| `iconsDisabled`         | `false`                    | Hides the icons above the title.            |
-| `urlDisabled`           | `false`                    | Hides the URL link snippet.                 |
+| Option                    | Default                    | Description                                   |
+| ------------------------- | -------------------------- | --------------------------------------------- |
+| `versionControlTagline`   | `'Digital object version'` | Heading of the version control panel.         |
+| `sectionHeadingLevel`     | `2`                        | Heading level of the section titles.          |
+| `sectionDividersDisabled` | `false`                    | Hides the divider beneath each section title. |
 
 Set defaults for every metadata view below an injector with `provideKgExplorerMetadataView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
 

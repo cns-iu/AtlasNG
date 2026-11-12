@@ -47,6 +47,23 @@ export interface KgExplorerMetadataIcon {
   alt: string;
 }
 
+/** The data entry displayed by the metadata view, such as a knowledge graph digital object. */
+export interface KgExplorerMetadata<T extends VersionControlFileFormat = VersionControlFileFormat> {
+  /** Page title. */
+  title: string;
+  /** Sections displayed below the title, in display order. */
+  sections: readonly KgExplorerMetadataSection[];
+  /** URL displayed in a copyable link snippet below the title. Nothing is shown when omitted. */
+  url?: string;
+  /** Icons displayed above the title. */
+  icons?: readonly KgExplorerMetadataIcon[];
+  /** Versions and their downloadable file formats. The version selector is disabled when there are none. */
+  versions?: readonly VersionControlItem<T>[];
+}
+
+/** Versions of an entry without versions, shared so the version control keeps the same list. */
+const NO_VERSIONS: readonly never[] = [];
+
 /**
  * Page layout template that displays the metadata of a single data entry, such as a knowledge graph digital object.
  *
@@ -55,7 +72,7 @@ export interface KgExplorerMetadataIcon {
  * On narrow screens the version control panel follows the first section; from the medium breakpoint up it is
  * displayed in a column beside the sections.
  *
- * Headings and visibility options are set through {@link KgExplorerMetadataView.config}, which is merged over the
+ * Headings and section options are set through {@link KgExplorerMetadataView.config}, which is merged over the
  * defaults provided with `provideKgExplorerMetadataView`.
  *
  * The page does not download files itself. Choosing a download option emits {@link KgExplorerMetadataView.download},
@@ -82,20 +99,13 @@ export interface KgExplorerMetadataIcon {
   },
 })
 export class KgExplorerMetadataView<T extends VersionControlFileFormat = VersionControlFileFormat> {
-  /** Page title. */
-  readonly title = input.required<string>();
-  /** Sections displayed below the title, in display order. */
-  readonly sections = input.required<readonly KgExplorerMetadataSection[]>();
+  /** Entry to display: its title, sections, and optional URL, icons, and versions. */
+  readonly metadata = input.required<KgExplorerMetadata<T>>();
   /** Breadcrumb trail displayed above the icons and title. */
   readonly breadcrumbs = input<BreadcrumbItem[]>([]);
-  /** Icons displayed above the title. */
-  readonly icons = input<readonly KgExplorerMetadataIcon[]>([]);
-  /** URL displayed in a copyable link snippet below the title. */
-  readonly url = input<string>();
-  /** Versions and their downloadable file formats. */
-  readonly versions = input.required<readonly VersionControlItem<T>[]>();
+
   /**
-   * Headings and visibility options. Omitted options use the values provided
+   * Headings and section options. Omitted options use the values provided
    * with `provideKgExplorerMetadataView` and then the built-in defaults.
    */
   readonly config = input<KgExplorerMetadataViewConfig>({});
@@ -111,9 +121,12 @@ export class KgExplorerMetadataView<T extends VersionControlFileFormat = Version
   /** The {@link config} input merged over the provided defaults. */
   protected readonly resolvedConfig = computed(() => ({ ...this.defaults, ...pickDefined(this.config()) }));
 
-  /** Sections with their content wrapped in content documents, created once per sections change. */
+  /** Versions of the entry. */
+  protected readonly versions = computed(() => this.metadata().versions ?? NO_VERSIONS);
+
+  /** Sections with their content wrapped in content documents, created once per metadata change. */
   protected readonly sectionViews = computed(() =>
-    this.sections().map((section): KgExplorerMetadataSectionView => ({
+    this.metadata().sections.map((section): KgExplorerMetadataSectionView => ({
       title: section.title,
       document: { version: CONTENT_DOCUMENT_VERSION, content: section.content },
     })),
