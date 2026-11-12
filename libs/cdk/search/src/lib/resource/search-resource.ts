@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { ConfigurationOf } from '@atlasng/core';
 import { SearchEngine } from '../engine/search-engine';
-import { SearchFieldDefinition, SearchFieldSpec, SearchResult, SearchSuggestion } from '../engine/types';
+import { SearchFieldDefinition, SearchFieldSpec, SearchFilter, SearchResult, SearchSuggestion } from '../engine/types';
 import { DEFAULT_SEARCH_VALUE_FIELD, isSearchPrimitive } from '../engine/values';
 import { SEARCH_CONFIG } from '../providers';
 import { debounceTerm } from './debounce-term';
@@ -49,7 +49,7 @@ const PRIMITIVE_SUGGESTION_FIELD: SearchFieldDefinition<unknown> = {
 /**
  * The {@link SearchResourceRef} created by `injectSearch`.
  *
- * The index is rebuilt only when the items, fields, or engine change. Synchronous engines update the results
+ * The index is rebuilt only when the items, fields, or engine change; the filter is applied per search. Synchronous engines update the results
  * synchronously (after the debounce, if any). While an asynchronous request for a new term is pending, the previous
  * results are kept; when the items or other options changed, the results are empty until the request resolves.
  */
@@ -95,6 +95,7 @@ export class SearchResourceImpl<T> implements SearchResourceRef<T> {
   constructor(options: InjectSearchOptions<T>, injector: Injector, config: ConfigurationOf<typeof SEARCH_CONFIG>) {
     const items = toSignal(options.items);
     const fields = toSignal(options.fields);
+    const filter = toSignal<SearchFilter<T> | undefined>(options.filter);
     const limit = toSignal(options.limit);
     const order = toSignal(options.order);
     const suggestionField = toSignal(options.suggestionField);
@@ -126,6 +127,7 @@ export class SearchResourceImpl<T> implements SearchResourceRef<T> {
       items: items(),
       fields: fields(),
       engine: engine(),
+      filter: filter(),
       limit: limit(),
       order: order(),
     }));
@@ -133,17 +135,23 @@ export class SearchResourceImpl<T> implements SearchResourceRef<T> {
       computed((): ContextualResponse<SearchResult<T>> => {
         this.#version();
         const context = searchContext();
+        const { filter: currentFilter } = context;
         if (!active()) {
-          return { response: items().map((item): SearchResult<T> => ({ item })), context };
+          const kept = currentFilter ? items().filter((item) => untracked(() => currentFilter(item))) : items();
+          return { response: kept.map((item): SearchResult<T> => ({ item })), context };
         }
         const currentIndex = index();
-        const query = { term: term(), limit: limit(), order: order() };
+        const query = { term: term(), filter: currentFilter, limit: limit(), order: order() };
         return { response: untracked(() => currentIndex.search(query)), context };
       }),
       injector,
     );
 
-    const suggestionContext = computed(() => ({ index: suggestionIndex(), limit: suggestionLimit() }));
+    const suggestionContext = computed(() => ({
+      index: suggestionIndex(),
+      limit: suggestionLimit(),
+      filter: filter(),
+    }));
     const suggested = resolveResponse(
       computed((): ContextualResponse<SearchSuggestion> => {
         this.#version();
@@ -153,7 +161,10 @@ export class SearchResourceImpl<T> implements SearchResourceRef<T> {
           return { response: [], context };
         }
         const currentTerm = term();
-        return { response: untracked(() => currentIndex.suggest?.(currentTerm, context.limit) ?? []), context };
+        return {
+          response: untracked(() => currentIndex.suggest?.(currentTerm, context.limit, context.filter) ?? []),
+          context,
+        };
       }),
       injector,
     );
