@@ -14,7 +14,9 @@ import { KgExplorerResultsNavigation } from '../results-navigation/results-navig
  *
  * Rows are searched with the injected `SearchEngine` and `SEARCH_CONFIG`, so
  * consumers can swap the engine or change the suggestion limit with `provideSearch`.
- * Matching rows keep the order of `rows`.
+ * Matching rows keep the order of `rows`. `rowFilter` is applied by the search, so
+ * changing it does not rebuild the search index and suggestions only come from
+ * rows that pass it.
  *
  * Projected content, such as a footer, is rendered at the end of the table.
  */
@@ -47,6 +49,9 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Field whose values are suggested below the search field; omit to disable suggestions. */
   readonly searchSuggestionField = input<SearchFieldSpec<TRow>>();
 
+  /** Decides which rows can be shown, for example from filter selections. Reuse the function while it is unchanged. */
+  readonly rowFilter = input<(row: TRow) => boolean>();
+
   /** Label of the search field. */
   readonly searchLabel = input('Search');
 
@@ -67,11 +72,12 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
     items: this.rows,
     term: this.search,
     fields: this.searchFields,
+    filter: this.rowFilter,
     suggestionField: this.searchSuggestionField,
     order: 'source',
   });
 
-  /** Rows matching the current search term; empty if an asynchronous engine fails. */
+  /** Rows matching the current search term and row filter; empty if an asynchronous engine fails. */
   protected readonly results = computed(() => [...this.#search.items()]);
 
   /** Autocomplete suggestions for the current search term; empty if an asynchronous engine fails. */

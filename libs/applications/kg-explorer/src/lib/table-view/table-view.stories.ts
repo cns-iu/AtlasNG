@@ -3,7 +3,6 @@ import { MatButton } from '@angular/material/button';
 import { Footer, FooterAction, FooterLogo } from '@atlasng/design-system/footer';
 import { type Args, argsToTemplate, type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
-import type { KgExplorerFilterSelections } from '../models';
 import {
   KG_EXPLORER_SAMPLE_COLUMNS,
   KG_EXPLORER_SAMPLE_FILTERS,
@@ -14,48 +13,15 @@ import {
 import { KgExplorerTableView } from './table-view';
 
 /**
- * Builds story props that narrow the rows down to the selected Type and Organ filter options. The
- * filtered rows are cached so the table only receives a new array when the rows or the selections change.
+ * Builds the table view template.
  *
  * @param args Story args.
- * @returns Props for {@link explorerTemplate}.
- */
-function filterProps(args: Args) {
-  let cache: { items: unknown; selections: unknown; rows: KgExplorerSampleItem[] } | undefined;
-
-  return {
-    ...args,
-    filterSelections: {} as KgExplorerFilterSelections,
-    filteredItems(items: KgExplorerSampleItem[], selections: KgExplorerFilterSelections) {
-      if (cache?.items !== items || cache.selections !== selections) {
-        const types = new Set(selections['type']?.map((option) => option.label));
-        const organs = new Set(selections['organ']?.map((option) => option.label));
-        const rows = items.filter(
-          (item) =>
-            (types.size === 0 || types.has(item.type)) &&
-            (organs.size === 0 || item.tags.some((tag) => organs.has(tag))),
-        );
-        cache = { items, selections, rows };
-      }
-      return cache.rows;
-    },
-  };
-}
-
-/**
- * Builds the explorer template with rows filtered by the filter selections.
- *
- * @param args Story args.
- * @param content Content projected into the explorer.
+ * @param content Content projected into the table view.
  * @returns Story template.
  */
 function explorerTemplate(args: Args, content = ''): string {
   return `
-    <ang-kg-explorer-table-view
-      ${argsToTemplate(args, { exclude: ['items', 'filterSelections'] })}
-      [items]="filteredItems(items, filterSelections)"
-      [(filterSelections)]="filterSelections"
-    >
+    <ang-kg-explorer-table-view ${argsToTemplate(args)}>
       ${content}
     </ang-kg-explorer-table-view>
   `;
@@ -87,7 +53,7 @@ const meta: Meta<KgExplorerTableView<KgExplorerSampleItem>> = {
     download: { action: 'download' },
   },
   render: (args) => ({
-    props: filterProps(args),
+    props: args,
     template: explorerTemplate(args),
     styles: [
       `
@@ -164,7 +130,7 @@ export const WithFooter: Story = {
     items: KG_EXPLORER_SAMPLE_ITEMS,
   },
   render: (args) => ({
-    props: filterProps(args),
+    props: args,
     template: explorerTemplate(
       args,
       `

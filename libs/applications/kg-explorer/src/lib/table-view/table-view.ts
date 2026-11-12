@@ -7,11 +7,15 @@ import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from '../config';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
+import { createRowFilter, deriveFilterOptions } from '../filtering';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { KgExplorerResultsTable } from '../results-table/results-table';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
+
+/** A filter with its options resolved. */
+type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: SearchListOption[] };
 
 /**
  * Copies the defined properties of an object, so that `undefined` values do not mask defaults when spread.
@@ -27,11 +31,12 @@ function definedValuesOf<T extends object>(value: T): Partial<T> {
  * White-label knowledge graph explorer in table view with a filter menu, a
  * searchable and sortable results table, and per-row downloads.
  *
- * The filter menu shows a multi-select filter for each of {@link filters}. The
- * explorer does not filter {@link items} itself: read {@link filterSelections}
- * and pass the matching rows. The menu is docked from the Angular Material
- * large breakpoint up and becomes a drawer controlled by {@link filtersOpen}
- * on smaller screens.
+ * The filter menu shows a multi-select filter for each of {@link filters}.
+ * Filters with a `field` or `matches` narrow the rows after they are searched,
+ * without rebuilding the search index; for other filters, read
+ * {@link filterSelections} and pass the matching {@link items}. The menu is
+ * docked from the Angular Material large breakpoint up and becomes a drawer
+ * controlled by {@link filtersOpen} on smaller screens.
  * Projected content, such as a footer, is rendered at the end of the table and
  * scrolls with it.
  *
@@ -61,7 +66,7 @@ export class KgExplorerTableView<
   readonly columns = input.required<TableColumn<TRow>[]>();
 
   /** Filters displayed in the filter menu, in display order. */
-  readonly filters = input<readonly KgExplorerFilter[]>([]);
+  readonly filters = input<readonly KgExplorerFilter<TRow>[]>([]);
 
   /** Selected options of each filter, keyed by filter id. Reset when the user clears the results. */
   readonly filterSelections = model<KgExplorerFilterSelections>({});
@@ -95,6 +100,35 @@ export class KgExplorerTableView<
     ...this.defaults,
     ...definedValuesOf(this.config()),
   }));
+
+  /** Filters with the options of their search lists, derived from the items where a filter has none. */
+  protected readonly resolvedFilters = computed((): ResolvedFilter<TRow>[] => {
+    const items = this.items();
+    return this.filters().map((filter) => ({
+      ...filter,
+      options: filter.options ?? (filter.field === undefined ? [] : deriveFilterOptions(items, filter.field)),
+    }));
+  });
+
+  /**
+   * Selected options of each filter, with selections replaced by the listed option of the same label so that
+   * selections created elsewhere, or before the options were derived again, stay checked in the list.
+   */
+  private readonly resolvedSelections = computed(() => {
+    const selections = this.filterSelections();
+    const resolved: Record<string, SearchListOption[]> = {};
+    for (const { id, options } of this.resolvedFilters()) {
+      const selected = selections[id];
+      if (selected && selected.length > 0) {
+        const byLabel = new Map(options.map((option) => [option.label, option]));
+        resolved[id] = selected.map((option) => byLabel.get(option.label) ?? option);
+      }
+    }
+    return resolved;
+  });
+
+  /** Predicate for the rows matching the filter selections; `undefined` when no filter restricts the rows. */
+  protected readonly rowFilter = computed(() => createRowFilter(this.filters(), this.filterSelections()));
 
   /** Field suggested below the search field, or `undefined` when suggestions are disabled. */
   protected readonly searchSuggestionField = computed(() => {
@@ -155,8 +189,8 @@ export class KgExplorerTableView<
    * @param filter Filter to look up.
    * @returns The selected options, or an empty selection when the filter has none.
    */
-  protected selectionOf(filter: KgExplorerFilter): SearchListOption[] {
-    return this.filterSelections()[filter.id] ?? NO_SELECTION;
+  protected selectionOf(filter: KgExplorerFilter<TRow>): SearchListOption[] {
+    return this.resolvedSelections()[filter.id] ?? NO_SELECTION;
   }
 
   /**
@@ -165,7 +199,7 @@ export class KgExplorerTableView<
    * @param filter Filter whose selection changed.
    * @param selected New selected options.
    */
-  protected select(filter: KgExplorerFilter, selected: SearchListOption[]): void {
+  protected select(filter: KgExplorerFilter<TRow>, selected: SearchListOption[]): void {
     this.filterSelections.update((selections) => ({ ...selections, [filter.id]: selected }));
   }
 

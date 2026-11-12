@@ -10,9 +10,10 @@
 ## Component Map
 
 - `table-view/`: `KgExplorerTableView` (`ang-kg-explorer-table-view`) is the root. It holds the `mat-sidenav` layout (docked from the `large` breakpoint via `watchBreakpoint`), one `ang-multi-select-filter` per filter, resolves its `config` input over `KG_EXPLORER_TABLE_VIEW_CONFIG`, adds the download column when `downloadFormats` is set, and passes inputs and its projected content to the results table.
-- `results-table/` (internal): `KgExplorerResultsTable` fills its container's height and holds the results navigation, `ang-table`, the end-of-results and no-results indicators, and projected content after the table, all in one `ang-scroll-area`. It searches the rows with `injectSearch` from `@atlasng/cdk/search`.
+- `results-table/` (internal): `KgExplorerResultsTable` fills its container's height and holds the results navigation, `ang-table`, the end-of-results and no-results indicators, and projected content after the table, all in one `ang-scroll-area`. It searches the rows with `injectSearch` from `@atlasng/cdk/search` and narrows them with its `rowFilter` input.
 - `results-navigation/` (internal): `KgExplorerResultsNavigation` is the presentational `ang-search-field` and the "Viewing X of Y" counter. `KgExplorerResultsTable` passes in the suggestions and counts.
 - `download-cell/`: `KgExplorerDownloadCellDefinition` is an `ang-table` cell definition whose button opens a `mat-menu` of formats, downloads a single format directly, or is disabled for a row without formats.
+- `filtering.ts` (internal): `createRowFilter` builds the row predicate from the filters and selections, which the results table passes to `injectSearch` as `filter`; `deriveFilterOptions` lists a filter's options from the items.
 - `config.ts` (`KgExplorerTableViewConfig`, `KG_EXPLORER_TABLE_VIEW_CONFIG`, `provideKgExplorerTableView`), `columns.ts` (generic column builders with Figma widths; consumers define their own columns), `models.ts` (public types), and `sample-data.ts` (internal white-label demo rows, columns, and filters for stories and tests).
 
 ## Conventions

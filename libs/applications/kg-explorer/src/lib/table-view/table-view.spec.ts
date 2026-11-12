@@ -9,7 +9,6 @@ import {
   KG_EXPLORER_SAMPLE_COLUMNS,
   KG_EXPLORER_SAMPLE_FILTERS,
   KG_EXPLORER_SAMPLE_ITEMS,
-  KG_EXPLORER_SAMPLE_TYPE_OPTIONS,
   kgExplorerSampleFormats,
   type KgExplorerSampleItem,
 } from '../sample-data';
@@ -120,7 +119,7 @@ describe('KgExplorerTableView', () => {
   });
 
   it('shows the selected options of each filter as chips', async () => {
-    const [dataset] = KG_EXPLORER_SAMPLE_TYPE_OPTIONS;
+    const dataset = { label: KG_EXPLORER_SAMPLE_ITEMS[0].type };
     await setup({ filterSelections: { type: [dataset] } });
 
     const chips = await screen.findByRole('list', { name: 'Active filters' });
@@ -128,7 +127,7 @@ describe('KgExplorerTableView', () => {
   });
 
   it('updates the filter selections when a chip is removed', async () => {
-    const [dataset] = KG_EXPLORER_SAMPLE_TYPE_OPTIONS;
+    const dataset = { label: KG_EXPLORER_SAMPLE_ITEMS[0].type };
     const { user, fixture } = await setup({ filterSelections: { type: [dataset] } });
 
     await user.click(await screen.findByRole('button', { name: `Remove ${dataset.label}` }));
@@ -137,7 +136,7 @@ describe('KgExplorerTableView', () => {
   });
 
   it('resets the filter selections when the results are cleared', async () => {
-    const [dataset] = KG_EXPLORER_SAMPLE_TYPE_OPTIONS;
+    const dataset = { label: KG_EXPLORER_SAMPLE_ITEMS[0].type };
     const { user, fixture } = await setup({
       items: [],
       filterSelections: { type: [dataset] },
@@ -146,6 +145,46 @@ describe('KgExplorerTableView', () => {
     await user.click(await screen.findByRole('button', { name: 'Clear filters' }));
 
     expect(fixture.componentInstance.filterSelections()).toEqual({});
+  });
+
+  it('shows only the rows that match the filter selections', async () => {
+    const [first, second] = KG_EXPLORER_SAMPLE_ITEMS;
+    const { rerender } = await setup({ filterSelections: { type: [{ label: first.type }] } });
+
+    expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: first.title })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: second.title })).not.toBeInTheDocument();
+
+    await rerender({ inputs: { filterSelections: {} }, partialUpdate: true });
+    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
+  });
+
+  it('suggests only rows that match the filter selections', async () => {
+    const [first] = KG_EXPLORER_SAMPLE_ITEMS;
+    const { user } = await setup({ filterSelections: { type: [{ label: first.type }] } });
+
+    await user.type(screen.getByRole('combobox', { name: 'Search' }), 'dolor');
+
+    const options = await screen.findAllByRole('option');
+    expect(options).toHaveLength(1);
+    expect(options[0]).toHaveTextContent(first.title);
+  });
+
+  it('derives the options of a filter from the items', async () => {
+    const { user } = await setup();
+
+    await user.click(await screen.findByRole('button', { name: 'Type' }));
+
+    expect(await screen.findByRole('option', { name: new RegExp(KG_EXPLORER_SAMPLE_ITEMS[1].type) })).toBeVisible();
+  });
+
+  it('leaves filters without a field to the consumer', async () => {
+    await setup({
+      filters: [{ id: 'type', label: 'Type', options: [{ label: 'Dataset' }] }],
+      filterSelections: { type: [{ label: 'Dataset' }] },
+    });
+
+    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
   });
 
   it('opens the filter drawer through the filtersOpen model below the large breakpoint', async () => {

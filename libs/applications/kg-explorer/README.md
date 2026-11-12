@@ -65,8 +65,30 @@ Give the table view a height (for example, fill the page below your header) and 
 
 - `items` takes any row type, and `columns` (required) sets which properties the table shows. There are no built-in default columns.
 - Build columns with the generic helpers, which apply the Figma column widths and cell types: `kgExplorerLinkColumn(name, prop, { labelProp | labelFn | label })`, `kgExplorerTextColumn`, `kgExplorerChipColumn` (one chip per array value, unsortable), `kgExplorerNumberColumn`, and `kgExplorerDateColumn`. Each takes optional `TableColumn` overrides as its last argument, and you can mix in plain `TableColumn` objects. Create the array once and reuse it, because the table caches cell templates by column identity.
-- `filters` takes `KgExplorerFilter` definitions (`id`, `label`, `options`, and optional `searchDisabled` and `count`). `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections and the search term.
-- The table view does not filter `items` itself: pass only the rows that match `filterSelections`.
+- `filters` takes `KgExplorerFilter` definitions, and `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections and the search term.
+
+## Filters
+
+```ts
+filters: KgExplorerFilter<Dataset>[] = [
+  { id: 'organ', label: 'Organ', field: 'organ' },
+  { id: 'size', label: 'Size', options: SIZE_OPTIONS, matches: (row, selected) => selected.some((size) => inRange(row, size)) },
+];
+```
+
+| Property         | Description                                                                                                       |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `id`, `label`    | Key of the filter in `filterSelections`, and the name on its button.                                              |
+| `field`          | Row key, or function returning a row's value or values. A row matches when it has the label of a selected option. |
+| `matches`        | `(row, selected) => boolean`, used instead of the `field` comparison.                                             |
+| `options`        | Options of the filter. When omitted, the distinct `field` values of `items` are listed with their row counts.     |
+| `searchDisabled` | Hides the search field of the filter's list.                                                                      |
+| `count`          | Number shown by the filter's counter. Defaults to the number of options.                                          |
+
+- A row is shown when it matches every filter that has a selection; within one filter, any selected option is enough.
+- Filtering is applied by the search after the index is built, so changing a selection does not rebuild the index, and suggestions only come from rows that pass the filters. "Viewing X of Y" counts against all `items`.
+- Derived option counts are the number of `items` with that value. They do not change with the search term or other filters.
+- A filter without `field` and `matches` does not narrow the rows. Read `filterSelections` and pass the matching `items` yourself, for example when filtering on a server.
 
 ## Inputs and outputs
 

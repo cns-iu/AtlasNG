@@ -80,6 +80,16 @@ describe('KgExplorerResultsTable', () => {
     expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
   });
 
+  it('shows and suggests only rows that pass the row filter', async () => {
+    const { user } = await setup({ rowFilter: (row: TestRow) => row.tags.includes('Heart') });
+
+    expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
+    await user.type(screen.getByRole('combobox', { name: 'Search' }), 'atlas');
+
+    expect(await screen.findAllByRole('option')).toHaveLength(1);
+    expect(screen.getByRole('option', { name: 'Heart atlas' })).toBeInTheDocument();
+  });
+
   it('suggests matching rows and applies a picked suggestion', async () => {
     const { user } = await setup();
 

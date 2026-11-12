@@ -8,7 +8,7 @@
     (openedChange)="this.filtersOpen.set($event)"
   >
     <div class="ang-kg-explorer-table-view--filters">
-      @for (filter of filters(); track filter.id) {
+      @for (filter of resolvedFilters(); track filter.id) {
         <ang-multi-select-filter
           [label]="filter.label"
           [options]="filter.options"
@@ -25,6 +25,7 @@
     <ang-kg-explorer-results-table
       [rows]="items()"
       [columns]="resolvedColumns()"
+      [rowFilter]="rowFilter()"
       [searchFields]="options.searchFields"
       [searchSuggestionField]="searchSuggestionField()"
       [searchDisabled]="options.searchDisabled ?? false"

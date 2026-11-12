@@ -15,5 +15,10 @@ export {
   type KgExplorerDownloadCellConfig,
   type KgExplorerDownloadFormats,
 } from './lib/download-cell/download-cell';
-export type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from './lib/models';
+export type {
+  KgExplorerDownloadRequest,
+  KgExplorerFilter,
+  KgExplorerFilterField,
+  KgExplorerFilterSelections,
+} from './lib/models';
 export { KgExplorerTableView } from './lib/table-view/table-view';
