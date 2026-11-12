@@ -72,13 +72,26 @@ export interface SearchResult<T> {
   readonly matches?: readonly SearchMatch[];
 }
 
+/**
+ * Decides whether an item can be matched or suggested.
+ *
+ * @param item Item to test.
+ * @returns True to keep the item.
+ */
+export type SearchFilter<T> = (item: T) => boolean;
+
 /** A search request. */
 export interface SearchQuery<T> {
   /** Search term. An empty term matches every item. */
   readonly term: string;
   /** Restricts the search to these indexed field names. Defaults to every indexed field. */
   readonly fields?: readonly SearchFieldName<T>[];
-  /** Maximum number of results. Defaults to no limit. Applied after ordering. */
+  /**
+   * Only items for which this returns true can match. Applied before ordering and {@link limit}, so filtering does
+   * not require a new index. Engines must honour it.
+   */
+  readonly filter?: SearchFilter<T>;
+  /** Maximum number of results. Defaults to no limit. Applied after filtering and ordering. */
   readonly limit?: number;
   /** Order of the results. Defaults to `'rank'`. */
   readonly order?: SearchOrder;
@@ -87,7 +100,10 @@ export interface SearchQuery<T> {
 /** Search results, returned synchronously or asynchronously. */
 export type SearchResponse<T> = readonly T[] | PromiseLike<readonly T[]>;
 
-/** A searchable collection created by `SearchEngine.createIndex`. */
+/**
+ * A searchable collection created by `SearchEngine.createIndex`. Implementations must honour the item filter of
+ * {@link SearchQuery.filter} and {@link SearchIndex.suggest}.
+ */
 export interface SearchIndex<T> {
   /**
    * Searches the indexed items.
@@ -100,8 +116,9 @@ export interface SearchIndex<T> {
    * Suggests unique values of the indexed fields that match a term, for autocomplete.
    *
    * @param term Search term.
-   * @param limit Maximum number of suggestions.
+   * @param limit Maximum number of suggestions. Applied after filtering.
+   * @param filter Only values of items for which this returns true are suggested.
    * @returns Suggested values with their match ranges, ordered by relevance, synchronously or as a promise.
    */
-  suggest?(term: string, limit?: number): SearchResponse<SearchSuggestion>;
+  suggest?(term: string, limit?: number, filter?: SearchFilter<T>): SearchResponse<SearchSuggestion>;
 }

@@ -1,0 +1,32 @@
+name: Bug
+description: Report something that renders or behaves wrong.
+type: Bug
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What happens, and where? Include the package and version or the commit on `main`.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest template, story, or code that shows the problem.
+      placeholder: |
+        1. Render `<ang-... />` in a 300px container.
+        2. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: cause
+    attributes:
+      label: Cause and proposed fix
+      description: If known, the code at fault, with permalinks, and how to fix it.

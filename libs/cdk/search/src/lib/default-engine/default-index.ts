@@ -1,5 +1,6 @@
 import {
   SearchFieldSpec,
+  SearchFilter,
   SearchIndex,
   SearchMatch,
   SearchQuery,
@@ -44,7 +45,9 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
   search(query: SearchQuery<T>): SearchResult<T>[] {
     const term = normalizeSearchText(query.term);
     if (term === '') {
-      return this.#items.slice(0, query.limit).map(({ item }) => ({ item }));
+      const { filter } = query;
+      const items = filter ? this.#items.filter(({ item }) => filter(item)) : this.#items;
+      return items.slice(0, query.limit).map(({ item }) => ({ item }));
     }
 
     const words = term.split(/\s+/);
@@ -52,7 +55,7 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
     const results: RankedResult<T>[] = [];
 
     let state: SearchMatchState<T> | undefined;
-    for (const [value, field, item, index] of this.#iterateFieldValues(allowed)) {
+    for (const [value, field, item, index] of this.#iterateFieldValues(allowed, query.filter)) {
       if (state?.index !== index) {
         state?.addResultTo(results);
         state = new SearchMatchState(term, words, item, index);
@@ -73,9 +76,10 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
    *
    * @param term Search term.
    * @param limit Maximum number of suggestions.
+   * @param filter Only values of items for which this returns true are suggested.
    * @returns Suggested values with their match ranges, ordered by relevance, then by first appearance.
    */
-  suggest(term: string, limit?: number): SearchSuggestion[] {
+  suggest(term: string, limit?: number, filter?: SearchFilter<T>): SearchSuggestion[] {
     const normalized = normalizeSearchText(term);
     if (normalized === '') {
       return [];
@@ -83,7 +87,7 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
 
     const words = normalized.split(/\s+/);
     const suggestions = new Map<string, SearchSuggestion & { score: number }>();
-    for (const [value, field] of this.#iterateFieldValues()) {
+    for (const [value, field] of this.#iterateFieldValues(undefined, filter)) {
       const match = matchValue(value, normalized, words, field.weight);
       if (match.wordScores.every((score) => score > 0)) {
         const score = combineScores(match.wordScores, match.phraseScore);
@@ -107,13 +111,20 @@ export class DefaultSearchIndex<T> implements SearchIndex<T> {
    * Iterates over the values of every indexed field, item by item in their original order.
    *
    * @param allowed Names of the fields to include. Defaults to every field.
+   * @param filter Items to include, tested once per item. Defaults to every item.
    * @yields Each value with its field, item, and the item's position in the index.
    */
   *#iterateFieldValues(
     allowed?: Set<string>,
+    filter?: SearchFilter<T>,
   ): Generator<[value: IndexedValue, field: IndexedField, item: T, index: number]> {
     let index = 0;
     for (const { fields, item } of this.#items) {
+      if (filter && !filter(item)) {
+        index++;
+        continue;
+      }
+
       for (const field of fields) {
         if (allowed && !allowed.has(field.name)) {
           continue;
