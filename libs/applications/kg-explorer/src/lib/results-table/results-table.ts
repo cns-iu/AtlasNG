@@ -1,32 +1,20 @@
-import { booleanAttribute, Component, computed, inject, input, model, output, ViewEncapsulation } from '@angular/core';
+import { booleanAttribute, Component, computed, input, model, output, ViewEncapsulation } from '@angular/core';
+import { injectSearch, type SearchFieldSpec } from '@atlasng/cdk/search';
 import { EndOfResultsIndicator } from '@atlasng/design-system/indicators/end-of-results-indicator';
 import { NoResultsIndicator } from '@atlasng/design-system/indicators/no-results-indicator';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
-import { KG_EXPLORER_CONFIG } from '../config';
 import { KgExplorerResultsNavigation } from '../results-navigation/results-navigation';
-
-/**
- * Matches a row when any of its primitive or array values contains the search term.
- *
- * @param row Row to test.
- * @param term Lowercase, trimmed search term.
- * @returns Whether the row matches.
- */
-export function defaultKgExplorerSearch(row: Row, term: string): boolean {
-  return Object.values(row).some((value) => {
-    const values: unknown[] = Array.isArray(value) ? value : [value];
-    return values.some(
-      (item) => (typeof item === 'string' || typeof item === 'number') && String(item).toLowerCase().includes(term),
-    );
-  });
-}
 
 /**
  * Searchable, sortable results table of the knowledge graph explorer with a
  * search bar, results counter, and end-of-results indicator. It fills its
  * container's height; the table, indicator, and table end content scroll
  * below the search bar.
+ *
+ * Rows are searched with the injected `SearchEngine` and `SEARCH_CONFIG`, so
+ * consumers can swap the engine or change the suggestion limit with `provideSearch`.
+ * Matching rows keep the order of `rows`.
  *
  * Projected content, such as a footer, is rendered at the end of the table.
  */
@@ -53,14 +41,11 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Currently applied column sorts. */
   readonly sorts = model<SortPropDir[]>([]);
 
-  /**
-   * Decides whether a row matches the lowercase, trimmed search term.
-   * Defaults to {@link defaultKgExplorerSearch}.
-   */
-  readonly searchFn = input<(row: TRow, term: string) => boolean>(defaultKgExplorerSearch);
+  /** Fields to search. Defaults to every string, number, and array of strings or numbers of a row. */
+  readonly searchFields = input<readonly SearchFieldSpec<TRow>[]>();
 
-  /** Derives the autocomplete suggestion for a row; omit to disable suggestions. */
-  readonly searchLabelFn = input<(row: TRow) => string>();
+  /** Field whose values are suggested below the search field; omit to disable suggestions. */
+  readonly searchSuggestionField = input<SearchFieldSpec<TRow>>();
 
   /** Label of the search field. */
   readonly searchLabel = input('Search');
@@ -77,36 +62,22 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Emits when the user clears the results from the no-results indicator. */
   readonly clearResults = output<void>();
 
-  /** Explorer configuration. */
-  private readonly config = inject(KG_EXPLORER_CONFIG);
-
-  /** Normalized search term. */
-  protected readonly term = computed(() => this.search().trim().toLowerCase());
-
-  /** Rows matching the current search term. */
-  protected readonly filteredRows = computed(() => {
-    const term = this.term();
-    const rows = this.rows();
-    if (!term) {
-      return rows;
-    }
-
-    const searchFn = this.searchFn();
-    return rows.filter((row) => searchFn(row, term));
+  /** Search over the rows, in their original order. */
+  readonly #search = injectSearch<TRow>({
+    items: this.rows,
+    term: this.search,
+    fields: this.searchFields,
+    suggestionField: this.searchSuggestionField,
+    order: 'source',
   });
 
-  /** Unique autocomplete suggestions for the current search term. */
-  protected readonly suggestions = computed(() => {
-    const labelFn = this.searchLabelFn();
-    const term = this.term();
-    if (!labelFn || !term) {
-      return [];
-    }
+  /** Rows matching the current search term; empty if an asynchronous engine fails. */
+  protected readonly results = computed(() => [...this.#search.items()]);
 
-    const labels = this.rows()
-      .map(labelFn)
-      .filter((label) => label.toLowerCase().includes(term));
-    return [...new Set(labels)].slice(0, this.config.maxSuggestions);
+  /** Autocomplete suggestions for the current search term; empty if an asynchronous engine fails. */
+  protected readonly suggestions = computed(() => {
+    const { suggestions } = this.#search;
+    return suggestions.hasValue() ? suggestions.value() : [];
   });
 
   /** Clears the search term and notifies listeners. */

@@ -1,32 +1,17 @@
 import { booleanAttribute, Component, input, model, ViewEncapsulation } from '@angular/core';
-import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
-import { MatIconButton } from '@angular/material/button';
-import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
-import { MatIcon } from '@angular/material/icon';
-import { MatInput } from '@angular/material/input';
+import type { SearchSuggestion } from '@atlasng/cdk/search';
 import { ResultsIndicator } from '@atlasng/design-system/indicators/results-indicator';
+import { SearchField } from '@atlasng/design-system/search-field';
 
 /**
- * Navigation bar above the knowledge graph explorer results: a search field
+ * Navigation bar above the knowledge graph explorer results: an `ang-search-field`
  * with optional autocomplete suggestions and a "Viewing X of Y" results counter.
  *
  * It only displays state; the parent filters the rows and computes the suggestions.
  */
 @Component({
   selector: 'ang-kg-explorer-results-navigation',
-  imports: [
-    MatAutocomplete,
-    MatAutocompleteTrigger,
-    MatFormField,
-    MatIcon,
-    MatIconButton,
-    MatInput,
-    MatLabel,
-    MatOption,
-    MatPrefix,
-    MatSuffix,
-    ResultsIndicator,
-  ],
+  imports: [ResultsIndicator, SearchField],
   templateUrl: './results-navigation.html',
   styleUrl: './results-navigation.scss',
   encapsulation: ViewEncapsulation.None,
@@ -41,11 +26,8 @@ export class KgExplorerResultsNavigation {
   /** Label of the search field. */
   readonly searchLabel = input('Search');
 
-  /** Autocomplete suggestions for the current search term. */
-  readonly suggestions = input<readonly string[]>([]);
-
-  /** Disables the autocomplete panel, for example when no suggestions can be derived. */
-  readonly suggestionsDisabled = input(false, { transform: booleanAttribute });
+  /** Autocomplete suggestions for the current search term; suggestions with ranges are highlighted. */
+  readonly suggestions = input<readonly (string | SearchSuggestion)[]>([]);
 
   /** Number of results currently shown. */
   readonly count = input(0);

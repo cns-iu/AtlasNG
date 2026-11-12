@@ -1,27 +1,26 @@
 import { booleanAttribute, Component, computed, effect, input, model, output, untracked } from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import { watchBreakpoint } from '@atlasng/cdk';
+import type { SearchFieldDefinition, SearchFieldSpec } from '@atlasng/cdk/search';
 import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
-import { defaultKgExplorerSearch, KgExplorerResultsTable } from '../results-table/results-table';
+import { KgExplorerResultsTable } from '../results-table/results-table';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
 
-/**
- * Derives the autocomplete suggestion for a row from its `title` property.
- *
- * @param row Row to derive the suggestion from.
- * @returns The row title, or an empty string when the row has none.
- */
-function defaultSearchLabel(row: Row): string {
-  const title: unknown = row['title'];
-  return typeof title === 'string' ? title : '';
-}
+/** Suggests the `title` of each row when it is a string. */
+const TITLE_SUGGESTION_FIELD: SearchFieldDefinition<Row> = {
+  name: 'title',
+  get: (row) => {
+    const title: unknown = row['title'];
+    return typeof title === 'string' ? title : undefined;
+  },
+};
 
 /**
  * White-label knowledge graph explorer in table view with a filter menu, a
@@ -75,11 +74,11 @@ export class KgExplorerTableView<TRow extends Row = Row> {
    */
   readonly filtersOpen = model(false);
 
-  /** Decides whether a row matches the lowercase, trimmed search term. */
-  readonly searchFn = input<(row: TRow, term: string) => boolean>(defaultKgExplorerSearch);
+  /** Fields to search. Defaults to every string, number, and array of strings or numbers of a row. */
+  readonly searchFields = input<readonly SearchFieldSpec<TRow>[]>();
 
-  /** Derives the autocomplete suggestion for a row. Defaults to the row's `title`. */
-  readonly searchLabelFn = input<(row: TRow) => string>(defaultSearchLabel);
+  /** Field whose values are suggested below the search field. Defaults to the row's `title`; `undefined` disables suggestions. */
+  readonly searchSuggestionField = input<SearchFieldSpec<TRow> | undefined>(TITLE_SUGGESTION_FIELD);
 
   /** Disables the table search field. */
   readonly searchDisabled = input(false, { transform: booleanAttribute });

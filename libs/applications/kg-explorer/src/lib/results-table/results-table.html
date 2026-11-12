@@ -1,4 +1,4 @@
-@let results = filteredRows();
+@let matches = results();
 
 <ang-scroll-area class="ang-kg-explorer-results-table--scroll-area" orientation="vertical">
   <div class="ang-kg-explorer-results-table--container">
@@ -7,8 +7,7 @@
         class="ang-kg-explorer-results-table--navigation"
         [searchLabel]="searchLabel()"
         [suggestions]="suggestions()"
-        [suggestionsDisabled]="!searchLabelFn()"
-        [count]="results.length"
+        [count]="matches.length"
         [total]="rows().length"
         [searchDisabled]="searchDisabled()"
         [resultsCounterDisabled]="resultsCounterDisabled()"
@@ -19,16 +18,16 @@
     <ang-table
       class="ang-kg-explorer-results-table--table"
       appearance="none"
-      [class.no-results]="results.length === 0"
-      [rows]="results"
+      [class.no-results]="matches.length === 0"
+      [rows]="matches"
       [columns]="columns()"
       [(sorts)]="sorts"
     >
       <ang-no-results-indicator class="ang-kg-explorer-results-table--empty" empty-content (clear)="clear()" />
     </ang-table>
 
-    @if (!endOfResultsDisabled() && results.length > 0) {
-      <ang-end-of-results-indicator class="ang-kg-explorer-results-table--end" [count]="results.length" />
+    @if (!endOfResultsDisabled() && matches.length > 0) {
+      <ang-end-of-results-indicator class="ang-kg-explorer-results-table--end" [count]="matches.length" />
     }
 
     <ng-content />

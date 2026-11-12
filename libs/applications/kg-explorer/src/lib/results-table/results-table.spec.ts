@@ -4,8 +4,8 @@ import { TextCellDefinition } from '@atlasng/design-system/table/columns';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { provideKgExplorerConfig } from '../config';
-import { defaultKgExplorerSearch, KgExplorerResultsTable } from './results-table';
+import { provideSearch } from '@atlasng/cdk/search';
+import { KgExplorerResultsTable } from './results-table';
 
 interface TestRow {
   title: string;
@@ -45,7 +45,7 @@ describe('KgExplorerResultsTable', () => {
     const user = userEvent.setup();
     const clearResults = vi.fn();
     const result = await render(KgExplorerResultsTable<TestRow>, {
-      inputs: { rows: ROWS, columns: COLUMNS, searchLabelFn: (row: TestRow) => row.title, ...inputs },
+      inputs: { rows: ROWS, columns: COLUMNS, searchSuggestionField: 'title', ...inputs },
       on: { clearResults },
     });
 
@@ -61,13 +61,23 @@ describe('KgExplorerResultsTable', () => {
   });
 
   it('filters rows by the search term and updates the counter', async () => {
-    const { user } = await setup({ searchLabelFn: undefined });
+    const { user } = await setup({ searchSuggestionField: undefined });
 
-    await user.type(screen.getByRole('searchbox', { name: 'Search' }), 'kidney');
+    await user.type(screen.getByRole('combobox', { name: 'Search' }), 'kidney');
+
+    expect(screen.queryByRole('option')).not.toBeInTheDocument();
 
     expect(screen.getByText('Viewing 2 of 3')).toBeInTheDocument();
     expect(await screen.findByText('Kidney atlas')).toBeInTheDocument();
     expect(screen.queryByText('Heart atlas')).not.toBeInTheDocument();
+  });
+
+  it('searches only the given fields', async () => {
+    const { user } = await setup({ searchFields: ['title'] });
+
+    await user.type(screen.getByRole('combobox', { name: 'Search' }), 'kidney');
+
+    expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
   });
 
   it('suggests matching rows and applies a picked suggestion', async () => {
@@ -84,8 +94,8 @@ describe('KgExplorerResultsTable', () => {
   it('limits the suggestions to the configured maximum', async () => {
     const user = userEvent.setup();
     await render(KgExplorerResultsTable<TestRow>, {
-      inputs: { rows: ROWS, columns: COLUMNS, searchLabelFn: (row: TestRow) => row.title },
-      providers: [provideKgExplorerConfig({ maxSuggestions: 1 })],
+      inputs: { rows: ROWS, columns: COLUMNS, searchSuggestionField: 'title' },
+      providers: [provideSearch({ suggestionLimit: 1 })],
     });
 
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'atlas');
@@ -144,14 +154,5 @@ describe('KgExplorerResultsTable table end slot', () => {
 
     expect(screen.queryByText('End of results')).not.toBeInTheDocument();
     expect(screen.getByText('Table footer')).toBeInTheDocument();
-  });
-});
-
-describe('defaultKgExplorerSearch', () => {
-  it('matches string, number, and array values', () => {
-    expect(defaultKgExplorerSearch({ title: 'Kidney atlas' }, 'kidney')).toBe(true);
-    expect(defaultKgExplorerSearch({ count: 1234 }, '123')).toBe(true);
-    expect(defaultKgExplorerSearch({ tags: ['Lung'] }, 'lung')).toBe(true);
-    expect(defaultKgExplorerSearch({ meta: { title: 'Kidney' } }, 'kidney')).toBe(false);
   });
 });
