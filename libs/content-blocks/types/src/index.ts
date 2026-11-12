@@ -1,6 +1,7 @@
 export { type ContentConfigSchema } from './lib/config-schema';
 export { type ContentDataSchema } from './lib/data-schema';
 export { type ContentDefinition } from './lib/definition';
+export { type ContentConfigOf, type ContentDataOf } from './lib/definition-output';
 export {
   CONTENT_DOCUMENT_VERSION,
   type ContentDataSource,

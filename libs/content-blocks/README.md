@@ -57,7 +57,7 @@ Zod or Valibot.
 import { DEFAULT_CONTENT, type ContentDefinition } from '@atlasng/content-blocks/types';
 import { passthroughSchema } from '@atlasng/content-blocks/utils';
 
-export const tableDefinition: ContentDefinition = {
+export const tableDefinition = {
   name: 'table',
   component: () => import('./table').then((m) => m.Table),
   config: { caption: z.string().optional() },
@@ -69,7 +69,7 @@ export const tableDefinition: ContentDefinition = {
   content: { footer: '[table-footer]', [DEFAULT_CONTENT]: 'footer' },
   placeholderComponent: TablePlaceholder,
   errorComponent: TableError,
-};
+} satisfies ContentDefinition;
 ```
 
 | Field                  | Purpose                                                                                                   |
@@ -94,6 +94,10 @@ export const tableDefinition: ContentDefinition = {
   error components the thrown value through `error`, when they declare those inputs.
 - **Unknown keys** in a node's config, data, or content, and keys without a component input, fail the node in dev mode.
   In prod mode they are skipped with a warning.
+- **Input types:** `ContentConfigOf<typeof tableDefinition>` and `ContentDataOf<typeof tableDefinition>` are the
+  validated config and data the definition binds, e.g. `{ caption?: string }` above, for typing the component's inputs.
+  Declare the definition with `satisfies ContentDefinition`, not a `: ContentDefinition` annotation, so its schema
+  types are kept.
 
 ## Data
 
