@@ -25,6 +25,9 @@ $config: (
     description-weight: token-utils.sys-token(body-medium-weight),
     description-tracking: token-utils.sys-token(body-medium-tracking),
     description-color: token-utils.sys-token(on-surface-variant),
+    highlight-background: token-utils.sys-token(primary-container),
+    highlight-color: token-utils.sys-token(on-primary-container),
+    highlight-radius: token-utils.sys-token(corner-extra-small),
   ),
 );
 

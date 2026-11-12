@@ -1,0 +1,20 @@
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'search-field',
+  tokens: (
+    highlight-background: transparent,
+    highlight-color: token-utils.sys-token(on-surface),
+    highlight-weight: token-utils.sys-token(label-large-weight-prominent),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
+
+// Returns a CSS variable for one of this component's tokens that falls back to its default value,
+// e.g. slot(primary) => var(--ang-<component>-primary, var(--mat-sys-primary))
+@function slot($token, $fallback: null) {
+  @return token-utils.slot($token, $config, $fallback);
+}
