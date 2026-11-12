@@ -4,7 +4,7 @@ export {
   kgExplorerLinkColumn,
   kgExplorerNumberColumn,
   kgExplorerTextColumn,
-} from './lib/columns';
+} from './lib/utils/columns';
 export {
   KG_EXPLORER_TABLE_VIEW_CONFIG,
   provideKgExplorerTableView,

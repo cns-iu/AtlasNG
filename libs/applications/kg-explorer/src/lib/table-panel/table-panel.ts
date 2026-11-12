@@ -1,10 +1,11 @@
-import { booleanAttribute, Component, computed, input, model, output, ViewEncapsulation } from '@angular/core';
-import { injectSearch, type SearchFieldSpec } from '@atlasng/cdk/search';
+import { Component, computed, input, model, output, ViewEncapsulation } from '@angular/core';
+import { injectSearch } from '@atlasng/cdk/search';
 import { EndOfResultsIndicator } from '@atlasng/design-system/indicators/end-of-results-indicator';
 import { NoResultsIndicator } from '@atlasng/design-system/indicators/no-results-indicator';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
-import { KgExplorerResultsNavigation } from '../results-navigation/results-navigation';
+import type { KgExplorerTableViewConfig } from '../config';
+import { KgExplorerTableToolbar } from '../table-toolbar/table-toolbar';
 
 /**
  * Searchable, sortable results table of the knowledge graph explorer with a
@@ -21,16 +22,16 @@ import { KgExplorerResultsNavigation } from '../results-navigation/results-navig
  * Projected content, such as a footer, is rendered at the end of the table.
  */
 @Component({
-  selector: 'ang-kg-explorer-results-table',
-  imports: [EndOfResultsIndicator, KgExplorerResultsNavigation, NoResultsIndicator, ScrollArea, Table],
-  templateUrl: './results-table.html',
-  styleUrl: './results-table.scss',
+  selector: 'ang-kg-explorer-table-panel',
+  imports: [EndOfResultsIndicator, KgExplorerTableToolbar, NoResultsIndicator, ScrollArea, Table],
+  templateUrl: './table-panel.html',
+  styleUrl: './table-panel.scss',
   encapsulation: ViewEncapsulation.None,
   host: {
-    class: 'ang-kg-explorer-results-table',
+    class: 'ang-kg-explorer-table-panel',
   },
 })
-export class KgExplorerResultsTable<TRow extends Row = Row> {
+export class KgExplorerTablePanel<TRow extends Row = Row> {
   /** All rows available to the table before searching. */
   readonly rows = input.required<TRow[]>();
 
@@ -43,26 +44,11 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   /** Currently applied column sorts. */
   readonly sorts = model<SortPropDir[]>([]);
 
-  /** Fields to search. Defaults to every string, number, and array of strings or numbers of a row. */
-  readonly searchFields = input<readonly SearchFieldSpec<TRow>[]>();
-
-  /** Field whose values are suggested below the search field; omit to disable suggestions. */
-  readonly searchSuggestionField = input<SearchFieldSpec<TRow>>();
+  /** Resolved table view configuration: search fields, suggestions, and which parts are shown. */
+  readonly config = input.required<KgExplorerTableViewConfig<TRow>>();
 
   /** Decides which rows can be shown, for example from filter selections. Reuse the function while it is unchanged. */
   readonly rowFilter = input<(row: TRow) => boolean>();
-
-  /** Label of the search field. */
-  readonly searchLabel = input('Search');
-
-  /** Disables the search field. */
-  readonly searchDisabled = input(false, { transform: booleanAttribute });
-
-  /** Disables the "Viewing X of Y" results counter. */
-  readonly resultsCounterDisabled = input(false, { transform: booleanAttribute });
-
-  /** Disables the end-of-results indicator below the table. */
-  readonly endOfResultsDisabled = input(false, { transform: booleanAttribute });
 
   /** Emits when the user clears the results from the no-results indicator. */
   readonly clearResults = output<void>();
@@ -71,9 +57,12 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
   readonly #search = injectSearch<TRow>({
     items: this.rows,
     term: this.search,
-    fields: this.searchFields,
+    fields: () => this.config().searchFields,
     filter: this.rowFilter,
-    suggestionField: this.searchSuggestionField,
+    suggestionField: () => {
+      const { searchSuggestionField, searchSuggestionsDisabled } = this.config();
+      return searchSuggestionsDisabled ? undefined : searchSuggestionField;
+    },
     order: 'source',
   });
 

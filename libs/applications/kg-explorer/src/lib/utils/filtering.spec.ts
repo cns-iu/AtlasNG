@@ -1,5 +1,5 @@
 import { createRowFilter, deriveFilterOptions } from './filtering';
-import type { KgExplorerFilter } from './models';
+import type { KgExplorerFilter } from '../models';
 
 interface TestRow {
   [key: string]: unknown;

@@ -1,30 +1,28 @@
-import { booleanAttribute, Component, input, model, ViewEncapsulation } from '@angular/core';
+import { Component, input, model, ViewEncapsulation } from '@angular/core';
 import type { SearchSuggestion } from '@atlasng/cdk/search';
 import { ResultsIndicator } from '@atlasng/design-system/indicators/results-indicator';
 import { SearchField } from '@atlasng/design-system/search-field';
+import type { KgExplorerTableViewConfig } from '../config';
 
 /**
- * Navigation bar above the knowledge graph explorer results: an `ang-search-field`
+ * Toolbar above the knowledge graph explorer table: an `ang-search-field`
  * with optional autocomplete suggestions and a "Viewing X of Y" results counter.
  *
  * It only displays state; the parent filters the rows and computes the suggestions.
  */
 @Component({
-  selector: 'ang-kg-explorer-results-navigation',
+  selector: 'ang-kg-explorer-table-toolbar',
   imports: [ResultsIndicator, SearchField],
-  templateUrl: './results-navigation.html',
-  styleUrl: './results-navigation.scss',
+  templateUrl: './table-toolbar.html',
+  styleUrl: './table-toolbar.scss',
   encapsulation: ViewEncapsulation.None,
   host: {
-    class: 'ang-kg-explorer-results-navigation',
+    class: 'ang-kg-explorer-table-toolbar',
   },
 })
-export class KgExplorerResultsNavigation {
+export class KgExplorerTableToolbar {
   /** Current search term. */
   readonly search = model('');
-
-  /** Label of the search field. */
-  readonly searchLabel = input('Search');
 
   /** Autocomplete suggestions for the current search term; suggestions with ranges are highlighted. */
   readonly suggestions = input<readonly (string | SearchSuggestion)[]>([]);
@@ -35,9 +33,6 @@ export class KgExplorerResultsNavigation {
   /** Total number of results before searching. */
   readonly total = input(0);
 
-  /** Disables the search field. */
-  readonly searchDisabled = input(false, { transform: booleanAttribute });
-
-  /** Disables the "Viewing X of Y" results counter. */
-  readonly resultsCounterDisabled = input(false, { transform: booleanAttribute });
+  /** Table view configuration; `searchDisabled` and `resultsCounterDisabled` hide the parts of the toolbar. */
+  readonly config = input<Pick<KgExplorerTableViewConfig, 'searchDisabled' | 'resultsCounterDisabled'>>({});
 }

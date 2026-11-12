@@ -1,6 +1,6 @@
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row } from '@atlasng/design-system/table';
-import type { KgExplorerFilter, KgExplorerFilterField, KgExplorerFilterSelections } from './models';
+import type { KgExplorerFilter, KgExplorerFilterField, KgExplorerFilterSelections } from '../models';
 
 /**
  * Reads the filter values of a row. Strings and numbers are used as they are,
@@ -10,7 +10,7 @@ import type { KgExplorerFilter, KgExplorerFilterField, KgExplorerFilterSelection
  * @param field Row key or function providing the values.
  * @returns The values of the row as strings.
  */
-function filterValuesOf<TRow extends Row>(row: TRow, field: KgExplorerFilterField<TRow>): string[] {
+function filterValuesFor<TRow extends Row>(row: TRow, field: KgExplorerFilterField<TRow>): string[] {
   const value: unknown = typeof field === 'function' ? field(row) : row[field];
   const values: readonly unknown[] = Array.isArray(value) ? value : [value];
   return values.filter((item) => typeof item === 'string' || typeof item === 'number').map(String);
@@ -41,7 +41,7 @@ export function createRowFilter<TRow extends Row>(
       predicates.push((row) => matches(row, selected));
     } else if (field !== undefined) {
       const labels = new Set(selected.map((option) => option.label));
-      predicates.push((row) => filterValuesOf(row, field).some((value) => labels.has(value)));
+      predicates.push((row) => filterValuesFor(row, field).some((value) => labels.has(value)));
     }
   }
 
@@ -61,7 +61,7 @@ export function deriveFilterOptions<TRow extends Row>(
 ): SearchListOption[] {
   const counts = new Map<string, number>();
   for (const item of items) {
-    for (const value of new Set(filterValuesOf(item, field))) {
+    for (const value of new Set(filterValuesFor(item, field))) {
       counts.set(value, (counts.get(value) ?? 0) + 1);
     }
   }

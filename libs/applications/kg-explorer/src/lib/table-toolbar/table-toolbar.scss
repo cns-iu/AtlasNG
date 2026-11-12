@@ -1,6 +1,6 @@
 @use 'internal/token-utils';
 
-.ang-kg-explorer-results-navigation {
+.ang-kg-explorer-table-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -9,7 +9,7 @@
   background-color: token-utils.sys-slot(surface);
   width: 100%;
 
-  .ang-kg-explorer-results-navigation--search {
+  .ang-kg-explorer-table-toolbar--search {
     flex: 1;
     min-width: 18rem;
     max-width: 36.25rem;

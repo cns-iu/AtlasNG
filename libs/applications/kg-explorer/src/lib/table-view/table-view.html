@@ -1,5 +1,3 @@
-@let options = resolvedConfig();
-
 <mat-sidenav-container class="ang-kg-explorer-table-view--container">
   <mat-sidenav
     class="ang-kg-explorer-table-view--sidenav"
@@ -14,7 +12,7 @@
           [options]="filter.options"
           [count]="filter.count"
           [searchDisabled]="filter.searchDisabled ?? false"
-          [selected]="selectionOf(filter)"
+          [selected]="selectionFor(filter)"
           (selectedChange)="select(filter, $event)"
         />
       }
@@ -22,20 +20,16 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="ang-kg-explorer-table-view--content">
-    <ang-kg-explorer-results-table
+    <ang-kg-explorer-table-panel
       [rows]="items()"
       [columns]="resolvedColumns()"
       [rowFilter]="rowFilter()"
-      [searchFields]="options.searchFields"
-      [searchSuggestionField]="searchSuggestionField()"
-      [searchDisabled]="options.searchDisabled ?? false"
-      [resultsCounterDisabled]="options.resultsCounterDisabled ?? false"
-      [endOfResultsDisabled]="options.endOfResultsDisabled ?? false"
+      [config]="resolvedConfig()"
       [(search)]="search"
       [(sorts)]="sorts"
       (clearResults)="clearAllFilters()"
     >
       <ng-content />
-    </ang-kg-explorer-results-table>
+    </ang-kg-explorer-table-panel>
   </mat-sidenav-content>
 </mat-sidenav-container>

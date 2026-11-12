@@ -10,12 +10,12 @@
   }
 }
 
-.ang-kg-explorer-results-table {
+.ang-kg-explorer-table-panel {
   display: flex;
   flex-direction: column;
   height: 100%;
 
-  .ang-kg-explorer-results-table--container {
+  .ang-kg-explorer-table-panel--container {
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -24,7 +24,7 @@
     margin: 0 auto;
   }
 
-  .ang-kg-explorer-results-table--table {
+  .ang-kg-explorer-table-panel--table {
     padding-top: 0;
 
     @include table.overrides(
@@ -41,7 +41,7 @@
       )
     );
 
-    .ang-kg-explorer-results-table--empty {
+    .ang-kg-explorer-table-panel--empty {
       grid-column: 1 / -1;
       padding-block: 2.5rem;
     }
@@ -73,7 +73,7 @@
     }
   }
 
-  .ang-kg-explorer-results-table--end {
+  .ang-kg-explorer-table-panel--end {
     @include end-of-results-indicator.overrides(
       (
         background-color: token-utils.sys-slot(surface-container-low),

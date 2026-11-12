@@ -1,5 +1,5 @@
 <ng-template let-row="row" [angCellTemplateContext]="rowType">
-  @let formats = formatsOf(row);
+  @let formats = getFormats(row);
 
   @if (formats.length === 0) {
     <button

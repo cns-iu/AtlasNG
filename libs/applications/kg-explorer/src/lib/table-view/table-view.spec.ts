@@ -1,18 +1,54 @@
 import { BreakpointObserver, type BreakpointState } from '@angular/cdk/layout';
 import { Component, type Provider } from '@angular/core';
-import { CSV_FILE_FORMAT, JSON_FILE_FORMAT } from '@atlasng/design-system/version-control';
+import type { Row, TableColumn } from '@atlasng/design-system/table';
+import {
+  CSV_FILE_FORMAT,
+  JSON_FILE_FORMAT,
+  type VersionControlFileFormat,
+} from '@atlasng/design-system/version-control';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { BehaviorSubject } from 'rxjs';
 import { provideKgExplorerTableView } from '../config';
-import {
-  KG_EXPLORER_SAMPLE_COLUMNS,
-  KG_EXPLORER_SAMPLE_FILTERS,
-  KG_EXPLORER_SAMPLE_ITEMS,
-  kgExplorerSampleFormats,
-  type KgExplorerSampleItem,
-} from '../sample-data';
+import type { KgExplorerFilter } from '../models';
+import { kgExplorerLinkColumn, kgExplorerTextColumn } from '../utils/columns';
 import { KgExplorerTableView } from './table-view';
+
+interface TestItem extends Row {
+  title: string;
+  url: string;
+  type: string;
+  tags: string[];
+  formats: VersionControlFileFormat[];
+}
+
+const ITEMS: TestItem[] = [
+  {
+    title: 'Lorem Ipsum Dolor',
+    url: 'https://example.com/1',
+    type: 'Dataset',
+    tags: ['Kidney', 'Lung'],
+    formats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
+  },
+  {
+    title: 'Dolor Sit Amet',
+    url: 'https://example.com/2',
+    type: 'Collection',
+    tags: ['Skin'],
+    formats: [CSV_FILE_FORMAT],
+  },
+  { title: 'Lorem Consectetur', url: 'https://example.com/3', type: 'Ontology', tags: [], formats: [] },
+];
+
+const COLUMNS: TableColumn<TestItem>[] = [
+  kgExplorerLinkColumn('Title', 'url', { labelProp: 'title' }),
+  kgExplorerTextColumn('Type', 'type'),
+];
+
+const FILTERS: KgExplorerFilter<TestItem>[] = [
+  { id: 'type', label: 'Type', field: 'type', searchDisabled: true },
+  { id: 'organ', label: 'Organ', field: 'tags' },
+];
 
 @Component({
   imports: [KgExplorerTableView],
@@ -23,8 +59,8 @@ import { KgExplorerTableView } from './table-view';
   `,
 })
 class SlotHost {
-  readonly items = KG_EXPLORER_SAMPLE_ITEMS.slice(0, 3);
-  readonly columns = KG_EXPLORER_SAMPLE_COLUMNS;
+  readonly items = ITEMS;
+  readonly columns = COLUMNS;
 }
 
 describe('KgExplorerTableView', () => {
@@ -32,12 +68,12 @@ describe('KgExplorerTableView', () => {
     const user = userEvent.setup();
     const download = vi.fn();
     const state = new BehaviorSubject<BreakpointState>({ matches: docked, breakpoints: {} });
-    const result = await render(KgExplorerTableView<KgExplorerSampleItem>, {
+    const result = await render(KgExplorerTableView<TestItem>, {
       inputs: {
-        items: KG_EXPLORER_SAMPLE_ITEMS.slice(0, 3),
-        columns: KG_EXPLORER_SAMPLE_COLUMNS,
+        items: ITEMS,
+        columns: COLUMNS,
         config: { downloadFormats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT] },
-        filters: KG_EXPLORER_SAMPLE_FILTERS,
+        filters: FILTERS,
         ...inputs,
       },
       on: { download },
@@ -51,10 +87,7 @@ describe('KgExplorerTableView', () => {
     await setup();
 
     expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
-    expect(await screen.findByRole('link', { name: KG_EXPLORER_SAMPLE_ITEMS[0].title })).toHaveAttribute(
-      'href',
-      KG_EXPLORER_SAMPLE_ITEMS[0].url,
-    );
+    expect(await screen.findByRole('link', { name: ITEMS[0].title })).toHaveAttribute('href', ITEMS[0].url);
   });
 
   it('emits a download request for the picked row and format', async () => {
@@ -64,24 +97,24 @@ describe('KgExplorerTableView', () => {
     await user.click(button);
     await user.click(await screen.findByRole('menuitem', { name: new RegExp(CSV_FILE_FORMAT.label) }));
 
-    expect(download).toHaveBeenCalledWith({ item: KG_EXPLORER_SAMPLE_ITEMS[0], format: CSV_FILE_FORMAT });
+    expect(download).toHaveBeenCalledWith({ item: ITEMS[0], format: CSV_FILE_FORMAT });
   });
 
   it('has no download column without download formats', async () => {
     await setup({ config: {} });
 
-    expect(await screen.findByRole('link', { name: KG_EXPLORER_SAMPLE_ITEMS[0].title })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: ITEMS[0].title })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /download/i })).not.toBeInTheDocument();
   });
 
   it('offers the download formats of each row', async () => {
-    const { user, download } = await setup({ config: { downloadFormats: kgExplorerSampleFormats } });
+    const { user, download } = await setup({ config: { downloadFormats: (item: TestItem) => item.formats } });
 
     expect(await screen.findByRole('button', { name: 'Choose download format' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'No downloads available' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: `Download ${CSV_FILE_FORMAT.label}` }));
 
-    expect(download).toHaveBeenCalledWith({ item: KG_EXPLORER_SAMPLE_ITEMS[1], format: CSV_FILE_FORMAT });
+    expect(download).toHaveBeenCalledWith({ item: ITEMS[1], format: CSV_FILE_FORMAT });
   });
 
   it('uses the provided configuration as defaults', async () => {
@@ -119,7 +152,7 @@ describe('KgExplorerTableView', () => {
   });
 
   it('shows the selected options of each filter as chips', async () => {
-    const dataset = { label: KG_EXPLORER_SAMPLE_ITEMS[0].type };
+    const dataset = { label: ITEMS[0].type };
     await setup({ filterSelections: { type: [dataset] } });
 
     const chips = await screen.findByRole('list', { name: 'Active filters' });
@@ -127,7 +160,7 @@ describe('KgExplorerTableView', () => {
   });
 
   it('updates the filter selections when a chip is removed', async () => {
-    const dataset = { label: KG_EXPLORER_SAMPLE_ITEMS[0].type };
+    const dataset = { label: ITEMS[0].type };
     const { user, fixture } = await setup({ filterSelections: { type: [dataset] } });
 
     await user.click(await screen.findByRole('button', { name: `Remove ${dataset.label}` }));
@@ -136,7 +169,7 @@ describe('KgExplorerTableView', () => {
   });
 
   it('resets the filter selections when the results are cleared', async () => {
-    const dataset = { label: KG_EXPLORER_SAMPLE_ITEMS[0].type };
+    const dataset = { label: ITEMS[0].type };
     const { user, fixture } = await setup({
       items: [],
       filterSelections: { type: [dataset] },
@@ -148,7 +181,7 @@ describe('KgExplorerTableView', () => {
   });
 
   it('shows only the rows that match the filter selections', async () => {
-    const [first, second] = KG_EXPLORER_SAMPLE_ITEMS;
+    const [first, second] = ITEMS;
     const { rerender } = await setup({ filterSelections: { type: [{ label: first.type }] } });
 
     expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
@@ -160,7 +193,7 @@ describe('KgExplorerTableView', () => {
   });
 
   it('suggests only rows that match the filter selections', async () => {
-    const [first] = KG_EXPLORER_SAMPLE_ITEMS;
+    const [first] = ITEMS;
     const { user } = await setup({ filterSelections: { type: [{ label: first.type }] } });
 
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'dolor');
@@ -175,7 +208,7 @@ describe('KgExplorerTableView', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Type' }));
 
-    expect(await screen.findByRole('option', { name: new RegExp(KG_EXPLORER_SAMPLE_ITEMS[1].type) })).toBeVisible();
+    expect(await screen.findByRole('option', { name: new RegExp(ITEMS[1].type) })).toBeVisible();
   });
 
   it('leaves filters without a field to the consumer', async () => {

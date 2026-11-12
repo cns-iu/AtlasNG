@@ -7,9 +7,9 @@ import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from '../config';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
-import { createRowFilter, deriveFilterOptions } from '../filtering';
+import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
-import { KgExplorerResultsTable } from '../results-table/results-table';
+import { KgExplorerTablePanel } from '../table-panel/table-panel';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
@@ -23,7 +23,7 @@ type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: Sear
  * @param value Object to copy.
  * @returns The properties of the object whose value is not `undefined`.
  */
-function definedValuesOf<T extends object>(value: T): Partial<T> {
+function pickDefined<T extends object>(value: T): Partial<T> {
   return Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== undefined)) as Partial<T>;
 }
 
@@ -45,7 +45,7 @@ function definedValuesOf<T extends object>(value: T): Partial<T> {
  */
 @Component({
   selector: 'ang-kg-explorer-table-view',
-  imports: [KgExplorerResultsTable, MatSidenav, MatSidenavContainer, MatSidenavContent, MultiSelectFilter],
+  imports: [KgExplorerTablePanel, MatSidenav, MatSidenavContainer, MatSidenavContent, MultiSelectFilter],
   templateUrl: './table-view.html',
   styleUrl: './table-view.scss',
   host: {
@@ -98,7 +98,7 @@ export class KgExplorerTableView<
   /** The {@link config} input merged over the provided defaults. */
   protected readonly resolvedConfig = computed((): KgExplorerTableViewConfig<TRow, TFormat> => ({
     ...this.defaults,
-    ...definedValuesOf(this.config()),
+    ...pickDefined(this.config()),
   }));
 
   /** Filters with the options of their search lists, derived from the items where a filter has none. */
@@ -129,12 +129,6 @@ export class KgExplorerTableView<
 
   /** Predicate for the rows matching the filter selections; `undefined` when no filter restricts the rows. */
   protected readonly rowFilter = computed(() => createRowFilter(this.filters(), this.filterSelections()));
-
-  /** Field suggested below the search field, or `undefined` when suggestions are disabled. */
-  protected readonly searchSuggestionField = computed(() => {
-    const { searchSuggestionField, searchSuggestionsDisabled } = this.resolvedConfig();
-    return searchSuggestionsDisabled ? undefined : searchSuggestionField;
-  });
 
   /** File formats of the download column, or `undefined` when there is no download column. */
   private readonly downloadFormats = computed(() => this.resolvedConfig().downloadFormats);
@@ -189,7 +183,7 @@ export class KgExplorerTableView<
    * @param filter Filter to look up.
    * @returns The selected options, or an empty selection when the filter has none.
    */
-  protected selectionOf(filter: KgExplorerFilter<TRow>): SearchListOption[] {
+  protected selectionFor(filter: KgExplorerFilter<TRow>): SearchListOption[] {
     return this.resolvedSelections()[filter.id] ?? NO_SELECTION;
   }
 

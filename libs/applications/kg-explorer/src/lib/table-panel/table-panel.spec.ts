@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
+import { provideSearch } from '@atlasng/cdk/search';
 import type { TableColumn } from '@atlasng/design-system/table';
 import { TextCellDefinition } from '@atlasng/design-system/table/columns';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-
-import { provideSearch } from '@atlasng/cdk/search';
-import { KgExplorerResultsTable } from './results-table';
+import { KgExplorerTablePanel } from './table-panel';
 
 interface TestRow {
   title: string;
@@ -21,31 +20,33 @@ const ROWS: TestRow[] = [
 const COLUMNS: TableColumn<TestRow>[] = [{ name: 'Title', prop: 'title', cellTemplate: TextCellDefinition }];
 
 @Component({
-  imports: [KgExplorerResultsTable],
+  imports: [KgExplorerTablePanel],
   template: `
-    <ang-kg-explorer-results-table
+    <ang-kg-explorer-table-panel
       [rows]="rows"
       [columns]="columns"
       [search]="search"
-      [endOfResultsDisabled]="!showEnd"
+      [config]="showEnd ? shown : hidden"
     >
       <footer>Table footer</footer>
-    </ang-kg-explorer-results-table>
+    </ang-kg-explorer-table-panel>
   `,
 })
 class TableEndHost {
   readonly rows = ROWS;
   readonly columns = COLUMNS;
+  readonly shown = {};
+  readonly hidden = { endOfResultsDisabled: true };
   search = '';
   showEnd = true;
 }
 
-describe('KgExplorerResultsTable', () => {
+describe('KgExplorerTablePanel', () => {
   async function setup(inputs: Record<string, unknown> = {}) {
     const user = userEvent.setup();
     const clearResults = vi.fn();
-    const result = await render(KgExplorerResultsTable<TestRow>, {
-      inputs: { rows: ROWS, columns: COLUMNS, searchSuggestionField: 'title', ...inputs },
+    const result = await render(KgExplorerTablePanel<TestRow>, {
+      inputs: { rows: ROWS, columns: COLUMNS, config: { searchSuggestionField: 'title' }, ...inputs },
       on: { clearResults },
     });
 
@@ -61,7 +62,7 @@ describe('KgExplorerResultsTable', () => {
   });
 
   it('filters rows by the search term and updates the counter', async () => {
-    const { user } = await setup({ searchSuggestionField: undefined });
+    const { user } = await setup({ config: { searchSuggestionField: 'title', searchSuggestionsDisabled: true } });
 
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'kidney');
 
@@ -73,7 +74,7 @@ describe('KgExplorerResultsTable', () => {
   });
 
   it('searches only the given fields', async () => {
-    const { user } = await setup({ searchFields: ['title'] });
+    const { user } = await setup({ config: { searchFields: ['title'] } });
 
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'kidney');
 
@@ -103,8 +104,8 @@ describe('KgExplorerResultsTable', () => {
 
   it('limits the suggestions to the configured maximum', async () => {
     const user = userEvent.setup();
-    await render(KgExplorerResultsTable<TestRow>, {
-      inputs: { rows: ROWS, columns: COLUMNS, searchSuggestionField: 'title' },
+    await render(KgExplorerTablePanel<TestRow>, {
+      inputs: { rows: ROWS, columns: COLUMNS, config: { searchSuggestionField: 'title' } },
       providers: [provideSearch({ suggestionLimit: 1 })],
     });
 
@@ -133,7 +134,7 @@ describe('KgExplorerResultsTable', () => {
   });
 
   it('hides sections with the boolean inputs', async () => {
-    await setup({ searchDisabled: true, resultsCounterDisabled: true, endOfResultsDisabled: true });
+    await setup({ config: { searchDisabled: true, resultsCounterDisabled: true, endOfResultsDisabled: true } });
 
     expect(screen.queryByRole('combobox', { name: 'Search' })).not.toBeInTheDocument();
     expect(screen.queryByText('Viewing 3 of 3')).not.toBeInTheDocument();
@@ -141,7 +142,7 @@ describe('KgExplorerResultsTable', () => {
   });
 });
 
-describe('KgExplorerResultsTable table end slot', () => {
+describe('KgExplorerTablePanel table end slot', () => {
   it('renders projected content after the end of results', async () => {
     await render(TableEndHost);
 

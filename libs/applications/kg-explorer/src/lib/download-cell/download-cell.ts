@@ -59,14 +59,20 @@ export class KgExplorerDownloadCellDefinition<
   TRow extends Row = Row,
   TFormat extends VersionControlFileFormat = VersionControlFileFormat,
 > extends CellDefinition<TRow, KgExplorerDownloadCellConfig<TRow, TFormat>> {
+  /** Resolves the file formats offered for a row. */
+  protected readonly getFormats = this.#createFormatsAccessor();
+
   /**
-   * Resolves the file formats offered for a row.
+   * Creates the accessor for the formats of a row from the configured formats.
    *
-   * @param row Row to resolve the formats of.
-   * @returns The formats of the row.
+   * @returns The configured function, or a function returning the configured list for every row.
    */
-  protected formatsOf(row: TRow): readonly TFormat[] {
-    const { formats } = this.config;
-    return typeof formats === 'function' ? formats(row) : formats;
+  #createFormatsAccessor(): (row: TRow) => readonly TFormat[] {
+    if (typeof this.config.formats === 'function') {
+      return this.config.formats;
+    }
+
+    const formats = this.config.formats;
+    return () => formats;
   }
 }

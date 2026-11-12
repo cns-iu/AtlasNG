@@ -37,7 +37,7 @@ export function kgExplorerLinkColumn<TRow extends Row = Row>(
   label: LinkCellConfig<TRow>,
   overrides: KgExplorerColumnOverrides<TRow> = {},
 ): TableColumn<TRow> {
-  const labelOf = (row: TRow): string =>
+  const labelFor = (row: TRow): string =>
     label.labelFn?.(row) ?? (label.labelProp !== undefined ? String(row[label.labelProp] ?? '') : (label.label ?? ''));
 
   return {
@@ -45,7 +45,7 @@ export function kgExplorerLinkColumn<TRow extends Row = Row>(
     prop,
     minWidth: 140,
     flexGrow: 1,
-    comparator: (_a: unknown, _b: unknown, rowA: TRow, rowB: TRow) => labelOf(rowA).localeCompare(labelOf(rowB)),
+    comparator: (_a: unknown, _b: unknown, rowA: TRow, rowB: TRow) => labelFor(rowA).localeCompare(labelFor(rowB)),
     cellTemplate: LinkCellDefinition,
     cellConfig: label,
     ...START_HEADER,

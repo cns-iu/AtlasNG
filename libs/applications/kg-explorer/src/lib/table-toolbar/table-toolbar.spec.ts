@@ -1,12 +1,11 @@
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { KgExplorerTableToolbar } from './table-toolbar';
 
-import { KgExplorerResultsNavigation } from './results-navigation';
-
-describe('KgExplorerResultsNavigation', () => {
+describe('KgExplorerTableToolbar', () => {
   async function setup(inputs: Record<string, unknown> = {}) {
     const user = userEvent.setup();
-    const result = await render(KgExplorerResultsNavigation, {
+    const result = await render(KgExplorerTableToolbar, {
       inputs: { count: 2, total: 3, suggestions: ['Heart atlas', 'Kidney atlas'], ...inputs },
     });
 
@@ -16,9 +15,9 @@ describe('KgExplorerResultsNavigation', () => {
   }
 
   it('shows the search field and the results counter', async () => {
-    await setup({ searchLabel: 'Find' });
+    await setup();
 
-    expect(screen.getByRole('combobox', { name: 'Find' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Search' })).toBeInTheDocument();
     expect(screen.getByText('Viewing 2 of 3')).toBeInTheDocument();
   });
 
@@ -37,7 +36,7 @@ describe('KgExplorerResultsNavigation', () => {
   });
 
   it('hides parts with the disabled inputs', async () => {
-    await setup({ searchDisabled: true, resultsCounterDisabled: true });
+    await setup({ config: { searchDisabled: true, resultsCounterDisabled: true } });
 
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(screen.queryByText('Viewing 2 of 3')).not.toBeInTheDocument();
