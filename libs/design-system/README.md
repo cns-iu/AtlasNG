@@ -43,8 +43,10 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/indicators/no-results-indicator`     | `NoResultsIndicator`                                                      |
 | `@atlasng/design-system/indicators/notice`                   | `Notice`                                                                  |
 | `@atlasng/design-system/indicators/results-indicator`        | `ResultsIndicator`                                                        |
+| `@atlasng/design-system/indicators/skeleton`                 | `Skeleton`                                                                |
 | `@atlasng/design-system/links/link-snippet`                  | `LinkSnippet`                                                             |
 | `@atlasng/design-system/links/text-link`                     | `TextLink`                                                                |
+| `@atlasng/design-system/search-field`                        | `SearchField`                                                             |
 | `@atlasng/design-system/search-list`                         | `SearchList`, `SearchListOption`                                          |
 | `@atlasng/design-system/snackbar`                            | `Snackbar`, `createSnackBarConfig`, `SnackBarConfig`, `SnackBarData`      |
 | `@atlasng/design-system/table`                               | `Table` and its column and template APIs                                  |
@@ -70,6 +72,7 @@ A few components with notable options:
 
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
+- **Skeleton:** stands in for loading content as a `text` line (default), `circle`, or `rect`. Size it from the surrounding styles, and set `lines` to stack several text lines. It is hidden from assistive technology, so set `aria-busy` on the loading region.
 
 ## Icons
 

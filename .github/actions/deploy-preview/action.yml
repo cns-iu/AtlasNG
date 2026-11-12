@@ -14,9 +14,9 @@ inputs:
     description: The site ID for the Netlify site to deploy to
     required: true
   netlify-filter:
-    description: The Netlify monorepo filter (site package name) to deploy
+    description: The Netlify monorepo filter (site package name) to deploy; empty passes no filter
     required: false
-    default: AtlasNG
+    default: ''
 
 runs:
   using: 'composite'

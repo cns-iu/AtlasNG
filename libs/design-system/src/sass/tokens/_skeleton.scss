@@ -1,0 +1,23 @@
+@use '../internal/sass-utils';
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'skeleton',
+  tokens: (
+    container-color: token-utils.sys-token(surface-container-highest),
+    shimmer-color: sass-utils.color-with-opacity(token-utils.sys-token(on-surface), 8%),
+    text-shape: token-utils.sys-token(corner-extra-small),
+    circle-shape: token-utils.sys-token(corner-full),
+    rect-shape: token-utils.sys-token(corner-medium),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
+
+// Returns a CSS variable for one of this component's tokens that falls back to its default value,
+// e.g. slot(primary) => var(--ang-<component>-primary, var(--mat-sys-primary))
+@function slot($token, $fallback: null) {
+  @return token-utils.slot($token, $config, $fallback);
+}
