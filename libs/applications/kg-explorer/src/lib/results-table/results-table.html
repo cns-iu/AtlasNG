@@ -31,6 +31,6 @@
       <ang-end-of-results-indicator class="ang-kg-explorer-results-table--end" [count]="results.length" />
     }
 
-    <ng-container [ngTemplateOutlet]="tableEndTemplate()" />
+    <ng-content />
   </div>
 </ang-scroll-area>

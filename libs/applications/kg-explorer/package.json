@@ -15,7 +15,6 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@angular/common": "^22.1.5",
     "@angular/core": "^22.1.5",
     "@angular/material": "^22.1.5",
     "@atlasng/cdk": "^0.0.11",

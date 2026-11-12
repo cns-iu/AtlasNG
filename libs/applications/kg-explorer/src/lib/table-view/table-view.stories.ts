@@ -10,7 +10,7 @@ import {
   KG_EXPLORER_SAMPLE_ITEMS,
   type KgExplorerSampleItem,
 } from '../sample-data';
-import { KgExplorerTableView, KgExplorerTableEndSlot } from './table-view';
+import { KgExplorerTableView } from './table-view';
 
 /**
  * Builds story props that narrow the rows down to the selected Type and Organ filter options. The
@@ -65,7 +65,7 @@ const meta: Meta<KgExplorerTableView<KgExplorerSampleItem>> = {
   title: 'Applications/KG Explorer',
   decorators: [
     moduleMetadata({
-      imports: [Footer, FooterAction, FooterLogo, KgExplorerTableEndSlot, MatButton],
+      imports: [Footer, FooterAction, FooterLogo, MatButton],
     }),
   ],
   parameters: {
@@ -87,7 +87,6 @@ const meta: Meta<KgExplorerTableView<KgExplorerSampleItem>> = {
   },
   argTypes: {
     download: { action: 'download' },
-    clearFilters: { action: 'clearFilters' },
   },
   render: (args) => ({
     props: filterProps(args),
@@ -171,13 +170,11 @@ export const WithFooter: Story = {
     template: explorerTemplate(
       args,
       `
-        <ng-template angKgExplorerTableEnd>
-          <ang-footer logoImage="" organization="Organization">
-            <ang-footer-logo>Logo</ang-footer-logo>
-            <a angFooterAction matButton>Privacy</a>
-            <a angFooterAction matButton>Accessibility</a>
-          </ang-footer>
-        </ng-template>
+        <ang-footer logoImage="" organization="Organization">
+          <ang-footer-logo>Logo</ang-footer-logo>
+          <a angFooterAction matButton>Privacy</a>
+          <a angFooterAction matButton>Accessibility</a>
+        </ang-footer>
       `,
     ),
   }),

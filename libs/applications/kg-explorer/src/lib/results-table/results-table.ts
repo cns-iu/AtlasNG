@@ -1,15 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
-import {
-  booleanAttribute,
-  Component,
-  computed,
-  inject,
-  input,
-  model,
-  output,
-  TemplateRef,
-  ViewEncapsulation,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, inject, input, model, output, ViewEncapsulation } from '@angular/core';
 import { EndOfResultsIndicator } from '@atlasng/design-system/indicators/end-of-results-indicator';
 import { NoResultsIndicator } from '@atlasng/design-system/indicators/no-results-indicator';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
@@ -39,18 +28,11 @@ export function defaultKgExplorerSearch(row: Row, term: string): boolean {
  * container's height; the table, indicator, and table end content scroll
  * below the search bar.
  *
- * Pass `tableEndTemplate` to add content such as a footer at the end of the table.
+ * Projected content, such as a footer, is rendered at the end of the table.
  */
 @Component({
   selector: 'ang-kg-explorer-results-table',
-  imports: [
-    EndOfResultsIndicator,
-    KgExplorerResultsNavigation,
-    NoResultsIndicator,
-    ScrollArea,
-    Table,
-    NgTemplateOutlet,
-  ],
+  imports: [EndOfResultsIndicator, KgExplorerResultsNavigation, NoResultsIndicator, ScrollArea, Table],
   templateUrl: './results-table.html',
   styleUrl: './results-table.scss',
   encapsulation: ViewEncapsulation.None,
@@ -94,9 +76,6 @@ export class KgExplorerResultsTable<TRow extends Row = Row> {
 
   /** Emits when the user clears the results from the no-results indicator. */
   readonly clearResults = output<void>();
-
-  /** Template rendered at the end of the table, such as a footer. */
-  readonly tableEndTemplate = input<TemplateRef<unknown>>();
 
   /** Explorer configuration. */
   private readonly config = inject(KG_EXPLORER_CONFIG);

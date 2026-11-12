@@ -28,9 +28,9 @@ const COLUMNS: TableColumn<TestRow>[] = [{ name: 'Title', prop: 'title', cellTem
       [columns]="columns"
       [search]="search"
       [endOfResultsDisabled]="!showEnd"
-      [tableEndTemplate]="tableEnd"
-    />
-    <ng-template #tableEnd><footer>Table footer</footer></ng-template>
+    >
+      <footer>Table footer</footer>
+    </ang-kg-explorer-results-table>
   `,
 })
 class TableEndHost {

@@ -28,10 +28,11 @@
       [searchDisabled]="searchDisabled()"
       [resultsCounterDisabled]="resultsCounterDisabled()"
       [endOfResultsDisabled]="endOfResultsDisabled()"
-      [tableEndTemplate]="tableEndSlot()?.template"
       [(search)]="search"
       [(sorts)]="sorts"
       (clearResults)="clearAllFilters()"
-    />
+    >
+      <ng-content />
+    </ang-kg-explorer-results-table>
   </mat-sidenav-content>
 </mat-sidenav-container>

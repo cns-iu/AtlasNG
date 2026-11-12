@@ -9,7 +9,7 @@ import {
 } from '@atlasng/design-system/table/columns';
 
 /** Column settings that override the defaults applied by a column builder. */
-export type KgExplorerColumnOverrides<TRow extends Row = Row> = Partial<TableColumn<TRow>>;
+type KgExplorerColumnOverrides<TRow extends Row = Row> = Partial<TableColumn<TRow>>;
 
 /** Start-aligned sortable text header. */
 const START_HEADER = { headerTemplate: TextHeaderCellDefinition, headerConfig: { align: 'start' } } as const;

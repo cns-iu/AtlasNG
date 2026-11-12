@@ -1,17 +1,4 @@
-import {
-  booleanAttribute,
-  Component,
-  computed,
-  contentChild,
-  Directive,
-  effect,
-  inject,
-  input,
-  model,
-  output,
-  TemplateRef,
-  untracked,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, effect, input, model, output, untracked } from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import { watchBreakpoint } from '@atlasng/cdk';
 import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
@@ -21,18 +8,6 @@ import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-sys
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { defaultKgExplorerSearch, KgExplorerResultsTable } from '../results-table/results-table';
-
-/**
- * Marks an `ng-template` rendered after the explorer table and its
- * end-of-results indicator, such as a footer. It scrolls with the table.
- */
-@Directive({
-  selector: 'ng-template[angKgExplorerTableEnd]',
-})
-export class KgExplorerTableEndSlot {
-  /** Template rendered at the end of the table. */
-  readonly template = inject(TemplateRef);
-}
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
@@ -57,8 +32,8 @@ function defaultSearchLabel(row: Row): string {
  * and pass the matching rows. The menu is docked from the Angular Material
  * large breakpoint up and becomes a drawer controlled by {@link filtersOpen}
  * on smaller screens.
- * Project an `<ng-template angKgExplorerTableEnd>` to add content such as a
- * footer at the end of the table.
+ * Projected content, such as a footer, is rendered at the end of the table and
+ * scrolls with it.
  */
 @Component({
   selector: 'ang-kg-explorer-table-view',
@@ -121,12 +96,6 @@ export class KgExplorerTableView<TRow extends Row = Row> {
   /** Emits when a user picks a download format for a row. */
   readonly download = output<KgExplorerDownloadRequest<TRow>>();
 
-  /** Emits when the user clears the results from the no-results indicator, after the filter selections are reset. */
-  readonly clearFilters = output<void>();
-
-  /** Projected template rendered at the end of the table. */
-  protected readonly tableEndSlot = contentChild(KgExplorerTableEndSlot);
-
   /** Whether the filter menu is docked beside the table. */
   protected readonly docked = watchBreakpoint('large');
 
@@ -183,9 +152,8 @@ export class KgExplorerTableView<TRow extends Row = Row> {
     this.filterSelections.update((selections) => ({ ...selections, [filter.id]: selected }));
   }
 
-  /** Resets the filter selections and notifies the consumer. */
+  /** Resets the filter selections. */
   protected clearAllFilters(): void {
     this.filterSelections.set({});
-    this.clearFilters.emit();
   }
 }

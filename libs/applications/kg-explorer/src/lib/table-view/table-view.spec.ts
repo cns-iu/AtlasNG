@@ -11,13 +11,13 @@ import {
   KG_EXPLORER_SAMPLE_TYPE_OPTIONS,
   type KgExplorerSampleItem,
 } from '../sample-data';
-import { KgExplorerTableView, KgExplorerTableEndSlot } from './table-view';
+import { KgExplorerTableView } from './table-view';
 
 @Component({
-  imports: [KgExplorerTableView, KgExplorerTableEndSlot],
+  imports: [KgExplorerTableView],
   template: `
     <ang-kg-explorer-table-view [items]="items" [columns]="columns">
-      <ng-template angKgExplorerTableEnd><p>Custom table footer</p></ng-template>
+      <p>Custom table footer</p>
     </ang-kg-explorer-table-view>
   `,
 })
@@ -30,7 +30,6 @@ describe('KgExplorerTableView', () => {
   async function setup(inputs: Record<string, unknown> = {}, docked = true) {
     const user = userEvent.setup();
     const download = vi.fn();
-    const clearFilters = vi.fn();
     const state = new BehaviorSubject<BreakpointState>({ matches: docked, breakpoints: {} });
     const result = await render(KgExplorerTableView<KgExplorerSampleItem>, {
       inputs: {
@@ -40,11 +39,11 @@ describe('KgExplorerTableView', () => {
         filters: KG_EXPLORER_SAMPLE_FILTERS,
         ...inputs,
       },
-      on: { download, clearFilters },
+      on: { download },
       providers: [{ provide: BreakpointObserver, useValue: { observe: () => state } }],
     });
 
-    return { ...result, user, download, clearFilters, state };
+    return { ...result, user, download, state };
   }
 
   it('renders the filter menu and the results table', async () => {
@@ -99,7 +98,7 @@ describe('KgExplorerTableView', () => {
 
   it('resets the filter selections when the results are cleared', async () => {
     const [dataset] = KG_EXPLORER_SAMPLE_TYPE_OPTIONS;
-    const { user, fixture, clearFilters } = await setup({
+    const { user, fixture } = await setup({
       items: [],
       filterSelections: { type: [dataset] },
     });
@@ -107,7 +106,6 @@ describe('KgExplorerTableView', () => {
     await user.click(await screen.findByRole('button', { name: 'Clear filters' }));
 
     expect(fixture.componentInstance.filterSelections()).toEqual({});
-    expect(clearFilters).toHaveBeenCalledOnce();
   });
 
   it('opens the filter drawer through the filtersOpen model below the large breakpoint', async () => {
@@ -144,15 +142,15 @@ describe('KgExplorerTableView', () => {
     expect(fixture.componentInstance.filtersOpen()).toBe(true);
   });
 
-  it('emits clear filters from the no results indicator', async () => {
-    const { user, clearFilters } = await setup({ search: 'no matching digital object' });
+  it('clears the search from the no results indicator', async () => {
+    const { user, fixture } = await setup({ search: 'no matching digital object' });
 
     await user.click(await screen.findByRole('button', { name: 'Clear filters' }));
 
-    expect(clearFilters).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.search()).toBe('');
   });
 
-  it('forwards the projected table end template', async () => {
+  it('renders projected content at the end of the table', async () => {
     await render(SlotHost);
 
     expect(screen.getByText('Custom table footer')).toBeInTheDocument();
