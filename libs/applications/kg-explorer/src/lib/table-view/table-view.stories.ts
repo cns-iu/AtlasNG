@@ -126,7 +126,7 @@ function explorerTemplate(args: Args, content = ''): string {
 
 const meta: Meta<KgExplorerTableView<SampleItem>> = {
   component: KgExplorerTableView as Type<KgExplorerTableView<SampleItem>>,
-  title: 'Applications/KG Explorer',
+  title: 'Applications/KG Explorer/Table View',
   decorators: [
     moduleMetadata({
       imports: [Footer, FooterAction, FooterLogo, MatButton],

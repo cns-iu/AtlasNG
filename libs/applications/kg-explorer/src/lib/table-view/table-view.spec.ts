@@ -9,7 +9,7 @@ import {
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { BehaviorSubject } from 'rxjs';
-import { provideKgExplorerTableView } from '../config';
+import { provideKgExplorerTableView } from './config';
 import type { KgExplorerFilter } from '../models';
 import { kgExplorerLinkColumn, kgExplorerTextColumn } from '../utils/columns';
 import { KgExplorerTableView } from './table-view';

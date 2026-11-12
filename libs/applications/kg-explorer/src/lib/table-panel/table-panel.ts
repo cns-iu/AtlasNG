@@ -4,7 +4,7 @@ import { EndOfResultsIndicator } from '@atlasng/design-system/indicators/end-of-
 import { NoResultsIndicator } from '@atlasng/design-system/indicators/no-results-indicator';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
-import type { KgExplorerTableViewConfig } from '../config';
+import type { KgExplorerTableViewConfig } from '../table-view/config';
 import { KgExplorerTableToolbar } from '../table-toolbar/table-toolbar';
 
 /**

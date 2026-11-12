@@ -3,7 +3,7 @@ import type { SearchFieldDefinition, SearchFieldSpec } from '@atlasng/cdk/search
 import { createConfigurationToken, type } from '@atlasng/core';
 import type { Row } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
-import type { KgExplorerDownloadFormats } from './download-cell/download-cell';
+import type { KgExplorerDownloadFormats } from '../download-cell/download-cell';
 
 /**
  * Setup of the knowledge graph explorer table view. Every option is optional;

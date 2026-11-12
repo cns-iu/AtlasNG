@@ -2,7 +2,7 @@ import { Component, input, model, ViewEncapsulation } from '@angular/core';
 import type { SearchSuggestion } from '@atlasng/cdk/search';
 import { ResultsIndicator } from '@atlasng/design-system/indicators/results-indicator';
 import { SearchField } from '@atlasng/design-system/search-field';
-import type { KgExplorerTableViewConfig } from '../config';
+import type { KgExplorerTableViewConfig } from '../table-view/config';
 
 /**
  * Toolbar above the knowledge graph explorer table: an `ang-search-field`

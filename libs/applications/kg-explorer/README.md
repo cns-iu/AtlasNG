@@ -1,10 +1,14 @@
 # @atlasng/kg-explorer
 
-White-label knowledge graph explorer in table view. It combines a filter menu with a searchable, sortable results table and per-row downloads, built from AtlasNG design-system components and Angular Material.
+White-label knowledge graph explorer, built from AtlasNG design-system components and Angular Material. It provides two page bodies: the [table view](#table-view), which lists digital objects, and the [metadata view](#metadata-view), which shows one of them.
 
 The library is in early development; its public API may still change. The header and footer shells are not included.
 
-## Usage
+## Table view
+
+`ang-kg-explorer-table-view` combines a filter menu with a searchable, sortable results table and per-row downloads.
+
+### Usage
 
 ```ts
 import { Component } from '@angular/core';
@@ -53,7 +57,7 @@ export class ExplorerPage {
 
 Give the table view a height (for example, fill the page below your header) and apply an AtlasNG theme such as the WPP theme. The theme should follow the user's system color scheme by default.
 
-## Layout
+### Layout
 
 | Area          | Behavior                                                                                                                                                                                                                              |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -61,13 +65,13 @@ Give the table view a height (for example, fill the page below your header) and 
 | Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows. |
 | Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                        |
 
-## Data and columns
+### Data and columns
 
 - `items` takes any row type, and `columns` (required) sets which properties the table shows. There are no built-in default columns.
 - Build columns with the generic helpers, which apply the Figma column widths and cell types: `kgExplorerLinkColumn(name, prop, { labelProp | labelFn | label })`, `kgExplorerTextColumn`, `kgExplorerChipColumn` (one chip per array value, unsortable), `kgExplorerNumberColumn`, and `kgExplorerDateColumn`. Each takes optional `TableColumn` overrides as its last argument, and you can mix in plain `TableColumn` objects. Create the array once and reuse it, because the table caches cell templates by column identity.
 - `filters` takes `KgExplorerFilter` definitions, and `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections and the search term.
 
-## Filters
+### Filters
 
 ```ts
 filters: KgExplorerFilter<Dataset>[] = [
@@ -90,7 +94,7 @@ filters: KgExplorerFilter<Dataset>[] = [
 - Derived option counts are the number of `items` with that value. They do not change with the search term or other filters.
 - A filter without `field` and `matches` does not narrow the rows. Read `filterSelections` and pass the matching `items` yourself, for example when filtering on a server.
 
-## Inputs and outputs
+### Inputs and outputs
 
 | Name                              | Description                                                   |
 | --------------------------------- | ------------------------------------------------------------- |
@@ -109,7 +113,7 @@ Content projected into the table view, such as a footer, renders after the table
 </ang-kg-explorer-table-view>
 ```
 
-## Configuration
+### Configuration
 
 `config` takes a `KgExplorerTableViewConfig`. Every option is optional.
 
@@ -129,11 +133,11 @@ Set defaults for every table view below an injector with `provideKgExplorerTable
 providers: [provideKgExplorerTableView({ endOfResultsDisabled: true })];
 ```
 
-### Search
+#### Search
 
 Rows are searched with `@atlasng/cdk/search`, and matching rows keep the order of `items`. Use `provideSearch` from `@atlasng/cdk/search` to change the number of suggestions (`suggestionLimit`, 10 by default), the debounce, or the search engine.
 
-### Downloads
+#### Downloads
 
 `downloadFormats` is either one list of formats for every row or a function that returns the formats of a row:
 
@@ -149,9 +153,116 @@ config = { downloadFormats: (dataset: Dataset) => dataset.formats };
 
 Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables.
 
-## Known limitations
+### Known limitations
 
 The search bar, counter, and table share one scroll area, and the table grows to fit all of its rows. The search bar and the column headers are not sticky, so they scroll out of view in long result lists.
+
+## Metadata view
+
+`ang-kg-explorer-metadata-view` is a page layout template that displays the metadata of a single data entry, such as a knowledge graph digital object. It accepts plain data, so it works with any data source, and renders only the page body. Compose it with a header (for example `ang-header-shell` from `@atlasng/labs/header-shell`) and `ang-footer` from `@atlasng/design-system/footer`.
+
+```html
+<ang-kg-explorer-metadata-view
+  [metadata]="entry"
+  [breadcrumbs]="breadcrumbs"
+  [config]="{ versionControlTagline: 'Dataset version' }"
+  (download)="downloadFile($event)"
+/>
+```
+
+### Inputs and outputs
+
+| Name                  | Default       | Description                                                           |
+| --------------------- | ------------- | --------------------------------------------------------------------- |
+| `metadata`            | required      | `KgExplorerMetadata`: the entry to display (see below).               |
+| `breadcrumbs`         | `[]`          | `BreadcrumbItem[]` from `@atlasng/design-system/buttons/breadcrumbs`. |
+| `config`              | `{}`          | `KgExplorerMetadataViewConfig` options (see below).                   |
+| `[(selectedVersion)]` | first version | Two-way bindable selected version.                                    |
+| `(download)`          |               | Emits `{ item, format }` when a download option is chosen.            |
+
+`KgExplorerMetadata` describes one entry:
+
+| Property   | Required | Description                                                                        |
+| ---------- | -------- | ---------------------------------------------------------------------------------- |
+| `title`    | yes      | Page title, rendered as the `h1`.                                                  |
+| `sections` | yes      | `KgExplorerMetadataSection[]` rendered in order below the title.                   |
+| `url`      | no       | URL shown in a copyable link snippet.                                              |
+| `icons`    | no       | `KgExplorerMetadataIcon[]` (`{ src, alt }`) shown as 64px circles above the title. |
+| `versions` | no       | `VersionControlItem[]` from `@atlasng/design-system/version-control`.              |
+
+Breadcrumbs, icons, and the URL are hidden when they have no data; leave them out to hide them. The version control panel is always displayed; without versions its selector is disabled.
+
+### Configuration
+
+`config` takes a `KgExplorerMetadataViewConfig`. Every option is optional.
+
+| Option                    | Default                    | Description                                   |
+| ------------------------- | -------------------------- | --------------------------------------------- |
+| `versionControlTagline`   | `'Digital object version'` | Heading of the version control panel.         |
+| `sectionHeadingLevel`     | `2`                        | Heading level of the section titles.          |
+| `sectionDividersDisabled` | `false`                    | Hides the divider beneath each section title. |
+
+Set defaults for every metadata view below an injector with `provideKgExplorerMetadataView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
+
+```ts
+providers: [provideKgExplorerMetadataView({ sectionHeadingLevel: 3 })];
+```
+
+### Section content
+
+A section is `{ title, content }`. `content` is one content-block node or a list of them, rendered with `ang-content-block` from `@atlasng/content-blocks`. The page registers these definitions:
+
+| Component          | Source                                              | Renders                                             |
+| ------------------ | --------------------------------------------------- | --------------------------------------------------- |
+| `ContentParagraph` | design-system definitions                           | A paragraph of text and inline nodes.               |
+| `TextLink`         | design-system definitions                           | A link. `config.href` is the destination.           |
+| `MetadataImage`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ src, alt }`) | An image spanning the full content width.           |
+| `MetadataChips`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ labels }`)   | A group of non-interactive chips, for example tags. |
+
+The other design-system definitions are available too.
+
+```ts
+const sections: KgExplorerMetadataSection[] = [
+  {
+    title: 'Description',
+    content: [
+      { component: 'ContentParagraph', content: 'A description of the entry.' },
+      { component: 'MetadataImage', config: { src: 'assets/illustration.svg', alt: 'Illustration of the entry' } },
+    ],
+  },
+  {
+    title: 'License',
+    content: {
+      component: 'ContentParagraph',
+      content: [
+        'CC BY 4.0 (',
+        { component: 'TextLink', config: { href: 'https://creativecommons.org/licenses/by/4.0/' }, content: 'license' },
+        ')',
+      ],
+    },
+  },
+  { title: 'Tags', content: { component: 'MetadataChips', config: { labels: ['Heart', 'Kidney'] } } },
+];
+```
+
+### Downloads
+
+The page does not download files. Choosing a download option emits `download` with `{ item, format }`, and the consumer performs the download. Extend `VersionControlFileFormat` with your own fields, such as a URL, to get them back in the event.
+
+### Responsive layout
+
+- Below the `medium` breakpoint (960px), the page is a single column with 20px side padding, and the version control panel follows the first section.
+- From `medium` up, the version control panel is a 400px column beside the sections, with 40px padding. The layout is centered and at most 1600px wide.
+
+Spacing can be customized with these CSS variables:
+
+| Variable                                                 | Default  | Effect                                                                  |
+| -------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
+| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem` | Space between sections                                                  |
+| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem` | Page padding from `medium` up                                           |
+| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`   | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+
+Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 
 ## Development
 

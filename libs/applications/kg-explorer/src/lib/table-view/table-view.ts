@@ -5,9 +5,10 @@ import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
-import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from '../config';
+import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
 import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
+import { pickDefined } from '../utils/pick-defined';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { KgExplorerTablePanel } from '../table-panel/table-panel';
 
@@ -16,16 +17,6 @@ const NO_SELECTION: SearchListOption[] = [];
 
 /** A filter with its options resolved. */
 type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: SearchListOption[] };
-
-/**
- * Copies the defined properties of an object, so that `undefined` values do not mask defaults when spread.
- *
- * @param value Object to copy.
- * @returns The properties of the object whose value is not `undefined`.
- */
-function pickDefined<T extends object>(value: T): Partial<T> {
-  return Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== undefined)) as Partial<T>;
-}
 
 /**
  * White-label knowledge graph explorer in table view with a filter menu, a
