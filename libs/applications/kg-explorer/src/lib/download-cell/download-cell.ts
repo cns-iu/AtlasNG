@@ -7,7 +7,7 @@ import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-s
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
 
 /** Configuration for the download cell definition. */
-export interface DownloadCellConfig<TRow extends Row = Row> {
+export interface KgExplorerDownloadCellConfig<TRow extends Row = Row> {
   /** File formats offered in the download menu. */
   formats: readonly VersionControlFileFormat[];
   /**
@@ -29,4 +29,7 @@ export interface DownloadCellConfig<TRow extends Row = Row> {
   styleUrl: './download-cell.scss',
   encapsulation: ViewEncapsulation.None,
 })
-export class DownloadCellDefinition<TRow extends Row = Row> extends CellDefinition<TRow, DownloadCellConfig<TRow>> {}
+export class KgExplorerDownloadCellDefinition<TRow extends Row = Row> extends CellDefinition<
+  TRow,
+  KgExplorerDownloadCellConfig<TRow>
+> {}

@@ -2,21 +2,24 @@ import { CSV_FILE_FORMAT, JSON_FILE_FORMAT } from '@atlasng/design-system/versio
 import { Table, type TableColumn } from '@atlasng/design-system/table';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { DownloadCellDefinition, type DownloadCellConfig } from './download-cell';
+import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from './download-cell';
 
 interface TestRow {
   name: string;
 }
 
-describe('DownloadCellDefinition', () => {
+describe('KgExplorerDownloadCellDefinition', () => {
   async function setup() {
     const download = vi.fn();
     const columns: TableColumn<TestRow>[] = [
       {
         name: '',
         prop: 'name',
-        cellTemplate: DownloadCellDefinition,
-        cellConfig: { formats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT], download } satisfies DownloadCellConfig<TestRow>,
+        cellTemplate: KgExplorerDownloadCellDefinition,
+        cellConfig: {
+          formats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
+          download,
+        } satisfies KgExplorerDownloadCellConfig<TestRow>,
       },
     ];
     const user = userEvent.setup();

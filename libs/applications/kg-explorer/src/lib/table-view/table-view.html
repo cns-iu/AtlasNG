@@ -1,11 +1,11 @@
-<mat-sidenav-container class="ang-kg-explorer--container">
+<mat-sidenav-container class="ang-kg-explorer-table-view--container">
   <mat-sidenav
-    class="ang-kg-explorer--sidenav"
+    class="ang-kg-explorer-table-view--sidenav"
     [mode]="docked() ? 'side' : 'over'"
     [opened]="filtersOpen()"
     (openedChange)="this.filtersOpen.set($event)"
   >
-    <div class="ang-kg-explorer--filters">
+    <div class="ang-kg-explorer-table-view--filters">
       @for (filter of filters(); track filter.id) {
         <ang-multi-select-filter
           [label]="filter.label"
@@ -19,7 +19,7 @@
     </div>
   </mat-sidenav>
 
-  <mat-sidenav-content class="ang-kg-explorer--content">
+  <mat-sidenav-content class="ang-kg-explorer-table-view--content">
     <ang-kg-explorer-results-table
       [rows]="items()"
       [columns]="resolvedColumns()"

@@ -11,14 +11,14 @@ import {
   KG_EXPLORER_SAMPLE_TYPE_OPTIONS,
   type KgExplorerSampleItem,
 } from '../sample-data';
-import { KgExplorer, KgExplorerTableEndSlot } from './kg-explorer';
+import { KgExplorerTableView, KgExplorerTableEndSlot } from './table-view';
 
 @Component({
-  imports: [KgExplorer, KgExplorerTableEndSlot],
+  imports: [KgExplorerTableView, KgExplorerTableEndSlot],
   template: `
-    <ang-kg-explorer [items]="items" [columns]="columns">
+    <ang-kg-explorer-table-view [items]="items" [columns]="columns">
       <ng-template angKgExplorerTableEnd><p>Custom table footer</p></ng-template>
-    </ang-kg-explorer>
+    </ang-kg-explorer-table-view>
   `,
 })
 class SlotHost {
@@ -26,13 +26,13 @@ class SlotHost {
   readonly columns = KG_EXPLORER_SAMPLE_COLUMNS;
 }
 
-describe('KgExplorer', () => {
+describe('KgExplorerTableView', () => {
   async function setup(inputs: Record<string, unknown> = {}, docked = true) {
     const user = userEvent.setup();
     const download = vi.fn();
     const clearFilters = vi.fn();
     const state = new BehaviorSubject<BreakpointState>({ matches: docked, breakpoints: {} });
-    const result = await render(KgExplorer<KgExplorerSampleItem>, {
+    const result = await render(KgExplorerTableView<KgExplorerSampleItem>, {
       inputs: {
         items: KG_EXPLORER_SAMPLE_ITEMS.slice(0, 3),
         columns: KG_EXPLORER_SAMPLE_COLUMNS,

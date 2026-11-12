@@ -9,11 +9,11 @@ The library is in early development; its public API may still change. The header
 ```ts
 import { Component } from '@angular/core';
 import {
-  KgExplorer,
+  KgExplorerTableView,
   kgExplorerLinkColumn,
   kgExplorerNumberColumn,
   kgExplorerTextColumn,
-  type KgExplorerDownload,
+  type KgExplorerDownloadRequest,
 } from '@atlasng/kg-explorer';
 
 interface Dataset {
@@ -24,8 +24,8 @@ interface Dataset {
 }
 
 @Component({
-  imports: [KgExplorer],
-  template: `<ang-kg-explorer [items]="items" [columns]="columns" (download)="onDownload($event)" />`,
+  imports: [KgExplorerTableView],
+  template: `<ang-kg-explorer-table-view [items]="items" [columns]="columns" (download)="onDownload($event)" />`,
 })
 export class ExplorerPage {
   readonly items: Dataset[] = [];
@@ -36,7 +36,7 @@ export class ExplorerPage {
     kgExplorerNumberColumn<Dataset>('#Cells', 'cellCount'),
   ];
 
-  onDownload({ item, format }: KgExplorerDownload<Dataset>): void {
+  onDownload({ item, format }: KgExplorerDownloadRequest<Dataset>): void {
     // Start the download of `item` in `format`.
   }
 }
@@ -60,7 +60,7 @@ Give the explorer a height (for example, fill the page below your header) and ap
 - `filters` takes `KgExplorerFilter` definitions (`id`, `label`, `options`, and optional `searchDisabled` and `count`). `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections before `(clearFilters)` emits.
 - The explorer does not filter `items` itself: pass only the rows that match `filterSelections`. `KG_EXPLORER_SAMPLE_FILTERS` defines Type and Organ filters for the sample data.
 - `searchFn` decides which rows match the search term (defaults to matching any string, number, or array value). `searchLabelFn` provides autocomplete suggestions (defaults to the row `title`); at most `maxSuggestions` are shown (see [Configuration](#configuration)).
-- `downloadFormats` sets the file formats in the per-row download menu (defaults to `FILE_FORMATS` from `@atlasng/design-system/version-control`). Picking a format emits `download` with `{ item, format }`. `DownloadCellDefinition` can also be used on its own in any `ang-table` column.
+- `downloadFormats` sets the file formats in the per-row download menu (defaults to `FILE_FORMATS` from `@atlasng/design-system/version-control`). Picking a format emits `download` with `{ item, format }`. `KgExplorerDownloadCellDefinition` can also be used on its own in any `ang-table` column.
 
 ## Inputs and outputs
 
@@ -90,11 +90,11 @@ Boolean inputs that default to `false`:
 Project a template to add content, such as a footer, at the end of the table:
 
 ```html
-<ang-kg-explorer [items]="items" [columns]="columns">
+<ang-kg-explorer-table-view [items]="items" [columns]="columns">
   <ng-template angKgExplorerTableEnd>
     <!-- Footer or other content after the last row -->
   </ng-template>
-</ang-kg-explorer>
+</ang-kg-explorer-table-view>
 ```
 
 `angKgExplorerTableEnd` content renders after the table and the end-of-results indicator, and scrolls with them.
@@ -105,7 +105,7 @@ The parts of the explorer are exported too, so you can build your own layout:
 
 - `KgExplorerResultsTable` (`ang-kg-explorer-results-table`) is the search bar, counter, and table. It fills its container's height, so give the container one. Pass content for the end of its table through its `tableEndTemplate` input.
 - `KgExplorerResultsNavigation` (`ang-kg-explorer-results-navigation`) is only the search field and counter. It displays the `suggestions`, `count`, and `total` you pass in and two-way binds `search`.
-- `DownloadCellDefinition` is the per-row download menu as an `ang-table` cell definition.
+- `KgExplorerDownloadCellDefinition` is the per-row download menu as an `ang-table` cell definition.
 
 ## Configuration
 

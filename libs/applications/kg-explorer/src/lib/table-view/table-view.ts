@@ -18,8 +18,8 @@ import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import { FILE_FORMATS, type VersionControlFileFormat } from '@atlasng/design-system/version-control';
-import { DownloadCellDefinition, type DownloadCellConfig } from '../download-cell/download-cell';
-import type { KgExplorerDownload, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
+import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
+import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { defaultKgExplorerSearch, KgExplorerResultsTable } from '../results-table/results-table';
 
 /**
@@ -61,15 +61,15 @@ function defaultSearchLabel(row: Row): string {
  * footer at the end of the table.
  */
 @Component({
-  selector: 'ang-kg-explorer',
+  selector: 'ang-kg-explorer-table-view',
   imports: [KgExplorerResultsTable, MatSidenav, MatSidenavContainer, MatSidenavContent, MultiSelectFilter],
-  templateUrl: './kg-explorer.html',
-  styleUrl: './kg-explorer.scss',
+  templateUrl: './table-view.html',
+  styleUrl: './table-view.scss',
   host: {
-    class: 'ang-kg-explorer',
+    class: 'ang-kg-explorer-table-view',
   },
 })
-export class KgExplorer<TRow extends Row = Row> {
+export class KgExplorerTableView<TRow extends Row = Row> {
   /** Digital objects listed in the table. */
   readonly items = input<TRow[]>([]);
 
@@ -119,7 +119,7 @@ export class KgExplorer<TRow extends Row = Row> {
   readonly downloadDisabled = input(false, { transform: booleanAttribute });
 
   /** Emits when a user picks a download format for a row. */
-  readonly download = output<KgExplorerDownload<TRow>>();
+  readonly download = output<KgExplorerDownloadRequest<TRow>>();
 
   /** Emits when the user clears the results from the no-results indicator, after the filter selections are reset. */
   readonly clearFilters = output<void>();
@@ -151,11 +151,11 @@ export class KgExplorer<TRow extends Row = Row> {
     width: 40,
     flexGrow: 0,
     sortable: false,
-    cellTemplate: DownloadCellDefinition,
+    cellTemplate: KgExplorerDownloadCellDefinition,
     cellConfig: {
       formats: this.downloadFormats(),
       download: (item, format) => this.download.emit({ item, format }),
-    } satisfies DownloadCellConfig<TRow>,
+    } satisfies KgExplorerDownloadCellConfig<TRow>,
   }));
 
   /** Columns displayed by the table, including the optional download column. */

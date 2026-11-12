@@ -10,7 +10,7 @@ import {
   KG_EXPLORER_SAMPLE_ITEMS,
   type KgExplorerSampleItem,
 } from '../sample-data';
-import { KgExplorer, KgExplorerTableEndSlot } from './kg-explorer';
+import { KgExplorerTableView, KgExplorerTableEndSlot } from './table-view';
 
 /**
  * Builds story props that narrow the rows down to the selected Type and Organ filter options. The
@@ -50,18 +50,18 @@ function filterProps(args: Args) {
  */
 function explorerTemplate(args: Args, content = ''): string {
   return `
-    <ang-kg-explorer
+    <ang-kg-explorer-table-view
       ${argsToTemplate(args, { exclude: ['items', 'filterSelections'] })}
       [items]="filteredItems(items, filterSelections)"
       [(filterSelections)]="filterSelections"
     >
       ${content}
-    </ang-kg-explorer>
+    </ang-kg-explorer-table-view>
   `;
 }
 
-const meta: Meta<KgExplorer<KgExplorerSampleItem>> = {
-  component: KgExplorer as Type<KgExplorer<KgExplorerSampleItem>>,
+const meta: Meta<KgExplorerTableView<KgExplorerSampleItem>> = {
+  component: KgExplorerTableView as Type<KgExplorerTableView<KgExplorerSampleItem>>,
   title: 'Applications/KG Explorer',
   decorators: [
     moduleMetadata({
@@ -94,7 +94,7 @@ const meta: Meta<KgExplorer<KgExplorerSampleItem>> = {
     template: explorerTemplate(args),
     styles: [
       `
-        .ang-kg-explorer {
+        .ang-kg-explorer-table-view {
           height: 100vh;
         }
       `,
@@ -104,7 +104,7 @@ const meta: Meta<KgExplorer<KgExplorerSampleItem>> = {
 
 export default meta;
 
-type Story = StoryObj<KgExplorer<KgExplorerSampleItem>>;
+type Story = StoryObj<KgExplorerTableView<KgExplorerSampleItem>>;
 
 export const Default: Story = {};
 
