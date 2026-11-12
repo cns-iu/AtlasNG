@@ -39,7 +39,9 @@
   multi-select-filter-slot;
 @forward './tokens/rich-tooltip' as rich-tooltip-* show rich-tooltip-overrides, rich-tooltip-slot;
 @forward './tokens/scroll-area' as scroll-area-* show scroll-area-overrides, scroll-area-slot;
+@forward './tokens/search-field' as search-field-* show search-field-overrides, search-field-slot;
 @forward './tokens/search-list' as search-list-* show search-list-overrides, search-list-slot;
+@forward './tokens/skeleton' as skeleton-* show skeleton-overrides, skeleton-slot;
 @forward './tokens/snackbar' as snackbar-* show snackbar-overrides, snackbar-slot;
 @forward './tokens/table' as table-* show table-overrides, table-slot;
 @forward './tokens/table-of-contents' as table-of-contents-* show table-of-contents-overrides, table-of-contents-slot;

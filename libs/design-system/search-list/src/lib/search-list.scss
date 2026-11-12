@@ -28,6 +28,12 @@
       text-overflow: ellipsis;
     }
 
+    .ang-search-highlight--match {
+      border-radius: token-utils.slot(highlight-radius, $config);
+      background: token-utils.slot(highlight-background, $config);
+      color: token-utils.slot(highlight-color, $config);
+    }
+
     .ang-search-list--count {
       color: token-utils.slot(count-color, $config);
       font-family: token-utils.slot(count-font, $config);
