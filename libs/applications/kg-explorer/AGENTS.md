@@ -9,16 +9,17 @@
 
 ## Component Map
 
-- `table-view/`: `KgExplorerTableView` (`ang-kg-explorer-table-view`) is the root. It holds the `mat-sidenav` layout (docked from the `large` breakpoint via `watchBreakpoint`), one `ang-multi-select-filter` per filter, adds the download column, and passes inputs to the results table. `KgExplorerTableEndSlot` (`ng-template[angKgExplorerTableEnd]`) is defined here too.
-- `results-table/`: `KgExplorerResultsTable` fills its container's height and holds the results navigation, `ang-table`, the end-of-results and no-results indicators, and the `tableEndTemplate` rendered after the table. The table, indicator, and template share an `ang-scroll-area`. It filters the rows and computes the autocomplete suggestions.
-- `results-navigation/`: `KgExplorerResultsNavigation` is the presentational search field with autocomplete and the "Viewing X of Y" counter. `KgExplorerResultsTable` passes in the suggestions and counts.
-- `download-cell/`: `KgExplorerDownloadCellDefinition` is an `ang-table` cell definition with the "Choose download format" tooltip and a `mat-menu` of `VersionControlFileFormat`s.
-- `config.ts` (`KG_EXPLORER_CONFIG`, `provideKgExplorerConfig`, defaults such as `maxSuggestions`), `columns.ts` (generic column builders with Figma widths; consumers define their own columns), `models.ts` (public types), and `sample-data.ts` (white-label demo rows, columns, and filters).
+- `table-view/`: `KgExplorerTableView` (`ang-kg-explorer-table-view`) is the root. It holds the `mat-sidenav` layout (docked from the `large` breakpoint via `watchBreakpoint`), one `ang-multi-select-filter` per filter, resolves its `config` input over `KG_EXPLORER_TABLE_VIEW_CONFIG`, adds the download column when `downloadFormats` is set, and passes inputs and its projected content to the results table.
+- `results-table/` (internal): `KgExplorerResultsTable` fills its container's height and holds the results navigation, `ang-table`, the end-of-results and no-results indicators, and projected content after the table, all in one `ang-scroll-area`. It searches the rows with `injectSearch` from `@atlasng/cdk/search`.
+- `results-navigation/` (internal): `KgExplorerResultsNavigation` is the presentational `ang-search-field` and the "Viewing X of Y" counter. `KgExplorerResultsTable` passes in the suggestions and counts.
+- `download-cell/`: `KgExplorerDownloadCellDefinition` is an `ang-table` cell definition whose button opens a `mat-menu` of formats, downloads a single format directly, or is disabled for a row without formats.
+- `config.ts` (`KgExplorerTableViewConfig`, `KG_EXPLORER_TABLE_VIEW_CONFIG`, `provideKgExplorerTableView`), `columns.ts` (generic column builders with Figma widths; consumers define their own columns), `models.ts` (public types), and `sample-data.ts` (internal white-label demo rows, columns, and filters for stories and tests).
 
 ## Conventions
 
-- Add customization as `*Disabled` boolean inputs (default `false`), `ng-template` slots, or `KgExplorerConfig` options, and pass new results-table inputs through the root.
-- `results-table/` must not import from `table-view/`: `table-view.ts` imports the results table, so the reverse import is circular and fails at startup ("can't access lexical declaration before initialization"). The root passes the slot's template to the table through `tableEndTemplate`.
+- `src/index.ts` lists every public export by name; do not use `export *`. Internal components and the sample data stay out of it.
+- Add setup options to `KgExplorerTableViewConfig` (with a default in `KG_EXPLORER_TABLE_VIEW_CONFIG` when they have one) rather than as new inputs, and pass new results-table inputs through the root.
+- `results-table/` must not import from `table-view/`: `table-view.ts` imports the results table, so the reverse import is circular and fails at startup ("can't access lexical declaration before initialization").
 - Column arrays must keep a stable identity (`computed` or module constants), because `ang-table` caches cell definitions per column object.
 - Name CSS classes `ang-<component>--<class>` with the component's own root, for example `ang-kg-explorer-download-cell--menu` and `ang-kg-explorer-results-navigation--search`.
 - The SCSS reads theme values with `token-utils.sys-slot(...)` rather than hard-coded `var(--mat-sys-*)`, and uses plain media queries at the Angular Material breakpoints (600, 960, and 1280px).

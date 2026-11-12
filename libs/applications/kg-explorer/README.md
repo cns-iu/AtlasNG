@@ -8,12 +8,14 @@ The library is in early development; its public API may still change. The header
 
 ```ts
 import { Component } from '@angular/core';
+import { CSV_FILE_FORMAT, JSON_FILE_FORMAT } from '@atlasng/design-system/version-control';
 import {
   KgExplorerTableView,
   kgExplorerLinkColumn,
   kgExplorerNumberColumn,
   kgExplorerTextColumn,
   type KgExplorerDownloadRequest,
+  type KgExplorerTableViewConfig,
 } from '@atlasng/kg-explorer';
 
 interface Dataset {
@@ -25,7 +27,9 @@ interface Dataset {
 
 @Component({
   imports: [KgExplorerTableView],
-  template: `<ang-kg-explorer-table-view [items]="items" [columns]="columns" (download)="onDownload($event)" />`,
+  template: `
+    <ang-kg-explorer-table-view [items]="items" [columns]="columns" [config]="config" (download)="onDownload($event)" />
+  `,
 })
 export class ExplorerPage {
   readonly items: Dataset[] = [];
@@ -36,13 +40,18 @@ export class ExplorerPage {
     kgExplorerNumberColumn<Dataset>('#Cells', 'cellCount'),
   ];
 
+  readonly config: KgExplorerTableViewConfig<Dataset> = {
+    searchSuggestionField: 'name',
+    downloadFormats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
+  };
+
   onDownload({ item, format }: KgExplorerDownloadRequest<Dataset>): void {
     // Start the download of `item` in `format`.
   }
 }
 ```
 
-Give the explorer a height (for example, fill the page below your header) and apply an AtlasNG theme such as the WPP theme. The theme should follow the user's system color scheme by default.
+Give the table view a height (for example, fill the page below your header) and apply an AtlasNG theme such as the WPP theme. The theme should follow the user's system color scheme by default.
 
 ## Layout
 
@@ -56,68 +65,67 @@ Give the explorer a height (for example, fill the page below your header) and ap
 
 - `items` takes any row type, and `columns` (required) sets which properties the table shows. There are no built-in default columns.
 - Build columns with the generic helpers, which apply the Figma column widths and cell types: `kgExplorerLinkColumn(name, prop, { labelProp | labelFn | label })`, `kgExplorerTextColumn`, `kgExplorerChipColumn` (one chip per array value, unsortable), `kgExplorerNumberColumn`, and `kgExplorerDateColumn`. Each takes optional `TableColumn` overrides as its last argument, and you can mix in plain `TableColumn` objects. Create the array once and reuse it, because the table caches cell templates by column identity.
-- `KG_EXPLORER_SAMPLE_ITEMS` and `KG_EXPLORER_SAMPLE_COLUMNS` (with the `KgExplorerSampleItem` row type) are white-label demo data used by the stories.
-- `filters` takes `KgExplorerFilter` definitions (`id`, `label`, `options`, and optional `searchDisabled` and `count`). `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections before `(clearFilters)` emits.
-- The explorer does not filter `items` itself: pass only the rows that match `filterSelections`. `KG_EXPLORER_SAMPLE_FILTERS` defines Type and Organ filters for the sample data.
-- `searchFn` decides which rows match the search term (defaults to matching any string, number, or array value). `searchLabelFn` provides autocomplete suggestions (defaults to the row `title`); at most `maxSuggestions` are shown (see [Configuration](#configuration)).
-- `downloadFormats` sets the file formats in the per-row download menu (defaults to `FILE_FORMATS` from `@atlasng/design-system/version-control`). Picking a format emits `download` with `{ item, format }`. `KgExplorerDownloadCellDefinition` can also be used on its own in any `ang-table` column.
+- `filters` takes `KgExplorerFilter` definitions (`id`, `label`, `options`, and optional `searchDisabled` and `count`). `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections and the search term.
+- The table view does not filter `items` itself: pass only the rows that match `filterSelections`.
 
 ## Inputs and outputs
 
-| Name                              | Description                                                          |
-| --------------------------------- | -------------------------------------------------------------------- |
-| `items`, `columns`                | Rows to display and the columns that show them.                      |
-| `filters`, `[(filterSelections)]` | Filter definitions and the selected options of each filter.          |
-| `[(search)]`, `[(sorts)]`         | Current search term and column sorts.                                |
-| `searchFn`, `searchLabelFn`       | Search matching and autocomplete labels.                             |
-| `downloadFormats`                 | File formats in the per-row download menu.                           |
-| `[(filtersOpen)]`                 | Whether the filter drawer is open below the large breakpoint.        |
-| `(download)`, `(clearFilters)`    | Download requests, and clear requests from the no-results indicator. |
+| Name                              | Description                                                   |
+| --------------------------------- | ------------------------------------------------------------- |
+| `items`, `columns`                | Rows to display and the columns that show them.               |
+| `filters`, `[(filterSelections)]` | Filter definitions and the selected options of each filter.   |
+| `config`                          | Search, download, and visibility options (see below).         |
+| `[(search)]`, `[(sorts)]`         | Current search term and column sorts.                         |
+| `[(filtersOpen)]`                 | Whether the filter drawer is open below the large breakpoint. |
+| `(download)`                      | Emits `{ item, format }` when a user downloads a row.         |
 
-## Show and hide features
-
-Boolean inputs that default to `false`:
-
-| Input                    | Effect                             |
-| ------------------------ | ---------------------------------- |
-| `downloadDisabled`       | Hides the download column          |
-| `endOfResultsDisabled`   | Hides the end-of-results indicator |
-| `resultsCounterDisabled` | Hides the "Viewing X of Y" counter |
-| `searchDisabled`         | Hides the search field             |
-
-## Slots
-
-Project a template to add content, such as a footer, at the end of the table:
+Content projected into the table view, such as a footer, renders after the table and the end-of-results indicator, and scrolls with them:
 
 ```html
 <ang-kg-explorer-table-view [items]="items" [columns]="columns">
-  <ng-template angKgExplorerTableEnd>
-    <!-- Footer or other content after the last row -->
-  </ng-template>
+  <ang-footer />
 </ang-kg-explorer-table-view>
 ```
 
-`angKgExplorerTableEnd` content renders after the table and the end-of-results indicator, and scrolls with them.
-
-## Building blocks
-
-The parts of the explorer are exported too, so you can build your own layout:
-
-- `KgExplorerResultsTable` (`ang-kg-explorer-results-table`) is the search bar, counter, and table. It fills its container's height, so give the container one. Pass content for the end of its table through its `tableEndTemplate` input.
-- `KgExplorerResultsNavigation` (`ang-kg-explorer-results-navigation`) is only the search field and counter. It displays the `suggestions`, `count`, and `total` you pass in and two-way binds `search`.
-- `KgExplorerDownloadCellDefinition` is the per-row download menu as an `ang-table` cell definition.
-
 ## Configuration
 
-Provide `provideKgExplorerConfig` to change the explorer's defaults. Omitted values keep their defaults.
+`config` takes a `KgExplorerTableViewConfig`. Every option is optional.
+
+| Option                      | Default     | Description                                                                                         |
+| --------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| `searchFields`              | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them. |
+| `searchSuggestionField`     | row `title` | Field whose values are suggested below the search field.                                            |
+| `searchSuggestionsDisabled` | `false`     | Turns the suggestions off.                                                                          |
+| `searchDisabled`            | `false`     | Hides the search field.                                                                             |
+| `resultsCounterDisabled`    | `false`     | Hides the "Viewing X of Y" counter.                                                                 |
+| `endOfResultsDisabled`      | `false`     | Hides the end-of-results indicator.                                                                 |
+| `downloadFormats`           | none        | File formats of the download column. The column is only shown when this is set.                     |
+
+Set defaults for every table view below an injector with `provideKgExplorerTableView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
 
 ```ts
-providers: [provideKgExplorerConfig({ maxSuggestions: 5 })];
+providers: [provideKgExplorerTableView({ endOfResultsDisabled: true })];
 ```
 
-| Option           | Default | Description                                                     |
-| ---------------- | ------- | --------------------------------------------------------------- |
-| `maxSuggestions` | `8`     | Maximum number of autocomplete suggestions below the search bar |
+### Search
+
+Rows are searched with `@atlasng/cdk/search`, and matching rows keep the order of `items`. Use `provideSearch` from `@atlasng/cdk/search` to change the number of suggestions (`suggestionLimit`, 10 by default), the debounce, or the search engine.
+
+### Downloads
+
+`downloadFormats` is either one list of formats for every row or a function that returns the formats of a row:
+
+```ts
+config = { downloadFormats: (dataset: Dataset) => dataset.formats };
+```
+
+| Formats of a row | Download button                                |
+| ---------------- | ---------------------------------------------- |
+| Several          | Opens a menu of the formats.                   |
+| One              | Downloads that format directly.                |
+| None             | Disabled, with a "No downloads available" tip. |
+
+Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables.
 
 ## Known limitations
 
