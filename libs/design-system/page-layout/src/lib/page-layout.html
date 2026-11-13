@@ -1,0 +1,17 @@
+<div class="ang-page-layout--header">
+  <ng-content select="ang-page-layout-header, [angPageLayoutHeader]" />
+</div>
+<div class="ang-page-layout--intro">
+  <ng-content select="ang-page-layout-intro, [angPageLayoutIntro]" />
+</div>
+<div class="ang-page-layout--side-panel">
+  <ng-content select="ang-page-layout-side-panel, [angPageLayoutSidePanel]" />
+</div>
+<div class="ang-page-layout--body">
+  <div class="ang-page-layout--main">
+    <ng-content />
+  </div>
+  <div class="ang-page-layout--end">
+    <ng-content select="ang-page-layout-end, [angPageLayoutEnd]" />
+  </div>
+</div>

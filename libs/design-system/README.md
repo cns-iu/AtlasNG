@@ -46,6 +46,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/indicators/skeleton`                 | `Skeleton`                                                                |
 | `@atlasng/design-system/links/link-snippet`                  | `LinkSnippet`                                                             |
 | `@atlasng/design-system/links/text-link`                     | `TextLink`                                                                |
+| `@atlasng/design-system/page-layout`                         | `PageLayout` and its slot directives                                      |
 | `@atlasng/design-system/search-field`                        | `SearchField`                                                             |
 | `@atlasng/design-system/search-list`                         | `SearchList`, `SearchListOption`                                          |
 | `@atlasng/design-system/snackbar`                            | `Snackbar`, `createSnackBarConfig`, `SnackBarConfig`, `SnackBarData`      |
@@ -72,6 +73,7 @@ A few components with notable options:
 
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
+- **Page layout:** lays out a page body with `angPageLayoutHeader`, `angPageLayoutIntro`, `angPageLayoutSidePanel`, and `angPageLayoutEnd` slots, and puts unmarked content in the main slot. From the `medium` breakpoint, the side panel is a sticky column. Set the layout's `sidePanelWidth` input to `default` for a table of contents or `wide` for version control. Side panel content that scrolls on its own, such as version control's download options, shrinks to fit the window; the panel scrolls anything else that is taller than the window. Below the `medium` breakpoint, the side panel follows the page header and intro, so a metadata page can put its first section in the intro. The layout adds no landmarks, so wrap it in the application's `main` element. Under a sticky header, set the `side-panel-sticky-top` token to the header's height. The `max-width`, `side-padding`, and `side-padding-medium` tokens set the page width and side padding, which the [`page-container` mixin](#page-container) shares. The `vertical-padding` and `section-gap` tokens set the space above and below the page and between its regions and sections.
 - **Skeleton:** stands in for loading content as a `text` line (default), `circle`, or `rect`. Size it from the surrounding styles, and set `lines` to stack several text lines. It is hidden from assistive technology, so set `aria-busy` on the loading region.
 
 ## Icons
@@ -185,6 +187,16 @@ The `breakpoint` mixin and function generate media queries from named widths (`x
 ```
 
 Named breakpoints up to `$print-breakpoint` (default `large`) also apply to print. Configure `$breakpoints` and `$print-breakpoint` with `@use '@atlasng/design-system' as ds with (...)`.
+
+### Page container
+
+The `page-container` mixin centers content at the page's maximum width (default 100rem, or 1600px) with the page's side padding (1.25rem, or 20px, and 2.5rem, or 40px, from the `medium` breakpoint). Use it for sections outside `ang-page-layout`, such as a hero or a footer, so they line up with page content. Change the values everywhere with `ds.page-layout-overrides((max-width: ..., side-padding: ..., side-padding-medium: ...))`.
+
+```scss
+.hero-content {
+  @include ds.page-container();
+}
+```
 
 ### Extended level colors
 

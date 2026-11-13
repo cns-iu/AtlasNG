@@ -1,0 +1,23 @@
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'page-layout',
+  tokens: (
+    max-width: 100rem,
+    side-padding: 1.25rem,
+    side-padding-medium: 2.5rem,
+    vertical-padding: 2.5rem,
+    section-gap: 2.5rem,
+    side-panel-sticky-top: 0rem,
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
+
+// Returns a CSS variable for one of this component's tokens that falls back to its default value,
+// e.g. slot(primary) => var(--ang-<component>-primary, var(--mat-sys-primary))
+@function slot($token, $fallback: null) {
+  @return token-utils.slot($token, $config, $fallback);
+}

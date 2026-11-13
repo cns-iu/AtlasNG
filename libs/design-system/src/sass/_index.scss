@@ -8,6 +8,7 @@
 // Utilities
 @forward './breakpoints' show $breakpoints, $print-breakpoint, breakpoint;
 @forward './ext-colors' show ext-level-colors;
+@forward './page-container' show page-container;
 @forward './internal/token-utils' show sys-token, sys-slot, ext-token, ext-slot, ext-sys-slot;
 
 // Component token overrides and slots
@@ -31,6 +32,7 @@
 @forward './tokens/no-results-indicator' as no-results-indicator-* show no-results-indicator-overrides,
   no-results-indicator-slot;
 @forward './tokens/notice' as notice-* show notice-overrides, notice-slot;
+@forward './tokens/page-layout' as page-layout-* show page-layout-overrides, page-layout-slot;
 @forward './tokens/results-indicator' as results-indicator-* show results-indicator-overrides, results-indicator-slot;
 @forward './tokens/link-snippet' as link-snippet-* show link-snippet-overrides, link-snippet-slot;
 @forward './tokens/text-link' as text-link-* show text-link-overrides, text-link-slot;

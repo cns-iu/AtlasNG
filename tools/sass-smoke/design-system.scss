@@ -9,4 +9,8 @@
   );
 }
 
+.smoke-page-container {
+  @include ds.page-container();
+}
+
 @include ds.defaults($exclude: text-selection);

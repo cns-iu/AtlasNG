@@ -69,6 +69,7 @@
       "@atlasng/design-system/links/link-snippet": ["./libs/design-system/links/link-snippet/src/index.ts"],
       "@atlasng/design-system/links/text-link": ["./libs/design-system/links/text-link/src/index.ts"],
       "@atlasng/design-system/multi-select-filter": ["./libs/design-system/multi-select-filter/src/index.ts"],
+      "@atlasng/design-system/page-layout": ["./libs/design-system/page-layout/src/index.ts"],
       "@atlasng/design-system/rich-tooltip": ["./libs/design-system/rich-tooltip/src/index.ts"],
       "@atlasng/design-system/scroll-area": ["./libs/design-system/scroll-area/src/index.ts"],
       "@atlasng/design-system/search-field": ["./libs/design-system/search-field/src/index.ts"],

@@ -1,0 +1,92 @@
+@use 'breakpoints';
+@use 'page-container';
+@use 'internal/token-utils';
+@use 'tokens/page-layout' as *;
+@use 'tokens/scroll-area';
+
+$_side-padding-medium: token-utils.slot(side-padding-medium, $config);
+$_vertical-padding: token-utils.slot(vertical-padding, $config);
+$_section-gap: token-utils.slot(section-gap, $config);
+$_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: $_section-gap;
+  padding-block: $_vertical-padding;
+  @include page-container.page-container();
+
+  .ang-page-layout--header,
+  .ang-page-layout--intro,
+  .ang-page-layout--side-panel,
+  .ang-page-layout--main,
+  .ang-page-layout--end {
+    min-width: 0;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .ang-page-layout--body,
+  .ang-page-layout--main {
+    display: flex;
+    flex-direction: column;
+    gap: $_section-gap;
+    min-width: 0;
+  }
+
+  @include breakpoints.breakpoint(medium) {
+    display: grid;
+    // The main column keeps a 45rem minimum, as in Figma, unless the side panel's minimum would no longer fit
+    grid-template:
+      'header side-panel' auto
+      'intro side-panel' auto
+      'body side-panel' 1fr
+      / minmax(min(45rem, 100% - 15rem), 1fr) minmax(15rem, 18.75rem);
+    gap: 0;
+    // The side panel runs to the layout's edge, so the side padding moves onto the main column's regions
+    padding: 0;
+
+    .ang-page-layout--header {
+      grid-area: header;
+      padding: $_vertical-padding $_side-padding-medium 0;
+    }
+
+    .ang-page-layout--intro {
+      grid-area: intro;
+      padding: $_section-gap $_side-padding-medium 0;
+    }
+
+    .ang-page-layout--body {
+      grid-area: body;
+      padding: $_section-gap $_side-padding-medium $_vertical-padding;
+    }
+
+    .ang-page-layout--side-panel {
+      grid-area: side-panel;
+      align-self: start;
+      position: sticky;
+      top: $_sticky-top;
+      // As a flex column, content that scrolls on its own, such as version control's download options, shrinks to
+      // fit, and the panel scrolls only content that can't, such as a long table of contents
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      max-height: calc(100dvh - #{$_sticky-top});
+      padding: $_vertical-padding 1rem;
+      overflow: hidden auto;
+      scrollbar-color: scroll-area.slot(thumb-color) transparent;
+      scrollbar-width: thin;
+    }
+
+    &.ang-page-layout--side-panel-width-wide {
+      // The side panel column includes the side padding, so the panel itself is 17.5rem to 25rem wide
+      grid-template-columns: minmax(min(45rem, 100% - 20rem), 1fr) minmax(20rem, 27.5rem);
+
+      .ang-page-layout--side-panel {
+        padding-inline: 0 $_side-padding-medium;
+      }
+    }
+  }
+}
