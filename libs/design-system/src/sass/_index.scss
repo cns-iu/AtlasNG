@@ -31,6 +31,7 @@
 @forward './tokens/no-results-indicator' as no-results-indicator-* show no-results-indicator-overrides,
   no-results-indicator-slot;
 @forward './tokens/notice' as notice-* show notice-overrides, notice-slot;
+@forward './tokens/last-modified' as last-modified-* show last-modified-overrides, last-modified-slot;
 @forward './tokens/results-indicator' as results-indicator-* show results-indicator-overrides, results-indicator-slot;
 @forward './tokens/link-snippet' as link-snippet-* show link-snippet-overrides, link-snippet-slot;
 @forward './tokens/text-link' as text-link-* show text-link-overrides, text-link-slot;

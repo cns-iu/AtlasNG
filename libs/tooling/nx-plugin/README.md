@@ -254,6 +254,42 @@ Generates a `$typography` map of font families and weights from the `Static` gro
 npx nx run my-theme:generate-typography-scss
 ```
 
+### `last-modified-dates`
+
+Writes a JSON file that maps page routes to the timestamp (milliseconds since the Unix epoch) of the last Git commit that changed each page's source file, for `ang-last-modified` from [`@atlasng/design-system`](../../design-system/README.md). Layout, style, and component changes don't affect the dates.
+
+- A route with one `:param` segment, such as `/dataset/:datasetId`, gets one entry per file matched by its `source` glob, named after the file without its extension.
+- A route without a `:param` that matches several files gets the latest timestamp.
+- Only files tracked by Git are used. Uncommitted new files are left out with a warning.
+- The executor warns in a shallow clone, where every file would get the timestamp of the latest commit. In GitHub Actions, check out the full history with `fetch-depth: 0`.
+
+| Option       | Default    | Description                                                                        |
+| ------------ | ---------- | ---------------------------------------------------------------------------------- |
+| `pages`      | (required) | Routes and their source file or glob, relative to the workspace root               |
+| `outputFile` | (required) | JSON file to write, relative to the workspace root, usually in the app's `public/` |
+
+```json
+{
+  "targets": {
+    "last-modified-dates": {
+      "executor": "@atlasng/nx-plugin:last-modified-dates",
+      "cache": false,
+      "options": {
+        "outputFile": "apps/portal/public/last-modified.json",
+        "pages": [
+          { "route": "/dataset/:datasetId", "source": "apps/portal/public/assets/datasets/*.json" },
+          { "route": "/about", "source": "apps/portal/content/about.yaml" }
+        ]
+      }
+    },
+    "build": { "dependsOn": ["last-modified-dates", "^build"] },
+    "serve": { "dependsOn": ["last-modified-dates"] }
+  }
+}
+```
+
+Load the file in the app with `inject(LastModifiedDates).loadFromUrl('last-modified.json')`, and add it to `.gitignore`, since it is regenerated on every build.
+
 ## Nx preset
 
 `presets/nx.json` holds the shared `namedInputs`, `targetDefaults` and `generators` defaults (without a selector prefix). It is **not** meant to be used through `nx.json` `"extends"`.
