@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { ErrorHandler, inject, Injector, Service, Signal } from '@angular/core';
+import { DestroyRef, ErrorHandler, inject, Injector, Service, Signal, signal } from '@angular/core';
 import {
   ActivatedRoute,
   isActive,
@@ -9,10 +9,10 @@ import {
   UrlTree,
 } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
-import { LinkAttributes, LinkCommand, LinkHandler } from './handler';
+import { LinkAttributes, LinkCommand, LinkHandler, UrlChangeMatchOptions } from './handler';
 import { RouterlessLinkHandler, RouterlessPreparedLink } from './routerless-handler';
 import { isAnchorLikeElement } from './utils/anchor-element';
-import { isUrlTree, tryParseAbsoluteUrl } from './utils/url';
+import { isUrlTree, tryParseAbsoluteUrl, urlChangeSignal } from './utils/url';
 
 /**
  * Link metadata prepared by the Angular Router-aware handler.
@@ -55,6 +55,21 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
    * Routerless fallback used for absolute URLs and hard navigations.
    */
   readonly #routerlessHandler = inject(RouterlessLinkHandler);
+
+  /**
+   * Current browser-visible URL, refreshed whenever Angular's `Location` reports a URL change.
+   */
+  readonly #currentUrl = signal(this.#currentExternalUrl());
+
+  /**
+   * Starts tracking URL changes reported by Angular's `Location`.
+   */
+  constructor() {
+    // `Location` reports external URLs for `go`/`replaceState` but internal paths for popstate,
+    // so re-read the URL to store a consistent format.
+    const unregister = this.#location.onUrlChange(() => this.#currentUrl.set(this.#currentExternalUrl()));
+    inject(DestroyRef).onDestroy(unregister);
+  }
 
   /**
    * Prepares a link payload that supports both absolute URLs and Angular Router commands.
@@ -126,6 +141,16 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
   }
 
   /**
+   * Tracks the browser-visible URL reported by Angular's `Location`.
+   *
+   * @param matchOptions URL parts that count as a change. All parts count by default.
+   * @returns A signal holding the URL, in the same format as prepared link hrefs, as of the last change that counted.
+   */
+  currentUrl(matchOptions?: UrlChangeMatchOptions): Signal<string> {
+    return urlChangeSignal(this.#currentUrl, matchOptions);
+  }
+
+  /**
    * Checks if a prepared link is active based on the current state.
    *
    * @param link Prepared link metadata.
@@ -139,6 +164,15 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
     }
 
     return isActive(urlTree, this.#router, matchOptions);
+  }
+
+  /**
+   * Reads the current browser-visible URL, including query parameters, fragment, and base href.
+   *
+   * @returns The current external URL.
+   */
+  #currentExternalUrl(): string {
+    return this.#location.prepareExternalUrl(this.#location.path(true));
   }
 
   /**

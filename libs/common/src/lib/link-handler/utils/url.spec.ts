@@ -1,5 +1,13 @@
+import { signal } from '@angular/core';
 import type { UrlTree } from '@angular/router';
-import { applyQueryParamsAndFragmentToUrl, isSafeNavigationUrl, isUrlTree, tryParseAbsoluteUrl } from './url';
+import {
+  applyQueryParamsAndFragmentToUrl,
+  isSafeNavigationUrl,
+  isUrlTree,
+  toIsActiveMatchOptions,
+  tryParseAbsoluteUrl,
+  urlChangeSignal,
+} from './url';
 
 const BASE_URL = 'https://example.com/path';
 
@@ -158,5 +166,67 @@ describe('isSafeNavigationUrl', () => {
 
   it('rejects URLs that cannot be parsed', () => {
     expect(isSafeNavigationUrl('http://[invalid')).toBe(false);
+  });
+});
+
+describe('toIsActiveMatchOptions', () => {
+  it('matches every URL part exactly by default', () => {
+    expect(toIsActiveMatchOptions()).toEqual({
+      paths: 'exact',
+      matrixParams: 'exact',
+      queryParams: 'exact',
+      fragment: 'exact',
+    });
+  });
+
+  it('ignores disabled URL parts', () => {
+    expect(toIsActiveMatchOptions({ matrixParams: false, queryParams: false, fragment: false })).toEqual({
+      paths: 'exact',
+      matrixParams: 'ignored',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+    });
+  });
+});
+
+describe('urlChangeSignal', () => {
+  it('follows every URL change by default', () => {
+    const source = signal('/page');
+    const url = urlChangeSignal(source);
+    expect(url()).toBe('/page');
+
+    source.set('/page;view=list?page=2#top');
+
+    expect(url()).toBe('/page;view=list?page=2#top');
+  });
+
+  it('keeps the previous URL when only disabled parts change', () => {
+    const source = signal('/page?page=1#old');
+    const url = urlChangeSignal(source, { matrixParams: false, queryParams: false, fragment: false });
+    expect(url()).toBe('/page?page=1#old');
+
+    source.set('/page;view=list?page=2#new');
+
+    expect(url()).toBe('/page?page=1#old');
+  });
+
+  it('updates when the path changes even if other parts are disabled', () => {
+    const source = signal('/page?page=1');
+    const url = urlChangeSignal(source, { queryParams: false, fragment: false });
+    expect(url()).toBe('/page?page=1');
+
+    source.set('/other?page=1');
+
+    expect(url()).toBe('/other?page=1');
+  });
+
+  it('treats reordered query params as unchanged', () => {
+    const source = signal('/page?a=1&b=2');
+    const url = urlChangeSignal(source);
+    expect(url()).toBe('/page?a=1&b=2');
+
+    source.set('/page?b=2&a=1');
+
+    expect(url()).toBe('/page?a=1&b=2');
   });
 });
