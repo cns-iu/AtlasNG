@@ -3,6 +3,7 @@
 $config: (
   namespace: 'table',
   tokens: (
+    auto-row-min-height: 48px,
     border-color: token-utils.sys-token(outline),
     border-radius: token-utils.sys-token(corner-small),
     header-background-color: token-utils.sys-token(surface-variant),

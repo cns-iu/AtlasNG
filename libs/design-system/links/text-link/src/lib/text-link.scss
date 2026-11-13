@@ -2,8 +2,7 @@
 @use 'tokens/text-link' as tokens;
 
 .ang-text-link {
-  display: inline-flex;
-  align-items: center;
+  display: inline;
   color: token-utils.slot(color, tokens.$config);
   text-decoration: underline;
   font-weight: inherit;
@@ -17,6 +16,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    vertical-align: middle;
     overflow-y: visible;
     height: 0;
 

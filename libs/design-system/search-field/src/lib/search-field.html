@@ -1,0 +1,40 @@
+<mat-form-field class="ang-search-field--form-field" subscriptSizing="dynamic">
+  <mat-icon matPrefix fontIcon="search" />
+  <mat-label>{{ label() }}</mat-label>
+  <input
+    class="ang-search-field--input"
+    matInput
+    type="search"
+    autocomplete="off"
+    [placeholder]="placeholder() ?? ''"
+    [disabled]="disabled()"
+    [value]="value()"
+    [matAutocomplete]="autocomplete"
+    (input)="updateValue($event)"
+    (keydown.escape)="handleEscape()"
+    #input
+  />
+  @if (value() && !disabled()) {
+    <button
+      class="ang-search-field--clear"
+      matIconButton
+      matSuffix
+      type="button"
+      aria-label="Clear search"
+      (click)="clear()"
+    >
+      <mat-icon fontIcon="close" />
+    </button>
+  }
+  <mat-autocomplete
+    class="ang-search-field--panel"
+    (optionSelected)="select($event.option.value)"
+    #autocomplete="matAutocomplete"
+  >
+    @for (suggestion of options(); track suggestion.value) {
+      <mat-option class="ang-search-field--option" [value]="suggestion.value">
+        <span [angSearchHighlight]="suggestion.value" [angSearchHighlightRanges]="suggestion.ranges"></span>
+      </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>

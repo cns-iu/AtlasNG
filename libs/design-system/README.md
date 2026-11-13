@@ -43,15 +43,19 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/indicators/no-results-indicator`     | `NoResultsIndicator`                                                      |
 | `@atlasng/design-system/indicators/notice`                   | `Notice`                                                                  |
 | `@atlasng/design-system/indicators/results-indicator`        | `ResultsIndicator`                                                        |
+| `@atlasng/design-system/indicators/skeleton`                 | `Skeleton`                                                                |
 | `@atlasng/design-system/links/link-snippet`                  | `LinkSnippet`                                                             |
 | `@atlasng/design-system/links/text-link`                     | `TextLink`                                                                |
 | `@atlasng/design-system/page-layout`                         | `PageLayout` and its slot directives                                      |
+| `@atlasng/design-system/search-field`                        | `SearchField`                                                             |
 | `@atlasng/design-system/search-list`                         | `SearchList`, `SearchListOption`                                          |
 | `@atlasng/design-system/snackbar`                            | `Snackbar`, `createSnackBarConfig`, `SnackBarConfig`, `SnackBarData`      |
 | `@atlasng/design-system/table`                               | `Table` and its column and template APIs                                  |
 | `@atlasng/design-system/table/columns`                       | Ready-made header, cell, and summary definitions                          |
 | `@atlasng/design-system/table-of-contents`                   | `TableOfContents`                                                         |
 | `@atlasng/design-system/youtube-player`                      | `YouTubePlayer`, `provideYouTubePlayerConfig`                             |
+
+Error codes are exported from `@atlasng/design-system/errors` as `DesignSystemErrorCode` and re-exported from `@atlasng/design-system`.
 
 ```ts
 import { Component } from '@angular/core';
@@ -70,6 +74,7 @@ A few components with notable options:
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
 - **Page layout:** lays out a page body with `angPageLayoutHeader`, `angPageLayoutIntro`, `angPageLayoutSidePanel`, and `angPageLayoutEnd` slots, and puts unmarked content in the main slot. From the `medium` breakpoint, the side panel is a sticky column. Set the layout's `sidePanelWidth` input to `medium` (default) for a table of contents or `large` for version control. Below the `medium` breakpoint, the side panel follows the page header and intro, so a metadata page can put its first section in the intro. The layout adds no landmarks, so wrap it in the application's `main` element. Under a sticky header, set the `side-panel-sticky-top` token to the header's height. The `max-width`, `side-padding`, and `side-padding-medium` tokens set the page width and side padding, which the [`page-container` mixin](#page-container) shares.
+- **Skeleton:** stands in for loading content as a `text` line (default), `circle`, or `rect`. Size it from the surrounding styles, and set `lines` to stack several text lines. It is hidden from assistive technology, so set `aria-busy` on the loading region.
 
 ## Icons
 
@@ -153,6 +158,7 @@ Include `ds.defaults()` once at your app root to apply every AtlasNG default sty
 | `mat-form-field`   | AtlasNG tokens for Angular Material form fields (`ds.mat-form-field-defaults()`)     |
 | `mat-progress-bar` | AtlasNG tokens for Angular Material progress bars (`ds.mat-progress-bar-defaults()`) |
 | `mat-slider`       | AtlasNG tokens for Angular Material sliders (`ds.mat-slider-defaults()`)             |
+| `mat-tree`         | Transparent background for Angular Material trees (`ds.mat-tree-defaults()`)         |
 | `text-selection`   | Theme colors for selected text (`ds.text-selection-styles()`)                        |
 
 ```scss

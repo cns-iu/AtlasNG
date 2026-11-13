@@ -1,4 +1,6 @@
+import { AnalyticsErrorCode } from '@atlasng/analytics/errors';
 import { AnalyticsEvent, AnalyticsEventCategory, getAnalyticsEventCategory } from '@atlasng/analytics/events';
+import { AngError } from '@atlasng/core';
 
 /** A mapping of analytics categories to their permission status. */
 type CategoryPermissions = Readonly<Record<AnalyticsEventCategory, boolean>>;
@@ -183,7 +185,10 @@ export class AnalyticsPermissions {
   static fromJSON(json: string, defaultPermissions?: AnalyticsPermissions): AnalyticsPermissions {
     const parsed = JSON.parse(json);
     if (typeof parsed !== 'object' || parsed === null) {
-      throw new Error('Invalid AnalyticsPermissions JSON');
+      throw new AngError(
+        AnalyticsErrorCode.InvalidPermissionsJson,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && 'Invalid AnalyticsPermissions JSON',
+      );
     }
 
     const categories = Object.values(AnalyticsEventCategory);

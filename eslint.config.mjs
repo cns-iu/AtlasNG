@@ -68,6 +68,7 @@ const baseConfig = [
               sourceTag: 'layer:app-library',
               onlyDependOnLibsWithTags: [
                 'layer:labs',
+                'layer:content-blocks',
                 'layer:design-system',
                 'layer:analytics',
                 'layer:cdk',
@@ -167,6 +168,15 @@ const libraryConfig = [
   ...baseConfig,
   ...angularConfig,
   ...atlasng.configs['flat/storybook'],
+  {
+    files: ['**/*.ts'],
+    ignores: ['**/*.spec.ts', '**/*.stories.ts', '**/.storybook/**', '**/test-setup.ts'],
+    plugins: { '@atlasng': atlasng },
+    rules: {
+      // Production builds drop strings guarded by ngDevMode; see AngError in @atlasng/core
+      '@atlasng/no-unguarded-error-message': 'error',
+    },
+  },
 
   // TODO: Might need to set packageJsonLocation for storybook/no-uninstalled-addons
   // import.meta.resolve('./package.json') + fileURLToPath

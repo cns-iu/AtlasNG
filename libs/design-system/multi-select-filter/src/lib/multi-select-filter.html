@@ -2,6 +2,7 @@
   @let tooltip = infoTooltip();
   @if (tooltip) {
     <button
+      type="button"
       class="ang-multi-select-filter--info"
       matIconButton
       angTrackClick
@@ -16,6 +17,7 @@
   }
 
   <button
+    type="button"
     class="ang-multi-select-filter--label"
     matButton
     angTrackClick
@@ -39,7 +41,7 @@
     @for (option of selected(); track option) {
       <mat-chip role="listitem" disableRipple (removed)="removeFilter(option)">
         {{ option.label }}
-        <button matChipRemove [attr.aria-label]="`${removeLabel()} ${option.label}`">
+        <button type="button" matChipRemove [attr.aria-label]="`${removeLabel()} ${option.label}`">
           <mat-icon fontIcon="cancel" />
         </button>
       </mat-chip>

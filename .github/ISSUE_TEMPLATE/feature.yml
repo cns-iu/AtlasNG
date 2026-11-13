@@ -1,0 +1,41 @@
+name: Feature
+description: Propose a new component, pattern, token, or improvement.
+type: Feature
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can't apps or sites do today, and who does it affect?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should AtlasNG add or change? List features as bullets.
+    validations:
+      required: true
+  - type: textarea
+    id: used-by
+    attributes:
+      label: Used by
+      description: Apps, sites, or hra-ui code that need this, with links.
+  - type: textarea
+    id: figma
+    attributes:
+      label: Figma
+      description: Links to the design, such as the AtlasNG Components frame and the app's implementation frame.
+      placeholder: |
+        - AtlasNG Components: https://www.figma.com/design/...
+        - App implementation: https://www.figma.com/design/...
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Material 3 guidance, other design systems, or related issues and PRs.
+  - type: textarea
+    id: open-questions
+    attributes:
+      label: Open questions
+      description: Decisions that need design or maintainer input before work starts.

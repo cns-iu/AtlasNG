@@ -80,26 +80,20 @@ npx nx build-compodoc <project>  # static
 
 CI, publishing, and the Storybook deploy run through reusable workflows (prefixed `nx-`) that other Nx repos can call. AtlasNG's own [ci.yml](.github/workflows/ci.yml), [publish.yml](.github/workflows/publish.yml), and [storybook-gh-pages.yml](.github/workflows/storybook-gh-pages.yml) are thin callers, so every AtlasNG PR exercises them.
 
-| Workflow or action                                                                     | Purpose                                                                                               |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| [nx-ci.yml](.github/workflows/nx-ci.yml)                                               | commitlint, `nx format:check`, `nx affected` with Nx Cloud distribution, `nx fix-ci`, Netlify preview |
-| [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)                     | Publishes the tagged release group or project to npm and creates the fixed group's GitHub Release     |
-| [nx-storybook-gh-pages.yml](.github/workflows/nx-storybook-gh-pages.yml)               | Builds a Storybook project and deploys it to GitHub Pages                                             |
-| [setup-nx-workspace](.github/actions/setup-nx-workspace/action.yml) (composite action) | Node.js from `.nvmrc`, `npm ci --no-audit`, optional `nx-set-shas`                                    |
+| Workflow or action                                                       | Purpose                                                                                               |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| [nx-ci.yml](.github/workflows/nx-ci.yml)                                 | commitlint, `nx format:check`, `nx affected` with Nx Cloud distribution, `nx fix-ci`, Netlify preview |
+| [nx-release-publish.yml](.github/workflows/nx-release-publish.yml)       | Publishes the tagged release group or project to npm and creates the fixed group's GitHub Release     |
+| [nx-storybook-gh-pages.yml](.github/workflows/nx-storybook-gh-pages.yml) | Builds a Storybook project and deploys it to GitHub Pages                                             |
+| [nx-app-gh-pages.yml](.github/workflows/nx-app-gh-pages.yml)             | Builds an Nx app and deploys it to GitHub Pages with a SPA fallback                                   |
 
-Each file documents its inputs and secrets. `nx-ci.yml` distributes tasks with `.nx/workflows/distribution-config.yaml` and runs them all on the CI runner when that file is missing. A caller owns the triggers, `concurrency`, and `permissions`, for example:
+See [Using these workflows](.github/workflows/README.md) for version pinning, an example caller, required permissions and secrets, and status check names.
 
-```yaml
-jobs:
-  ci:
-    uses: cns-iu/AtlasNG/.github/workflows/nx-ci.yml@<ref>
-    with:
-      targets: lint test build
-    secrets:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-```
+### Releasing the workflows
 
-Where the workflows are hosted long term and how other repos pin versions is still to be decided. Until then the workflows reference their actions with local `./.github/actions/...` paths, which resolve against the calling repository, so they only work outside AtlasNG once those references are fully qualified.
+The reusable workflows and composite actions are released together, independently of the npm packages, as `workflows/v<major>.<minor>.<patch>` tags plus a moving `workflows/v<major>` tag.
+
+To cut a release, run the [Release workflows](.github/workflows/release-workflows.yml) workflow on `main` with the new version (enable `dry-run` to preview the notes first). It tags `main`, moves the major tag, and creates the GitHub Release. It refuses versions that are not greater than the latest release, releases without workflow or action changes, and breaking changes (`type!:` or a `BREAKING CHANGE` footer) without a major version bump from 1.0.0 on.
 
 ## Releasing
 

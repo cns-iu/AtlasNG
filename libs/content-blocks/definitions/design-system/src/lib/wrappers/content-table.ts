@@ -1,12 +1,5 @@
 import { Component, computed, input, Type } from '@angular/core';
-import {
-  CellDefinition,
-  Row,
-  Table,
-  TABLE_ROW_HEIGHT,
-  TableAppearance,
-  TableColumn,
-} from '@atlasng/design-system/table';
+import { CellDefinition, Row, Table, TableAppearance, TableColumn } from '@atlasng/design-system/table';
 import {
   ChipCellDefinition,
   CodeCellDefinition,
@@ -81,7 +74,7 @@ export class ContentTable {
   readonly appearance = input<TableAppearance>('striped');
 
   /** Height of each row in pixels. */
-  readonly rowHeight = input(TABLE_ROW_HEIGHT);
+  readonly rowHeight = input<number | 'auto'>('auto');
 
   /** Columns converted to design-system table columns, recreated only when the JSON columns change. */
   protected readonly tableColumns = computed(() => this.columns().map(toTableColumn));
