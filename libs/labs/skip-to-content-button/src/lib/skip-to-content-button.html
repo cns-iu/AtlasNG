@@ -1,4 +1,4 @@
-<a mat-button class="link" [angAnyLink]="anchorId()">
+<a mat-button class="link" [href]="href()" (click)="skipToContent($event)">
   {{ label() }}
   <mat-icon fontIcon="arrow_right_alt" class="ang-skip-to-content-button-icon" iconPositionEnd />
 </a>
