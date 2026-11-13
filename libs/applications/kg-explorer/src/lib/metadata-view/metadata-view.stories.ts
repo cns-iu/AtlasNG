@@ -15,13 +15,6 @@ import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angul
 import { expect } from 'storybook/test';
 import { KgExplorerMetadataSection, KgExplorerMetadataView } from './metadata-view';
 
-const DESCRIPTION =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore ' +
-  'magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo ' +
-  'consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla ' +
-  'pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est ' +
-  'laborum.';
-
 /**
  * Creates a paragraph node.
  *
@@ -43,20 +36,14 @@ function link(text: string, href: string): ContentNode {
   return { component: 'TextLink', config: { href }, content: text };
 }
 
+const DESCRIPTION =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore ' +
+  'magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo ' +
+  'consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla ' +
+  'pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est ' +
+  'laborum.';
+
 const SECTIONS: KgExplorerMetadataSection[] = [
-  {
-    title: 'Description',
-    content: [
-      paragraph(DESCRIPTION),
-      {
-        component: 'MetadataImage',
-        config: {
-          src: 'assets/illustration-placeholder.svg',
-          alt: 'Placeholder illustration of the cardiovascular system',
-        },
-      },
-    ],
-  },
   { title: 'Creator(s)', content: [paragraph(link('Jacob C. Scherba', 'https://www.example.com'))] },
   { title: 'Project lead(s)', content: paragraph(link('Katy Börner', 'https://www.example.com')) },
   { title: 'Internal reviewer(s)', content: paragraph(link('Rajan Jain', 'https://www.example.com')) },
@@ -100,26 +87,12 @@ const meta: Meta<KgExplorerMetadataView> = {
     },
     layout: 'fullscreen',
   },
-  argTypes: {
-    download: { table: { disable: true } },
-  },
   args: {
-    metadata: {
-      title: 'Whole Person Physiome (WPP) table for cardiovascular system',
-      icons: [
-        { src: 'assets/product-icon-placeholder.svg', alt: 'Knowledge graph' },
-        { src: 'assets/organ-icon-placeholder.svg', alt: 'Heart' },
-      ],
-      url: 'https://purl.wholepersonphysiome.org/wpp/cardiovascular-system',
-      sections: SECTIONS,
-      versions: VERSIONS,
-    },
     breadcrumbs: [
       { name: 'Home', command: '/' },
       { name: 'Knowledge Graph Explorer', command: '/kg-explorer' },
       { name: 'Whole Person Physiome (WPP) table for cardiovascular system' },
     ],
-    config: {},
   },
   render: (args) => ({
     props: args,
@@ -142,6 +115,33 @@ export const Default: Story = {
     await expect(canvas.getByText('Digital object version')).toBeVisible();
     await expect(await canvas.findByRole('link', { name: 'CC BY 4.0' })).toBeVisible();
   },
+  args: {
+    metadata: {
+      title: 'Whole Person Physiome (WPP) table for cardiovascular system',
+      icons: [
+        { src: 'assets/product-icon-placeholder.svg', alt: 'Knowledge graph' },
+        { src: 'assets/organ-icon-placeholder.svg', alt: 'Heart' },
+      ],
+      url: 'https://purl.wholepersonphysiome.org/wpp/cardiovascular-system',
+      sections: [
+        {
+          title: 'Description',
+          content: [
+            paragraph(DESCRIPTION),
+            {
+              component: 'MetadataImage',
+              config: {
+                src: 'assets/illustration-placeholder.svg',
+                alt: 'Placeholder illustration of the cardiovascular system',
+              },
+            },
+          ],
+        },
+        ...SECTIONS,
+      ],
+      versions: VERSIONS,
+    },
+  },
 };
 
 /** Metadata page whose first section displays the primary file as an interactive 3D model. */
@@ -155,6 +155,7 @@ export const WithModel: Story = {
         {
           title: '3D model',
           content: [
+            paragraph(DESCRIPTION),
             {
               component: 'MetadataModel',
               config: {
@@ -162,10 +163,9 @@ export const WithModel: Story = {
                 alt: '3D model of the left female kidney',
               },
             },
-            paragraph(DESCRIPTION),
           ],
         },
-        ...SECTIONS.slice(1),
+        ...SECTIONS,
       ],
       versions: VERSIONS,
     },
@@ -177,6 +177,28 @@ export const WithModel: Story = {
   },
 };
 
+/** Metadata page with a section displaying a table loaded from a CSV file. */
+export const WithTable: Story = {
+  args: {
+    metadata: {
+      title: 'Anatomical structures of the heart',
+      icons: [{ src: 'assets/organ-icon-placeholder.svg', alt: 'Heart' }],
+      url: 'https://purl.humanatlas.io/ref-organ/heart-female',
+      sections: [
+        {
+          title: 'Anatomical structures',
+          content: { component: 'MetadataTable', config: { url: 'assets/sample-table.csv' } },
+        },
+        ...SECTIONS,
+      ],
+      versions: VERSIONS,
+    },
+  },
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByText('Left ventricle')).toBeVisible();
+  },
+};
+
 const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
   { id: 'kg-explorer', label: 'Knowledge Graph Explorer' },
   { id: 'about', label: 'About' },
@@ -185,6 +207,33 @@ const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
 /** Metadata page displayed below the application header. */
 export const WithHeader: Story = {
   decorators: [moduleMetadata({ imports: [HeaderShell, NavigationContainer] })],
+  args: {
+    metadata: {
+      title: 'Whole Person Physiome (WPP) table for cardiovascular system',
+      icons: [
+        { src: 'assets/product-icon-placeholder.svg', alt: 'Knowledge graph' },
+        { src: 'assets/organ-icon-placeholder.svg', alt: 'Heart' },
+      ],
+      url: 'https://purl.wholepersonphysiome.org/wpp/cardiovascular-system',
+      sections: [
+        {
+          title: 'Description',
+          content: [
+            paragraph(DESCRIPTION),
+            {
+              component: 'MetadataImage',
+              config: {
+                src: 'assets/illustration-placeholder.svg',
+                alt: 'Placeholder illustration of the cardiovascular system',
+              },
+            },
+          ],
+        },
+        ...SECTIONS,
+      ],
+      versions: VERSIONS,
+    },
+  },
   render: (args) => ({
     props: { ...args, navigationItems: NAVIGATION_ITEMS },
     template: `

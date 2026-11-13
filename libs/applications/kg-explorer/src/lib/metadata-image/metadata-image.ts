@@ -7,7 +7,6 @@ import { Component, input } from '@angular/core';
   imports: [NgOptimizedImage],
   templateUrl: './metadata-image.html',
   styleUrl: './metadata-image.scss',
-  host: { class: 'ang-kg-explorer-metadata-image' },
 })
 export class KgExplorerMetadataImage {
   /** Image source URL. */
