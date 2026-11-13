@@ -32,8 +32,12 @@
 
   <div class="ang-footer--actions">
     <ng-content select="ang-footer-action, [angFooterAction]">
-      <button matButton class="ang-footer--action" (click)="openPrivacyPreferences.emit()">Privacy Preferences</button>
-      <button matButton class="ang-footer--action" (click)="openPrivacyPolicy.emit()">Privacy Policy</button>
+      <button type="button" matButton class="ang-footer--action" (click)="openPrivacyPreferences.emit()">
+        Privacy Preferences
+      </button>
+      <button type="button" matButton class="ang-footer--action" (click)="openPrivacyPolicy.emit()">
+        Privacy Policy
+      </button>
     </ng-content>
   </div>
 

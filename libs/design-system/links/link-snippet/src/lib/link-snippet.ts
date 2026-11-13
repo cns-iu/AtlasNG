@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AnyLink, IdGenerator } from '@atlasng/common';
+import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
 /** Regular expression to match URL prefixes. */
 const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
@@ -13,7 +14,7 @@ const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
  */
 @Component({
   selector: 'ang-link-snippet',
-  imports: [AnyLink, MatIconModule, MatButtonModule],
+  imports: [AnyLink, MatIconModule, MatButtonModule, ScrollArea],
   templateUrl: './link-snippet.html',
   styleUrl: './link-snippet.scss',
   encapsulation: ViewEncapsulation.None,

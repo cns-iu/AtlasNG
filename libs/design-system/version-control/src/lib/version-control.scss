@@ -4,6 +4,7 @@
 
 :host {
   display: flex;
+  box-sizing: border-box;
   flex-direction: column;
   width: 100%;
   overflow: hidden;
@@ -37,8 +38,6 @@
 }
 
 ang-scroll-area {
-  max-height: 30rem;
-
   @include scroll.overrides(
     (
       container-color: token-utils.slot(container-color, $config),
