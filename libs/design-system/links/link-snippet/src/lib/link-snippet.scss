@@ -35,9 +35,6 @@
   }
 
   .ang-link-snippet--scroll-area {
-    flex: 1 1 auto;
-    min-width: 0;
-
     @include scroll.overrides(
       (
         container-color: token-utils.slot(link-background, tokens.$config),

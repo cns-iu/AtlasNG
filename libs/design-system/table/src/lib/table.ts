@@ -80,8 +80,39 @@ function optionalNumberAttribute(value: unknown): number | undefined {
   return value == null ? undefined : numberAttribute(value);
 }
 
-/** Default row height used by the virtualized table. */
-export const TABLE_ROW_HEIGHT = 48;
+/** Summary row height used when the body row height is not a fixed number. */
+const DEFAULT_SUMMARY_HEIGHT = 48;
+
+/**
+ * Body row height: a fixed pixel height, `'auto'` to size rows to their
+ * content, or a function estimating each row's pixel height.
+ *
+ * - `'auto'` disables virtualization and renders every row, so rows wrap and
+ *   grow to fit their content at any width.
+ * - Numbers and functions keep virtualization; rendered rows are exactly the
+ *   returned height, so taller content is clipped. Replace the function to
+ *   recompute every row height, for example after the table width changes.
+ */
+export type TableRowHeight<TRow extends Row = Row> = number | 'auto' | ((row: TRow) => number);
+
+/**
+ * Coerces a row height attribute, parsing numeric strings while passing
+ * `'auto'` and estimator functions through.
+ *
+ * @param value Bound or static attribute value.
+ * @returns Row height accepted by ngx-datatable; `'auto'` when unset.
+ */
+function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TRow> {
+  if (value == null || value === '') {
+    return 'auto';
+  }
+
+  if (value === 'auto' || typeof value === 'function') {
+    return value as TableRowHeight<TRow>;
+  }
+
+  return numberAttribute(value);
+}
 
 /**
  * AtlasNG data table with curated appearance, sorting, selection, reusable
@@ -99,6 +130,7 @@ export const TABLE_ROW_HEIGHT = 48;
     '[class]': '"ang-table--appearance-" + appearance()',
     '[class.ang-table--summary-top]': 'summaryRow() && summaryPosition() === "top"',
     '[class.ang-table--summary-bottom]': 'summaryRow() && summaryPosition() === "bottom"',
+    '[class.ang-table--auto-row-height]': 'rowHeight() === "auto"',
   },
 })
 export class Table<TRow extends Row = Row> {
@@ -111,8 +143,11 @@ export class Table<TRow extends Row = Row> {
   /** Visual treatment applied to rows and internal rules. */
   readonly appearance = input<TableAppearance>('striped');
 
-  /** Height of each virtualized row in pixels. */
-  readonly rowHeight = input(TABLE_ROW_HEIGHT, { transform: numberAttribute });
+  /**
+   * Body row height in pixels, `'auto'` to fit content, or a per-row estimator.
+   * See {@link TableRowHeight} for the virtualization trade-offs.
+   */
+  readonly rowHeight = input<TableRowHeight<TRow>, unknown>('auto', { transform: rowHeightAttribute });
 
   /** Enables horizontal scrolling when columns exceed the available width. */
   readonly scrollbarH = input(true, { transform: booleanAttribute });
@@ -132,14 +167,17 @@ export class Table<TRow extends Row = Row> {
   /** Displays a row of per-column summaries computed with each column's `summaryFunc`. */
   readonly summaryRow = input(false, { transform: booleanAttribute });
 
-  /** Height of the summary row in pixels; defaults to {@link rowHeight}. */
+  /** Height of the summary row in pixels; defaults to {@link rowHeight} when it is a number and 48px otherwise. */
   readonly summaryHeight = input(undefined, { transform: optionalNumberAttribute });
 
   /** Placement of the summary row relative to the body rows. */
   readonly summaryPosition = input<TableSummaryPosition>('top');
 
-  /** Summary row height with the body row height applied as a fallback. */
-  protected readonly resolvedSummaryHeight = computed(() => this.summaryHeight() ?? this.rowHeight());
+  /** Summary row height with the numeric body row height applied as a fallback. */
+  protected readonly resolvedSummaryHeight = computed(() => {
+    const rowHeight = this.rowHeight();
+    return this.summaryHeight() ?? (typeof rowHeight === 'number' ? rowHeight : DEFAULT_SUMMARY_HEIGHT);
+  });
 
   /** Columns converted to the native ngx-datatable representation. */
   protected readonly resolvedColumns = computed(() => this.columns().map((column) => this.#resolveColumn(column)));

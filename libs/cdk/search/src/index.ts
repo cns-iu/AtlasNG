@@ -7,7 +7,12 @@ export {
   SearchHighlight,
   type HighlightSegment,
 } from './lib/highlight/highlight';
-export { injectSearch, type InjectSearchOptions, type MaybeSignalLike } from './lib/resource/inject-search';
+export {
+  injectSearch,
+  type InjectSearchOptions,
+  type MaybeSignalLike,
+  type SignalLike,
+} from './lib/resource/inject-search';
 export type { SearchResourceRef } from './lib/resource/search-resource';
 export { SearchEngine } from './lib/engine/search-engine';
 export { DEFAULT_SEARCH_VALUE_FIELD } from './lib/engine/values';
@@ -26,6 +31,7 @@ export type {
   SearchFieldName,
   SearchFieldSpec,
   SearchFieldValue,
+  SearchFilter,
   SearchIndex,
   SearchKey,
   SearchMatch,
