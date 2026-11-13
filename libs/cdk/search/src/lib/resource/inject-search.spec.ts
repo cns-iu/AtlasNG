@@ -5,7 +5,7 @@ import { DefaultSearchEngine } from '../default-engine/default-engine';
 import { injectSearch, InjectSearchOptions } from './inject-search';
 import { SearchEngine } from '../engine/search-engine';
 import { provideSearch, withCustomEngine } from '../providers';
-import { SearchFieldSpec, SearchIndex, SearchResult, SearchSuggestion } from '../engine/types';
+import { SearchFieldSpec, SearchFilter, SearchIndex, SearchResult, SearchSuggestion } from '../engine/types';
 
 interface Organ {
   label: string;
@@ -37,7 +37,7 @@ class DeferredEngine implements SearchEngine {
         new Promise<readonly SearchResult<T>[]>((resolve, reject) => {
           this.pending.push({ resolve: () => resolve(index.search(query)), reject });
         }),
-      suggest: (term, limit) => Promise.resolve(index.suggest(term, limit)),
+      suggest: (term, limit, filter) => Promise.resolve(index.suggest(term, limit, filter)),
     };
   }
 }
@@ -123,6 +123,68 @@ describe('injectSearch', () => {
       expect.objectContaining({ item: items[0] }),
       expect.objectContaining({ item: items[1], matches: [{ field: 'label', value: 'Heart', ranges: [[0, 5]] }] }),
     ]);
+  });
+
+  it('applies the filter while the term is empty or too short', () => {
+    const term = signal('');
+    const filter = signal<SearchFilter<Organ> | undefined>((organ) => organ.label !== 'Heart');
+    const search = setup({ items: ORGANS, term, filter, minLength: 3 });
+    expect(labels(search.items())).toEqual(['Left Kidney', 'Heartwood']);
+
+    term.set('he');
+    expect(labels(search.items())).toEqual(['Left Kidney', 'Heartwood']);
+    filter.set(undefined);
+    expect(search.items()).toEqual(ORGANS);
+  });
+
+  it('applies filter changes to the results and suggestions without rebuilding the index', () => {
+    const engine = new DefaultSearchEngine();
+    const createIndex = vi.spyOn(engine, 'createIndex');
+    const filter = signal<SearchFilter<Organ> | undefined>(undefined);
+    const search = setup({ items: ORGANS, term: 'heart', filter, limit: 1, suggestionField: 'label', engine });
+    expect(labels(search.items())).toEqual(['Heart']);
+    expect(values(search.suggestions.value())).toEqual(['Heart', 'Heartwood']);
+    expect(createIndex).toHaveBeenCalledTimes(2);
+
+    filter.set((organ) => organ.label !== 'Heart');
+    expect(labels(search.items())).toEqual(['Heartwood']);
+    expect(values(search.suggestions.value())).toEqual(['Heartwood']);
+
+    filter.set(() => false);
+    expect(search.items()).toEqual([]);
+    expect(search.suggestions.value()).toEqual([]);
+    expect(createIndex).toHaveBeenCalledTimes(2);
+  });
+
+  it('reads the filter from a function that returns the predicate', () => {
+    const hidden = signal('Heart');
+    const predicate = vi.fn((organ: Organ) => organ.label !== hidden());
+    const search = setup({ items: ORGANS, term: 'heart', filter: () => predicate });
+    expect(labels(search.items())).toEqual(['Heartwood']);
+    expect(predicate.mock.calls.every((args) => args.length === 1)).toBe(true);
+
+    // A predicate is not a getter: passing one directly would call it without an item
+    // @ts-expect-error Predicates must be wrapped in a signal or function
+    const options: InjectSearchOptions<Organ> = { items: ORGANS, term: '', filter: predicate };
+    expect(options.filter).toBe(predicate);
+  });
+
+  it('drops results for a previous filter while an asynchronous request is pending', async () => {
+    const engine = new DeferredEngine();
+    const filter = signal<SearchFilter<Organ> | undefined>(undefined);
+    const search = setup({ items: ORGANS, term: 'heart', filter, engine, suggestionField: 'label' });
+    await settle();
+    engine.pending.shift()?.resolve();
+    await settle();
+    expect(labels(search.items())).toEqual(['Heart', 'Heartwood']);
+
+    filter.set((organ) => organ.label !== 'Heart');
+    expect(search.items()).toEqual([]);
+    await settle();
+    engine.pending.shift()?.resolve();
+    await settle();
+    expect(labels(search.items())).toEqual(['Heartwood']);
+    expect(values(search.suggestions.value())).toEqual(['Heartwood']);
   });
 
   it('suggests values of the suggestion field with their ranges', () => {

@@ -45,9 +45,18 @@ $slider-defaults: (
   @include mat.slider-overrides($slider-defaults);
 }
 
+$tree-defaults: (
+  container-background-color: transparent,
+);
+
+@mixin tree-defaults {
+  @include mat.tree-overrides($tree-defaults);
+}
+
 @mixin all-defaults {
   @include button-defaults;
   @include form-field-defaults;
   @include progress-bar-defaults;
   @include slider-defaults;
+  @include tree-defaults;
 }

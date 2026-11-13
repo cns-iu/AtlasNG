@@ -6,7 +6,14 @@
   </div>
 
   @if (!disableClose) {
-    <button matIconButton matDialogClose angEventScope="close" angTrackClick aria-label="Close cookie consent modal">
+    <button
+      type="button"
+      matIconButton
+      matDialogClose
+      angEventScope="close"
+      angTrackClick
+      aria-label="Close cookie consent modal"
+    >
       <mat-icon fontIcon="close" />
     </button>
   }
@@ -43,6 +50,7 @@
 
 <div matDialogActions class="ang-cookie-modal--actions" angEventScope="actions" align="center">
   <button
+    type="button"
     matButton="filled"
     angEventScope="allow-necessary"
     angTrackClick
@@ -54,6 +62,7 @@
 
   @if (activeTab() === 0) {
     <button
+      type="button"
       matButton="outlined"
       angEventScope="customize"
       angTrackClick
@@ -64,6 +73,7 @@
     </button>
   } @else {
     <button
+      type="button"
       matButton="filled"
       angEventScope="allow-selection"
       angTrackClick
@@ -75,6 +85,7 @@
   }
 
   <button
+    type="button"
     matButton="filled"
     angEventScope="allow-all"
     angTrackClick

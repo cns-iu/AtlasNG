@@ -158,6 +158,26 @@ describe('DefaultSearchEngine', () => {
       expect(labels(results)).toEqual(['Heart']);
     });
 
+    it('matches only items that pass the filter', () => {
+      const index = engine.createIndex(ORGANS, ['label']);
+      const filter = vi.fn((organ: Organ) => organ.label !== 'Heart');
+      expect(labels(index.search({ term: 'heart', filter }))).toEqual(['Heartwood', 'Café Heart']);
+      expect(filter).toHaveBeenCalledTimes(ORGANS.length);
+    });
+
+    it('limits results after filtering', () => {
+      const index = engine.createIndex(ORGANS, ['label']);
+      const filter = (organ: Organ) => organ.label !== 'Heart';
+      expect(labels(index.search({ term: 'heart', filter, limit: 1 }))).toEqual(['Heartwood']);
+      expect(labels(index.search({ term: 'heart', filter, limit: 1, order: 'source' }))).toEqual(['Heartwood']);
+    });
+
+    it('filters before limiting for an empty term', () => {
+      const filter = (organ: Organ) => organ.label.includes('Kidney');
+      const results = engine.createIndex(ORGANS).search({ term: '', filter, limit: 2 });
+      expect(results).toEqual([{ item: ORGANS[0] }, { item: ORGANS[2] }]);
+    });
+
     it('searches primitive items', () => {
       const results = engine.createIndex(['Alpha', 42, 'Beta']).search({ term: '4' });
       expect(results).toEqual([
@@ -226,6 +246,23 @@ describe('DefaultSearchEngine', () => {
 
     it('limits suggestions', () => {
       expect(index.suggest('e', 2)).toHaveLength(2);
+    });
+
+    it('suggests only values of items that pass the filter', () => {
+      const filter = (organ: Organ) => organ.label !== 'Heart';
+      expect(index.suggest('heart', 1, filter)).toEqual([{ value: 'Heartwood', ranges: [[0, 5]] }]);
+      expect(index.suggest('heart', undefined, () => false)).toEqual([]);
+    });
+
+    it('suggests a repeated value when any of its items passes the filter', () => {
+      const items = [
+        { label: 'Heart', id: 1 },
+        { label: 'Heart', id: 2 },
+      ];
+      const repeated = engine.createIndex(items, ['label']);
+      expect(repeated.suggest('heart', undefined, (item) => item.id === 2)).toEqual([
+        { value: 'Heart', ranges: [[0, 5]] },
+      ]);
     });
   });
 });
