@@ -23,7 +23,8 @@
     "@atlasng/core": "^0.0.11",
     "@atlasng/design-system": "^0.0.11",
     "@google/model-viewer": "^4.4.0",
-    "papaparse": "^5.7.1"
+    "papaparse": "^5.7.1",
+    "three": "^0.183.0"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "*",

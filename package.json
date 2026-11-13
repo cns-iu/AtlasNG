@@ -34,6 +34,7 @@
     "papaparse": "^5.7.1",
     "qs": "^6.16.0",
     "rxjs": "^7.8.2",
+    "three": "^0.183.0",
     "type-fest": "^5.9.0"
   },
   "devDependencies": {
