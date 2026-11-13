@@ -14,6 +14,7 @@ export {
   type LinkCommand,
   type NullableLinkAttributes,
   type PreparedLink,
+  type UrlChangeMatchOptions,
 } from './lib/link-handler/handler';
 export {
   LinkHandlerFeatureKind,

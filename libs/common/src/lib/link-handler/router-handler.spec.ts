@@ -29,6 +29,7 @@ describe('RouterLinkHandler', () => {
   interface TestContext {
     activeUrl: WritableSignal<UrlTree>;
     angularLocation: {
+      onUrlChange: ReturnType<typeof vi.fn<(fn: (url: string, state: unknown) => void) => VoidFunction>>;
       path: ReturnType<typeof vi.fn<(includeHash?: boolean) => string>>;
       prepareExternalUrl: ReturnType<typeof vi.fn<(url: string) => string>>;
     };
@@ -56,6 +57,7 @@ describe('RouterLinkHandler', () => {
       serializeUrl: vi.fn((tree: UrlTree) => urlSerializer.serialize(tree)),
     };
     const angularLocation = {
+      onUrlChange: vi.fn().mockReturnValue(vi.fn()),
       path: vi.fn().mockReturnValue('/current/path?existing=1#old'),
       prepareExternalUrl: vi.fn((url: string) => `/base${url}`),
     };
@@ -340,6 +342,47 @@ describe('RouterLinkHandler', () => {
       await Promise.resolve();
 
       expect(errorHandler.handleError).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe('currentUrl', () => {
+    it('starts with the current external URL', () => {
+      const { handler } = setup();
+
+      expect(handler.currentUrl()()).toBe('/base/current/path?existing=1#old');
+    });
+
+    it('updates with the external URL when Location reports a change', () => {
+      const { angularLocation, handler } = setup();
+      const currentUrl = handler.currentUrl();
+
+      const [[listener]] = angularLocation.onUrlChange.mock.calls;
+      angularLocation.path.mockReturnValue('/team/42');
+      listener('/team/42', null);
+
+      expect(currentUrl()).toBe('/base/team/42');
+    });
+
+    it('ignores changes to disabled URL parts', () => {
+      const { angularLocation, handler } = setup();
+      const currentUrl = handler.currentUrl({ queryParams: false, fragment: false });
+      expect(currentUrl()).toBe('/base/current/path?existing=1#old');
+
+      const [[listener]] = angularLocation.onUrlChange.mock.calls;
+      angularLocation.path.mockReturnValue('/current/path?existing=2#new');
+      listener('/current/path?existing=2#new', null);
+
+      expect(currentUrl()).toBe('/base/current/path?existing=1#old');
+    });
+
+    it('stops listening to Location when destroyed', () => {
+      const { angularLocation, handler } = setup();
+      expect(handler).toBeDefined();
+      const [unregister] = angularLocation.onUrlChange.mock.results.map(({ value }) => value);
+
+      TestBed.resetTestingModule();
+
+      expect(unregister).toHaveBeenCalled();
     });
   });
 
