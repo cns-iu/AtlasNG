@@ -157,6 +157,7 @@ Include `ds.defaults()` once at your app root to apply every AtlasNG default sty
 | `mat-form-field`   | AtlasNG tokens for Angular Material form fields (`ds.mat-form-field-defaults()`)     |
 | `mat-progress-bar` | AtlasNG tokens for Angular Material progress bars (`ds.mat-progress-bar-defaults()`) |
 | `mat-slider`       | AtlasNG tokens for Angular Material sliders (`ds.mat-slider-defaults()`)             |
+| `mat-tree`         | Transparent background for Angular Material trees (`ds.mat-tree-defaults()`)         |
 | `text-selection`   | Theme colors for selected text (`ds.text-selection-styles()`)                        |
 
 ```scss

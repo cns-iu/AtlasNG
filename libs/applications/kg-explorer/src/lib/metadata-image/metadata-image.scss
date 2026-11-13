@@ -1,0 +1,11 @@
+@use 'sass:list';
+
+:host {
+  position: relative;
+  aspect-ratio: list.slash(16, 9);
+  height: 100%;
+
+  .ang-kg-explorer-metadata-image--image {
+    object-fit: contain;
+  }
+}
