@@ -35,6 +35,10 @@
   </nav>
 
   <div class="ang-header-shell-right">
+    <div class="ang-header-shell--actions">
+      <ng-content select="[angHeaderShellAction]" />
+    </div>
+
     @if (helpLink()) {
       <div class="ang-header-shell-right-fixed">
         <ang-help-button [link]="helpLink()" />

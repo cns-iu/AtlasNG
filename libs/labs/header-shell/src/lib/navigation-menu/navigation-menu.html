@@ -1,11 +1,16 @@
 <div class="ang-navigation-menu">
   <mat-accordion displayMode="flat" class="ang-navigation-menu-links">
     @for (item of navigationItems(); track item.id) {
+      @if (item.divider) {
+        <mat-divider class="ang-navigation-menu--divider" />
+      }
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- angAnyLink sets href, so the link is focusable and Enter fires click -->
       <a
         matButton
         class="ang-navigation-menu-link"
         [angAnyLink]="item.link"
         [target]="item.external ? '_blank' : undefined"
+        (click)="linkClick.emit(item)"
       >
         @if (item.icon) {
           <mat-icon class="ang-navigation-menu-icon" [fontIcon]="item.icon" />

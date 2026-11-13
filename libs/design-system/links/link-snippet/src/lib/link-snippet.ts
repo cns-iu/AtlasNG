@@ -11,6 +11,7 @@ const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
 
 /**
  * Displays a link in a code-snippet-style presentation with an open-in-new-tab link and a copy button.
+ * A URL too long for the available width scrolls horizontally in an {@link ScrollArea}.
  */
 @Component({
   selector: 'ang-link-snippet',
