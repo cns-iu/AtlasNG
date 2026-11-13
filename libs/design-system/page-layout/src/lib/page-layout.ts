@@ -3,10 +3,10 @@ import { Component, Directive, input } from '@angular/core';
 /**
  * Width of the page layout's side panel column from the `medium` breakpoint.
  *
- * - `medium`: fits a table of contents. The column is 15rem to 18.75rem wide and runs to the layout's edge.
- * - `large`: fits version control. The panel is 17.5rem to 25rem wide and stays inside the side padding.
+ * - `default`: fits a table of contents. The column is 15rem to 18.75rem wide and runs to the layout's edge.
+ * - `wide`: fits version control. The panel is 17.5rem to 25rem wide and stays inside the side padding.
  */
-export type PageLayoutSidePanelWidth = 'medium' | 'large';
+export type PageLayoutSidePanelWidth = 'default' | 'wide';
 
 /**
  * Marks projected content as the page header, such as breadcrumbs, the page title, a description, and actions.
@@ -52,10 +52,12 @@ export class PageLayoutEnd {}
  * column beside the page header, intro, main content, and end. Below it, the slots stack in a single column with
  * the side panel after the page header and intro. Empty slots take no space, but an empty side panel keeps its
  * column on wide screens so the main content width stays the same from page to page. Set `sidePanelWidth` to
- * `large` for wider side panel content, such as a metadata page's version control.
+ * `wide` for wider side panel content, such as a metadata page's version control. Side panel content that scrolls
+ * on its own, such as version control's download options, shrinks to fit the window; the panel scrolls anything
+ * else that is taller than the window.
  *
- * The maximum width and side padding come from the `page-layout` tokens, which the `page-container` Sass mixin
- * shares with sections outside the layout.
+ * The maximum width, side padding, vertical padding, and section gap come from the `page-layout` tokens. The
+ * `page-container` Sass mixin shares the maximum width and side padding with sections outside the layout.
  *
  * The layout adds no landmarks. The application shell owns the `main` landmark, as well as the header and footer
  * around the layout.
@@ -70,6 +72,6 @@ export class PageLayoutEnd {}
   },
 })
 export class PageLayout {
-  /** Width of the side panel column from the `medium` breakpoint. Use `large` for version control. */
-  readonly sidePanelWidth = input<PageLayoutSidePanelWidth>('medium');
+  /** Width of the side panel column from the `medium` breakpoint. Use `wide` for version control. */
+  readonly sidePanelWidth = input<PageLayoutSidePanelWidth>('default');
 }

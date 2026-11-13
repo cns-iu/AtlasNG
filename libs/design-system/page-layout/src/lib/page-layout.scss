@@ -2,15 +2,18 @@
 @use 'page-container';
 @use 'internal/token-utils';
 @use 'tokens/page-layout' as *;
+@use 'tokens/scroll-area';
 
 $_side-padding-medium: token-utils.slot(side-padding-medium, $config);
+$_vertical-padding: token-utils.slot(vertical-padding, $config);
+$_section-gap: token-utils.slot(section-gap, $config);
 $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
 
 :host {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-  padding-block: 2.5rem;
+  gap: $_section-gap;
+  padding-block: $_vertical-padding;
   @include page-container.page-container();
 
   .ang-page-layout--header,
@@ -29,7 +32,7 @@ $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
   .ang-page-layout--main {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: $_section-gap;
     min-width: 0;
   }
 
@@ -47,17 +50,17 @@ $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
 
     .ang-page-layout--header {
       grid-area: header;
-      padding: 2.5rem $_side-padding-medium 0;
+      padding: $_vertical-padding $_side-padding-medium 0;
     }
 
     .ang-page-layout--intro {
       grid-area: intro;
-      padding: 2.5rem $_side-padding-medium 0;
+      padding: $_section-gap $_side-padding-medium 0;
     }
 
     .ang-page-layout--body {
       grid-area: body;
-      padding: 2.5rem $_side-padding-medium;
+      padding: $_section-gap $_side-padding-medium $_vertical-padding;
     }
 
     .ang-page-layout--side-panel {
@@ -65,13 +68,19 @@ $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
       align-self: start;
       position: sticky;
       top: $_sticky-top;
+      // As a flex column, content that scrolls on its own, such as version control's download options, shrinks to
+      // fit, and the panel scrolls only content that can't, such as a long table of contents
+      display: flex;
+      flex-direction: column;
       box-sizing: border-box;
       max-height: calc(100dvh - #{$_sticky-top});
-      padding: 2.5rem 1rem;
+      padding: $_vertical-padding 1rem;
       overflow: hidden auto;
+      scrollbar-color: scroll-area.slot(thumb-color) transparent;
+      scrollbar-width: thin;
     }
 
-    &.ang-page-layout--side-panel-width-large {
+    &.ang-page-layout--side-panel-width-wide {
       // The side panel column includes the side padding, so the panel itself is 17.5rem to 25rem wide
       grid-template-columns: minmax(min(45rem, 100% - 20rem), 1fr) minmax(20rem, 27.5rem);
 

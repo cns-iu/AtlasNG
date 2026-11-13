@@ -58,17 +58,17 @@ describe('PageLayout', () => {
     expect(screen.getByText('End').parentElement).toHaveClass('ang-page-layout--end');
   });
 
-  it('defaults to the medium side panel width', async () => {
+  it('defaults to the default side panel width', async () => {
     const { fixture } = await render(PageLayout);
 
-    expect(fixture.nativeElement).toHaveClass('ang-page-layout', 'ang-page-layout--side-panel-width-medium');
+    expect(fixture.nativeElement).toHaveClass('ang-page-layout', 'ang-page-layout--side-panel-width-default');
   });
 
-  it('applies the large side panel width', async () => {
-    const { fixture } = await render(PageLayout, { inputs: { sidePanelWidth: 'large' } });
+  it('applies the wide side panel width', async () => {
+    const { fixture } = await render(PageLayout, { inputs: { sidePanelWidth: 'wide' } });
 
-    expect(fixture.nativeElement).toHaveClass('ang-page-layout', 'ang-page-layout--side-panel-width-large');
-    expect(fixture.nativeElement).not.toHaveClass('ang-page-layout--side-panel-width-medium');
+    expect(fixture.nativeElement).toHaveClass('ang-page-layout', 'ang-page-layout--side-panel-width-wide');
+    expect(fixture.nativeElement).not.toHaveClass('ang-page-layout--side-panel-width-default');
   });
 
   it('adds no landmarks of its own', async () => {

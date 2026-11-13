@@ -141,13 +141,19 @@ export const WithoutSidePanel: Story = {
 
 /**
  * A metadata page: breadcrumbs, the page label, and a copyable URL in the page header, the first section in the
- * intro, and version control in a large side panel. On narrow screens, version control follows the first section.
+ * intro, and version control in a wide side panel. On narrow screens, version control follows the first section.
  */
 export const MetadataPage: Story = {
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=8698-11558',
+    },
+  },
   render: () => ({
     props: { crumbs: CRUMBS, sections: SECTIONS, lorem: LOREM, versions: VERSIONS, selectedVersion: VERSIONS[0] },
     template: `
-      <ang-page-layout sidePanelWidth="large">
+      <ang-page-layout sidePanelWidth="wide">
         <div angPageLayoutHeader style="display: flex; flex-direction: column; gap: 2rem;">
           <ang-breadcrumbs [items]="crumbs" />
           <div style="display: flex; flex-direction: column; gap: 1rem;">
