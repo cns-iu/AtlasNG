@@ -1,9 +1,10 @@
-import { Location, LocationStrategy, PathLocationStrategy, PlatformLocation } from '@angular/common';
+import { APP_BASE_HREF, Location, LocationStrategy, PathLocationStrategy, PlatformLocation } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MOCK_PLATFORM_LOCATION_CONFIG, MockPlatformLocation } from '@angular/common/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { provideLinkHandler, withRouterHandler } from '@atlasng/common';
 import { render, screen } from '@testing-library/angular';
 import { LastModified } from './last-modified';
 import { LastModifiedDates } from './last-modified-dates';
@@ -17,7 +18,7 @@ const DATES = {
 };
 
 describe('LastModifiedDates', () => {
-  async function setup(path: string, template = '<ang-last-modified />') {
+  async function setup(path: string, template = '<ang-last-modified />', baseHref = '/') {
     const result = await render(template, {
       imports: [LastModified],
       providers: [
@@ -25,9 +26,11 @@ describe('LastModifiedDates', () => {
         provideHttpClientTesting(),
         { provide: PlatformLocation, useClass: MockPlatformLocation },
         { provide: MOCK_PLATFORM_LOCATION_CONFIG, useValue: { startUrl: `http://localhost${path}` } },
+        { provide: APP_BASE_HREF, useValue: baseHref },
         { provide: LocationStrategy, useClass: PathLocationStrategy },
         { provide: Location, useClass: Location },
         provideRouter([{ path: '**', children: [] }]),
+        provideLinkHandler(withRouterHandler()),
       ],
     });
     return {
@@ -63,6 +66,24 @@ describe('LastModifiedDates', () => {
     location.go('/dataset/liver');
 
     expect(await screen.findByText('March 15, 2026')).toBeInTheDocument();
+  });
+
+  it('follows matrix parameter changes', async () => {
+    const { dates, location } = await load('/dataset/heart');
+    dates.set('/dataset/heart;v=2', new Date(2026, 0, 2));
+    await screen.findByText('June 16, 2026');
+
+    location.go('/dataset/heart;v=2');
+
+    expect(await screen.findByText('January 2, 2026')).toBeInTheDocument();
+  });
+
+  it('resolves routes relative to the base href', async () => {
+    const { dates } = await setup('/app/dataset/heart', undefined, '/app');
+
+    dates.set('/dataset/heart', new Date(2026, 5, 16));
+
+    expect(await screen.findByText('June 16, 2026')).toBeInTheDocument();
   });
 
   it('ignores the query, fragment, and trailing slash', async () => {

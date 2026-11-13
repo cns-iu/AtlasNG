@@ -1,6 +1,7 @@
-import { Location } from '@angular/common';
+import { DOCUMENT, LocationStrategy } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { computed, DestroyRef, inject, Service, signal } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
+import { LinkHandler } from '@atlasng/common';
 import { AngError } from '@atlasng/core';
 import { DesignSystemErrorCode } from '@atlasng/design-system/errors';
 import { firstValueFrom } from 'rxjs';
@@ -19,23 +20,23 @@ export class LastModifiedDates {
   /** Client used to load dates files. */
   readonly #http = inject(HttpClient);
 
-  /** Location used to read the current path and follow navigation. */
-  readonly #location = inject(Location);
+  /** Document whose base URL the current URL is resolved against. */
+  readonly #document = inject(DOCUMENT);
+
+  /** Strategy providing the application base href. */
+  readonly #locationStrategy = inject(LocationStrategy);
+
+  /** Current URL. Query and fragment changes are ignored since they don't change the route. */
+  readonly #url = inject(LinkHandler).currentUrl({ queryParams: false, fragment: false });
 
   /** Current route, normalized for lookups. */
-  readonly #route = signal(normalizeRoute(this.#location.path()));
+  readonly #route = computed(() => normalizeRoute(this.#toPath(this.#url())));
 
   /** Dates keyed by normalized route. Replaced on every change so that readers are notified. */
   readonly #dates = signal(new Map<string, Date>());
 
   /** Last modified date of the current route, or `undefined` when it has none. */
   readonly current = computed(() => this.get(this.#route()));
-
-  /** Follows URL changes for the lifetime of the injector. */
-  constructor() {
-    const unsubscribe = this.#location.onUrlChange(() => this.#route.set(normalizeRoute(this.#location.path())));
-    inject(DestroyRef).onDestroy(unsubscribe);
-  }
 
   /**
    * Gets the last modified date of a route.
@@ -90,6 +91,19 @@ export class LastModifiedDates {
       return next;
     });
   }
+
+  /**
+   * Converts a link handler URL to an application path relative to the application base href.
+   *
+   * @param url Absolute or root-relative URL, for example `https://example.com/app/dataset/heart;v=2`.
+   * @returns The path with its matrix parameters, for example `dataset/heart;v=2` for the base `/app/`.
+   */
+  #toPath(url: string): string {
+    const { baseURI } = this.#document;
+    const { pathname } = new URL(url, baseURI);
+    const basePath = new URL(this.#locationStrategy.getBaseHref(), baseURI).pathname.replace(/\/?$/, '/');
+    return pathname.startsWith(basePath) ? pathname.slice(basePath.length) : pathname;
+  }
 }
 
 /**
@@ -117,7 +131,7 @@ export function parseDate(value: unknown): Date | undefined {
 /**
  * Normalizes a path to a route by dropping the query, fragment, and trailing slash.
  *
- * @param path Path such as `Location.path()`, for example `/dataset/heart/?tab=1#files`.
+ * @param path Path, for example `/dataset/heart/?tab=1#files`.
  * @returns The route, for example `/dataset/heart`.
  */
 function normalizeRoute(path: string): string {
