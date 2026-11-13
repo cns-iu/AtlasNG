@@ -82,6 +82,44 @@ const meta: Meta<PageLayout> = {
       type: 'figma',
       url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=4917-23208',
     },
+    docs: {
+      description: {
+        component: `
+Lays out a page body. Pages fill its slots; the layout owns the grid, maximum width, padding, breakpoints, and sticky side panel.
+
+| Slot | Mark content with | Holds | Below \`medium\` |
+| --- | --- | --- | --- |
+| Page header | \`angPageLayoutHeader\` | Breadcrumbs, page label, description, actions | First |
+| Intro | \`angPageLayoutIntro\` | A metadata page's first section and data preview | After the page header |
+| Side panel | \`angPageLayoutSidePanel\` | Table of contents or version control | After the intro |
+| Main | Unmarked content | Page sections | After the side panel |
+| End | \`angPageLayoutEnd\` | Last updated date | Last |
+
+Set \`sidePanelWidth\` to match the side panel's content:
+
+| | Table of contents (\`default\`) | Version control (\`wide\`) |
+| --- | --- | --- |
+| Side panel width | 208–268px | 280–400px |
+| Main content width at 960px | 640px | 560px |
+| Main content width at 1600px | 1220px | 1080px |
+| Space between main content and side panel | 56px | 40px |
+| Side panel's distance from the page's right edge | 16px | 40px |
+| When taller than the window | The side panel scrolls | Download options scroll; the version picker stays in view |
+
+Below 960px (\`medium\`), the page is one column with 20px side padding. From 960px, the side panel sits beside the main content, which has 40px side padding. As the page widens:
+
+1. The main content grows to 640px.
+2. The side panel grows to its maximum width.
+3. The main content takes the rest, up to the page's 1600px maximum width, which includes the side padding.
+
+Sections are 40px apart, with 40px above and below the page.
+
+- Wrap the layout in the app's \`main\` element; it adds no landmarks.
+- Don't add another max width or side padding around it. Line up heroes and footers with the \`page-container\` mixin.
+- Under a sticky header, set \`side-panel-sticky-top\` to the header's height.
+        `,
+      },
+    },
   },
   decorators: [
     moduleMetadata({

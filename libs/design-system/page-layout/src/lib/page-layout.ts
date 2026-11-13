@@ -18,8 +18,8 @@ export type PageLayoutSidePanelWidth = 'default' | 'wide';
 export class PageLayoutHeader {}
 
 /**
- * Marks projected content as the intro, such as a metadata page's first section. On narrow screens the intro
- * stays above the side panel, while the rest of the main content follows it.
+ * Marks projected content as the intro, such as a metadata page's first section and data preview. On narrow
+ * screens the intro stays above the side panel, while the rest of the main content follows it.
  * Works as an element or an attribute.
  */
 @Directive({
