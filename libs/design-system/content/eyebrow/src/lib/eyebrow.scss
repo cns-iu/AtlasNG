@@ -1,0 +1,14 @@
+@use 'internal/token-utils';
+@use 'tokens/eyebrow' as *;
+
+:host {
+  display: block;
+  margin: 0;
+  color: token-utils.slot(color, $config);
+  font-family: token-utils.sys-slot(label-small-font);
+  font-size: token-utils.sys-slot(label-small-size);
+  font-weight: 700;
+  line-height: token-utils.sys-slot(label-small-line-height);
+  letter-spacing: 0.01875rem;
+  text-transform: uppercase;
+}
