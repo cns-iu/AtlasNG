@@ -34,6 +34,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/content/content-header`              | `ContentHeader`                                                           |
 | `@atlasng/design-system/content/content-paragraph`           | `ContentParagraph`                                                        |
 | `@atlasng/design-system/content/content-section`             | `ContentSection`                                                          |
+| `@atlasng/design-system/content/eyebrow`                     | `Eyebrow`                                                                 |
 | `@atlasng/design-system/content/heading`                     | `Heading`                                                                 |
 | `@atlasng/design-system/cookie-banner`                       | `CookieBanner`, `CookieBannerContainer`, and its content directives       |
 | `@atlasng/design-system/error-page`                          | `ErrorPage` and its content directives, `NotFoundPage`, `ServerErrorPage` |
@@ -71,6 +72,7 @@ export class Maintenance {}
 A few components with notable options:
 
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
+- **Eyebrow:** a short uppercase label above a heading, in the theme's `label-small` font, size, and line height at bold weight, with 0.3px letter spacing in every brand. Use `<ang-eyebrow>`, or add `angEyebrow` to the element whose semantics fit, such as a heading or a `span` inside one. Write the text in sentence case so screen readers read words instead of letters. It defaults to the `primary` color; change it with `ds.eyebrow-overrides((color: ...))`. HRA apps use `on-primary-container`, because HRA's light `primary` falls below 4.5:1 contrast on `surface-container` and darker surfaces.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
 - **Skeleton:** stands in for loading content as a `text` line (default), `circle`, or `rect`. Size it from the surrounding styles, and set `lines` to stack several text lines. It is hidden from assistive technology, so set `aria-busy` on the loading region.
 

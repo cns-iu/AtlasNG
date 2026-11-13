@@ -23,6 +23,7 @@
 @forward './tokens/content-header' as content-header-* show content-header-overrides, content-header-slot;
 @forward './tokens/content-paragraph' as content-paragraph-* show content-paragraph-overrides, content-paragraph-slot;
 @forward './tokens/content-section' as content-section-* show content-section-overrides, content-section-slot;
+@forward './tokens/eyebrow' as eyebrow-* show eyebrow-overrides, eyebrow-slot;
 @forward './tokens/cookie-banner' as cookie-banner-* show cookie-banner-overrides, cookie-banner-slot;
 @forward './tokens/error-page' as error-page-* show error-page-overrides, error-page-slot;
 @forward './tokens/footer' as footer-* show footer-overrides, footer-slot;
