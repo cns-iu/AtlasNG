@@ -1,3 +1,40 @@
+## 0.0.12 (2026-11-13)
+
+### 🚀 Features
+
+- add last modified component and executor ([#248](https://github.com/cns-iu/AtlasNG/pull/248))
+- **design-system:** scroll long link snippet URLs in a scroll area ([#294](https://github.com/cns-iu/AtlasNG/pull/294))
+- **design-system:** add material tree story ([#349](https://github.com/cns-iu/AtlasNG/pull/349))
+- **design-system:** add dialog, expansion panel, sidenav, and bottom sheet stories ([#348](https://github.com/cns-iu/AtlasNG/pull/348))
+- **kg-explorer:** add metadata page layout ([#189](https://github.com/cns-iu/AtlasNG/pull/189))
+- **design-system:** add skeleton component ([#286](https://github.com/cns-iu/AtlasNG/pull/286))
+- **design-system:** use the shared search engine in the search list ([#299](https://github.com/cns-iu/AtlasNG/pull/299))
+- **design-system:** add search field component with autocomplete ([#300](https://github.com/cns-iu/AtlasNG/pull/300))
+- add coded AngError and guard error messages with ngDevMode ([#296](https://github.com/cns-iu/AtlasNG/pull/296))
+- **design-system:** add Material stories and track defaults ([#271](https://github.com/cns-iu/AtlasNG/pull/271))
+
+### 🩹 Fixes
+
+- **design-system:** let text links wrap with the surrounding text ([#344](https://github.com/cns-iu/AtlasNG/pull/344))
+- **design-system:** include the border in the version control width ([#343](https://github.com/cns-iu/AtlasNG/pull/343))
+- set type="button" on buttons that would otherwise submit a form ([#346](https://github.com/cns-iu/AtlasNG/pull/346))
+- **design-system:** request marketing consent from the YouTube button ([#267](https://github.com/cns-iu/AtlasNG/pull/267))
+- **design-system:** wrap long table of contents entries ([#266](https://github.com/cns-iu/AtlasNG/pull/266))
+- use the shadow color for cookie banner and modal shadows ([#265](https://github.com/cns-iu/AtlasNG/pull/265))
+- **design-system:** follow text link color in cookie banner policy link ([#245](https://github.com/cns-iu/AtlasNG/pull/245))
+- **design-system:** inherit surrounding font weight in text links ([#236](https://github.com/cns-iu/AtlasNG/pull/236))
+- **design-system:** support fontIcon with the ang-icons font set ([#231](https://github.com/cns-iu/AtlasNG/pull/231))
+
+### ❤️ Thank You
+
+- Claude
+- Claude Fable 5.1
+- Claude Fable 5.2
+- Claude Opus 5.5
+- Daniel Bolin
+- Edward Lu @edlu77
+- LibbyUX @LibbyUX
+
 ## 0.0.11 (2026-10-30)
 
 ### 🚀 Features

@@ -1,3 +1,22 @@
+## 0.0.4 (2026-11-13)
+
+### 🚀 Features
+
+- add last modified component and executor ([#248](https://github.com/cns-iu/AtlasNG/pull/248))
+- **nx-plugin:** add generate-typography-scss executor ([#260](https://github.com/cns-iu/AtlasNG/pull/260))
+- **nx-plugin:** add generate-palettes-scss executor ([#259](https://github.com/cns-iu/AtlasNG/pull/259))
+- **nx-plugin:** add generate-shape-scss executor ([#258](https://github.com/cns-iu/AtlasNG/pull/258))
+
+### 🧱 Updated Dependencies
+
+- Updated eslint-plugin to 0.0.2
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- LibbyUX @LibbyUX
+
 ## 0.0.3 (2026-10-30)
 
 This was a version bump only for nx-plugin to align it with other projects, there were no code changes.

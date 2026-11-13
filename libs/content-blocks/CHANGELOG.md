@@ -1,3 +1,20 @@
+## 0.0.12 (2026-11-13)
+
+### 🚀 Features
+
+- add coded AngError and guard error messages with ngDevMode ([#296](https://github.com/cns-iu/AtlasNG/pull/296))
+
+### 🩹 Fixes
+
+- **design-system:** request marketing consent from the YouTube button ([#267](https://github.com/cns-iu/AtlasNG/pull/267))
+- **design-system:** inherit surrounding font weight in text links ([#236](https://github.com/cns-iu/AtlasNG/pull/236))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- LibbyUX @LibbyUX
+
 ## 0.0.11 (2026-10-30)
 
 This was a version bump only for content-blocks to align it with other projects, there were no code changes.

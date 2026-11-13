@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/nx-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Nx plugin with shared generators, executors, inferred targets and presets for AtlasNG and related Nx workspaces",
   "license": "MIT",
   "repository": {
@@ -39,7 +39,7 @@
   },
   "peerDependencies": {
     "@atlasng/commitlint-config": "^0.0.1",
-    "@atlasng/eslint-plugin": "^0.0.1",
+    "@atlasng/eslint-plugin": "^0.0.2",
     "@atlasng/prettier-config": "^0.0.1",
     "@atlasng/tsconfig": "^0.0.1",
     "nx": "^23.0.0"

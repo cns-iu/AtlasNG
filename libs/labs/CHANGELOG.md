@@ -1,3 +1,22 @@
+## 0.0.12 (2026-11-13)
+
+### 🚀 Features
+
+- **labs:** scroll cookie modal tab content in a scroll area ([#269](https://github.com/cns-iu/AtlasNG/pull/269))
+
+### 🩹 Fixes
+
+- set type="button" on buttons that would otherwise submit a form ([#346](https://github.com/cns-iu/AtlasNG/pull/346))
+- **design-system:** request marketing consent from the YouTube button ([#267](https://github.com/cns-iu/AtlasNG/pull/267))
+- use the shadow color for cookie banner and modal shadows ([#265](https://github.com/cns-iu/AtlasNG/pull/265))
+- **labs:** left-align cookie modal logo and add a logo height token ([#246](https://github.com/cns-iu/AtlasNG/pull/246))
+
+### ❤️ Thank You
+
+- Claude Fable 5.1
+- Claude Opus 5.5
+- LibbyUX @LibbyUX
+
 ## 0.0.11 (2026-10-30)
 
 This was a version bump only for labs to align it with other projects, there were no code changes.
