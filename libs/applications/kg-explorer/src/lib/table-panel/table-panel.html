@@ -1,0 +1,34 @@
+@let matches = results();
+@let options = config();
+
+<ang-scroll-area class="ang-kg-explorer-table-panel--scroll-area" orientation="vertical">
+  <div class="ang-kg-explorer-table-panel--container">
+    @if (!options.searchDisabled || !options.resultsCounterDisabled) {
+      <ang-kg-explorer-table-toolbar
+        class="ang-kg-explorer-table-panel--toolbar"
+        [suggestions]="suggestions()"
+        [count]="matches.length"
+        [total]="rows().length"
+        [config]="options"
+        [(search)]="search"
+      />
+    }
+
+    <ang-table
+      class="ang-kg-explorer-table-panel--table"
+      appearance="none"
+      [class.no-results]="matches.length === 0"
+      [rows]="matches"
+      [columns]="columns()"
+      [(sorts)]="sorts"
+    >
+      <ang-no-results-indicator class="ang-kg-explorer-table-panel--empty" empty-content (clear)="clear()" />
+    </ang-table>
+
+    @if (!options.endOfResultsDisabled && matches.length > 0) {
+      <ang-end-of-results-indicator class="ang-kg-explorer-table-panel--end" [count]="matches.length" />
+    }
+
+    <ng-content />
+  </div>
+</ang-scroll-area>

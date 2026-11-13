@@ -1,0 +1,35 @@
+<mat-sidenav-container class="ang-kg-explorer-table-view--container">
+  <mat-sidenav
+    class="ang-kg-explorer-table-view--sidenav"
+    [mode]="docked() ? 'side' : 'over'"
+    [opened]="filtersOpen()"
+    (openedChange)="this.filtersOpen.set($event)"
+  >
+    <div class="ang-kg-explorer-table-view--filters">
+      @for (filter of resolvedFilters(); track filter.id) {
+        <ang-multi-select-filter
+          [label]="filter.label"
+          [options]="filter.options"
+          [count]="filter.count"
+          [searchDisabled]="filter.searchDisabled ?? false"
+          [selected]="selectionFor(filter)"
+          (selectedChange)="select(filter, $event)"
+        />
+      }
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="ang-kg-explorer-table-view--content">
+    <ang-kg-explorer-table-panel
+      [rows]="items()"
+      [columns]="resolvedColumns()"
+      [rowFilter]="rowFilter()"
+      [config]="resolvedConfig()"
+      [(search)]="search"
+      [(sorts)]="sorts"
+      (clearResults)="clearAllFilters()"
+    >
+      <ng-content />
+    </ang-kg-explorer-table-panel>
+  </mat-sidenav-content>
+</mat-sidenav-container>

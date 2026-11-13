@@ -43,14 +43,18 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/indicators/no-results-indicator`     | `NoResultsIndicator`                                                      |
 | `@atlasng/design-system/indicators/notice`                   | `Notice`                                                                  |
 | `@atlasng/design-system/indicators/results-indicator`        | `ResultsIndicator`                                                        |
+| `@atlasng/design-system/indicators/skeleton`                 | `Skeleton`                                                                |
 | `@atlasng/design-system/links/link-snippet`                  | `LinkSnippet`                                                             |
 | `@atlasng/design-system/links/text-link`                     | `TextLink`                                                                |
+| `@atlasng/design-system/search-field`                        | `SearchField`                                                             |
 | `@atlasng/design-system/search-list`                         | `SearchList`, `SearchListOption`                                          |
 | `@atlasng/design-system/snackbar`                            | `Snackbar`, `createSnackBarConfig`, `SnackBarConfig`, `SnackBarData`      |
 | `@atlasng/design-system/table`                               | `Table` and its column and template APIs                                  |
 | `@atlasng/design-system/table/columns`                       | Ready-made header, cell, and summary definitions                          |
 | `@atlasng/design-system/table-of-contents`                   | `TableOfContents`                                                         |
 | `@atlasng/design-system/youtube-player`                      | `YouTubePlayer`, `provideYouTubePlayerConfig`                             |
+
+Error codes are exported from `@atlasng/design-system/errors` as `DesignSystemErrorCode` and re-exported from `@atlasng/design-system`.
 
 ```ts
 import { Component } from '@angular/core';
@@ -68,6 +72,7 @@ A few components with notable options:
 
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
+- **Skeleton:** stands in for loading content as a `text` line (default), `circle`, or `rect`. Size it from the surrounding styles, and set `lines` to stack several text lines. It is hidden from assistive technology, so set `aria-busy` on the loading region.
 
 ## Icons
 
@@ -145,17 +150,20 @@ Functions ending in `-token` return a CSS variable name, which you use to declar
 
 Include `ds.defaults()` once at your app root to apply every AtlasNG default style. New defaults are added to it, so apps pick them up without changes. Pass `$include` or `$exclude` with feature names to pick which ones apply:
 
-| Feature          | Applies                                                                          |
-| ---------------- | -------------------------------------------------------------------------------- |
-| `mat-button`     | AtlasNG tokens for Angular Material buttons (`ds.mat-button-defaults()`)         |
-| `mat-form-field` | AtlasNG tokens for Angular Material form fields (`ds.mat-form-field-defaults()`) |
-| `text-selection` | Theme colors for selected text (`ds.text-selection-styles()`)                    |
+| Feature            | Applies                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| `mat-button`       | AtlasNG tokens for Angular Material buttons (`ds.mat-button-defaults()`)             |
+| `mat-form-field`   | AtlasNG tokens for Angular Material form fields (`ds.mat-form-field-defaults()`)     |
+| `mat-progress-bar` | AtlasNG tokens for Angular Material progress bars (`ds.mat-progress-bar-defaults()`) |
+| `mat-slider`       | AtlasNG tokens for Angular Material sliders (`ds.mat-slider-defaults()`)             |
+| `mat-tree`         | Transparent background for Angular Material trees (`ds.mat-tree-defaults()`)         |
+| `text-selection`   | Theme colors for selected text (`ds.text-selection-styles()`)                        |
 
 ```scss
 @include ds.defaults($exclude: text-selection);
 ```
 
-Each feature's mixin can also be included on its own. `ds.mat-all-defaults()` applies both Material features.
+Each feature's mixin can also be included on its own. `ds.mat-all-defaults()` applies every Material feature.
 
 Text selection defaults to the `tertiary-container` and `on-tertiary-container` pair; override both together with `ds.text-selection-overrides((background-color: ..., text-color: ...))`. Forced colors mode keeps the system highlight colors.
 

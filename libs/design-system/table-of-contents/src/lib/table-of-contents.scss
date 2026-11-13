@@ -30,16 +30,25 @@
     padding: 0;
   }
 
+  .ang-table-of-contents--title {
+    white-space: normal;
+  }
+
   .ang-table-of-contents--item {
     margin-left: calc((var(--ang-table-of-contents--level, 2) - 2) * 1rem);
     width: calc(100% - (var(--ang-table-of-contents--level, 2) - 2) * 1rem);
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
+    min-height: token-utils.slot(item-height, $config);
+    // A single line stays at item-height; long entries wrap and grow.
+    padding-block: calc(
+      (#{token-utils.slot(item-height, $config)} - #{token-utils.slot(item-line-height, $config)}) / 2
+    );
 
     @include mat.list-overrides(
       (
         active-indicator-color: transparent,
-        list-item-one-line-container-height: token-utils.slot(item-height, $config),
+        list-item-one-line-container-height: auto,
         list-item-label-text-color: token-utils.slot(item-color, $config),
         list-item-label-text-font: token-utils.slot(item-font, $config),
         list-item-label-text-size: token-utils.slot(item-size, $config),

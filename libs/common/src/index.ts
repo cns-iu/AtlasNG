@@ -1,3 +1,4 @@
+export { CommonErrorCode } from '@atlasng/common/errors';
 export { AnyLink } from './lib/any-link/any-link';
 export {
   AnyLinkActive,

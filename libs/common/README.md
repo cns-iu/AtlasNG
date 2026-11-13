@@ -78,3 +78,7 @@ const id = inject(IdGenerator).getId('ang-tooltip'); // "ang-tooltip-0", "ang-to
 ```
 
 IDs include the application's `APP_ID` when it is not the default `ng`. Production builds also add a random infix so that IDs from multiple Angular applications on the same page do not collide. Use `provideIdGeneratorConfig({ infix })` to set a fixed infix (`string`), always use a random one (`true`), or turn it off (`false`).
+
+### Error codes
+
+Error codes are exported from `@atlasng/common/errors` as `CommonErrorCode` and re-exported from `@atlasng/common`.

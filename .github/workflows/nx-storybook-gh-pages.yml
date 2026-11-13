@@ -1,7 +1,7 @@
 # Reusable workflow (workflow_call): builds a Storybook project and deploys it to GitHub Pages.
 # Reusable workflows are prefixed with `nx-`; AtlasNG's storybook-gh-pages.yml is a thin caller.
-# Callers own triggers and concurrency and must grant contents: write. Local
-# `./.github/actions/*` refs resolve against the caller's checkout.
+# Callers own triggers and concurrency and must grant contents: write. The status check is named
+# `<caller job> / Build and deploy Storybook`. See README.md in this directory for setup.
 name: Nx Storybook GH Pages
 
 on:
@@ -58,10 +58,14 @@ jobs:
           fetch-depth: 0
           filter: tree:0
 
-      - name: Set up Nx workspace
-        uses: ./.github/actions/setup-nx-workspace
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
           node-version-file: ${{ inputs.node-version-file }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit
 
       - name: Build Storybook
         env:

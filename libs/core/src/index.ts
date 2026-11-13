@@ -19,3 +19,4 @@ export {
   type ConfigurationWithDefaults,
 } from './lib/configuration-token';
 export { SafeStorage } from './lib/utils/storage';
+export { AngError, formatAngErrorCode } from './lib/errors';
