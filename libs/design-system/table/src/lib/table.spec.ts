@@ -34,7 +34,7 @@ interface TestRow extends Row {
 }
 
 class MockLinkHandler implements LinkHandler {
-  readonly onUrlChange = vi.fn(() => () => undefined);
+  readonly currentUrl = vi.fn(() => signal(''));
 
   readonly prepareLink = vi.fn((command: LinkCommand): PreparedLink => ({ href: String(command.command) }));
 

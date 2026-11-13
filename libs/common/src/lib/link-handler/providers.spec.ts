@@ -12,8 +12,8 @@ import { RouterLinkHandler } from './router-handler';
 import { RouterlessLinkHandler } from './routerless-handler';
 
 class MockLinkHandler implements LinkHandler {
-  onUrlChange(): () => void {
-    return () => undefined;
+  currentUrl(): Signal<string> {
+    return signal('');
   }
 
   prepareLink(command: LinkCommand): PreparedLink {

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, model } from '@angular/core';
+import { Component, effect, inject, input, model, untracked } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { LinkHandler } from '@atlasng/common';
 import { HeaderShellNavigationItem } from '../header-shell';
@@ -29,15 +29,26 @@ export class NavigationContainer {
   readonly rightMenuOpen = model(false);
 
   /**
-   * Closes both drawers whenever the link handler reports a URL change, including browser back and forward.
+   * Closes both drawers whenever the page path changes, including browser back and forward.
+   * Query parameter, matrix parameter, and fragment changes keep the drawers open.
    */
   constructor() {
-    const unregister = inject(LinkHandler).onUrlChange(() => {
-      this.leftMenuOpen.set(false);
-      this.rightMenuOpen.set(false);
-    });
+    const pageUrl = inject(LinkHandler).currentUrl({ matrixParams: false, queryParams: false, fragment: false });
+    // Read the URL now so the effect only reacts to later changes, even when its first run happens after one,
+    // and an initially open drawer bound by the parent stays open.
+    let previousUrl = untracked(pageUrl);
+    effect(() => {
+      const url = pageUrl();
+      if (url === previousUrl) {
+        return;
+      }
 
-    inject(DestroyRef).onDestroy(unregister);
+      previousUrl = url;
+      untracked(() => {
+        this.leftMenuOpen.set(false);
+        this.rightMenuOpen.set(false);
+      });
+    });
   }
 
   /**

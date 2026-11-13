@@ -246,38 +246,59 @@ describe('RouterlessLinkHandler', () => {
     });
   });
 
-  describe('onUrlChange', () => {
-    it('notifies listeners when the browser URL changes', () => {
+  describe('currentUrl', () => {
+    it('updates when the browser URL changes', () => {
       const { browserLocation, handler } = setup('/current');
-      const callback = vi.fn();
-      handler.onUrlChange(callback);
+      const currentUrl = handler.currentUrl();
 
       browserLocation.href = '/other';
       window.dispatchEvent(new Event('popstate'));
 
-      expect(callback).toHaveBeenCalledExactlyOnceWith('/other');
+      expect(currentUrl()).toBe('/other');
     });
 
-    it('does not notify listeners when the URL is unchanged', () => {
-      const { handler } = setup('/current');
-      const callback = vi.fn();
-      handler.onUrlChange(callback);
-
-      window.dispatchEvent(new Event('popstate'));
-
-      expect(callback).not.toHaveBeenCalled();
-    });
-
-    it('stops notifying listeners after they unregister', () => {
+    it('tracks query, matrix, and fragment changes by default', () => {
       const { browserLocation, handler } = setup('/current');
-      const callback = vi.fn();
-      const unregister = handler.onUrlChange(callback);
+      const currentUrl = handler.currentUrl();
 
-      unregister();
-      browserLocation.href = '/other';
+      browserLocation.href = '/current;view=list?page=2#top';
+      window.dispatchEvent(new Event('hashchange'));
+
+      expect(currentUrl()).toBe('/current;view=list?page=2#top');
+    });
+
+    it('ignores changes to disabled URL parts', () => {
+      const { browserLocation, handler } = setup('/current?page=1#old');
+      const currentUrl = handler.currentUrl({ matrixParams: false, queryParams: false, fragment: false });
+      expect(currentUrl()).toBe('/current?page=1#old');
+
+      browserLocation.href = '/current;view=list?page=2#new';
       window.dispatchEvent(new Event('popstate'));
 
-      expect(callback).not.toHaveBeenCalled();
+      expect(currentUrl()).toBe('/current?page=1#old');
+    });
+
+    it('updates on path changes when other URL parts are disabled', () => {
+      const { browserLocation, handler } = setup('/current?page=1');
+      const currentUrl = handler.currentUrl({ queryParams: false, fragment: false });
+      expect(currentUrl()).toBe('/current?page=1');
+
+      browserLocation.href = '/other?page=1';
+      window.dispatchEvent(new Event('popstate'));
+
+      expect(currentUrl()).toBe('/other?page=1');
+    });
+
+    it('updates after the handler navigates', () => {
+      const { browserLocation, handler } = setup('/current');
+      const currentUrl = handler.currentUrl();
+      browserLocation.assign.mockImplementation((url) => {
+        browserLocation.href = String(url);
+      });
+
+      handler.navigateTo({ href: '/next', isAnchorLikeElement: false }, new Event('click'), defaultOptions());
+
+      expect(currentUrl()).toBe('/next');
     });
   });
 

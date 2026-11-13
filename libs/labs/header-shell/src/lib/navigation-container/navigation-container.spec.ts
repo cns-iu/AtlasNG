@@ -1,5 +1,5 @@
 import { provideRouter, Router } from '@angular/router';
-import { LinkHandler, provideLinkHandler, withRouterHandler } from '@atlasng/common';
+import { provideLinkHandler, withRouterHandler } from '@atlasng/common';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { NavigationContainer } from './navigation-container';
@@ -69,27 +69,38 @@ describe('NavigationContainer', () => {
     expect(fixture.componentInstance.rightMenuOpen()).toBe(false);
   });
 
-  it('stops listening for URL changes when destroyed', async () => {
-    const unregister = vi.fn();
-    const { fixture } = await render(NavigationContainer, {
-      providers: [{ provide: LinkHandler, useValue: { onUrlChange: () => unregister } }],
+  describe('browser history navigation', () => {
+    const initialUrl = location.href;
+
+    afterEach(() => {
+      history.replaceState(null, '', initialUrl);
     });
 
-    fixture.destroy();
+    it('closes both drawers after a path change', async () => {
+      const { fixture } = await render(NavigationContainer, {
+        inputs: { leftMenuOpen: true, rightMenuOpen: true },
+      });
 
-    expect(unregister).toHaveBeenCalled();
-  });
+      history.pushState(null, '', '/drawer-test');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      fixture.detectChanges();
 
-  it('closes both drawers after a browser history navigation', async () => {
-    const { fixture } = await render(NavigationContainer, {
-      inputs: { leftMenuOpen: true, rightMenuOpen: true },
+      expect(fixture.componentInstance.leftMenuOpen()).toBe(false);
+      expect(fixture.componentInstance.rightMenuOpen()).toBe(false);
     });
 
-    history.pushState(null, '', '#drawer-test');
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    it('keeps both drawers open after a query or fragment change', async () => {
+      const { fixture } = await render(NavigationContainer, {
+        inputs: { leftMenuOpen: true, rightMenuOpen: true },
+      });
 
-    expect(fixture.componentInstance.leftMenuOpen()).toBe(false);
-    expect(fixture.componentInstance.rightMenuOpen()).toBe(false);
+      history.pushState(null, '', '?filter=1#drawer-test');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.leftMenuOpen()).toBe(true);
+      expect(fixture.componentInstance.rightMenuOpen()).toBe(true);
+    });
   });
 
   it('closes both drawers after a router navigation', async () => {
@@ -99,8 +110,22 @@ describe('NavigationContainer', () => {
     });
 
     await fixture.debugElement.injector.get(Router).navigateByUrl('/other');
+    fixture.detectChanges();
 
     expect(fixture.componentInstance.leftMenuOpen()).toBe(false);
     expect(fixture.componentInstance.rightMenuOpen()).toBe(false);
+  });
+
+  it('keeps both drawers open after a router navigation that only changes query params', async () => {
+    const { fixture } = await render(NavigationContainer, {
+      inputs: { leftMenuOpen: true, rightMenuOpen: true },
+      providers: [provideRouter([{ path: '**', children: [] }]), provideLinkHandler(withRouterHandler())],
+    });
+
+    await fixture.debugElement.injector.get(Router).navigateByUrl('/?filter=1');
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.leftMenuOpen()).toBe(true);
+    expect(fixture.componentInstance.rightMenuOpen()).toBe(true);
   });
 });

@@ -22,7 +22,7 @@ const SUBSET_MATCH_OPTIONS: IsActiveMatchOptions = {
 };
 
 class MockLinkHandler implements LinkHandler {
-  readonly onUrlChange = vi.fn(() => () => undefined);
+  readonly currentUrl = vi.fn(() => signal(''));
 
   readonly activeStates = new Map<string, WritableSignal<boolean>>();
 

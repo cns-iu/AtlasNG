@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { ErrorHandler, inject, Injector, Service, Signal } from '@angular/core';
+import { DestroyRef, ErrorHandler, inject, Injector, Service, Signal, signal } from '@angular/core';
 import {
   ActivatedRoute,
   isActive,
@@ -9,10 +9,10 @@ import {
   UrlTree,
 } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
-import { LinkAttributes, LinkCommand, LinkHandler } from './handler';
+import { LinkAttributes, LinkCommand, LinkHandler, UrlChangeMatchOptions } from './handler';
 import { RouterlessLinkHandler, RouterlessPreparedLink } from './routerless-handler';
 import { isAnchorLikeElement } from './utils/anchor-element';
-import { isUrlTree, tryParseAbsoluteUrl } from './utils/url';
+import { isUrlTree, tryParseAbsoluteUrl, urlChangeSignal } from './utils/url';
 
 /**
  * Link metadata prepared by the Angular Router-aware handler.
@@ -55,6 +55,21 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
    * Routerless fallback used for absolute URLs and hard navigations.
    */
   readonly #routerlessHandler = inject(RouterlessLinkHandler);
+
+  /**
+   * Current browser-visible URL, refreshed whenever Angular's `Location` reports a URL change.
+   */
+  readonly #currentUrl = signal(this.#currentExternalUrl());
+
+  /**
+   * Starts tracking URL changes reported by Angular's `Location`.
+   */
+  constructor() {
+    // `Location` reports external URLs for `go`/`replaceState` but internal paths for popstate,
+    // so re-read the URL to store a consistent format.
+    const unregister = this.#location.onUrlChange(() => this.#currentUrl.set(this.#currentExternalUrl()));
+    inject(DestroyRef).onDestroy(unregister);
+  }
 
   /**
    * Prepares a link payload that supports both absolute URLs and Angular Router commands.
@@ -126,22 +141,13 @@ export class RouterLinkHandler implements LinkHandler<RouterPreparedLink> {
   }
 
   /**
-   * Registers a callback that runs whenever Angular's `Location` reports a URL change.
+   * Tracks the browser-visible URL reported by Angular's `Location`.
    *
-   * @param callback Function invoked with the new browser-visible URL, in the same format as prepared link hrefs.
-   * @returns A function that unregisters the callback.
+   * @param matchOptions URL parts that count as a change. All parts count by default.
+   * @returns A signal holding the URL, in the same format as prepared link hrefs, as of the last change that counted.
    */
-  onUrlChange(callback: (url: string) => void): () => void {
-    let previousUrl = this.#currentExternalUrl();
-    return this.#location.onUrlChange(() => {
-      // `Location` reports external URLs for `go`/`replaceState` but internal paths for popstate,
-      // so re-read the URL to report a consistent format.
-      const url = this.#currentExternalUrl();
-      if (url !== previousUrl) {
-        previousUrl = url;
-        callback(url);
-      }
-    });
+  currentUrl(matchOptions?: UrlChangeMatchOptions): Signal<string> {
+    return urlChangeSignal(this.#currentUrl, matchOptions);
   }
 
   /**

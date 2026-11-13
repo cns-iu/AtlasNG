@@ -10,7 +10,7 @@ import { provideLinkHandler, withCustomHandler, withRouterHandler } from '../lin
 import { AnyLink } from './any-link';
 
 class MockLinkHandler implements LinkHandler {
-  readonly onUrlChange = vi.fn(() => () => undefined);
+  readonly currentUrl = vi.fn(() => signal(''));
 
   readonly prepareLink = vi.fn(
     (_command: LinkCommand, _element?: Element, attributes?: LinkAttributes): PreparedLink => ({

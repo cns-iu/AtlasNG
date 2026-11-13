@@ -1,11 +1,11 @@
-import { computed, DestroyRef, inject, Injector, Service, Signal, signal, untracked } from '@angular/core';
+import { computed, DestroyRef, inject, Injector, Service, Signal, signal } from '@angular/core';
 import type { IsActiveMatchOptions, NavigationBehaviorOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION, NAVIGATION, WINDOW } from '@atlasng/core';
-import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from './handler';
+import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink, UrlChangeMatchOptions } from './handler';
 import { isAnchorLikeElement } from './utils/anchor-element';
 import { RouterlessCommandSerializer } from './utils/command-serializer';
 import { isUrlActive } from './utils/compare-url';
-import { isSafeNavigationUrl } from './utils/url';
+import { isSafeNavigationUrl, urlChangeSignal } from './utils/url';
 
 /**
  * Link metadata prepared by the default routerless handler.
@@ -44,11 +44,6 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
    * Current browser URL, refreshed whenever the browser reports a URL change.
    */
   readonly #currentUrl = signal(this.#location.href);
-
-  /**
-   * Callbacks registered through {@link onUrlChange}.
-   */
-  readonly #urlChangeListeners = new Set<(url: string) => void>();
 
   /**
    * Starts tracking browser URL changes for reactive active-state checks.
@@ -116,14 +111,13 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
   }
 
   /**
-   * Registers a callback that runs whenever the tracked browser URL changes.
+   * Tracks the browser URL (`location.href`).
    *
-   * @param callback Function invoked with the new browser URL (`location.href`).
-   * @returns A function that unregisters the callback.
+   * @param matchOptions URL parts that count as a change. All parts count by default.
+   * @returns A signal holding the URL as of the last change that counted.
    */
-  onUrlChange(callback: (url: string) => void): () => void {
-    this.#urlChangeListeners.add(callback);
-    return () => this.#urlChangeListeners.delete(callback);
+  currentUrl(matchOptions?: UrlChangeMatchOptions): Signal<string> {
+    return urlChangeSignal(this.#currentUrl, matchOptions);
   }
 
   /**
@@ -146,18 +140,10 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
   }
 
   /**
-   * Re-reads the browser URL into the current URL signal and notifies URL change listeners when it differs.
+   * Re-reads the browser URL into the current URL signal.
    */
   #updateCurrentUrl(): void {
-    const url = this.#location.href;
-    if (url === untracked(this.#currentUrl)) {
-      return;
-    }
-
-    this.#currentUrl.set(url);
-    for (const listener of [...this.#urlChangeListeners]) {
-      listener(url);
-    }
+    this.#currentUrl.set(this.#location.href);
   }
 
   /**

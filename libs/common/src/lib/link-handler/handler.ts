@@ -59,6 +59,24 @@ export interface PreparedLink {
 }
 
 /**
+ * URL parts that count as a change for {@link LinkHandler.currentUrl}. The path always counts.
+ */
+export interface UrlChangeMatchOptions {
+  /**
+   * Whether matrix parameter changes count. Defaults to `true`.
+   */
+  matrixParams?: boolean;
+  /**
+   * Whether query parameter changes count. Defaults to `true`.
+   */
+  queryParams?: boolean;
+  /**
+   * Whether fragment changes count. Defaults to `true`.
+   */
+  fragment?: boolean;
+}
+
+/**
  * Base strategy for preparing and executing link navigation.
  */
 @Injectable({
@@ -67,12 +85,15 @@ export interface PreparedLink {
 })
 export abstract class LinkHandler<TLink extends PreparedLink = PreparedLink> {
   /**
-   * Registers a callback that runs whenever the handler observes a URL change, including browser back and forward.
+   * Tracks the current URL, including changes from browser back and forward.
    *
-   * @param callback Function invoked with the new URL. The URL format is handler specific.
-   * @returns A function that unregisters the callback.
+   * The signal only notifies when the path or a part enabled in `matchOptions` changes. Its value is the full URL
+   * as of the last notified change, so disabled parts may be stale. The URL format is handler specific.
+   *
+   * @param matchOptions URL parts that count as a change. All parts count by default.
+   * @returns A signal holding the current URL.
    */
-  abstract onUrlChange(callback: (url: string) => void): () => void;
+  abstract currentUrl(matchOptions?: UrlChangeMatchOptions): Signal<string>;
 
   /**
    * Resolves command and element inputs into a navigable link descriptor.
