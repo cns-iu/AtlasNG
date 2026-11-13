@@ -28,6 +28,7 @@ $_sticky-top: token-utils.slot(side-panel-sticky-top, $config);
     }
   }
 
+  .ang-page-layout--intro,
   .ang-page-layout--body,
   .ang-page-layout--main {
     display: flex;
