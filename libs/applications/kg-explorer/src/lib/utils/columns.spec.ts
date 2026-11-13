@@ -37,16 +37,33 @@ describe('kgExplorer column builders', () => {
     expect(byLabel.flexGrow).toBe(2);
   });
 
-  it('builds text, number, and date columns', () => {
+  it('builds fixed-width text, number, and date columns', () => {
     expect(kgExplorerTextColumn<TestRow>('Name', 'name')).toMatchObject({
       cellTemplate: TextCellDefinition,
+      width: 140,
+      minWidth: 140,
+      flexGrow: 0,
     });
     expect(kgExplorerNumberColumn<TestRow>('Count', 'count')).toMatchObject({
       cellTemplate: NumberCellDefinition,
       headerConfig: { align: 'end' },
+      width: 96,
+      minWidth: 96,
+      flexGrow: 0,
     });
     expect(kgExplorerDateColumn<TestRow>('Date', 'date')).toMatchObject({
       cellConfig: { align: 'end' },
+      width: 136,
+      minWidth: 136,
+      flexGrow: 0,
+    });
+  });
+
+  it('lets overrides replace the default sizing', () => {
+    expect(kgExplorerNumberColumn<TestRow>('Count', 'count', { width: 120, flexGrow: 1 })).toMatchObject({
+      width: 120,
+      minWidth: 96,
+      flexGrow: 1,
     });
   });
 
