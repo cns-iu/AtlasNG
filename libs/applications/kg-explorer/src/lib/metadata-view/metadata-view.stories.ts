@@ -13,7 +13,7 @@ import {
 import { HeaderShell, HeaderShellNavigationItem, NavigationContainer } from '@atlasng/labs/header-shell';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { expect } from 'storybook/test';
-import { KgExplorerMetadataView, KgExplorerMetadataSection } from './metadata-view';
+import { KgExplorerMetadataSection, KgExplorerMetadataView } from './metadata-view';
 
 const DESCRIPTION =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore ' +
@@ -141,6 +141,39 @@ export const Default: Story = {
     ).toBeVisible();
     await expect(canvas.getByText('Digital object version')).toBeVisible();
     await expect(await canvas.findByRole('link', { name: 'CC BY 4.0' })).toBeVisible();
+  },
+};
+
+/** Metadata page whose first section displays the primary file as an interactive 3D model. */
+export const WithModel: Story = {
+  args: {
+    metadata: {
+      title: '3D reference organ: Kidney, left, female',
+      icons: [{ src: 'assets/organ-icon-placeholder.svg', alt: 'Kidney' }],
+      url: 'https://purl.humanatlas.io/ref-organ/kidney-female-left',
+      sections: [
+        {
+          title: '3D model',
+          content: [
+            {
+              component: 'MetadataModel',
+              config: {
+                src: 'https://cdn.humanatlas.io/digital-objects/ref-organ/kidney-female-left/v1.3/assets/3d-vh-f-kidney-l.glb',
+                alt: '3D model of the left female kidney',
+              },
+            },
+            paragraph(DESCRIPTION),
+          ],
+        },
+        ...SECTIONS.slice(1),
+      ],
+      versions: VERSIONS,
+    },
+    breadcrumbs: [
+      { name: 'Home', command: '/' },
+      { name: 'Knowledge Graph Explorer', command: '/kg-explorer' },
+      { name: '3D reference organ: Kidney, left, female' },
+    ],
   },
 };
 

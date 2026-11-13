@@ -10,6 +10,8 @@ import userEvent from '@testing-library/user-event';
 import { provideKgExplorerMetadataView } from './config';
 import { KgExplorerMetadataView, type KgExplorerMetadata, type KgExplorerMetadataSection } from './metadata-view';
 
+vi.mock('@google/model-viewer', () => ({}));
+
 describe('KgExplorerMetadataView', () => {
   const sections: KgExplorerMetadataSection[] = [
     { title: 'Description', content: { component: 'ContentParagraph', content: 'A description of the entry.' } },
@@ -136,6 +138,24 @@ describe('KgExplorerMetadataView', () => {
     });
 
     expect(await screen.findByRole('img', { name: 'Figure of the entry' })).toHaveAttribute('src', 'figure.png');
+  });
+
+  it('renders 3D models', async () => {
+    const { container } = await setup({
+      metadata: {
+        ...metadata,
+        sections: [
+          {
+            title: '3D model',
+            content: { component: 'MetadataModel', config: { src: 'kidney.glb', alt: '3D model of the kidney' } },
+          },
+        ],
+      },
+    });
+
+    // `model-viewer` is a custom element without an ARIA role, so there is no Testing Library query for it.
+    await vi.waitFor(() => expect(container.querySelector('model-viewer')).toHaveAttribute('src', 'kidney.glb'));
+    expect(container.querySelector('model-viewer')).toHaveAttribute('alt', '3D model of the kidney');
   });
 
   it('renders chip labels in order', async () => {

@@ -1,0 +1,14 @@
+@use 'internal/token-utils';
+@use './../../sass/tokens/metadata-view' as *;
+
+:host {
+  display: block;
+
+  .ang-kg-explorer-metadata-model--viewer {
+    display: block;
+    width: 100%;
+    height: token-utils.slot(model-height, $config);
+    background-color: token-utils.sys-slot(surface-container-low);
+    border-radius: token-utils.sys-slot(corner-medium);
+  }
+}

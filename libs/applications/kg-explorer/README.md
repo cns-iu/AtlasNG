@@ -218,6 +218,7 @@ A section is `{ title, content }`. `content` is one content-block node or a list
 | `TextLink`         | design-system definitions                           | A link. `config.href` is the destination.           |
 | `MetadataImage`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ src, alt }`) | An image spanning the full content width.           |
 | `MetadataChips`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ labels }`)   | A group of non-interactive chips, for example tags. |
+| `MetadataModel`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ src, alt }`) | An interactive 3D model, for example a GLB file.    |
 
 The other design-system definitions are available too.
 
@@ -245,6 +246,22 @@ const sections: KgExplorerMetadataSection[] = [
 ];
 ```
 
+#### Primary file
+
+Show the entry's primary file inline by adding a node for it to a section, usually the first one:
+
+- **Illustration (SVG):** use `MetadataImage`.
+- **3D model (GLB):** use `MetadataModel`. It renders the [`model-viewer`](https://modelviewer.dev/) web component, so users can rotate and zoom the model.
+
+```ts
+{
+  title: '3D model',
+  content: { component: 'MetadataModel', config: { src: 'assets/kidney.glb', alt: '3D model of the left kidney' } },
+}
+```
+
+`@google/model-viewer` (which requires `three`) is a peer dependency of `@atlasng/kg-explorer`; install it alongside the library. It is imported when the library loads and registers the `model-viewer` custom element, so it is part of the bundle even on pages without a model.
+
 ### Downloads
 
 The page does not download files. Choosing a download option emits `download` with `{ item, format }`, and the consumer performs the download. Extend `VersionControlFileFormat` with your own fields, such as a URL, to get them back in the event.
@@ -261,6 +278,7 @@ Spacing can be customized with these CSS variables:
 | `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem` | Space between sections                                                  |
 | `--ang-kg-explorer-metadata-view-padding`                | `2.5rem` | Page padding from `medium` up                                           |
 | `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`   | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+| `--ang-kg-explorer-metadata-view-model-height`           | `30rem`  | Height of `MetadataModel` viewers                                       |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 
