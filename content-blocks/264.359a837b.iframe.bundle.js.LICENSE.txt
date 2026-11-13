@@ -1,0 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * @license Angular v22.1.5
+ * (c) 2010-2026 Google LLC. https://angular.dev/
+ * License: MIT
+ */
