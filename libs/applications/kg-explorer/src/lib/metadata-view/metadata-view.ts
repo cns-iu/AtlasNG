@@ -22,7 +22,8 @@ import { KG_EXPLORER_METADATA_DEFINITIONS } from './definitions';
  * A titled section of the metadata page.
  *
  * The content is rendered with content blocks. Besides the design-system definitions, e.g. `ContentParagraph`, it can
- * use the {@link KG_EXPLORER_METADATA_DEFINITIONS}: `MetadataImage` and `MetadataChips`.
+ * use the {@link KG_EXPLORER_METADATA_DEFINITIONS}: `MetadataImage`, `MetadataChips`, and
+ * `MetadataModel`.
  */
 export interface KgExplorerMetadataSection {
   /** Section heading. */

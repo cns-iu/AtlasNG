@@ -1,0 +1,8 @@
+Anatomical structure,Ontology ID,Cell types,Biomarkers,References
+Heart,UBERON:0000948,24,112,8
+Left ventricle,UBERON:0002084,18,87,5
+Right ventricle,UBERON:0002080,17,81,5
+Left atrium,UBERON:0002079,14,63,4
+Right atrium,UBERON:0002078,14,61,4
+Aorta,UBERON:0000947,9,42,3
+"Coronary artery, left",UBERON:0001621,7,35,2

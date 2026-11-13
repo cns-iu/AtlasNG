@@ -1,0 +1,13 @@
+@use 'sass:list';
+@use 'internal/token-utils';
+
+:host {
+  aspect-ratio: list.slash(16, 9);
+
+  .ang-kg-explorer-metadata-model--viewer {
+    width: 100%;
+    height: 100%;
+    border: 1px solid token-utils.sys-slot(outline);
+    border-radius: token-utils.sys-slot(corner-medium);
+  }
+}

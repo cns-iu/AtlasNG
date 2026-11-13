@@ -4,6 +4,21 @@ White-label knowledge graph explorer, built from AtlasNG design-system component
 
 The library is in early development; its public API may still change. The header and footer shells are not included.
 
+## Installation
+
+```sh
+npm install @atlasng/kg-explorer @google/model-viewer three papaparse
+```
+
+Besides the Angular and AtlasNG packages, these peer dependencies are required:
+
+| Package                | Used by                                       |
+| ---------------------- | --------------------------------------------- |
+| `@google/model-viewer` | `MetadataModel` 3D viewers (requires `three`) |
+| `papaparse`            | `MetadataTable`, to parse CSV files           |
+
+`@google/model-viewer` is imported when the library loads, so it is part of the bundle even on pages without a model.
+
 ## Table view
 
 `ang-kg-explorer-table-view` combines a filter menu with a searchable, sortable results table and per-row downloads.
@@ -218,6 +233,8 @@ A section is `{ title, content }`. `content` is one content-block node or a list
 | `TextLink`         | design-system definitions                           | A link. `config.href` is the destination.           |
 | `MetadataImage`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ src, alt }`) | An image spanning the full content width.           |
 | `MetadataChips`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ labels }`)   | A group of non-interactive chips, for example tags. |
+| `MetadataModel`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ src, alt }`) | An interactive 3D model, for example a GLB file.    |
+| `MetadataTable`    | `KG_EXPLORER_METADATA_DEFINITIONS` (`{ url }`)      | A sortable table loaded from a CSV file.            |
 
 The other design-system definitions are available too.
 
@@ -245,6 +262,30 @@ const sections: KgExplorerMetadataSection[] = [
 ];
 ```
 
+#### Primary file
+
+Show the entry's primary file inline by adding a node for it to a section, usually the first one:
+
+- **Illustration (SVG):** use `MetadataImage`.
+- **3D model (GLB):** use `MetadataModel`. It renders the [`model-viewer`](https://modelviewer.dev/) web component, so users can rotate and zoom the model.
+
+```ts
+{
+  title: '3D model',
+  content: { component: 'MetadataModel', config: { src: 'assets/kidney.glb', alt: '3D model of the left kidney' } },
+}
+```
+
+#### Tables
+
+`MetadataTable` loads a CSV file and shows it in a sortable design-system table. The first line is the header. Columns with only numeric values are right-aligned. If the file fails to load, a notice is shown instead.
+
+```ts
+{ title: 'Anatomical structures', content: { component: 'MetadataTable', config: { url: 'assets/structures.csv' } } }
+```
+
+The file is fetched with `fetch`, so it must be same-origin or allow CORS, and parsed with [Papa Parse](https://www.papaparse.com/). The table grows up to `--ang-kg-explorer-metadata-view-table-max-height` and then scrolls.
+
 ### Downloads
 
 The page does not download files. Choosing a download option emits `download` with `{ item, format }`, and the consumer performs the download. Extend `VersionControlFileFormat` with your own fields, such as a URL, to get them back in the event.
@@ -261,6 +302,8 @@ Spacing can be customized with these CSS variables:
 | `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem` | Space between sections                                                  |
 | `--ang-kg-explorer-metadata-view-padding`                | `2.5rem` | Page padding from `medium` up                                           |
 | `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`   | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+| `--ang-kg-explorer-metadata-view-model-height`           | `30rem`  | Height of `MetadataModel` viewers                                       |
+| `--ang-kg-explorer-metadata-view-table-max-height`       | `30rem`  | Maximum height of `MetadataTable` tables; longer tables scroll          |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 
