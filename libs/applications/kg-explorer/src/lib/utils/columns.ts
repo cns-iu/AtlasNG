@@ -19,7 +19,8 @@ const END_HEADER = { headerTemplate: TextHeaderCellDefinition, headerConfig: { a
 
 /**
  * Creates a column whose cells link to the row property's value, sized like the
- * Figma title column. Rows sort by the displayed label when it comes from a
+ * Figma title column. It shares the table's extra width with the chip columns.
+ * Rows sort by the displayed label when it comes from a
  * row property or function.
  *
  * Build columns once and reuse the array; the table caches cell templates by
@@ -54,7 +55,8 @@ export function kgExplorerLinkColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates a start-aligned text column, sized like the Figma string column.
+ * Creates a start-aligned text column with the fixed width of the Figma string
+ * column.
  *
  * @param name Header label.
  * @param prop Row property displayed in the cells.
@@ -69,7 +71,9 @@ export function kgExplorerTextColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
+    width: 140,
     minWidth: 140,
+    flexGrow: 0,
     cellTemplate: TextCellDefinition,
     ...START_HEADER,
     ...overrides,
@@ -104,7 +108,8 @@ export function kgExplorerChipColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates an end-aligned, localized number column, sized like the Figma number columns.
+ * Creates an end-aligned, localized number column with the fixed width of the
+ * Figma number columns.
  *
  * @param name Header label.
  * @param prop Row property holding the number.
@@ -119,7 +124,9 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
+    width: 96,
     minWidth: 96,
+    flexGrow: 0,
     cellTemplate: NumberCellDefinition,
     ...END_HEADER,
     ...overrides,
@@ -127,8 +134,8 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates an end-aligned date column for preformatted values, sized like the
- * Figma date column.
+ * Creates an end-aligned date column for preformatted values, with the fixed
+ * width of the Figma date column.
  *
  * @param name Header label.
  * @param prop Row property holding the formatted date.
@@ -143,7 +150,9 @@ export function kgExplorerDateColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
+    width: 136,
     minWidth: 136,
+    flexGrow: 0,
     cellTemplate: TextCellDefinition,
     cellConfig: { align: 'end' },
     ...END_HEADER,

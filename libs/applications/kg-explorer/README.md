@@ -69,6 +69,7 @@ Give the table view a height (for example, fill the page below your header) and 
 
 - `items` takes any row type, and `columns` (required) sets which properties the table shows. There are no built-in default columns.
 - Build columns with the generic helpers, which apply the Figma column widths and cell types: `kgExplorerLinkColumn(name, prop, { labelProp | labelFn | label })`, `kgExplorerTextColumn`, `kgExplorerChipColumn` (one chip per array value, unsortable), `kgExplorerNumberColumn`, and `kgExplorerDateColumn`. Each takes optional `TableColumn` overrides as its last argument, and you can mix in plain `TableColumn` objects. Create the array once and reuse it, because the table caches cell templates by column identity.
+- Column sizing: the table uses flex column mode. Link and chip columns grow (`flexGrow: 1`, with minimum widths of 140px and 248px) and share the table's extra width. Text, number, and date columns keep a fixed width (140px, 96px, and 136px) with `flexGrow: 0`. To change a column's size, pass `width`, `minWidth`, or `flexGrow` in its overrides, for example `kgExplorerLinkColumn('Title', 'url', { labelProp: 'title' }, { flexGrow: 2 })` to give the link column twice the extra width of a chip column. A column with `flexGrow: 0` keeps its `width`, which defaults to 150px, so set `width` too.
 - `filters` takes `KgExplorerFilter` definitions, and `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections and the search term.
 
 ### Filters
