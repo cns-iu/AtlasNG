@@ -1,0 +1,29 @@
+# Custom Nx Agents launch templates. `linux-medium-js-playwright` is the pre-built
+# `linux-medium-js` template (https://github.com/nrwl/nx-cloud-workflows/blob/main/launch-templates/linux.yaml)
+# plus a cached Playwright Chromium install for the `test-storybook` target.
+launch-templates:
+  linux-medium-js-playwright:
+    resource-class: 'docker_linux_amd64/medium'
+    image: 'ubuntu22.04-node24.14-v1'
+    init-steps:
+      - name: Checkout
+        uses: 'nrwl/nx-cloud-workflows/v6/workflow-steps/checkout/main.yaml'
+      - name: Restore Node Modules Cache
+        uses: 'nrwl/nx-cloud-workflows/v6/workflow-steps/cache/main.yaml'
+        inputs:
+          key: 'package-lock.json|patches/**'
+          paths: 'node_modules'
+          base-branch: 'main'
+      # Keyed on the lockfile so a Playwright upgrade downloads the matching browser build.
+      - name: Restore Playwright Browser Cache
+        uses: 'nrwl/nx-cloud-workflows/v6/workflow-steps/cache/main.yaml'
+        inputs:
+          key: 'package-lock.json|"playwright-chromium"'
+          paths: '../.cache/ms-playwright'
+          base-branch: 'main'
+      - name: Install Node
+        uses: 'nrwl/nx-cloud-workflows/v6/workflow-steps/install-node/main.yaml'
+      - name: Install Node Modules
+        uses: 'nrwl/nx-cloud-workflows/v6/workflow-steps/install-node-modules/main.yaml'
+      - name: Install Playwright Chromium
+        script: npx playwright install --with-deps chromium

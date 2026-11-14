@@ -69,6 +69,7 @@
     "@storybook/addon-docs": "^10.6.0",
     "@storybook/addon-themes": "^10.6.0",
     "@storybook/angular": "^10.6.0",
+    "@storybook/test-runner": "^0.26.0",
     "@swc-node/register": "^1.11.1",
     "@swc/core": "^1.15.47",
     "@swc/helpers": "^0.5.23",

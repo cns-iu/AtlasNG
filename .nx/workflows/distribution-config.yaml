@@ -1,9 +1,17 @@
 distribute-on:
-  default: 3 linux-medium-js
+  default: 2 linux-medium-js, 1 linux-medium-js-playwright
 
 assignment-rules:
   - targets:
       - test
     run-on:
       - agent: linux-medium-js
+        parallelism: 1
+      - agent: linux-medium-js-playwright
+        parallelism: 1
+  # Only the Playwright agent has a browser installed.
+  - targets:
+      - test-storybook
+    run-on:
+      - agent: linux-medium-js-playwright
         parallelism: 1
