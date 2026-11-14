@@ -10,6 +10,29 @@
   }
 }
 
+/// Vertical padding of text cells, between the row's spacing and the text.
+/// 8px centers the 28px chips, with their 4px margin, on a 20px line of text,
+/// and matches the space a 40px icon button leaves above its 24px icon at
+/// Material's default density.
+$text-cell-padding: 0.5rem;
+
+@mixin row-space-above($space) {
+  .datatable-body-cell {
+    padding-top: $space + $text-cell-padding;
+  }
+
+  .datatable-body-cell:has(.ang-table--chip-cell) {
+    padding-top: $space;
+  }
+
+  .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
+    padding-top: calc(
+      $space + $text-cell-padding -
+        (var(--mat-icon-button-state-layer-size, 40px) - var(--mat-icon-button-icon-size, 24px)) / 2
+    );
+  }
+}
+
 .ang-kg-explorer-table-panel {
   display: flex;
   flex-direction: column;
@@ -59,13 +82,30 @@
     .datatable-body-row {
       border-bottom: 1px solid token-utils.sys-slot(outline-variant);
 
+      @include row-space-above(0.5rem);
+
+      .datatable-body-cell {
+        align-items: flex-start;
+        padding-bottom: 0.75rem + $text-cell-padding;
+        line-height: inherit;
+      }
+
       .datatable-body-cell-label {
         white-space: normal;
       }
 
-      .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
-        padding: 0;
+      .datatable-body-cell:has(.ang-table--chip-cell) {
+        padding-bottom: 0.75rem;
       }
+
+      .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
+        padding-inline: 0;
+        padding-bottom: 0;
+      }
+    }
+
+    .datatable-row-wrapper:first-child .datatable-body-row {
+      @include row-space-above(0.25rem);
     }
 
     &.no-results {
