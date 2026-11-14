@@ -10,6 +10,26 @@
   }
 }
 
+/// Vertical padding of text cells, between the row's spacing and the text.
+$text-cell-padding: 0.5rem;
+
+/// Sets the space between a row's top divider and its cells. Rows have 12px
+/// of space above the divider below them, set on the cells' bottom padding.
+/// Text cells add 8px of padding to the row's spacing. Chip cells have 4px of
+/// padding, which the chips' own 4px margin already provides, and the
+/// download button's own padding lines its icon up with the first line of text.
+/// @param {Number} $space Space between the top divider and the cells.
+@mixin row-space-above($space) {
+  .datatable-body-cell {
+    padding-top: $space + $text-cell-padding;
+  }
+
+  .datatable-body-cell:has(.ang-table--chip-cell),
+  .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
+    padding-top: $space;
+  }
+}
+
 .ang-kg-explorer-table-panel {
   display: flex;
   flex-direction: column;
@@ -59,13 +79,31 @@
     .datatable-body-row {
       border-bottom: 1px solid token-utils.sys-slot(outline-variant);
 
+      @include row-space-above(0.5rem);
+
+      .datatable-body-cell {
+        align-items: flex-start;
+        padding-bottom: 0.75rem + $text-cell-padding;
+        // Use the row's cell text line height instead of ngx-datatable's 1.625.
+        line-height: inherit;
+      }
+
       .datatable-body-cell-label {
         white-space: normal;
       }
 
-      .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
-        padding: 0;
+      .datatable-body-cell:has(.ang-table--chip-cell) {
+        padding-bottom: 0.75rem;
       }
+
+      .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
+        padding-inline: 0;
+        padding-bottom: 0;
+      }
+    }
+
+    .datatable-row-wrapper:first-child .datatable-body-row {
+      @include row-space-above(0.25rem);
     }
 
     &.no-results {
