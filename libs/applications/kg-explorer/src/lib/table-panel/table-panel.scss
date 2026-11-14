@@ -11,22 +11,25 @@
 }
 
 /// Vertical padding of text cells, between the row's spacing and the text.
+/// 8px centers the 28px chips, with their 4px margin, on a 20px line of text,
+/// and matches the space a 40px icon button leaves above its 24px icon at
+/// Material's default density.
 $text-cell-padding: 0.5rem;
 
-/// Sets the space between a row's top divider and its cells. Rows have 12px
-/// of space above the divider below them, set on the cells' bottom padding.
-/// Text cells add 8px of padding to the row's spacing. Chip cells have 4px of
-/// padding, which the chips' own 4px margin already provides, and the
-/// download button's own padding lines its icon up with the first line of text.
-/// @param {Number} $space Space between the top divider and the cells.
 @mixin row-space-above($space) {
   .datatable-body-cell {
     padding-top: $space + $text-cell-padding;
   }
 
-  .datatable-body-cell:has(.ang-table--chip-cell),
-  .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
+  .datatable-body-cell:has(.ang-table--chip-cell) {
     padding-top: $space;
+  }
+
+  .datatable-body-cell:has(.ang-kg-explorer-download-cell--button) {
+    padding-top: calc(
+      $space + $text-cell-padding -
+        (var(--mat-icon-button-state-layer-size, 40px) - var(--mat-icon-button-icon-size, 24px)) / 2
+    );
   }
 }
 
@@ -84,7 +87,6 @@ $text-cell-padding: 0.5rem;
       .datatable-body-cell {
         align-items: flex-start;
         padding-bottom: 0.75rem + $text-cell-padding;
-        // Use the row's cell text line height instead of ngx-datatable's 1.625.
         line-height: inherit;
       }
 
