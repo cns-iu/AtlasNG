@@ -95,7 +95,11 @@
       [(search)]="search"
       (selectedChange)="updateSelected($event)"
     >
-      <ng-container [ngTemplateOutlet]="chips" />
+      @if (selected().length > 0) {
+        <ang-scroll-area class="ang-multi-select-filter--chip-row" orientation="horizontal">
+          <ng-container [ngTemplateOutlet]="chips" />
+        </ang-scroll-area>
+      }
     </ang-search-list>
   </mat-dialog-content>
   <mat-dialog-actions align="end">

@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/multi-select-filter' as *;
+@use 'tokens/scroll-area';
 @use 'tokens/search-list';
 
 .ang-multi-select-filter {
@@ -86,6 +87,7 @@
   // options up with the dialog title.
   @include mat.dialog-overrides(
     (
+      container-color: token-utils.slot(dialog-container-color, $config),
       container-shape: token-utils.slot(dialog-container-shape, $config),
       with-actions-content-padding: 0 0.5rem,
     )
@@ -109,7 +111,31 @@
     );
   }
 
+  .ang-multi-select-filter--chip-row {
+    flex: none;
+    margin-top: 0.75rem;
+
+    @include scroll-area.overrides(
+      (
+        container-color: token-utils.slot(dialog-container-color, $config),
+      )
+    );
+  }
+
+  // Keeps the chips on one row, so selecting an option never moves the list down.
   .ang-multi-select-filter--chips {
-    padding: 0.75rem 1rem 0;
+    box-sizing: border-box;
+    width: max-content;
+    min-width: 100%;
+    padding: 0 1rem 0.5rem;
+
+    .mdc-evolution-chip-set__chips {
+      flex-wrap: nowrap;
+    }
+
+    // Matches the row's end padding, so a chip scrolled into view clears the edge fade.
+    .mat-mdc-chip {
+      scroll-margin-inline: 1rem;
+    }
   }
 }

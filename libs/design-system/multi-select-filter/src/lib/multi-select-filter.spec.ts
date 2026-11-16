@@ -245,6 +245,25 @@ describe('MultiSelectFilter', () => {
       expect(within(dialog).queryByRole('list', { name: 'Active filters' })).not.toBeInTheDocument();
     });
 
+    it('scrolls the newest chip into view when an option is selected in the dialog', async () => {
+      const user = userEvent.setup();
+      const scrollIntoView = vi.fn();
+      Element.prototype.scrollIntoView = scrollIntoView;
+      await setup({ selected: [kidney] }, false);
+
+      await user.click(screen.getByRole('button', { name: 'Organ' }));
+      const dialog = await screen.findByRole('dialog', { name: 'Organ' });
+      await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
+
+      await waitFor(() => expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' }));
+      expect(scrollIntoView.mock.contexts.at(-1)).toHaveTextContent('Liver');
+
+      scrollIntoView.mockClear();
+      await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
+      expect(scrollIntoView).not.toHaveBeenCalled();
+      Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
+    });
+
     it('closes the dialog with the Done button and returns focus to the label button', async () => {
       const user = userEvent.setup();
       const { expandedChange } = await setup({ doneLabel: 'Apply' }, false);

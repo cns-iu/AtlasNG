@@ -74,6 +74,9 @@ export const WithoutSearch: Story = {
 };
 
 export const SmallScreen: Story = {
+  args: {
+    selected: ORGANS.slice(0, 5),
+  },
   globals: {
     viewport: { value: 'mobile1', isRotated: false },
   },
