@@ -21,8 +21,13 @@
   &.ang-table--text-header-align-end {
     justify-content: flex-end;
 
-    .datatable-header-cell:not(.sortable):has(&) {
-      padding-right: 24px;
+    .ang-table--sort-indicator {
+      order: -1;
+    }
+
+    // Outranks the table's zero end padding on sortable headers so labels line up with the cells.
+    .ang-table .datatable-header .datatable-header-cell:has(&) {
+      padding-right: 16px;
     }
   }
 }
