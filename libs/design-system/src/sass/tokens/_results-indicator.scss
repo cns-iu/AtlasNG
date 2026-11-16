@@ -4,8 +4,9 @@ $config: (
   namespace: 'results-indicator',
   tokens: (
     color: token-utils.sys-token(on-surface-variant),
-    background-color: token-utils.sys-token(surface-bright),
+    background-color: token-utils.sys-token(surface-container-low),
     border-color: token-utils.sys-token(outline-variant),
+    container-shape: token-utils.sys-token(corner-small),
     text-font: token-utils.sys-token(label-large-font),
     text-size: token-utils.sys-token(label-large-size),
     text-weight: token-utils.sys-token(label-large-weight),
