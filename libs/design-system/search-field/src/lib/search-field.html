@@ -1,6 +1,6 @@
 <mat-form-field class="ang-search-field--form-field" subscriptSizing="dynamic">
   <mat-icon matPrefix fontIcon="search" />
-  <mat-label>{{ label() }}</mat-label>
+  <mat-label>{{ labelText() }}</mat-label>
   <input
     class="ang-search-field--input"
     matInput
@@ -20,7 +20,7 @@
       matIconButton
       matSuffix
       type="button"
-      aria-label="Clear search"
+      [attr.aria-label]="clearLabel()"
       (click)="clear()"
     >
       <mat-icon fontIcon="close" />

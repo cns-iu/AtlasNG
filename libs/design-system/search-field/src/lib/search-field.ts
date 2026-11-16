@@ -5,6 +5,30 @@ import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggestion } from '@atlasng/cdk/search';
+import { createConfigurationToken, resolveText, type, type Text } from '@atlasng/core';
+
+/** User-facing text of {@link SearchField}. */
+export interface SearchFieldMessages {
+  /** Label of the search field. Defaults to "Search". */
+  label?: Text;
+  /** Accessible label of the clear button. Defaults to "Clear search". */
+  clearLabel?: Text;
+}
+
+/**
+ * Text of every {@link SearchField} below the injector. Provided messages are merged over the parent's.
+ *
+ * @example
+ * ```ts
+ * SEARCH_FIELD_MESSAGES.provide({ label: 'Rechercher', clearLabel: 'Effacer la recherche' });
+ * ```
+ */
+export const SEARCH_FIELD_MESSAGES = createConfigurationToken({
+  name: 'SEARCH_FIELD_MESSAGES',
+  config: type<SearchFieldMessages>(),
+  defaults: () => ({ label: 'Search' as Text, clearLabel: 'Clear search' as Text }),
+  inherit: true,
+});
 
 /**
  * Search input with a search icon, a clear button, and autocomplete suggestions whose matched text is highlighted.
@@ -49,8 +73,8 @@ export class SearchField<T = string> {
    */
   readonly suggestions = input<readonly (string | SearchSuggestion)[]>();
 
-  /** Label of the search field. */
-  readonly label = input('Search');
+  /** Label of the search field. Defaults to the `label` of {@link SEARCH_FIELD_MESSAGES}. */
+  readonly label = input<string>();
 
   /** Placeholder of the search input. */
   readonly placeholder = input<string>();
@@ -72,6 +96,15 @@ export class SearchField<T = string> {
 
   /** Emits when the user clears the term with the clear button or Escape. */
   readonly cleared = output<void>();
+
+  /** Text of the search field. */
+  readonly #messages = SEARCH_FIELD_MESSAGES.inject();
+
+  /** Displayed label. */
+  protected readonly labelText = computed(() => this.label() ?? resolveText(this.#messages.label));
+
+  /** Accessible label of the clear button. */
+  protected readonly clearLabel = computed(() => resolveText(this.#messages.clearLabel));
 
   /** Search input element. */
   private readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');

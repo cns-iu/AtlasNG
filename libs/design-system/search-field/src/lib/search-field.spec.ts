@@ -1,7 +1,8 @@
+import { signal } from '@angular/core';
 import { provideSearch, SearchEngine, SearchIndex, withCustomEngine } from '@atlasng/cdk/search';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { SearchField } from './search-field';
+import { SEARCH_FIELD_MESSAGES, SearchField } from './search-field';
 
 interface Organ {
   name: string;
@@ -205,5 +206,30 @@ describe('SearchField', () => {
       'Lymph Node',
     ]);
     expect(within(options[0]).getByText('L')).toHaveClass('ang-search-highlight--match');
+  });
+
+  it('uses the provided messages', async () => {
+    const user = userEvent.setup();
+    await setup({}, [SEARCH_FIELD_MESSAGES.provide({ label: 'Rechercher', clearLabel: 'Effacer' })]);
+
+    await user.type(getInput('Rechercher'), 'a');
+
+    expect(screen.getByRole('button', { name: 'Effacer' })).toBeInTheDocument();
+  });
+
+  it('prefers the label input over the provided messages', async () => {
+    await setup({ label: 'Find organs' }, [SEARCH_FIELD_MESSAGES.provide({ label: 'Rechercher' })]);
+
+    expect(getInput('Find organs')).toBeInTheDocument();
+  });
+
+  it('updates messages read from signals', async () => {
+    const label = signal('Search');
+    const { fixture } = await setup({}, [SEARCH_FIELD_MESSAGES.provide({ label })]);
+
+    label.set('Rechercher');
+    fixture.detectChanges();
+
+    expect(getInput('Rechercher')).toBeInTheDocument();
   });
 });

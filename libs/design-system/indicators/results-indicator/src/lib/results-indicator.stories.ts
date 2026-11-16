@@ -21,11 +21,10 @@ type Story = StoryObj<ResultsIndicator>;
 
 export const Default: Story = {};
 
-export const WithPrefixAndSuffix: Story = {
+export const WithMessage: Story = {
   args: {
     value: 50000,
     total: 100000,
-    prefix: 'Viewing',
-    suffix: 'items',
+    message: ({ formattedValue, formattedTotal }) => `Viewing ${formattedValue} of ${formattedTotal} items`,
   },
 };

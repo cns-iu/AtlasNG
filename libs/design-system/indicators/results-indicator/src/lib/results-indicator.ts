@@ -10,14 +10,55 @@ import {
   LOCALE_ID,
   untracked,
 } from '@angular/core';
+import { createConfigurationToken, type, type Message } from '@atlasng/core';
 
 /** Milliseconds the text has to stay the same before screen readers announce it. */
 const ANNOUNCE_DELAY = 1000;
 
+/** Values passed to the {@link ResultsIndicatorMessages.text} message. */
+export interface ResultsIndicatorParams {
+  /** Current value. */
+  value: number;
+  /** Total value. */
+  total: number;
+  /** `value` formatted for `locale`. */
+  formattedValue: string;
+  /** `total` formatted for `locale`. */
+  formattedTotal: string;
+  /** Active Angular locale, for example to select plural forms with `plural`. */
+  locale: string;
+}
+
+/** User-facing text of {@link ResultsIndicator}. */
+export interface ResultsIndicatorMessages {
+  /** Text of the indicator. Defaults to "[value] of [total]". */
+  text?: Message<ResultsIndicatorParams>;
+}
+
+/**
+ * Text of every {@link ResultsIndicator} below the injector. Provided messages are merged over the parent's.
+ *
+ * @example
+ * ```ts
+ * RESULTS_INDICATOR_MESSAGES.provide({
+ *   text: ({ formattedValue, formattedTotal, total, locale }) =>
+ *     `${formattedValue} sur ${formattedTotal} ${plural(locale, total, { one: 'résultat', other: 'résultats' })}`,
+ * });
+ * ```
+ */
+export const RESULTS_INDICATOR_MESSAGES = createConfigurationToken({
+  name: 'RESULTS_INDICATOR_MESSAGES',
+  config: type<ResultsIndicatorMessages>(),
+  defaults: () => ({
+    text: ({ formattedValue, formattedTotal }: ResultsIndicatorParams) => `${formattedValue} of ${formattedTotal}`,
+  }),
+  inherit: true,
+});
+
 /**
  * Displays a localized "value of total" style indicator.
  *
- * Example output: "Showing 5 of 120 results".
+ * Example output: "5 of 120". The text comes from {@link RESULTS_INDICATOR_MESSAGES} or the `message` input.
  *
  * The host is a `status` live region, so screen readers announce changes to the
  * text without moving focus. The visible text updates immediately, while the
@@ -43,13 +84,21 @@ export class ResultsIndicator {
   /** Maximum or total value to display. */
   readonly total = input.required<number>();
 
-  /** Word or separator symbol between value and total. Defaults to "of". */
-  readonly separator = input('of');
+  /** Text of this indicator. Defaults to the `text` of {@link RESULTS_INDICATOR_MESSAGES}. */
+  readonly message = input<Message<ResultsIndicatorParams>>();
 
-  /** Optional text shown before the numeric segment. */
+  /**
+   * Optional text shown before the message.
+   *
+   * @deprecated Use `message` or {@link RESULTS_INDICATOR_MESSAGES}, which can place the values anywhere in the text.
+   */
   readonly prefix = input('');
 
-  /** Optional text shown after the numeric segment. */
+  /**
+   * Optional text shown after the message.
+   *
+   * @deprecated Use `message` or {@link RESULTS_INDICATOR_MESSAGES}, which can place the values anywhere in the text.
+   */
   readonly suffix = input('');
 
   /**
@@ -58,20 +107,21 @@ export class ResultsIndicator {
    */
   readonly announceDisabled = input(false, { transform: booleanAttribute });
 
-  /**
-   * Final display string composed from prefix/value/separator/total/suffix.
-   * Numeric values are localized using the active Angular locale.
-   */
+  /** Display text: the message with the values formatted for the active Angular locale. */
   protected readonly text = computed(() => {
-    const parts = [
-      this.prefix(),
-      formatNumber(this.value(), this.#locale),
-      this.separator(),
-      formatNumber(this.total(), this.#locale),
-      this.suffix(),
-    ];
+    const locale = this.#locale;
+    const value = this.value();
+    const total = this.total();
+    const message = this.message() ?? this.#messages.text;
+    const text = message({
+      value,
+      total,
+      formattedValue: formatNumber(value, locale),
+      formattedTotal: formatNumber(total, locale),
+      locale,
+    });
 
-    return parts.join(' ').trim();
+    return [this.prefix(), text, this.suffix()].join(' ').trim();
   });
 
   /**
@@ -86,6 +136,9 @@ export class ResultsIndicator {
 
   /** Locale used for number formatting, injected from Angular DI. */
   readonly #locale = inject(LOCALE_ID);
+
+  /** Text of the indicator. */
+  readonly #messages = RESULTS_INDICATOR_MESSAGES.inject();
 
   /** Schedules the announcement of each new text, restarting the delay whenever the text changes again. */
   constructor() {
