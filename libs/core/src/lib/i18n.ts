@@ -157,6 +157,50 @@ export function computedMessage<TParams>(...args: unknown[]): Signal<string> {
 }
 
 /**
+ * {@link MessageContext} of a locale. Creates its default formatters once, so instances are cached per locale by
+ * {@link getMessageContext}. Methods are arrow functions so messages can destructure them from the context.
+ */
+class MessageContextImpl implements MessageContext {
+  /** Number format of the locale without options. */
+  readonly #numberFormat: Intl.NumberFormat;
+  /** Plural rules of the locale. */
+  readonly #pluralRules: Intl.PluralRules;
+
+  /**
+   * Creates the context and the default formatters of a locale.
+   *
+   * @param locale Locale to format for.
+   */
+  constructor(readonly locale: string) {
+    this.#numberFormat = new Intl.NumberFormat(locale);
+    this.#pluralRules = new Intl.PluralRules(locale);
+  }
+
+  /**
+   * Formats a number for the locale. Options create a new `Intl.NumberFormat` on each call.
+   *
+   * @param value Number to format.
+   * @param options Formatting options, for example `{ notation: 'compact' }`.
+   * @returns The formatted number.
+   */
+  readonly number = (value: number, options?: Intl.NumberFormatOptions): string => {
+    const format = options ? new Intl.NumberFormat(this.locale, options) : this.#numberFormat;
+    return format.format(value);
+  };
+
+  /**
+   * Selects the plural form of a text for a count.
+   *
+   * @param count Count that selects the form.
+   * @param forms Forms by plural category. Categories without a form fall back to `other`.
+   * @returns The selected form.
+   */
+  readonly plural = (count: number, forms: PluralForms): string => {
+    return forms[this.#pluralRules.select(count)] ?? forms.other;
+  };
+}
+
+/**
  * Returns the message context of a locale. Contexts are cached, so every call with the same locale returns the same
  * instance.
  *
@@ -166,13 +210,7 @@ export function computedMessage<TParams>(...args: unknown[]): Signal<string> {
 export function getMessageContext(locale: string): MessageContext {
   let context = MESSAGE_CONTEXTS.get(locale);
   if (!context) {
-    const numberFormat = new Intl.NumberFormat(locale);
-    const pluralRules = new Intl.PluralRules(locale);
-    context = {
-      locale,
-      number: (value, options) => (options ? new Intl.NumberFormat(locale, options) : numberFormat).format(value),
-      plural: (count, forms) => forms[pluralRules.select(count)] ?? forms.other,
-    };
+    context = new MessageContextImpl(locale);
     MESSAGE_CONTEXTS.set(locale, context);
   }
 
