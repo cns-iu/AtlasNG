@@ -2,11 +2,19 @@ import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { KgExplorerTableToolbar } from './table-toolbar';
 
+const counter = (text: string) => screen.queryByText(text, { ignore: '.cdk-visually-hidden' });
+
 describe('KgExplorerTableToolbar', () => {
   async function setup(inputs: Record<string, unknown> = {}) {
     const user = userEvent.setup();
     const result = await render(KgExplorerTableToolbar, {
-      inputs: { count: 2, total: 3, suggestions: ['Heart atlas', 'Kidney atlas'], ...inputs },
+      inputs: {
+        count: 2,
+        total: 3,
+        suggestions: ['Heart atlas', 'Kidney atlas'],
+        config: { resultsCounterPrefix: 'Viewing' },
+        ...inputs,
+      },
     });
 
     const search = () => result.fixture.componentInstance.search();
@@ -18,7 +26,7 @@ describe('KgExplorerTableToolbar', () => {
     await setup();
 
     expect(screen.getByRole('combobox', { name: 'Search' })).toBeInTheDocument();
-    expect(screen.getByText('Viewing 2 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 2 of 3')).toBeInTheDocument();
   });
 
   it('updates the search from typing, suggestions, and the clear button', async () => {
@@ -39,6 +47,6 @@ describe('KgExplorerTableToolbar', () => {
     await setup({ config: { searchDisabled: true, resultsCounterDisabled: true } });
 
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
-    expect(screen.queryByText('Viewing 2 of 3')).not.toBeInTheDocument();
+    expect(counter('Viewing 2 of 3')).not.toBeInTheDocument();
   });
 });

@@ -33,6 +33,11 @@ export class KgExplorerTableToolbar {
   /** Total number of results before searching. */
   readonly total = input(0);
 
-  /** Table view configuration; `searchDisabled` and `resultsCounterDisabled` hide the parts of the toolbar. */
-  readonly config = input<Pick<KgExplorerTableViewConfig, 'searchDisabled' | 'resultsCounterDisabled'>>({});
+  /**
+   * Table view configuration; `searchDisabled` and `resultsCounterDisabled` hide the parts of the toolbar,
+   * and `resultsCounterPrefix` is shown before the numbers of the counter.
+   */
+  readonly config = input<
+    Pick<KgExplorerTableViewConfig, 'searchDisabled' | 'resultsCounterDisabled' | 'resultsCounterPrefix'>
+  >({});
 }
