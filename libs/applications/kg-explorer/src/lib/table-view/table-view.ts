@@ -1,16 +1,17 @@
-import { Component, computed, effect, input, model, output, untracked } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Component, computed, effect, inject, input, linkedSignal, model, output, untracked } from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
-import { watchBreakpoint } from '@atlasng/cdk';
+import { BREAKPOINTS, breakpointQuery } from '@atlasng/cdk';
 import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
-import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
-import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
-import { pickDefined } from '../utils/pick-defined';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { KgExplorerTablePanel } from '../table-panel/table-panel';
+import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
+import { pickDefined } from '../utils/pick-defined';
+import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
@@ -26,8 +27,9 @@ type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: Sear
  * Filters with a `field` or `matches` narrow the rows after they are searched,
  * without rebuilding the search index; for other filters, read
  * {@link filterSelections} and pass the matching {@link items}. The menu is
- * docked from the Angular Material large breakpoint up and becomes a drawer
- * controlled by {@link filtersOpen} on smaller screens.
+ * docked from the `filtersDockBreakpoint` of {@link config} up (the large
+ * breakpoint by default) and becomes a drawer controlled by {@link filtersOpen}
+ * on smaller screens; `ang-kg-explorer-filter-toggle` opens and closes it.
  * Projected content, such as a footer, is rendered at the end of the table and
  * scrolls with it.
  *
@@ -124,11 +126,41 @@ export class KgExplorerTableView<
   /** File formats of the download column, or `undefined` when there is no download column. */
   private readonly downloadFormats = computed(() => this.resolvedConfig().downloadFormats);
 
-  /** Whether the filter menu is docked beside the table. */
-  protected readonly docked = watchBreakpoint('large');
+  /** Observer of the viewport width. */
+  private readonly breakpointObserver = inject(BreakpointObserver);
 
-  /** Opens the filter menu when it is or becomes docked and closes the drawer when it undocks. */
+  /** Named breakpoints used to resolve the dock breakpoint. */
+  private readonly breakpoints = inject(BREAKPOINTS);
+
+  /**
+   * Media query from which the filter menu is docked; empty when it is docked at every width.
+   * Computed rather than read once, because the `config` input is not set yet during construction.
+   */
+  private readonly dockQuery = computed(() =>
+    breakpointQuery(this.resolvedConfig().filtersDockBreakpoint ?? 'large', this.breakpoints),
+  );
+
+  /** Whether the filter menu is docked beside the table. Reset synchronously when the dock query changes. */
+  protected readonly docked = linkedSignal(() => {
+    const query = this.dockQuery();
+    return query === '' || this.breakpointObserver.isMatched(query);
+  });
+
+  /**
+   * Watches the dock breakpoint, opens the filter menu when it is or becomes
+   * docked, and closes the drawer when it undocks.
+   */
   constructor() {
+    effect((onCleanup) => {
+      const query = this.dockQuery();
+      if (query !== '') {
+        const subscription = this.breakpointObserver
+          .observe(query)
+          .subscribe(({ matches }) => this.docked.set(matches));
+        onCleanup(() => subscription.unsubscribe());
+      }
+    });
+
     let previous: boolean | undefined;
     effect(() => {
       const docked = this.docked();

@@ -2,10 +2,10 @@
 @use 'tokens/table' as table;
 
 @mixin table-padding() {
-  padding: 1.25rem;
+  padding: 0 1.25rem;
 
   @media (min-width: 960px) {
-    padding: 2rem;
+    padding: 0 2rem;
   }
 }
 
@@ -41,12 +41,22 @@ $text-cell-padding: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    @include table-padding;
+    // @include table-padding;
     max-width: 96rem;
     margin: 0 auto;
   }
 
+  .ang-kg-explorer-table-panel--toolbar {
+    @include table-padding;
+    margin-top: 1.25rem;
+
+    @media (min-width: 960px) {
+      margin-top: 2rem;
+    }
+  }
+
   .ang-kg-explorer-table-panel--table {
+    @include table-padding;
     padding-top: 0;
 
     @include table.overrides(
@@ -113,6 +123,13 @@ $text-cell-padding: 0.5rem;
   }
 
   .ang-kg-explorer-table-panel--end {
+    @include table-padding;
+    @include end-of-results-indicator.overrides(
+      (
+        background-color: token-utils.sys-slot(surface-container-low),
+      )
+    );
+
     padding-top: 0;
 
     .mat-divider {
@@ -124,6 +141,11 @@ $text-cell-padding: 0.5rem;
       width: fit-content;
       margin: 0 auto;
       margin-top: 0rem !important;
+      margin-bottom: 1.25rem;
+
+      @media (min-width: 960px) {
+        margin-bottom: 2rem;
+      }
     }
   }
 }

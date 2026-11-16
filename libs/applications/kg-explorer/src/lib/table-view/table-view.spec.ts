@@ -68,6 +68,7 @@ describe('KgExplorerTableView', () => {
     const user = userEvent.setup();
     const download = vi.fn();
     const state = new BehaviorSubject<BreakpointState>({ matches: docked, breakpoints: {} });
+    const observer = { observe: vi.fn(() => state), isMatched: vi.fn(() => state.value.matches) };
     const result = await render(KgExplorerTableView<TestItem>, {
       inputs: {
         items: ITEMS,
@@ -77,10 +78,10 @@ describe('KgExplorerTableView', () => {
         ...inputs,
       },
       on: { download },
-      providers: [{ provide: BreakpointObserver, useValue: { observe: () => state } }, ...providers],
+      providers: [{ provide: BreakpointObserver, useValue: observer }, ...providers],
     });
 
-    return { ...result, user, download, state };
+    return { ...result, user, download, state, observer };
   }
 
   it('renders the filter menu and the results table', async () => {
@@ -252,6 +253,28 @@ describe('KgExplorerTableView', () => {
     const { fixture } = await setup({ filtersOpen: true }, false);
 
     expect(fixture.componentInstance.filtersOpen()).toBe(true);
+  });
+
+  it('docks the filter menu from the large breakpoint by default', async () => {
+    const { observer } = await setup();
+
+    expect(observer.observe).toHaveBeenCalledWith('(min-width: 1280px)');
+  });
+
+  it('docks the filter menu from the configured breakpoint', async () => {
+    const { observer, rerender, fixture } = await setup({ config: { filtersDockBreakpoint: 'x-large' } });
+    expect(observer.observe).toHaveBeenCalledWith('(min-width: 1920px)');
+
+    await rerender({ inputs: { config: { filtersDockBreakpoint: 'medium' } }, partialUpdate: true });
+    await fixture.whenStable();
+    expect(observer.observe).toHaveBeenCalledWith('(min-width: 960px)');
+  });
+
+  it('docks the filter menu at every width for a breakpoint starting at zero', async () => {
+    const { fixture, observer } = await setup({ config: { filtersDockBreakpoint: 'x-small' } }, false);
+
+    expect(fixture.componentInstance.filtersOpen()).toBe(true);
+    expect(observer.observe).not.toHaveBeenCalledWith(expect.stringContaining('min-width'));
   });
 
   it('clears the search from the no results indicator', async () => {

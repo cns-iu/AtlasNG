@@ -1,4 +1,5 @@
 import type { Provider } from '@angular/core';
+import type { BreakpointExpression } from '@atlasng/cdk';
 import type { SearchFieldDefinition, SearchFieldSpec } from '@atlasng/cdk/search';
 import { createConfigurationToken, type } from '@atlasng/core';
 import type { Row } from '@atlasng/design-system/table';
@@ -32,6 +33,12 @@ export interface KgExplorerTableViewConfig<
    * only shown when this is set.
    */
   downloadFormats?: KgExplorerDownloadFormats<TRow, TFormat>;
+  /**
+   * Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`,
+   * from which the filter menu is docked beside the table instead of opening as
+   * a drawer. Defaults to `'large'` (1280px).
+   */
+  filtersDockBreakpoint?: BreakpointExpression;
 }
 
 /** Suggests the `title` of each row when it is a string. */
@@ -58,6 +65,7 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
     searchDisabled: false,
     resultsCounterDisabled: false,
     endOfResultsDisabled: false,
+    filtersDockBreakpoint: 'large',
   }),
   inherit: true,
 });
