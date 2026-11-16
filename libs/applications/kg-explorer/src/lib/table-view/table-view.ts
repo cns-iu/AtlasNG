@@ -15,6 +15,12 @@ import { KgExplorerTablePanel } from '../table-panel/table-panel';
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
 
+/**
+ * Distance, in pixels, from the end of a filter row to its search list panel: the filter menu's
+ * 20px end padding and 1px border, plus the 9px gap between the menu and the panel in Figma.
+ */
+const FILTER_PANEL_OFFSET_X = 30;
+
 /** A filter with its options resolved. */
 type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: SearchListOption[] };
 
@@ -126,6 +132,9 @@ export class KgExplorerTableView<
 
   /** Whether the filter menu is docked beside the table. */
   protected readonly docked = watchBreakpoint('large');
+
+  /** Distance from the end of a filter row to its search list panel, which opens past the filter menu. */
+  protected readonly filterPanelOffsetX = FILTER_PANEL_OFFSET_X;
 
   /** Opens the filter menu when it is or becomes docked and closes the drawer when it undocks. */
   constructor() {
