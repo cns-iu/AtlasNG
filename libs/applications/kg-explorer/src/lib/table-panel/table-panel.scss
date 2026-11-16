@@ -1,5 +1,4 @@
 @use 'internal/token-utils';
-@use 'tokens/end-of-results-indicator' as end-of-results-indicator;
 @use 'tokens/table' as table;
 
 @mixin table-padding() {
@@ -74,12 +73,6 @@
   }
 
   .ang-kg-explorer-table-panel--end {
-    @include end-of-results-indicator.overrides(
-      (
-        background-color: token-utils.sys-slot(surface-container-low),
-      )
-    );
-
     padding-top: 0;
 
     .mat-divider {
