@@ -1,6 +1,14 @@
 @use 'internal/token-utils';
+@use 'tokens/text-link' as text-link;
+@use './../../sass/tokens/table-view' as *;
 
 :host {
+  @include text-link.overrides(
+    (
+      color: token-utils.slot(link-color, $config),
+    )
+  );
+
   display: block;
   background-color: token-utils.sys-slot(surface);
   color: token-utils.sys-slot(on-surface);
