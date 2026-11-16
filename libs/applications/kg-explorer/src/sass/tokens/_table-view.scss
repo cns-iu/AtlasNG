@@ -4,6 +4,7 @@ $config: (
   namespace: 'kg-explorer-table-view',
   tokens: (
     link-color: token-utils.sys-token(primary),
+    filters-offset: 0rem,
   ),
 );
 

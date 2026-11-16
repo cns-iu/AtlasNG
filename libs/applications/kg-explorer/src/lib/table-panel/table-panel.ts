@@ -2,16 +2,14 @@ import { Component, computed, input, model, output, ViewEncapsulation } from '@a
 import { injectSearch } from '@atlasng/cdk/search';
 import { EndOfResultsIndicator } from '@atlasng/design-system/indicators/end-of-results-indicator';
 import { NoResultsIndicator } from '@atlasng/design-system/indicators/no-results-indicator';
-import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { Table, type Row, type SortPropDir, type TableColumn } from '@atlasng/design-system/table';
 import type { KgExplorerTableViewConfig } from '../table-view/config';
 import { KgExplorerTableToolbar } from '../table-toolbar/table-toolbar';
 
 /**
  * Searchable, sortable results table of the knowledge graph explorer with a
- * search bar, results counter, and end-of-results indicator. It fills its
- * container's height; the table, indicator, and table end content scroll
- * below the search bar.
+ * search bar, results counter, and end-of-results indicator. It grows to fit
+ * all of its rows, so the page scrolls them; only the table scrolls sideways.
  *
  * Rows are searched with the injected `SearchEngine` and `SEARCH_CONFIG`, so
  * consumers can swap the engine or change the suggestion limit with `provideSearch`.
@@ -23,7 +21,7 @@ import { KgExplorerTableToolbar } from '../table-toolbar/table-toolbar';
  */
 @Component({
   selector: 'ang-kg-explorer-table-panel',
-  imports: [EndOfResultsIndicator, KgExplorerTableToolbar, NoResultsIndicator, ScrollArea, Table],
+  imports: [EndOfResultsIndicator, KgExplorerTableToolbar, NoResultsIndicator, Table],
   templateUrl: './table-panel.html',
   styleUrl: './table-panel.scss',
   encapsulation: ViewEncapsulation.None,

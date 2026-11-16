@@ -163,11 +163,11 @@ function explorerTemplate(args: Args, content = ''): string {
   `;
 }
 
-/** Styles that fit the table view into the height below the header. */
+/** Styles that let the table view fill at least the height below the header and grow with its rows. */
 const EXPLORER_STYLES = [
   `ang-header-shell img { height: 100%; }`,
-  `.explorer-main { display: flex; flex: 1; flex-direction: column; min-height: 0; }`,
-  `.ang-kg-explorer-table-view { flex: 1; min-height: 0; }`,
+  `.explorer-main { display: flex; flex: 1 0 auto; flex-direction: column; }`,
+  `.ang-kg-explorer-table-view { flex: 1 0 auto; --ang-kg-explorer-table-view-filters-offset: 3.5rem; }`,
   `.ang-footer {z-index: 3;}`,
 ];
 

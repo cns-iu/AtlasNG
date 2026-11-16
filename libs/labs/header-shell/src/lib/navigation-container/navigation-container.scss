@@ -11,13 +11,23 @@
     )
   );
 
-  mat-drawer-content {
-    height: calc(100vh - 3.5rem);
-    display: flex;
-    flex-direction: column;
+  // The page scrolls instead of the drawer content. Clipping instead of hiding the overflow
+  // keeps these elements from becoming scroll containers, so sticky content in the page works.
+  mat-drawer-container {
+    overflow: clip;
   }
 
+  mat-drawer-content {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - 3.5rem);
+    overflow: clip;
+  }
+
+  // Keeps the menus below the sticky header and in view wherever the page is scrolled.
   mat-drawer {
+    position: fixed;
+    top: 3.5rem;
     --ang-drawer-background-color: #{token-utils.slot(menu-container-color, $config)};
 
     border-color: token-utils.slot(drawer-border-color, $config);

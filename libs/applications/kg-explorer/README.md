@@ -55,17 +55,19 @@ export class ExplorerPage {
 }
 ```
 
-Give the table view a height (for example, fill the page below your header) and apply an AtlasNG theme such as the WPP theme. The theme should follow the user's system color scheme by default.
+The table view grows to fit its rows, so the page scrolls it. Give it a minimum height (for example, the height below your header) so the filter menu reaches the bottom of short result lists, and apply an AtlasNG theme such as the WPP theme. The theme should follow the user's system color scheme by default.
 
 ### Layout
 
 | Area          | Behavior                                                                                                                                                                                                                                                                      |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Filter menu   | Shows an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from `filtersDockBreakpoint` (the large breakpoint, 1280px, by default) up; below that it is a drawer opened and closed through `[(filtersOpen)]` and the [filter toggle](#filter-toggle). |
-| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows.                                         |
+| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, followed by the end-of-results indicator and any table end content. Only the table scrolls sideways. The no-results indicator replaces empty rows.                                          |
 | Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                                                                |
 
 Text links, such as the cells of `kgExplorerLinkColumn` columns, use the theme's `primary` color. Set `--ang-kg-explorer-table-view-link-color` to change it.
+
+The filter menu sticks to the top of the window while the page scrolls. Set `--ang-kg-explorer-table-view-filters-offset` to the height of a sticky page header (for example, `3.5rem`) to keep the menu below it.
 
 ### Data and columns
 
@@ -180,7 +182,7 @@ Formats can be any type that extends `VersionControlFileFormat`, for example wit
 
 ### Known limitations
 
-The search bar, counter, and table share one scroll area, and the table grows to fit all of its rows. The search bar and the column headers are not sticky, so they scroll out of view in long result lists.
+The table grows to fit all of its rows. The search bar and the column headers are not sticky, so they scroll out of view in long result lists, and the table's sideways scrollbar sits below its last row.
 
 ## Metadata view
 
@@ -277,7 +279,7 @@ The page does not download files. Choosing a download option emits `download` wi
 ### Responsive layout
 
 - Below the `medium` breakpoint (960px), the page is a single column with 20px side padding, and the version control panel follows the first section.
-- From `medium` up, the version control panel is a 400px column beside the sections, with 40px padding. The layout is centered and at most 1600px wide.
+- From `medium` up, the version control panel is a 400px column beside the sections, with 40px padding. The layout is centered and at most 1600px wide. In windows at least 512px tall, the panel sticks while the page scrolls.
 
 Spacing and the link color can be customized with these CSS variables:
 

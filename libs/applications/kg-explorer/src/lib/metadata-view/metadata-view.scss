@@ -88,12 +88,16 @@
     grid-area: version;
     align-self: start;
 
+    // Short windows can't fit the version select and download options in a sticky panel,
+    // so there it keeps its full height and scrolls with the page.
     @include breakpoints.breakpoint(medium) {
-      position: sticky;
-      max-height: calc(
-        100dvh - (token-utils.slot(padding, $config) * 2) - token-utils.slot(version-control-offset, $config)
-      );
-      top: token-utils.slot(padding, $config);
+      @media (min-height: 32rem) {
+        position: sticky;
+        max-height: calc(
+          100dvh - (token-utils.slot(padding, $config) * 2) - token-utils.slot(version-control-offset, $config)
+        );
+        top: calc(token-utils.slot(padding, $config) + token-utils.slot(version-control-offset, $config));
+      }
     }
   }
 

@@ -2,39 +2,54 @@
 @use 'tokens/text-link' as text-link;
 @use './../../sass/tokens/table-view' as *;
 
-:host {
+.ang-kg-explorer-table-view {
   @include text-link.overrides(
     (
       color: token-utils.slot(link-color, $config),
     )
   );
 
-  display: block;
+  display: flex;
+  flex-direction: column;
   background-color: token-utils.sys-slot(surface);
   color: token-utils.sys-slot(on-surface);
 
+  // The view grows with its rows and the page scrolls it. Clipping instead of hiding the
+  // overflow keeps these elements from becoming scroll containers, so the filters can stick.
   .ang-kg-explorer-table-view--container {
-    height: 100%;
+    flex: 1 0 auto;
+    overflow: clip;
     background-color: inherit;
   }
 
   .ang-kg-explorer-table-view--sidenav {
     width: 20rem;
     max-width: 100%;
+    overflow: clip;
     border-radius: 0;
     border-right: 1px solid token-utils.sys-slot(outline-variant);
     background-color: token-utils.sys-slot(surface-container-low);
+
+    .mat-drawer-inner-container {
+      overflow: clip;
+    }
   }
 
   .ang-kg-explorer-table-view--filters {
+    position: sticky;
+    top: token-utils.slot(filters-offset, $config);
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    max-height: calc(100dvh - token-utils.slot(filters-offset, $config));
     padding: 1.5rem 1.25rem;
+    overflow-y: auto;
   }
 
   .ang-kg-explorer-table-view--content {
     min-width: 0;
+    height: auto;
     overflow: hidden;
   }
 }

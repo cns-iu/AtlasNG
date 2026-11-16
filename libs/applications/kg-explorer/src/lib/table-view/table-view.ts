@@ -1,5 +1,16 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, computed, effect, inject, input, linkedSignal, model, output, untracked } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+  model,
+  output,
+  untracked,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import { BREAKPOINTS, breakpointQuery } from '@atlasng/cdk';
 import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
@@ -41,6 +52,7 @@ type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: Sear
   imports: [KgExplorerTablePanel, MatSidenav, MatSidenavContainer, MatSidenavContent, MultiSelectFilter],
   templateUrl: './table-view.html',
   styleUrl: './table-view.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-kg-explorer-table-view',
   },
