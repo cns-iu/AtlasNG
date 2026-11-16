@@ -30,6 +30,9 @@ export class NavigationButton {
   /** Space-separated ids of elements describing the link, announced before the new-tab hint. */
   readonly ariaDescribedby = input<string | null>(null, { alias: 'aria-describedby' });
 
+  /** Visually hidden hint announcing that the link opens in a new tab. */
+  readonly newTabHint = input('Opens in a new tab');
+
   /** Id of the hint announcing that the link opens in a new tab. */
   protected readonly newTabHintId = inject(IdGenerator).getId('ang-navigation-button--new-tab-hint');
 

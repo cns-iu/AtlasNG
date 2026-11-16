@@ -42,4 +42,12 @@ describe('NavigationButton', () => {
     expect(link).toHaveAccessibleDescription('External site Opens in a new tab');
     expect(link.closest('ang-navigation-button')).not.toHaveAttribute('aria-label');
   });
+
+  it('uses a custom new-tab hint', async () => {
+    await render('<ang-navigation-button link="/docs" newTabHint="Neuer Tab">Docs</ang-navigation-button>', {
+      imports: [NavigationButton],
+    });
+
+    expect(screen.getByRole('link', { name: 'Docs' })).toHaveAccessibleDescription('Neuer Tab');
+  });
 });

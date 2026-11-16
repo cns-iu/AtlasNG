@@ -52,6 +52,12 @@ export class VersionControl<T extends VersionControlFileFormat = VersionControlF
   /** Heading displayed beside the version selector. */
   readonly tagline = input.required<string>();
 
+  /** Label of the version selector. */
+  readonly versionLabel = input('Version');
+
+  /** Heading displayed above the download options. */
+  readonly downloadTagline = input('Download options');
+
   /** Versions and their available file formats. */
   readonly versions = input.required<readonly VersionControlItem<T>[]>();
 

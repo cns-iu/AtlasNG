@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, Directive, input, output, ViewEncapsulation } from '@angular/core';
+import { Component, computed, Directive, input, output, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -53,8 +53,15 @@ export class Footer {
   readonly copyrightYear = input<number>(new Date().getFullYear());
   /** Tooltip shown on the default logo link. Override it when the link does not lead to the homepage. */
   readonly logoTooltip = input('Homepage');
+  /** Accessible name of the default logo link. Defaults to "Visit <organization>". */
+  readonly logoLabel = input<string>();
+  /** Accessible name of the social media button group. */
+  readonly socialsLabel = input('Social media');
   /** An event emitted when the privacy policy link is clicked. */
   readonly openPrivacyPolicy = output();
   /** An event emitted when the privacy preferences link is clicked. */
   readonly openPrivacyPreferences = output();
+
+  /** Accessible name of the default logo link with the organization fallback applied. */
+  protected readonly resolvedLogoLabel = computed(() => this.logoLabel() ?? `Visit ${this.organization()}`);
 }

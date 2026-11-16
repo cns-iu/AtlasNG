@@ -1,4 +1,8 @@
-<section class="ang-cookie-banner--section" [attr.aria-labelledby]="titleId()">
+<section
+  class="ang-cookie-banner--section"
+  [attr.aria-labelledby]="titleId()"
+  [attr.aria-describedby]="descriptionId()"
+>
   <ng-content select="ang-cookie-banner-logo, [angCookieBannerLogo]" />
 
   <div class="ang-cookie-banner--content">
@@ -7,7 +11,7 @@
     </ng-content>
 
     <ng-content>
-      <p class="ang-cookie-banner--description">
+      <p class="ang-cookie-banner--description" [id]="descriptionId()">
         Cookies and similar technologies are used to play videos and to improve this website.
       </p>
     </ng-content>
