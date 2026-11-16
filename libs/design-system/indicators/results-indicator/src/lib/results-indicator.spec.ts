@@ -46,14 +46,6 @@ describe('ResultsIndicator', () => {
     expect(visibleText('5 out of 120 results')).toBeInTheDocument();
   });
 
-  it('should prefer the message input over the provided messages', async () => {
-    await setup({ message: ({ value, total }) => `${total - value} left` }, 'en-US', [
-      provideResultsIndicatorMessages({ text: () => 'provided' }),
-    ]);
-
-    expect(visibleText('115 left')).toBeInTheDocument();
-  });
-
   it('should include the deprecated prefix and suffix', async () => {
     await setup({ prefix: 'Showing', suffix: 'results' });
 

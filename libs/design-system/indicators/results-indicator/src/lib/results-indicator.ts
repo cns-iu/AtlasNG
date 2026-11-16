@@ -10,7 +10,7 @@ import {
   LOCALE_ID,
   untracked,
 } from '@angular/core';
-import { computedMessage, type Message } from '@atlasng/core';
+import { computedMessage } from '@atlasng/core';
 import { RESULTS_INDICATOR_MESSAGES, type ResultsIndicatorParams } from './config';
 
 /** Milliseconds the text has to stay the same before screen readers announce it. */
@@ -19,7 +19,7 @@ const ANNOUNCE_DELAY = 1000;
 /**
  * Displays a localized "value of total" style indicator.
  *
- * Example output: "5 of 120". The text comes from `provideResultsIndicatorMessages` or the `message` input.
+ * Example output: "5 of 120". The text comes from `provideResultsIndicatorMessages`.
  *
  * The host is a `status` live region, so screen readers announce changes to the
  * text without moving focus. The visible text updates immediately, while the
@@ -45,20 +45,17 @@ export class ResultsIndicator {
   /** Maximum or total value to display. */
   readonly total = input.required<number>();
 
-  /** Text of this indicator. Defaults to the `text` of `provideResultsIndicatorMessages`. */
-  readonly message = input<Message<ResultsIndicatorParams>>();
-
   /**
    * Optional text shown before the message.
    *
-   * @deprecated Use `message` or `provideResultsIndicatorMessages`, which can place the values anywhere in the text.
+   * @deprecated Use `provideResultsIndicatorMessages`, which can place the values anywhere in the text.
    */
   readonly prefix = input('');
 
   /**
    * Optional text shown after the message.
    *
-   * @deprecated Use `message` or `provideResultsIndicatorMessages`, which can place the values anywhere in the text.
+   * @deprecated Use `provideResultsIndicatorMessages`, which can place the values anywhere in the text.
    */
   readonly suffix = input('');
 
@@ -83,8 +80,8 @@ export class ResultsIndicator {
     locale: this.#locale,
   }));
 
-  /** Text from the `message` input, or else from the provided messages. */
-  readonly #message = computedMessage(() => this.message()?.(this.#params()), this.#messages.text, this.#params);
+  /** Text from the provided messages. */
+  readonly #message = computedMessage(this.#messages.text, this.#params);
 
   /** Display text, including the deprecated prefix and suffix. */
   protected readonly text = computed(() => [this.prefix(), this.#message(), this.suffix()].join(' ').trim());

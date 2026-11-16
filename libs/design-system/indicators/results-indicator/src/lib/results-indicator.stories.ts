@@ -1,4 +1,5 @@
-import { type Meta, type StoryObj } from '@storybook/angular';
+import { applicationConfig, type Meta, type StoryObj } from '@storybook/angular';
+import { provideResultsIndicatorMessages } from './config';
 import { ResultsIndicator } from './results-indicator';
 
 const meta: Meta<ResultsIndicator> = {
@@ -21,10 +22,18 @@ type Story = StoryObj<ResultsIndicator>;
 
 export const Default: Story = {};
 
-export const WithMessage: Story = {
+export const WithMessages: Story = {
   args: {
     value: 50000,
     total: 100000,
-    message: ({ formattedValue, formattedTotal }) => `Viewing ${formattedValue} of ${formattedTotal} items`,
   },
+  decorators: [
+    applicationConfig({
+      providers: [
+        provideResultsIndicatorMessages({
+          text: ({ formattedValue, formattedTotal }) => `Viewing ${formattedValue} of ${formattedTotal} items`,
+        }),
+      ],
+    }),
+  ],
 };
