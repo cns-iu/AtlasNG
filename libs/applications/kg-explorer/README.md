@@ -126,6 +126,7 @@ Content projected into the table view, such as a footer, renders after the table
 | `searchSuggestionsDisabled` | `false`     | Turns the suggestions off.                                                                          |
 | `searchDisabled`            | `false`     | Hides the search field.                                                                             |
 | `resultsCounterDisabled`    | `false`     | Hides the "Viewing X of Y" counter.                                                                 |
+| `resultsCounterPrefix`      | `Viewing`   | Text before the numbers of the results counter.                                                     |
 | `endOfResultsDisabled`      | `false`     | Hides the end-of-results indicator.                                                                 |
 | `downloadFormats`           | none        | File formats of the download column. The column is only shown when this is set.                     |
 | `downloadColumnLabel`       | `Download`  | Accessible name of the download column's header, which is visually empty.                           |

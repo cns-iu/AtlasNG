@@ -24,6 +24,8 @@ export interface KgExplorerTableViewConfig<
   searchDisabled?: boolean;
   /** Hides the "Viewing X of Y" results counter. Defaults to `false`. */
   resultsCounterDisabled?: boolean;
+  /** Text before the numbers of the results counter. Defaults to `Viewing`. */
+  resultsCounterPrefix?: string;
   /** Hides the end-of-results indicator below the table. Defaults to `false`. */
   endOfResultsDisabled?: boolean;
   /**
@@ -66,6 +68,7 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
     searchSuggestionsDisabled: false,
     searchDisabled: false,
     resultsCounterDisabled: false,
+    resultsCounterPrefix: 'Viewing',
     endOfResultsDisabled: false,
     downloadColumnLabel: 'Download',
   }),

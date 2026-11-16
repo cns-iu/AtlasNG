@@ -14,6 +14,8 @@ import type { KgExplorerFilter } from '../models';
 import { kgExplorerLinkColumn, kgExplorerTextColumn } from '../utils/columns';
 import { KgExplorerTableView } from './table-view';
 
+const counter = (text: string) => screen.queryByText(text, { ignore: '.cdk-visually-hidden' });
+
 interface TestItem extends Row {
   title: string;
   url: string;
@@ -86,7 +88,7 @@ describe('KgExplorerTableView', () => {
   it('renders the filter menu and the results table', async () => {
     await setup();
 
-    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 3 of 3')).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: ITEMS[0].title })).toHaveAttribute('href', ITEMS[0].url);
   });
 
@@ -141,7 +143,7 @@ describe('KgExplorerTableView', () => {
   it('uses the provided configuration as defaults', async () => {
     await setup({}, true, [provideKgExplorerTableView({ resultsCounterDisabled: true, searchDisabled: true })]);
 
-    expect(screen.queryByText('Viewing 3 of 3')).not.toBeInTheDocument();
+    expect(counter('Viewing 3 of 3')).not.toBeInTheDocument();
     expect(screen.queryByRole('combobox', { name: 'Search' })).not.toBeInTheDocument();
   });
 
@@ -150,8 +152,14 @@ describe('KgExplorerTableView', () => {
       provideKgExplorerTableView({ resultsCounterDisabled: true, searchDisabled: true }),
     ]);
 
-    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 3 of 3')).toBeInTheDocument();
     expect(screen.queryByRole('combobox', { name: 'Search' })).not.toBeInTheDocument();
+  });
+
+  it('shows the configured results counter prefix', async () => {
+    await setup({ config: { resultsCounterPrefix: 'Showing' } });
+
+    expect(counter('Showing 3 of 3')).toBeInTheDocument();
   });
 
   it('suggests row titles and disables suggestions through the config', async () => {
@@ -205,12 +213,12 @@ describe('KgExplorerTableView', () => {
     const [first, second] = ITEMS;
     const { rerender } = await setup({ filterSelections: { type: [{ label: first.type }] } });
 
-    expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 1 of 3')).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: first.title })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: second.title })).not.toBeInTheDocument();
 
     await rerender({ inputs: { filterSelections: {} }, partialUpdate: true });
-    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 3 of 3')).toBeInTheDocument();
   });
 
   it('suggests only rows that match the filter selections', async () => {
@@ -238,7 +246,7 @@ describe('KgExplorerTableView', () => {
       filterSelections: { type: [{ label: 'Dataset' }] },
     });
 
-    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 3 of 3')).toBeInTheDocument();
   });
 
   it('opens the filter drawer through the filtersOpen model below the large breakpoint', async () => {
