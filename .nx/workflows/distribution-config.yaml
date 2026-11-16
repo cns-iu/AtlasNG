@@ -1,5 +1,12 @@
+# Nx Cloud splits changesets into equal shares of affected projects (5 tiers = 20% each), so only
+# the first tier (about 1–3 of 17 projects) gets 2 agents. More agents don't help larger PRs,
+# whose CI time is bound by task dependencies, not agent count.
 distribute-on:
-  default: 3 linux-medium-js
+  small-changeset: 2 linux-medium-js
+  medium-changeset: 3 linux-medium-js
+  large-changeset: 3 linux-medium-js
+  larger-changeset: 3 linux-medium-js
+  largest-changeset: 3 linux-medium-js
 
 assignment-rules:
   - targets:
