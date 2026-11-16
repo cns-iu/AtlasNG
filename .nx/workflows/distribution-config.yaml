@@ -14,3 +14,10 @@ assignment-rules:
     run-on:
       - agent: linux-medium-js
         parallelism: 1
+
+  # Concurrent Storybook webpack builds crash a medium agent
+  - targets:
+      - build-storybook
+    run-on:
+      - agent: linux-medium-js
+        parallelism: 1
