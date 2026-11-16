@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 import { injectSearch, SearchHighlight, SearchRange, SearchResult } from '@atlasng/cdk/search';
+import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
 /** Search list option interface */
 export interface SearchListOption {
@@ -26,10 +27,13 @@ export interface SearchListOption {
  *
  * Selections are matched by option object identity and are kept while the
  * search filter hides the selected options.
+ *
+ * The options scroll in an `ang-scroll-area` below the search field. Constrain
+ * the height of the host so that the options can scroll.
  */
 @Component({
   selector: 'ang-search-list',
-  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule, SearchHighlight],
+  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule, ScrollArea, SearchHighlight],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
   host: {
