@@ -31,4 +31,15 @@ describe('HelpButton', () => {
     expect(button).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Open help page in a new tab' })).not.toBeInTheDocument();
   });
+
+  it('forwards aria-label and aria-describedby', async () => {
+    await render(
+      `<span id="hint">Opens the docs</span>
+      <ang-help-button link="/docs" aria-label="Hilfe" aria-describedby="hint" />`,
+      { imports: [HelpButton] },
+    );
+
+    const link = screen.getByRole('link', { name: 'Hilfe' });
+    expect(link).toHaveAccessibleDescription(/^Opens the docs/);
+  });
 });

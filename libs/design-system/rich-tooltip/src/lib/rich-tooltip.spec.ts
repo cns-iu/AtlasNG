@@ -90,4 +90,51 @@ describe('RichTooltip', () => {
 
     expect(closed).toHaveBeenCalledOnce();
   });
+
+  it('describes the panel with its content', async () => {
+    const user = userEvent.setup();
+    await render(
+      `
+        <ang-rich-tooltip #tip tagline="Title" description="Details" />
+        <button type="button" [angRichTooltipTriggerFor]="tip">Open</button>
+      `,
+      { imports: IMPORTS },
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+
+    expect(screen.getByRole('dialog', { name: 'Title' })).toHaveAccessibleDescription('Details');
+  });
+
+  it('uses aria-label instead of the tagline', async () => {
+    const user = userEvent.setup();
+    await render(
+      `
+        <ang-rich-tooltip #tip tagline="Title" aria-label="Help" />
+        <button type="button" [angRichTooltipTriggerFor]="tip">Open</button>
+      `,
+      { imports: IMPORTS },
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+
+    expect(screen.getByRole('dialog', { name: 'Help' })).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('forwards aria-labelledby and aria-describedby to the panel', async () => {
+    const user = userEvent.setup();
+    await render(
+      `
+        <span id="label">External title</span>
+        <span id="description">External details</span>
+        <ang-rich-tooltip #tip tagline="Title" description="Details" aria-labelledby="label" aria-describedby="description" />
+        <button type="button" [angRichTooltipTriggerFor]="tip">Open</button>
+      `,
+      { imports: IMPORTS },
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+
+    expect(screen.getByRole('dialog', { name: 'External title' })).toHaveAccessibleDescription('External details');
+  });
 });

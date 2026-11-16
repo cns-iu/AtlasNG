@@ -1,7 +1,7 @@
 @let version = this.selectedVersion() ?? this.versions()[0];
 
-<div class="ang-version-control--top">
-  <span class="ang-version-control--version-heading">{{ tagline() }}</span>
+<div class="ang-version-control--top" role="group" [attr.aria-labelledby]="taglineId">
+  <span class="ang-version-control--version-heading" [id]="taglineId">{{ tagline() }}</span>
 
   <mat-form-field class="ang-version-control--version" subscriptSizing="dynamic">
     <mat-label>Version</mat-label>
@@ -18,9 +18,9 @@
 </div>
 
 @if (version && version.formats.length > 0) {
-  <span class="ang-version-control--heading">Download options</span>
+  <span class="ang-version-control--heading" [id]="downloadHeadingId">Download options</span>
   <ang-scroll-area>
-    <mat-action-list class="ang-version-control--download-options" aria-label="Download options">
+    <mat-action-list class="ang-version-control--download-options" [attr.aria-labelledby]="downloadHeadingId">
       @for (option of version.formats; track option) {
         <button
           type="button"

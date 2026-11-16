@@ -5,6 +5,9 @@
   class="ang-navigation-toggle--button"
   disableRipple
   [attr.aria-expanded]="selected()"
+  [attr.aria-label]="ariaLabel()"
+  [attr.aria-describedby]="ariaDescribedby()"
+  [attr.aria-controls]="ariaControls()"
 >
   <span class="ang-navigation-toggle--text"><ng-content /></span>
 

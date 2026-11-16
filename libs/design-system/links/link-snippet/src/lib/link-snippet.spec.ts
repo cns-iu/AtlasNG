@@ -75,4 +75,10 @@ describe('LinkSnippet', () => {
     expect(open).toHaveBeenCalledWith('Could not copy link', '', expect.objectContaining({ politeness: 'polite' }));
     expect(open).not.toHaveBeenCalledWith('Link copied', expect.anything(), expect.anything());
   });
+
+  it('describes the copy button with the URL', async () => {
+    await setup();
+
+    expect(screen.getByRole('button', { name: 'Copy' })).toHaveAccessibleDescription('example.com/resources/example');
+  });
 });

@@ -95,4 +95,11 @@ describe('VersionControl', () => {
     expect(screen.getByRole('combobox', { name: 'Version' })).toHaveAttribute('aria-disabled', 'true');
     expect(screen.queryByRole('group', { name: 'Download options' })).not.toBeInTheDocument();
   });
+
+  it('labels the version selector group with the tagline', async () => {
+    await setup();
+
+    const group = screen.getByRole('group', { name: 'Digital object version' });
+    expect(within(group).getByRole('combobox', { name: /Version/ })).toBeInTheDocument();
+  });
 });
