@@ -3,13 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import {
   computedMessage,
   computedText,
-  getMessageContext,
-  injectMessageContext,
-  type Message,
+  getLocalizationContext,
+  injectLocalizationContext,
+  type LocalizedMessage,
   resolveText,
-} from './i18n';
+} from './localization';
 
-const message: Message<{ count: number }> = ({ count }, { number, plural }) =>
+const message: LocalizedMessage<{ count: number }> = ({ count }, { number, plural }) =>
   `${number(count)} ${plural(count, { one: 'item', other: 'items' })}`;
 
 describe('resolveText', () => {
@@ -48,22 +48,22 @@ describe('computedText', () => {
   });
 });
 
-describe('getMessageContext', () => {
+describe('getLocalizationContext', () => {
   it('returns the same context for a locale', () => {
-    expect(getMessageContext('en-US')).toBe(getMessageContext('en-US'));
-    expect(getMessageContext('en-US')).not.toBe(getMessageContext('sv-SE'));
+    expect(getLocalizationContext('en-US')).toBe(getLocalizationContext('en-US'));
+    expect(getLocalizationContext('en-US')).not.toBe(getLocalizationContext('sv-SE'));
   });
 
   it('formats numbers for the locale', () => {
-    const { number } = getMessageContext('sv-SE');
+    const { number } = getLocalizationContext('sv-SE');
 
     expect(number(1000000)).toMatch(/^1\s000\s000$/);
-    expect(getMessageContext('en-US').number(1500, { notation: 'compact' })).toBe('1.5K');
+    expect(getLocalizationContext('en-US').number(1500, { notation: 'compact' })).toBe('1.5K');
   });
 
   it('selects plural forms with the rules of the locale', () => {
     const polish = { one: 'wynik', few: 'wyniki', many: 'wyników', other: 'wyniku' };
-    const { plural } = getMessageContext('pl');
+    const { plural } = getLocalizationContext('pl');
 
     expect(plural(1, polish)).toBe('wynik');
     expect(plural(3, polish)).toBe('wyniki');
@@ -72,26 +72,26 @@ describe('getMessageContext', () => {
   });
 });
 
-describe('injectMessageContext', () => {
+describe('injectLocalizationContext', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [{ provide: LOCALE_ID, useValue: 'sv-SE' }] });
   });
 
   it('injects the context of the active locale', () => {
-    expect(TestBed.runInInjectionContext(() => injectMessageContext())).toBe(getMessageContext('sv-SE'));
+    expect(TestBed.runInInjectionContext(() => injectLocalizationContext())).toBe(getLocalizationContext('sv-SE'));
   });
 
   it('injects from a given injector outside an injection context', () => {
-    expect(injectMessageContext({ injector: TestBed.inject(Injector) })).toBe(getMessageContext('sv-SE'));
+    expect(injectLocalizationContext({ injector: TestBed.inject(Injector) })).toBe(getLocalizationContext('sv-SE'));
   });
 
   it('throws outside an injection context without an injector', () => {
-    expect(() => injectMessageContext()).toThrow();
+    expect(() => injectLocalizationContext()).toThrow();
   });
 });
 
 describe('computedMessage', () => {
-  const context = getMessageContext('en-US');
+  const context = getLocalizationContext('en-US');
 
   it('builds the message from the params', () => {
     const count = signal(1);

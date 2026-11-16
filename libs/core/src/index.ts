@@ -21,14 +21,14 @@ export {
 export {
   computedMessage,
   computedText,
-  getMessageContext,
-  injectMessageContext,
+  getLocalizationContext,
+  injectLocalizationContext,
   resolveText,
-  type InjectMessageContextOptions,
-  type Message,
-  type MessageContext,
+  type InjectLocalizationContextOptions,
+  type LocalizationContext,
+  type LocalizedMessage,
+  type LocalizedText,
   type PluralForms,
-  type Text,
-} from './lib/i18n';
+} from './lib/localization';
 export { SafeStorage } from './lib/utils/storage';
 export { AngError, formatAngErrorCode } from './lib/errors';

@@ -1,19 +1,19 @@
 import type { Provider } from '@angular/core';
-import { createConfigurationToken, type, type Text } from '@atlasng/core';
+import { createConfigurationToken, type, type LocalizedText } from '@atlasng/core';
 
 /** User-facing text of the search field. */
 export interface SearchFieldMessages {
   /** Label of the search field. Defaults to "Search". */
-  label?: Text;
+  label?: LocalizedText;
   /** Accessible label of the clear button. Defaults to "Clear search". */
-  clearLabel?: Text;
+  clearLabel?: LocalizedText;
 }
 
 /** Text of every search field below the injector. */
 export const SEARCH_FIELD_MESSAGES = createConfigurationToken({
   name: 'SEARCH_FIELD_MESSAGES',
   config: type<SearchFieldMessages>(),
-  defaults: () => ({ label: 'Search' as Text, clearLabel: 'Clear search' as Text }),
+  defaults: () => ({ label: 'Search' as LocalizedText, clearLabel: 'Clear search' as LocalizedText }),
   inherit: true,
 });
 

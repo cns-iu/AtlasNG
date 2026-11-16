@@ -1,5 +1,5 @@
 import type { Provider } from '@angular/core';
-import { createConfigurationToken, type, type Message, type MessageContext } from '@atlasng/core';
+import { createConfigurationToken, type, type LocalizedMessage, type LocalizationContext } from '@atlasng/core';
 
 /** Values passed to the {@link ResultsIndicatorMessages.text} message. */
 export interface ResultsIndicatorParams {
@@ -12,7 +12,7 @@ export interface ResultsIndicatorParams {
 /** User-facing text of the results indicator. */
 export interface ResultsIndicatorMessages {
   /** Text of the indicator. Defaults to "[value] of [total]". */
-  text?: Message<ResultsIndicatorParams>;
+  text?: LocalizedMessage<ResultsIndicatorParams>;
 }
 
 /** Text of every results indicator below the injector. */
@@ -20,7 +20,7 @@ export const RESULTS_INDICATOR_MESSAGES = createConfigurationToken({
   name: 'RESULTS_INDICATOR_MESSAGES',
   config: type<ResultsIndicatorMessages>(),
   defaults: () => ({
-    text: ({ value, total }: ResultsIndicatorParams, { number }: MessageContext) =>
+    text: ({ value, total }: ResultsIndicatorParams, { number }: LocalizationContext) =>
       `${number(value)} of ${number(total)}`,
   }),
   inherit: true,

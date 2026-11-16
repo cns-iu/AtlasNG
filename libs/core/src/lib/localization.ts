@@ -3,16 +3,16 @@ import { assertInInjectionContext, computed, inject, Injector, LOCALE_ID, type S
 /**
  * User-facing text: a string, or a function returning one.
  *
- * A `Signal<string>` is also a `Text`, and so is any function that reads signals. Components resolve texts inside
+ * A `Signal<string>` is also a `LocalizedText`, and so is any function that reads signals. Components resolve texts inside
  * `computed()`, so text backed by signals, for example from a translation library, updates when the language changes.
  */
-export type Text = string | (() => string);
+export type LocalizedText = string | (() => string);
 
 /** Plural forms of a text, keyed by CLDR plural category. `other` is required as the fallback. */
 export type PluralForms = Partial<Record<Intl.LDMLPluralRule, string>> & { other: string };
 
-/** Locale-aware helpers passed to every {@link Message}. */
-export interface MessageContext {
+/** Locale-aware helpers passed to every {@link LocalizedMessage}. */
+export interface LocalizationContext {
   /** Locale the helpers format for. */
   readonly locale: string;
   /**
@@ -39,41 +39,38 @@ export interface MessageContext {
  *
  * @example
  * ```ts
- * const text: Message<{ count: number }> = ({ count }, { number, plural }) =>
+ * const text: LocalizedMessage<{ count: number }> = ({ count }, { number, plural }) =>
  *   `${number(count)} ${plural(count, { one: 'result', other: 'results' })}`;
  * ```
  */
-export type Message<TParams> = (params: TParams, context: MessageContext) => string;
+export type LocalizedMessage<TParams> = (params: TParams, context: LocalizationContext) => string;
 
 /** Injector to read the locale from. Required outside an injection context. */
-export interface InjectMessageContextOptions {
+export interface InjectLocalizationContextOptions {
   /** Injector to read `LOCALE_ID` from. */
   injector?: Injector;
 }
 
-/** Message contexts by locale, shared so each locale creates its formatters once. */
-const MESSAGE_CONTEXTS = new Map<string, MessageContext>();
-
 /**
- * Resolves a {@link Text} to a string. Call it inside a reactive context, such as `computed()`, to track the signals a
+ * Resolves a {@link LocalizedText} to a string. Call it inside a reactive context, such as `computed()`, to track the signals a
  * text function reads.
  *
  * @param text Text to resolve.
  * @returns The string.
  */
-export function resolveText(text: Text): string {
+export function resolveText(text: LocalizedText): string {
   return typeof text === 'function' ? text() : text;
 }
 
 /**
- * Creates a signal of a resolved {@link Text}. Signals the text reads are tracked.
+ * Creates a signal of a resolved {@link LocalizedText}. Signals the text reads are tracked.
  *
  * @param text Text to resolve.
  * @returns Signal of the string.
  */
-export function computedText(text: Text): Signal<string>;
+export function computedText(text: LocalizedText): Signal<string>;
 /**
- * Creates a signal of a resolved {@link Text} that a source, such as an input, overrides when it is defined.
+ * Creates a signal of a resolved {@link LocalizedText} that a source, such as an input, overrides when it is defined.
  *
  * @example
  * ```ts
@@ -84,20 +81,20 @@ export function computedText(text: Text): Signal<string>;
  * @param text Text to resolve when the source is `undefined`.
  * @returns Signal of the string.
  */
-export function computedText(source: () => string | undefined, text: Text): Signal<string>;
+export function computedText(source: () => string | undefined, text: LocalizedText): Signal<string>;
 /**
  * Implementation of the {@link computedText} overloads.
  *
  * @param args Text, or source and text.
  * @returns Signal of the string.
  */
-export function computedText(...args: [Text] | [() => string | undefined, Text]): Signal<string> {
+export function computedText(...args: [LocalizedText] | [() => string | undefined, LocalizedText]): Signal<string> {
   const [source, text] = args.length === 2 ? args : [undefined, args[0]];
   return computed(() => source?.() ?? resolveText(text));
 }
 
 /**
- * Creates a signal of a {@link Message} built from reactive parameters.
+ * Creates a signal of a {@link LocalizedMessage} built from reactive parameters.
  *
  * @param message Message to build.
  * @param params Parameters of the message. Signals it reads are tracked.
@@ -106,12 +103,12 @@ export function computedText(...args: [Text] | [() => string | undefined, Text])
  * @returns Signal of the string.
  */
 export function computedMessage<TParams>(
-  message: Message<TParams>,
+  message: LocalizedMessage<TParams>,
   params: () => TParams,
-  options?: MessageContext | InjectMessageContextOptions,
+  options?: LocalizationContext | InjectLocalizationContextOptions,
 ): Signal<string>;
 /**
- * Creates a signal of a {@link Message} built from reactive parameters, which a source, such as an input, overrides
+ * Creates a signal of a {@link LocalizedMessage} built from reactive parameters, which a source, such as an input, overrides
  * when it is defined.
  *
  * @param source Overriding string, or `undefined` to use the message.
@@ -123,9 +120,9 @@ export function computedMessage<TParams>(
  */
 export function computedMessage<TParams>(
   source: () => string | undefined,
-  message: Message<TParams>,
+  message: LocalizedMessage<TParams>,
   params: () => TParams,
-  options?: MessageContext | InjectMessageContextOptions,
+  options?: LocalizationContext | InjectLocalizationContextOptions,
 ): Signal<string>;
 /**
  * Implementation of the {@link computedMessage} overloads.
@@ -138,29 +135,32 @@ export function computedMessage<TParams>(...args: unknown[]): Signal<string> {
   const hasSource = typeof args[2] === 'function';
   const [source, message, params, options] = (hasSource ? args : [undefined, ...args]) as [
     (() => string | undefined) | undefined,
-    Message<TParams>,
+    LocalizedMessage<TParams>,
     () => TParams,
-    MessageContext | InjectMessageContextOptions | undefined,
+    LocalizationContext | InjectLocalizationContextOptions | undefined,
   ];
 
-  let context: MessageContext;
+  let context: LocalizationContext;
   if (options && 'locale' in options) {
     context = options;
   } else {
     if (!options?.injector) {
       assertInInjectionContext(computedMessage);
     }
-    context = injectMessageContext(options);
+    context = injectLocalizationContext(options);
   }
 
   return computed(() => source?.() ?? message(params(), context));
 }
 
+/** Localization contexts by locale, shared so each locale creates its formatters once. */
+const LOCALIZATION_CONTEXTS = new Map<string, LocalizationContext>();
+
 /**
- * {@link MessageContext} of a locale. Creates its default formatters once, so instances are cached per locale by
- * {@link getMessageContext}. Methods are arrow functions so messages can destructure them from the context.
+ * {@link LocalizationContext} of a locale. Creates its default formatters once, so instances are cached per locale by
+ * {@link getLocalizationContext}. Methods are arrow functions so messages can destructure them from the context.
  */
-class MessageContextImpl implements MessageContext {
+class LocalizationContextImpl implements LocalizationContext {
   /** Number format of the locale without options. */
   readonly #numberFormat: Intl.NumberFormat;
   /** Plural rules of the locale. */
@@ -201,33 +201,33 @@ class MessageContextImpl implements MessageContext {
 }
 
 /**
- * Returns the message context of a locale. Contexts are cached, so every call with the same locale returns the same
+ * Returns the localization context of a locale. Contexts are cached, so every call with the same locale returns the same
  * instance.
  *
  * @param locale Locale to format for, such as the injected `LOCALE_ID`.
- * @returns The message context.
+ * @returns The localization context.
  */
-export function getMessageContext(locale: string): MessageContext {
-  let context = MESSAGE_CONTEXTS.get(locale);
+export function getLocalizationContext(locale: string): LocalizationContext {
+  let context = LOCALIZATION_CONTEXTS.get(locale);
   if (!context) {
-    context = new MessageContextImpl(locale);
-    MESSAGE_CONTEXTS.set(locale, context);
+    context = new LocalizationContextImpl(locale);
+    LOCALIZATION_CONTEXTS.set(locale, context);
   }
 
   return context;
 }
 
 /**
- * Injects the message context of the active `LOCALE_ID`.
+ * Injects the localization context of the active `LOCALE_ID`.
  *
  * @param options Injector to read the locale from. Required outside an injection context.
- * @returns The message context.
+ * @returns The localization context.
  */
-export function injectMessageContext(options?: InjectMessageContextOptions): MessageContext {
+export function injectLocalizationContext(options?: InjectLocalizationContextOptions): LocalizationContext {
   if (!options?.injector) {
-    assertInInjectionContext(injectMessageContext);
+    assertInInjectionContext(injectLocalizationContext);
   }
 
   const injector = options?.injector ?? inject(Injector);
-  return getMessageContext(injector.get(LOCALE_ID));
+  return getLocalizationContext(injector.get(LOCALE_ID));
 }
