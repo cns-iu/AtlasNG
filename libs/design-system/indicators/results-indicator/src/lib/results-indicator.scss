@@ -1,4 +1,3 @@
-@use '@angular/cdk' as cdk;
 @use 'internal/token-utils';
 @use 'tokens/results-indicator' as *;
 
@@ -18,6 +17,4 @@
   color: token-utils.slot(color, $config);
   background-color: token-utils.slot(background-color, $config);
   border: 1px solid token-utils.slot(border-color, $config);
-
-  @include cdk.a11y-visually-hidden;
 }
