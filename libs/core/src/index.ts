@@ -18,6 +18,14 @@ export {
   type ConfigurationOf,
   type ConfigurationWithDefaults,
 } from './lib/configuration-token';
-export { plural, resolveText, type Message, type PluralForms, type Text } from './lib/messages';
+export {
+  computedMessage,
+  computedText,
+  plural,
+  resolveText,
+  type Message,
+  type PluralForms,
+  type Text,
+} from './lib/messages';
 export { SafeStorage } from './lib/utils/storage';
 export { AngError, formatAngErrorCode } from './lib/errors';

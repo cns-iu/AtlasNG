@@ -1,5 +1,5 @@
 import { signal } from '@angular/core';
-import { plural, resolveText } from './messages';
+import { computedMessage, computedText, plural, resolveText } from './messages';
 
 describe('resolveText', () => {
   it('returns a string as is', () => {
@@ -35,5 +35,45 @@ describe('plural', () => {
 
   it('falls back to other for missing categories', () => {
     expect(plural('pl', 3, forms)).toBe('results');
+  });
+});
+
+describe('computedText', () => {
+  it('resolves the text', () => {
+    const text = signal('Clear');
+    const result = computedText(text);
+    text.set('Effacer');
+
+    expect(result()).toBe('Effacer');
+  });
+
+  it('prefers a defined source', () => {
+    const source = signal<string | undefined>('Override');
+    const result = computedText(source, 'Clear');
+
+    expect(result()).toBe('Override');
+    source.set(undefined);
+    expect(result()).toBe('Clear');
+  });
+});
+
+describe('computedMessage', () => {
+  const message = ({ count }: { count: number }) => `${count} items`;
+
+  it('builds the message from the params', () => {
+    const count = signal(1);
+    const result = computedMessage(message, () => ({ count: count() }));
+    count.set(2);
+
+    expect(result()).toBe('2 items');
+  });
+
+  it('prefers a defined source', () => {
+    const source = signal<string | undefined>('Override');
+    const result = computedMessage(source, message, () => ({ count: 1 }));
+
+    expect(result()).toBe('Override');
+    source.set(undefined);
+    expect(result()).toBe('1 items');
   });
 });

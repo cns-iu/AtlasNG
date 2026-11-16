@@ -2,7 +2,8 @@ import { signal } from '@angular/core';
 import { provideSearch, SearchEngine, SearchIndex, withCustomEngine } from '@atlasng/cdk/search';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { SEARCH_FIELD_MESSAGES, SearchField } from './search-field';
+import { provideSearchFieldMessages } from './config';
+import { SearchField } from './search-field';
 
 interface Organ {
   name: string;
@@ -210,7 +211,7 @@ describe('SearchField', () => {
 
   it('uses the provided messages', async () => {
     const user = userEvent.setup();
-    await setup({}, [SEARCH_FIELD_MESSAGES.provide({ label: 'Rechercher', clearLabel: 'Effacer' })]);
+    await setup({}, [provideSearchFieldMessages({ label: 'Rechercher', clearLabel: 'Effacer' })]);
 
     await user.type(getInput('Rechercher'), 'a');
 
@@ -218,14 +219,14 @@ describe('SearchField', () => {
   });
 
   it('prefers the label input over the provided messages', async () => {
-    await setup({ label: 'Find organs' }, [SEARCH_FIELD_MESSAGES.provide({ label: 'Rechercher' })]);
+    await setup({ label: 'Find organs' }, [provideSearchFieldMessages({ label: 'Rechercher' })]);
 
     expect(getInput('Find organs')).toBeInTheDocument();
   });
 
   it('updates messages read from signals', async () => {
     const label = signal('Search');
-    const { fixture } = await setup({}, [SEARCH_FIELD_MESSAGES.provide({ label })]);
+    const { fixture } = await setup({}, [provideSearchFieldMessages({ label })]);
 
     label.set('Rechercher');
     fixture.detectChanges();

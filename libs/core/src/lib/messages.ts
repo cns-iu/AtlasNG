@@ -1,3 +1,5 @@
+import { computed, type Signal } from '@angular/core';
+
 /**
  * User-facing text: a string, or a function returning one.
  *
@@ -24,6 +26,72 @@ export type PluralForms = Partial<Record<Intl.LDMLPluralRule, string>> & { other
  */
 export function resolveText(text: Text): string {
   return typeof text === 'function' ? text() : text;
+}
+
+/**
+ * Creates a signal of a resolved {@link Text}. Signals the text reads are tracked.
+ *
+ * @param text Text to resolve.
+ * @returns Signal of the string.
+ */
+export function computedText(text: Text): Signal<string>;
+/**
+ * Creates a signal of a resolved {@link Text} that a source, such as an input, overrides when it is defined.
+ *
+ * @example
+ * ```ts
+ * protected readonly labelText = computedText(this.label, this.#messages.label);
+ * ```
+ *
+ * @param source Overriding string, or `undefined` to use the text.
+ * @param text Text to resolve when the source is `undefined`.
+ * @returns Signal of the string.
+ */
+export function computedText(source: () => string | undefined, text: Text): Signal<string>;
+/**
+ * Implementation of the {@link computedText} overloads.
+ *
+ * @param args Text, or source and text.
+ * @returns Signal of the string.
+ */
+export function computedText(...args: [Text] | [() => string | undefined, Text]): Signal<string> {
+  const [source, text] = args.length === 2 ? args : [undefined, args[0]];
+  return computed(() => source?.() ?? resolveText(text));
+}
+
+/**
+ * Creates a signal of a {@link Message} built from reactive parameters.
+ *
+ * @param message Message to build.
+ * @param params Parameters of the message. Signals it reads are tracked.
+ * @returns Signal of the string.
+ */
+export function computedMessage<TParams>(message: Message<TParams>, params: () => TParams): Signal<string>;
+/**
+ * Creates a signal of a {@link Message} built from reactive parameters, which a source, such as an input, overrides
+ * when it is defined.
+ *
+ * @param source Overriding string, or `undefined` to use the message.
+ * @param message Message to build when the source is `undefined`.
+ * @param params Parameters of the message. Signals it reads are tracked.
+ * @returns Signal of the string.
+ */
+export function computedMessage<TParams>(
+  source: () => string | undefined,
+  message: Message<TParams>,
+  params: () => TParams,
+): Signal<string>;
+/**
+ * Implementation of the {@link computedMessage} overloads.
+ *
+ * @param args Message and parameters, or source, message, and parameters.
+ * @returns Signal of the string.
+ */
+export function computedMessage<TParams>(
+  ...args: [Message<TParams>, () => TParams] | [() => string | undefined, Message<TParams>, () => TParams]
+): Signal<string> {
+  const [source, message, params] = args.length === 3 ? args : [undefined, ...args];
+  return computed(() => source?.() ?? message(params()));
 }
 
 /**

@@ -3,7 +3,8 @@ import localeSv from '@angular/common/locales/sv';
 import { LOCALE_ID, type Provider } from '@angular/core';
 import { plural } from '@atlasng/core';
 import { ComponentInput, render, screen } from '@testing-library/angular';
-import { RESULTS_INDICATOR_MESSAGES, ResultsIndicator } from './results-indicator';
+import { provideResultsIndicatorMessages } from './config';
+import { ResultsIndicator } from './results-indicator';
 
 describe('ResultsIndicator', () => {
   const defaultInputs = {
@@ -36,7 +37,7 @@ describe('ResultsIndicator', () => {
 
   it('should render the text of the provided messages', async () => {
     await setup({}, 'en-US', [
-      RESULTS_INDICATOR_MESSAGES.provide({
+      provideResultsIndicatorMessages({
         text: ({ formattedValue, formattedTotal, total, locale }) =>
           `${formattedValue} out of ${formattedTotal} ${plural(locale, total, { one: 'result', other: 'results' })}`,
       }),
@@ -47,7 +48,7 @@ describe('ResultsIndicator', () => {
 
   it('should prefer the message input over the provided messages', async () => {
     await setup({ message: ({ value, total }) => `${total - value} left` }, 'en-US', [
-      RESULTS_INDICATOR_MESSAGES.provide({ text: () => 'provided' }),
+      provideResultsIndicatorMessages({ text: () => 'provided' }),
     ]);
 
     expect(visibleText('115 left')).toBeInTheDocument();
