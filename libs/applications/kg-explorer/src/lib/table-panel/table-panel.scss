@@ -41,7 +41,6 @@ $text-cell-padding: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    // @include table-padding;
     max-width: 96rem;
     margin: 0 auto;
   }
@@ -124,11 +123,6 @@ $text-cell-padding: 0.5rem;
 
   .ang-kg-explorer-table-panel--end {
     @include table-padding;
-    @include end-of-results-indicator.overrides(
-      (
-        background-color: token-utils.sys-slot(surface-container-low),
-      )
-    );
 
     padding-top: 0;
 
