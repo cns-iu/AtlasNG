@@ -1,5 +1,5 @@
 import type { Provider } from '@angular/core';
-import { createConfigurationToken, type, type Message } from '@atlasng/core';
+import { createConfigurationToken, type, type Message, type MessageContext } from '@atlasng/core';
 
 /** Values passed to the {@link ResultsIndicatorMessages.text} message. */
 export interface ResultsIndicatorParams {
@@ -7,12 +7,6 @@ export interface ResultsIndicatorParams {
   value: number;
   /** Total value. */
   total: number;
-  /** `value` formatted for `locale`. */
-  formattedValue: string;
-  /** `total` formatted for `locale`. */
-  formattedTotal: string;
-  /** Active Angular locale, for example to select plural forms with `plural`. */
-  locale: string;
 }
 
 /** User-facing text of the results indicator. */
@@ -26,7 +20,8 @@ export const RESULTS_INDICATOR_MESSAGES = createConfigurationToken({
   name: 'RESULTS_INDICATOR_MESSAGES',
   config: type<ResultsIndicatorMessages>(),
   defaults: () => ({
-    text: ({ formattedValue, formattedTotal }: ResultsIndicatorParams) => `${formattedValue} of ${formattedTotal}`,
+    text: ({ value, total }: ResultsIndicatorParams, { number }: MessageContext) =>
+      `${number(value)} of ${number(total)}`,
   }),
   inherit: true,
 });
@@ -37,8 +32,8 @@ export const RESULTS_INDICATOR_MESSAGES = createConfigurationToken({
  * @example
  * ```ts
  * provideResultsIndicatorMessages({
- *   text: ({ formattedValue, formattedTotal, total, locale }) =>
- *     `${formattedValue} sur ${formattedTotal} ${plural(locale, total, { one: 'résultat', other: 'résultats' })}`,
+ *   text: ({ value, total }, { number, plural }) =>
+ *     `${number(value)} sur ${number(total)} ${plural(total, { one: 'résultat', other: 'résultats' })}`,
  * });
  * ```
  *

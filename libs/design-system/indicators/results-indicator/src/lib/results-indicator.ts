@@ -1,17 +1,6 @@
-import { formatNumber } from '@angular/common';
-import {
-  booleanAttribute,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  linkedSignal,
-  LOCALE_ID,
-  untracked,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, effect, input, linkedSignal, untracked } from '@angular/core';
 import { computedMessage } from '@atlasng/core';
-import { RESULTS_INDICATOR_MESSAGES, type ResultsIndicatorParams } from './config';
+import { RESULTS_INDICATOR_MESSAGES } from './config';
 
 /** Milliseconds the text has to stay the same before screen readers announce it. */
 const ANNOUNCE_DELAY = 1000;
@@ -65,23 +54,11 @@ export class ResultsIndicator {
    */
   readonly announceDisabled = input(false, { transform: booleanAttribute });
 
-  /** Locale used for number formatting, injected from Angular DI. */
-  readonly #locale = inject(LOCALE_ID);
-
   /** Text of the indicator. */
   readonly #messages = RESULTS_INDICATOR_MESSAGES.inject();
 
-  /** Parameters of the message, with the values formatted for the active Angular locale. */
-  readonly #params = computed((): ResultsIndicatorParams => ({
-    value: this.value(),
-    total: this.total(),
-    formattedValue: formatNumber(this.value(), this.#locale),
-    formattedTotal: formatNumber(this.total(), this.#locale),
-    locale: this.#locale,
-  }));
-
-  /** Text from the provided messages. */
-  readonly #message = computedMessage(this.#messages.text, this.#params);
+  /** Text from the provided messages, with the values formatted for the active Angular locale. */
+  readonly #message = computedMessage(this.#messages.text, () => ({ value: this.value(), total: this.total() }));
 
   /** Display text, including the deprecated prefix and suffix. */
   protected readonly text = computed(() => [this.prefix(), this.#message(), this.suffix()].join(' ').trim());

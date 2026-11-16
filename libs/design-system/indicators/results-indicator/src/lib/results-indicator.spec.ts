@@ -1,7 +1,6 @@
 import { registerLocaleData } from '@angular/common';
 import localeSv from '@angular/common/locales/sv';
 import { LOCALE_ID, type Provider } from '@angular/core';
-import { plural } from '@atlasng/core';
 import { ComponentInput, render, screen } from '@testing-library/angular';
 import { provideResultsIndicatorMessages } from './config';
 import { ResultsIndicator } from './results-indicator';
@@ -38,8 +37,8 @@ describe('ResultsIndicator', () => {
   it('should render the text of the provided messages', async () => {
     await setup({}, 'en-US', [
       provideResultsIndicatorMessages({
-        text: ({ formattedValue, formattedTotal, total, locale }) =>
-          `${formattedValue} out of ${formattedTotal} ${plural(locale, total, { one: 'result', other: 'results' })}`,
+        text: ({ value, total }, { number, plural }) =>
+          `${number(value)} out of ${number(total)} ${plural(total, { one: 'result', other: 'results' })}`,
       }),
     ]);
 

@@ -31,7 +31,7 @@ export const WithMessages: Story = {
     applicationConfig({
       providers: [
         provideResultsIndicatorMessages({
-          text: ({ formattedValue, formattedTotal }) => `Viewing ${formattedValue} of ${formattedTotal} items`,
+          text: ({ value, total }, { number }) => `Viewing ${number(value)} of ${number(total)} items`,
         }),
       ],
     }),

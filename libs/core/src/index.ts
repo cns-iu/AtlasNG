@@ -21,11 +21,14 @@ export {
 export {
   computedMessage,
   computedText,
-  plural,
+  getMessageContext,
+  injectMessageContext,
   resolveText,
+  type InjectMessageContextOptions,
   type Message,
+  type MessageContext,
   type PluralForms,
   type Text,
-} from './lib/messages';
+} from './lib/i18n';
 export { SafeStorage } from './lib/utils/storage';
 export { AngError, formatAngErrorCode } from './lib/errors';
