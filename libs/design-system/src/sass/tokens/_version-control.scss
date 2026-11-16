@@ -8,6 +8,8 @@ $config: (
     container-color: token-utils.sys-token(surface-container-low),
     container-shape: token-utils.sys-token(corner-small),
     outline-color: token-utils.sys-token(outline-variant),
+    version-max-width: 22rem,
+    version-panel-color: token-utils.sys-token(surface-container),
     heading-color: token-utils.sys-token(on-surface),
     heading-font: token-utils.sys-token(title-medium-font),
     heading-size: token-utils.sys-token(title-medium-size),

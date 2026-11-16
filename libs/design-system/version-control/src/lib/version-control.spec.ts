@@ -1,9 +1,21 @@
-import { render, screen, within } from '@testing-library/angular';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { CSV_FILE_FORMAT, JSON_FILE_FORMAT, PDF_FILE_FORMAT } from './file-formats';
 import { VersionControl, VersionControlFileFormat, VersionControlItem } from './version-control';
 
 describe('VersionControl', () => {
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+  const scrollIntoView = vi.fn();
+
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = scrollIntoView;
+  });
+
+  afterEach(() => {
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+    scrollIntoView.mockClear();
+  });
+
   const versions: VersionControlItem<VersionControlFileFormat>[] = [
     {
       label: '2.0.0',
@@ -66,6 +78,28 @@ describe('VersionControl', () => {
     expect(await screen.findByRole('button', { name: /PDF/ })).toBeVisible();
     expect(screen.queryByRole('button', { name: /CSV/ })).not.toBeInTheDocument();
     expect(selectedVersionChange).toHaveBeenCalledExactlyOnceWith(versions[1]);
+  });
+
+  it('scrolls the selected version into view when the select opens', async () => {
+    const { user } = await setup(versions, versions[1]);
+
+    await user.click(screen.getByRole('combobox', { name: 'Version' }));
+    const option = await screen.findByRole('option', { name: '1.0.0' });
+
+    await waitFor(() => expect(scrollIntoView.mock.contexts).toContain(option));
+    expect(scrollIntoView).toHaveBeenLastCalledWith({ block: 'nearest' });
+    expect(within(screen.getByRole('listbox', { name: 'Version' })).getAllByRole('option')).toHaveLength(2);
+  });
+
+  it('scrolls the highlighted version into view as the keyboard moves the highlight', async () => {
+    const { user } = await setup();
+
+    await user.click(screen.getByRole('combobox', { name: 'Version' }));
+    const option = await screen.findByRole('option', { name: '1.0.0' });
+    // Material reads the deprecated keyCode, which user-event does not set
+    await fireEvent.keyDown(screen.getByRole('combobox', { name: 'Version' }), { key: 'ArrowDown', keyCode: 40 });
+
+    await waitFor(() => expect(scrollIntoView.mock.contexts.at(-1)).toBe(option));
   });
 
   it('honors a supplied selected version', async () => {

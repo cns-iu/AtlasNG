@@ -6,20 +6,23 @@
   <mat-form-field class="ang-version-control--version" subscriptSizing="dynamic">
     <mat-label>Version</mat-label>
     <mat-select
+      panelClass="ang-version-control--version-panel"
       [disabled]="versions().length === 0"
       [value]="version"
       (selectionChange)="selectedVersion.set($event.value)"
     >
-      @for (item of versions(); track item) {
-        <mat-option [value]="item">{{ item.label }}</mat-option>
-      }
+      <ang-scroll-area class="ang-version-control--version-scroll-area" orientation="vertical">
+        @for (item of versions(); track item) {
+          <mat-option class="ang-version-control--version-option" [value]="item">{{ item.label }}</mat-option>
+        }
+      </ang-scroll-area>
     </mat-select>
   </mat-form-field>
 </div>
 
 @if (version && version.formats.length > 0) {
   <span class="ang-version-control--heading">Download options</span>
-  <ang-scroll-area>
+  <ang-scroll-area class="ang-version-control--download-scroll-area">
     <mat-action-list class="ang-version-control--download-options" aria-label="Download options">
       @for (option of version.formats; track option) {
         <button

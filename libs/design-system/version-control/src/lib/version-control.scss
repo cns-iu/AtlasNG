@@ -1,8 +1,9 @@
+@use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/version-control' as *;
 @use 'tokens/scroll-area' as scroll;
 
-:host {
+.ang-version-control {
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
@@ -15,11 +16,14 @@
 }
 
 .ang-version-control--top {
+  display: flex;
+  flex-direction: column;
   margin: 1.5rem;
 }
 
 .ang-version-control--version {
   width: 100%;
+  max-width: token-utils.slot(version-max-width, $config);
   margin-top: 1rem;
 }
 
@@ -37,12 +41,39 @@
   letter-spacing: token-utils.slot(heading-tracking, $config);
 }
 
-ang-scroll-area {
+.ang-version-control--download-scroll-area {
   @include scroll.overrides(
     (
       container-color: token-utils.slot(container-color, $config),
     )
   );
+}
+
+.ang-version-control--version-panel.mat-mdc-select-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  @include mat.select-overrides(
+    (
+      panel-background-color: token-utils.slot(version-panel-color, $config),
+    )
+  );
+}
+
+.ang-version-control--version-scroll-area {
+  min-height: 0;
+
+  @include scroll.overrides(
+    (
+      container-color: token-utils.slot(version-panel-color, $config),
+    )
+  );
+}
+
+// Keeps the highlighted option clear of the edge fades when the keyboard scrolls it into view.
+.ang-version-control--version-option {
+  scroll-margin-block: scroll.slot(fade-size);
 }
 
 .ang-version-control--download-options {

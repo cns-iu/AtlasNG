@@ -1,4 +1,15 @@
-import { Component, input, model, output } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  model,
+  output,
+  viewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -46,6 +57,10 @@ export interface VersionDownload<T extends VersionControlFileFormat> {
   imports: [MatActionList, MatFormField, MatIcon, MatLabel, MatListModule, MatOption, MatSelect, ScrollArea],
   templateUrl: './version-control.html',
   styleUrl: './version-control.scss',
+  encapsulation: ViewEncapsulation.None,
+  host: {
+    class: 'ang-version-control',
+  },
 })
 export class VersionControl<T extends VersionControlFileFormat = VersionControlFileFormat> {
   /** Heading displayed beside the version selector. */
@@ -59,4 +74,33 @@ export class VersionControl<T extends VersionControlFileFormat = VersionControlF
 
   /** Emits the version and file format whenever a download option is chosen. */
   readonly download = output<VersionDownload<T>>();
+
+  /** Host element of the version select. */
+  private readonly versionSelect = viewChild.required<MatSelect, ElementRef<HTMLElement>>(MatSelect, {
+    read: ElementRef,
+  });
+
+  /**
+   * Keeps the highlighted version option in view.
+   *
+   * `mat-select` scrolls its panel to show the highlighted option, but here the options scroll in an
+   * `ang-scroll-area` inside the panel. The select names the highlighted option in its
+   * `aria-activedescendant` whenever the panel opens or the highlight moves, including through
+   * type-ahead, so watching that attribute covers every case.
+   */
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+
+    afterNextRender(() => {
+      const select = this.versionSelect().nativeElement;
+      const observer = new MutationObserver(() => {
+        const id = select.getAttribute('aria-activedescendant');
+        const option = id ? select.ownerDocument.getElementById(id) : null;
+        option?.scrollIntoView({ block: 'nearest' });
+      });
+
+      observer.observe(select, { attributeFilter: ['aria-activedescendant'] });
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
 }
