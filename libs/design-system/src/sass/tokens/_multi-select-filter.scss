@@ -12,6 +12,7 @@ $config: (
     counter-text-tracking: token-utils.sys-token(body-small-tracking),
     counter-shape: token-utils.sys-token(corner-full),
     counter-focus-outline-color: token-utils.sys-token(secondary),
+    dialog-container-shape: token-utils.sys-token(corner-none),
   ),
 );
 

@@ -6,6 +6,8 @@
   </mat-form-field>
 }
 
+<ng-content />
+
 <mat-selection-list class="ang-search-list--list" (selectionChange)="updateSelection($event)">
   @for (result of results(); track result.item) {
     @let option = result.item;

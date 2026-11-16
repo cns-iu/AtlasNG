@@ -1,8 +1,10 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { BreakpointObserver, type BreakpointState } from '@angular/cdk/layout';
 import { RichTooltip } from '@atlasng/design-system/rich-tooltip';
 import { SearchListOption } from '@atlasng/design-system/search-list';
-import { render, screen } from '@testing-library/angular';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { BehaviorSubject } from 'rxjs';
 import { MultiSelectFilter } from './multi-select-filter';
 
 describe('MultiSelectFilter', () => {
@@ -10,15 +12,22 @@ describe('MultiSelectFilter', () => {
   const kidney: SearchListOption = { label: 'Kidney', count: 5 };
   const options = [liver, kidney];
 
-  async function setup(inputs: Record<string, unknown> = {}) {
+  function provideBreakpoint(wide: boolean) {
+    const breakpoint = new BehaviorSubject<BreakpointState>({ matches: wide, breakpoints: {} });
+    return { breakpoint, providers: [{ provide: BreakpointObserver, useValue: { observe: () => breakpoint } }] };
+  }
+
+  async function setup(inputs: Record<string, unknown> = {}, wide = true) {
     const selectedChange = vi.fn();
     const expandedChange = vi.fn();
+    const { breakpoint, providers } = provideBreakpoint(wide);
     const result = await render(MultiSelectFilter, {
       inputs: { label: 'Organ', options, ...inputs },
+      providers,
     });
     result.fixture.componentInstance.selected.subscribe(selectedChange);
     result.fixture.componentInstance.expanded.subscribe(expandedChange);
-    return { ...result, selectedChange, expandedChange };
+    return { ...result, breakpoint, selectedChange, expandedChange };
   }
 
   async function setupWithInfo(attributes = '') {
@@ -27,7 +36,7 @@ describe('MultiSelectFilter', () => {
         <ang-multi-select-filter label="Organ" [options]="options" [infoTooltip]="info" ${attributes} />
         <ang-rich-tooltip #info tagline="About organs" description="Filter by organ" />
       `,
-      { imports: [MultiSelectFilter, RichTooltip], componentProperties: { options } },
+      { imports: [MultiSelectFilter, RichTooltip], componentProperties: { options }, ...provideBreakpoint(true) },
     );
   }
 
@@ -201,5 +210,98 @@ describe('MultiSelectFilter', () => {
     await setup();
 
     expect(screen.queryByRole('list', { name: 'Active filters' })).not.toBeInTheDocument();
+  });
+
+  describe('below the medium breakpoint', () => {
+    it('opens the search list in a full-screen dialog and moves focus into it', async () => {
+      const user = userEvent.setup();
+      const { expandedChange } = await setup({ selected: [kidney] }, false);
+
+      await user.click(screen.getByRole('button', { name: 'Organ' }));
+
+      const dialog = await screen.findByRole('dialog', { name: 'Organ' });
+      expect(within(dialog).getByRole('heading', { name: 'Organ' })).toBeInTheDocument();
+      expect(within(dialog).getByRole('list', { name: 'Active filters' })).toBeInTheDocument();
+      expect(within(dialog).getByRole('option', { name: /Liver/ })).toBeInTheDocument();
+      expect(within(dialog).getByRole('textbox', { name: 'Search' })).toBeInTheDocument();
+      // jsdom reports no element as visible, so the dialog focuses its container instead of the search field.
+      await waitFor(() => expect(dialog).toContainElement(document.activeElement as HTMLElement));
+      expect(expandedChange).toHaveBeenLastCalledWith(true);
+    });
+
+    it('adds and removes chips in the dialog', async () => {
+      const user = userEvent.setup();
+      const { selectedChange } = await setup({}, false);
+
+      await user.click(screen.getByRole('button', { name: 'Organ' }));
+      const dialog = await screen.findByRole('dialog', { name: 'Organ' });
+      await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
+
+      expect(selectedChange).toHaveBeenLastCalledWith([liver]);
+
+      await user.click(within(dialog).getByRole('button', { name: 'Remove Liver' }));
+
+      expect(selectedChange).toHaveBeenLastCalledWith([]);
+      expect(within(dialog).queryByRole('list', { name: 'Active filters' })).not.toBeInTheDocument();
+    });
+
+    it('closes the dialog with the Done button and returns focus to the label button', async () => {
+      const user = userEvent.setup();
+      const { expandedChange } = await setup({ doneLabel: 'Apply' }, false);
+
+      const labelButton = screen.getByRole('button', { name: 'Organ' });
+      await user.click(labelButton);
+      const dialog = await screen.findByRole('dialog', { name: 'Organ' });
+      await user.click(within(dialog).getByRole('button', { name: 'Apply' }));
+
+      expect(expandedChange).toHaveBeenLastCalledWith(false);
+      await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Organ' })).not.toBeInTheDocument());
+      expect(labelButton).toHaveAttribute('aria-expanded', 'false');
+      expect(labelButton).toHaveFocus();
+    });
+
+    it('closes the dialog with Escape', async () => {
+      const user = userEvent.setup();
+      const { expandedChange } = await setup({}, false);
+
+      await user.click(screen.getByRole('button', { name: 'Organ' }));
+      const dialog = await screen.findByRole('dialog', { name: 'Organ' });
+      // The dialog checks the key code, which user-event doesn't set.
+      fireEvent.keyDown(dialog, { key: 'Escape', keyCode: 27 });
+
+      expect(expandedChange).toHaveBeenLastCalledWith(false);
+      await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Organ' })).not.toBeInTheDocument());
+    });
+
+    it('closes the dialog when the viewport grows past the breakpoint', async () => {
+      const user = userEvent.setup();
+      const { breakpoint, fixture, expandedChange } = await setup({}, false);
+
+      await user.click(screen.getByRole('button', { name: 'Organ' }));
+      await screen.findByRole('dialog', { name: 'Organ' });
+      breakpoint.next({ matches: true, breakpoints: {} });
+      fixture.detectChanges();
+
+      expect(expandedChange).toHaveBeenLastCalledWith(false);
+      await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Organ' })).not.toBeInTheDocument());
+    });
+
+    it('opens the dialog when the filter starts expanded', async () => {
+      await setup({ expanded: true }, false);
+
+      expect(await screen.findByRole('dialog', { name: 'Organ' })).toBeInTheDocument();
+    });
+  });
+
+  it('closes the search list panel when the viewport shrinks past the medium breakpoint', async () => {
+    const user = userEvent.setup();
+    const { breakpoint, fixture, expandedChange } = await setup();
+
+    await user.click(screen.getByRole('button', { name: 'Organ' }));
+    breakpoint.next({ matches: false, breakpoints: {} });
+    fixture.detectChanges();
+
+    expect(expandedChange).toHaveBeenLastCalledWith(false);
+    expect(screen.queryByRole('dialog', { name: 'Organ' })).not.toBeInTheDocument();
   });
 });

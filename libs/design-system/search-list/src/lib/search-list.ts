@@ -26,6 +26,9 @@ export interface SearchListOption {
  *
  * Selections are matched by option object identity and are kept while the
  * search filter hides the selected options.
+ *
+ * Projected content is shown between the search field and the list, for
+ * example the chips of the selected options.
  */
 @Component({
   selector: 'ang-search-list',

@@ -73,6 +73,15 @@ export const WithoutSearch: Story = {
   },
 };
 
+export const SmallScreen: Story = {
+  globals: {
+    viewport: { value: 'mobile1', isRotated: false },
+  },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Organ' }));
+  },
+};
+
 export const WithoutInfo: Story = {
   render: (args) => ({
     props: args,

@@ -23,7 +23,7 @@
     angTrackClick
     aria-haspopup="dialog"
     [attr.aria-expanded]="expanded()"
-    [attr.aria-controls]="expanded() ? panelId : null"
+    [attr.aria-controls]="expanded() && wide() ? panelId : null"
     (click)="toggle()"
   >
     {{ label() }}
@@ -39,23 +39,27 @@
   </span>
 </div>
 
-@if (selected().length > 0) {
-  <mat-chip-set class="ang-multi-select-filter--chips" role="list" [attr.aria-label]="selectedLabel()">
-    @for (option of selected(); track option) {
-      <mat-chip role="listitem" disableRipple (removed)="removeFilter(option)">
-        {{ option.label }}
-        <button type="button" matChipRemove [attr.aria-label]="`${removeLabel()} ${option.label}`">
-          <mat-icon fontIcon="cancel" />
-        </button>
-      </mat-chip>
-    }
-  </mat-chip-set>
-}
+<ng-container [ngTemplateOutlet]="chips" />
+
+<ng-template #chips>
+  @if (selected().length > 0) {
+    <mat-chip-set class="ang-multi-select-filter--chips" role="list" [attr.aria-label]="selectedLabel()">
+      @for (option of selected(); track option) {
+        <mat-chip role="listitem" disableRipple (removed)="removeFilter(option)">
+          {{ option.label }}
+          <button type="button" matChipRemove [attr.aria-label]="`${removeLabel()} ${option.label}`">
+            <mat-icon fontIcon="cancel" />
+          </button>
+        </mat-chip>
+      }
+    </mat-chip-set>
+  }
+</ng-template>
 
 <ng-template
   cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="panelOrigin"
-  [cdkConnectedOverlayOpen]="expanded()"
+  [cdkConnectedOverlayOpen]="expanded() && wide()"
   [cdkConnectedOverlayPositions]="panelPositions()"
   (overlayOutsideClick)="close()"
   (overlayKeydown)="handlePanelKeydown($event)"
@@ -78,4 +82,23 @@
       (selectedChange)="updateSelected($event)"
     />
   </div>
+</ng-template>
+
+<ng-template #dialog>
+  <h2 mat-dialog-title>{{ label() }}</h2>
+  <mat-dialog-content class="ang-multi-select-filter--dialog-content">
+    <ang-search-list
+      class="ang-multi-select-filter--search-list"
+      [options]="options()"
+      [searchDisabled]="searchDisabled()"
+      [selected]="selected()"
+      [(search)]="search"
+      (selectedChange)="updateSelected($event)"
+    >
+      <ng-container [ngTemplateOutlet]="chips" />
+    </ang-search-list>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button type="button" matButton mat-dialog-close angTrackClick>{{ doneLabel() }}</button>
+  </mat-dialog-actions>
 </ng-template>

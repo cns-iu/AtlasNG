@@ -1,22 +1,29 @@
 import { CdkTrapFocus, LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition } from '@angular/cdk/overlay';
-import { DecimalPipe, formatNumber } from '@angular/common';
+import { DecimalPipe, formatNumber, NgTemplateOutlet } from '@angular/common';
 import {
   booleanAttribute,
   Component,
   computed,
+  DestroyRef,
+  effect,
   inject,
   input,
   LOCALE_ID,
   model,
   numberAttribute,
+  TemplateRef,
+  untracked,
+  viewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
+import { watchBreakpoint } from '@atlasng/cdk';
 import { IdGenerator } from '@atlasng/common';
 import { RichTooltip, RichTooltipTrigger } from '@atlasng/design-system/rich-tooltip';
 import { SearchList, SearchListOption } from '@atlasng/design-system/search-list';
@@ -27,6 +34,10 @@ const SEARCH_FIELD_INSET = 16;
 /**
  * Multi-select filter: a label button that opens a {@link SearchList} flyout, a unique item
  * counter, a removable chip for every selected option, and an optional info button.
+ *
+ * From the `medium` breakpoint (960px), the search list opens in a panel beside the filter.
+ * On smaller screens, it opens in a full-screen dialog with the filter's name, the search field,
+ * the selected options as removable chips, and a Done button.
  *
  * Takes the same options as the search list. Selections are matched by option object identity,
  * and removing a chip deselects its option in the search list.
@@ -40,8 +51,10 @@ const SEARCH_FIELD_INSET = 16;
     DecimalPipe,
     MatButtonModule,
     MatChipsModule,
+    MatDialogModule,
     MatIconModule,
     MatTooltipModule,
+    NgTemplateOutlet,
     RichTooltipTrigger,
     SearchList,
     TrackClick,
@@ -98,6 +111,9 @@ export class MultiSelectFilter<T extends SearchListOption> {
    */
   readonly selectedCountText = input('selected');
 
+  /** Text of the button that closes the full-screen dialog on small screens. */
+  readonly doneLabel = input('Done');
+
   /**
    * Horizontal distance, in pixels, from the end of the filter row to the search list panel.
    * Increase it to open the panel past the edge of a container with padding, such as a drawer.
@@ -123,6 +139,21 @@ export class MultiSelectFilter<T extends SearchListOption> {
     ];
   });
 
+  /**
+   * Whether the viewport is at least as wide as the `medium` breakpoint (960px). The search list
+   * opens in a panel beside the filter when it is, and in a full-screen dialog when it isn't.
+   */
+  protected readonly wide = watchBreakpoint('medium');
+
+  /** Content of the full-screen dialog. */
+  private readonly dialogTemplate = viewChild<TemplateRef<unknown>>('dialog');
+
+  /** Service that opens the full-screen dialog. */
+  readonly #dialog = inject(MatDialog);
+
+  /** Full-screen dialog while it is open. */
+  #dialogRef?: MatDialogRef<unknown>;
+
   /** Announces selection changes to screen readers. */
   readonly #announcer = inject(LiveAnnouncer);
 
@@ -134,6 +165,30 @@ export class MultiSelectFilter<T extends SearchListOption> {
 
   /** Accessible label of the info button. */
   protected readonly resolvedInfoLabel = computed(() => this.infoLabel() ?? `${this.label()} info`);
+
+  /**
+   * Opens the full-screen dialog while the filter is expanded below the `medium` breakpoint, and
+   * closes the search list when the viewport crosses the breakpoint.
+   */
+  constructor() {
+    let wasWide = this.wide();
+    effect(() => {
+      const wide = this.wide();
+      if (wide !== wasWide) {
+        wasWide = wide;
+        untracked(() => this.expanded.set(false));
+      }
+
+      const template = this.dialogTemplate();
+      if (template && this.expanded() && !wide) {
+        untracked(() => this.openDialog(template));
+      } else {
+        untracked(() => this.closeDialog());
+      }
+    });
+
+    inject(DestroyRef).onDestroy(() => this.closeDialog());
+  }
 
   /** Toggles the search list panel. */
   protected toggle(): void {
@@ -172,6 +227,39 @@ export class MultiSelectFilter<T extends SearchListOption> {
   protected removeFilter(option: T): void {
     this.selected.update((current) => current.filter((item) => item !== option));
     this.announceSelectedCount();
+  }
+
+  /**
+   * Opens the search list in a full-screen dialog. Closing the dialog with Done or Escape
+   * collapses the filter, and the dialog returns focus to the label button.
+   * @param template Content of the dialog
+   */
+  private openDialog(template: TemplateRef<unknown>): void {
+    if (this.#dialogRef) {
+      return;
+    }
+
+    const ref = this.#dialog.open(template, {
+      panelClass: 'ang-multi-select-filter--dialog',
+      width: '100%',
+      height: '100%',
+      maxWidth: '100%',
+      maxHeight: '100%',
+    });
+    this.#dialogRef = ref;
+    ref.beforeClosed().subscribe(() => {
+      if (this.#dialogRef === ref) {
+        this.#dialogRef = undefined;
+        this.expanded.set(false);
+      }
+    });
+  }
+
+  /** Closes the full-screen dialog if it is open. */
+  private closeDialog(): void {
+    const ref = this.#dialogRef;
+    this.#dialogRef = undefined;
+    ref?.close();
   }
 
   /** Announces the number of selected options, for example `3 selected`. */
