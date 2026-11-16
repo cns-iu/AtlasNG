@@ -5,7 +5,7 @@
 @if (!config().resultsCounterDisabled) {
   <ang-results-indicator
     class="ang-kg-explorer-table-toolbar--counter"
-    prefix="Viewing"
+    [prefix]="config().resultsCounterPrefix ?? ''"
     [value]="count()"
     [total]="total()"
   />
