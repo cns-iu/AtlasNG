@@ -6,7 +6,11 @@
   </mat-form-field>
 }
 
-<mat-selection-list class="ang-search-list--list" (selectionChange)="updateSelection($event)">
+<mat-selection-list
+  class="ang-search-list--list"
+  [attr.aria-label]="listLabel()"
+  (selectionChange)="updateSelection($event)"
+>
   @for (result of results(); track result.item) {
     @let option = result.item;
     <mat-list-option togglePosition="before" [value]="option" [selected]="selected().includes(option)">

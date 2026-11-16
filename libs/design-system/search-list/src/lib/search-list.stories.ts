@@ -103,10 +103,14 @@ const meta: Meta<SearchList<SearchListOption>> = {
   },
   args: {
     searchDisabled: false,
+    listLabel: 'Options',
   },
   argTypes: {
     searchDisabled: {
       control: 'boolean',
+    },
+    listLabel: {
+      control: 'text',
     },
   },
 };

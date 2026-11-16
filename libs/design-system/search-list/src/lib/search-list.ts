@@ -49,6 +49,9 @@ export class SearchList<T extends SearchListOption> {
   /** Whether to hide the search field */
   readonly searchDisabled = input(false, { transform: booleanAttribute });
 
+  /** Accessible name of the options list, such as the name of the filter it belongs to */
+  readonly listLabel = input('Options');
+
   /** Search over the options, in their original order */
   readonly #search = injectSearch({
     items: this.options,

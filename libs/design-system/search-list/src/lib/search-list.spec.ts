@@ -19,6 +19,7 @@ const OPTIONS: SearchListOption[] = [
 
 interface SearchListInputs {
   searchDisabled?: boolean;
+  listLabel?: string;
   search?: string;
   selected?: SearchListOption[];
 }
@@ -143,6 +144,18 @@ describe('SearchList', () => {
 
     expect(screen.queryByRole('textbox', { name: 'Search' })).not.toBeInTheDocument();
     expect(screen.getAllByRole('option')).toHaveLength(OPTIONS.length);
+  });
+
+  it('names the options list "Options" by default', async () => {
+    await setup();
+
+    expect(screen.getByRole('listbox', { name: 'Options' })).toBeInTheDocument();
+  });
+
+  it('names the options list with a custom list label', async () => {
+    await setup({ listLabel: 'Organ' });
+
+    expect(screen.getByRole('listbox', { name: 'Organ' })).toBeInTheDocument();
   });
 
   it('marks options from the selected input as selected', async () => {
