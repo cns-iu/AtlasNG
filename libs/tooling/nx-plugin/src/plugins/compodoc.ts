@@ -164,7 +164,7 @@ function buildStorybookCompodocTarget(): TargetConfiguration {
   return {
     executor: 'nx:run-commands',
     cache: true,
-    inputs: ['default', { externalDependencies: ['@compodoc/compodoc'] }],
+    inputs: ['production', { externalDependencies: ['@compodoc/compodoc'] }],
     outputs: ['{projectRoot}/.storybook/compodoc/documentation.json'],
     options: {
       commands: [STORYBOOK_COMPODOC_COMMAND],
