@@ -17,24 +17,8 @@
       }
     },
     "build-storybook": {
-      "dependsOn": [
-        "build-storybook-compodoc",
-        {
-          "projects": ["icons"],
-          "target": "build"
-        }
-      ],
-      "inputs": [
-        "default",
-        "^production",
-        "{projectRoot}/.storybook/**/*",
-        {
-          "dependentTasksOutputFiles": "**/*"
-        },
-        {
-          "externalDependencies": ["storybook", "@storybook/angular"]
-        }
-      ]
+      "dependsOn": ["...", { "projects": ["icons"], "target": "build" }],
+      "inputs": ["...", { "dependentTasksOutputFiles": "**/*" }]
     },
     "serve-static-storybook": {},
     "storybook": {
