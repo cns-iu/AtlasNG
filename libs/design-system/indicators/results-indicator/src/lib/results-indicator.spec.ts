@@ -1,6 +1,8 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { registerLocaleData } from '@angular/common';
 import localeSv from '@angular/common/locales/sv';
 import { LOCALE_ID, type Provider } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ComponentInput, render, screen } from '@testing-library/angular';
 import { provideResultsIndicatorMessages } from './config';
 import { ResultsIndicator } from './results-indicator';
@@ -21,8 +23,7 @@ describe('ResultsIndicator', () => {
     });
   }
 
-  const visibleText = (text: string | RegExp) => screen.getByText(text, { ignore: '.cdk-visually-hidden' });
-  const announcedText = (text: string) => screen.getByText(text, { selector: '.cdk-visually-hidden' });
+  const visibleText = (text: string | RegExp) => screen.getByText(text);
 
   beforeAll(() => {
     registerLocaleData(localeSv);
@@ -63,15 +64,9 @@ describe('ResultsIndicator', () => {
     expect(visibleText(/^1\s000 of 1\s000\s000$/)).toBeInTheDocument();
   });
 
-  it('should be a status live region that reads the text', async () => {
-    await setup();
-
-    expect(screen.getByRole('status')).toContainElement(announcedText('5 of 120'));
-    expect(visibleText('5 of 120')).toHaveAttribute('aria-hidden', 'true');
-  });
-
   it('should announce the text once it stops changing', async () => {
     const { fixture } = await setup();
+    const announce = vi.spyOn(TestBed.inject(LiveAnnouncer), 'announce').mockResolvedValue();
     vi.useFakeTimers();
     try {
       fixture.componentRef.setInput('value', 6);
@@ -79,28 +74,29 @@ describe('ResultsIndicator', () => {
       vi.advanceTimersByTime(500);
       fixture.componentRef.setInput('value', 7);
       fixture.detectChanges();
-      vi.advanceTimersByTime(500);
-      fixture.detectChanges();
+      vi.advanceTimersByTime(1000);
 
       expect(visibleText('7 of 120')).toBeInTheDocument();
-      expect(announcedText('5 of 120')).toBeInTheDocument();
-
-      vi.advanceTimersByTime(500);
-      fixture.detectChanges();
-
-      expect(announcedText('7 of 120')).toBeInTheDocument();
+      expect(announce).toHaveBeenCalledTimes(1);
+      expect(announce).toHaveBeenCalledWith('7 of 120', undefined, undefined);
     } finally {
       vi.useRealTimers();
     }
   });
 
-  it('should drop the status role and update the read text immediately when announcements are disabled', async () => {
+  it('should not announce changes when announcements are disabled', async () => {
     const { fixture } = await setup({ announceDisabled: true });
+    const announce = vi.spyOn(TestBed.inject(LiveAnnouncer), 'announce').mockResolvedValue();
+    vi.useFakeTimers();
+    try {
+      fixture.componentRef.setInput('value', 6);
+      fixture.detectChanges();
+      vi.advanceTimersByTime(1000);
 
-    fixture.componentRef.setInput('value', 6);
-    fixture.detectChanges();
-
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    expect(announcedText('6 of 120')).toBeInTheDocument();
+      expect(visibleText('6 of 120')).toBeInTheDocument();
+      expect(announce).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

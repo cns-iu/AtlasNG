@@ -1,30 +1,24 @@
-import { booleanAttribute, Component, computed, effect, input, linkedSignal, untracked } from '@angular/core';
+import { booleanAttribute, Component, computed, input } from '@angular/core';
+import { Announce } from '@atlasng/cdk/a11y';
 import { computedMessage } from '@atlasng/core';
 import { RESULTS_INDICATOR_MESSAGES } from './config';
-
-/** Milliseconds the text has to stay the same before screen readers announce it. */
-const ANNOUNCE_DELAY = 1000;
 
 /**
  * Displays a localized "value of total" style indicator.
  *
  * Example output: "5 of 120". The text comes from `provideResultsIndicatorMessages`.
  *
- * The host is a `status` live region, so screen readers announce changes to the
- * text without moving focus. The visible text updates immediately, while the
- * announced copy waits until the text stops changing, so typing in a search
- * field queues one announcement instead of one per keystroke.
+ * Changes to the text are announced to screen readers with the `angAnnounce` directive once the text stops
+ * changing, so typing in a search field queues one announcement instead of one per keystroke. Configure the delay,
+ * politeness, and duration with `provideAnnounceConfig` from `@atlasng/cdk/a11y`.
  */
 @Component({
   selector: 'ang-results-indicator',
-  template: `
-    <span aria-hidden="true">{{ text() }}</span>
-    <span class="cdk-visually-hidden">{{ announcedText() }}</span>
-  `,
+  imports: [Announce],
+  template: `<span [angAnnounce]="text()" [angAnnounceDisabled]="announceDisabled()">{{ text() }}</span>`,
   styleUrl: './results-indicator.scss',
   host: {
     class: 'ang-results-indicator',
-    '[attr.role]': 'announceDisabled() ? null : "status"',
   },
 })
 export class ResultsIndicator {
@@ -48,10 +42,7 @@ export class ResultsIndicator {
    */
   readonly suffix = input('');
 
-  /**
-   * Removes the `status` role so screen readers don't announce changes, for
-   * consumers that announce them another way.
-   */
+  /** Stops announcing changes to screen readers, for consumers that announce them another way. */
   readonly announceDisabled = input(false, { transform: booleanAttribute });
 
   /** Text of the indicator. */
@@ -62,25 +53,4 @@ export class ResultsIndicator {
 
   /** Display text, including the deprecated prefix and suffix. */
   protected readonly text = computed(() => [this.prefix(), this.#message(), this.suffix()].join(' ').trim());
-
-  /**
-   * Text read by screen readers. Starts as {@link text} and then follows it
-   * {@link ANNOUNCE_DELAY} milliseconds after its last change, or immediately
-   * while announcements are disabled.
-   */
-  protected readonly announcedText = linkedSignal<{ text: string; immediate: boolean }, string>({
-    source: () => ({ text: this.text(), immediate: this.announceDisabled() }),
-    computation: (current, previous) => (current.immediate || !previous ? current.text : previous.value),
-  });
-
-  /** Schedules the announcement of each new text, restarting the delay whenever the text changes again. */
-  constructor() {
-    effect((onCleanup) => {
-      const text = this.text();
-      if (!this.announceDisabled() && text !== untracked(this.announcedText)) {
-        const timeout = setTimeout(() => this.announcedText.set(text), ANNOUNCE_DELAY);
-        onCleanup(() => clearTimeout(timeout));
-      }
-    });
-  }
 }
