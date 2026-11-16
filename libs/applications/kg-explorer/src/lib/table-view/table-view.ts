@@ -7,6 +7,7 @@ import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
+import { KgExplorerDownloadHeaderCellDefinition } from '../download-cell/download-header-cell';
 import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
 import { pickDefined } from '../utils/pick-defined';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
@@ -124,6 +125,12 @@ export class KgExplorerTableView<
   /** File formats of the download column, or `undefined` when there is no download column. */
   private readonly downloadFormats = computed(() => this.resolvedConfig().downloadFormats);
 
+  /** Accessible name of the download column's header. */
+  private readonly downloadColumnLabel = computed(() => this.resolvedConfig().downloadColumnLabel ?? '');
+
+  /** Accessible name of each row's download button, or `undefined` for the default. */
+  private readonly downloadLabel = computed(() => this.resolvedConfig().downloadLabel);
+
   /** Whether the filter menu is docked beside the table. */
   protected readonly docked = watchBreakpoint('large');
 
@@ -141,7 +148,7 @@ export class KgExplorerTableView<
     });
   }
 
-  /** Download column, recreated only when the download formats change; `undefined` without download formats. */
+  /** Download column, recreated only when its formats or labels change; `undefined` without download formats. */
   private readonly downloadColumn = computed((): TableColumn<TRow> | undefined => {
     const formats = this.downloadFormats();
     if (formats === undefined) {
@@ -149,15 +156,17 @@ export class KgExplorerTableView<
     }
 
     return {
-      name: '',
+      name: this.downloadColumnLabel(),
       prop: '$$download',
       width: 40,
       flexGrow: 0,
       sortable: false,
+      headerTemplate: KgExplorerDownloadHeaderCellDefinition,
       cellTemplate: KgExplorerDownloadCellDefinition,
       cellConfig: {
         formats,
         download: (item, format) => this.download.emit({ item, format }),
+        label: this.downloadLabel(),
       } satisfies KgExplorerDownloadCellConfig<TRow, TFormat>,
     };
   });

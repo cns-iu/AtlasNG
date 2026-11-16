@@ -44,8 +44,14 @@ export class KgExplorerTablePanel<TRow extends Row = Row> {
   /** Currently applied column sorts. */
   readonly sorts = model<SortPropDir[]>([]);
 
-  /** Resolved table view configuration: search fields, suggestions, and which parts are shown. */
-  readonly config = input.required<KgExplorerTableViewConfig<TRow>>();
+  /**
+   * Resolved table view configuration: search fields, suggestions, and which parts are shown. The download
+   * options are left out because the table view builds the download column itself.
+   */
+  readonly config =
+    input.required<
+      Omit<KgExplorerTableViewConfig<TRow>, 'downloadFormats' | 'downloadColumnLabel' | 'downloadLabel'>
+    >();
 
   /** Decides which rows can be shown, for example from filter selections. Reuse the function while it is unchanged. */
   readonly rowFilter = input<(row: TRow) => boolean>();

@@ -1,16 +1,23 @@
 import { Table, type TableColumn } from '@atlasng/design-system/table';
-import { CSV_FILE_FORMAT, JSON_FILE_FORMAT } from '@atlasng/design-system/version-control';
+import {
+  CSV_FILE_FORMAT,
+  JSON_FILE_FORMAT,
+  type VersionControlFileFormat,
+} from '@atlasng/design-system/version-control';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from './download-cell';
 
 interface TestRow {
   name: string;
+  title?: string;
 }
 
 describe('KgExplorerDownloadCellDefinition', () => {
   async function setup(
     formats: KgExplorerDownloadCellConfig<TestRow>['formats'] = [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
+    row: TestRow = { name: 'Ada' },
+    label?: KgExplorerDownloadCellConfig<TestRow>['label'],
   ) {
     const download = vi.fn();
     const columns: TableColumn<TestRow>[] = [
@@ -18,11 +25,11 @@ describe('KgExplorerDownloadCellDefinition', () => {
         name: '',
         prop: 'name',
         cellTemplate: KgExplorerDownloadCellDefinition,
-        cellConfig: { formats, download } satisfies KgExplorerDownloadCellConfig<TestRow>,
+        cellConfig: { formats, download, label } satisfies KgExplorerDownloadCellConfig<TestRow>,
       },
     ];
     const user = userEvent.setup();
-    await render(Table<TestRow>, { inputs: { rows: [{ name: 'Ada' }], columns } });
+    await render(Table<TestRow>, { inputs: { rows: [row], columns } });
 
     return { download, user };
   }
@@ -82,5 +89,37 @@ describe('KgExplorerDownloadCellDefinition', () => {
 
     expect(button).toHaveAttribute('aria-disabled', 'true');
     expect(download).not.toHaveBeenCalled();
+  });
+
+  it('names the buttons after the title of the row', async () => {
+    const row = { name: 'Ada', title: 'Heart atlas' };
+    const { user } = await setup(undefined, row);
+
+    const button = await screen.findByRole('button', { name: 'Choose download format for Heart atlas' });
+    await user.hover(button);
+
+    const tooltip = await screen.findByText('Choose download format', {
+      ignore: '.cdk-describedby-message-container *',
+    });
+    expect(tooltip).toBeInTheDocument();
+    expect(button).toHaveAccessibleDescription('Choose download format');
+  });
+
+  it('names the button of a single format after the title of the row', async () => {
+    await setup([CSV_FILE_FORMAT], { name: 'Ada', title: 'Heart atlas' });
+
+    expect(
+      await screen.findByRole('button', { name: `Download Heart atlas as ${CSV_FILE_FORMAT.label}` }),
+    ).toBeInTheDocument();
+  });
+
+  it('names the buttons with the label function', async () => {
+    const label = vi.fn((row: TestRow, format?: VersionControlFileFormat) =>
+      format ? `Get ${row.name} ${format.label}` : `Formats of ${row.name}`,
+    );
+    await setup(undefined, undefined, label);
+
+    expect(await screen.findByRole('button', { name: 'Formats of Ada' })).toBeInTheDocument();
+    expect(label).toHaveBeenCalledWith({ name: 'Ada' });
   });
 });

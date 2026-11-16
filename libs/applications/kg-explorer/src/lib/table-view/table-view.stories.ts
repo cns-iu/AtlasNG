@@ -178,7 +178,7 @@ export const Demo: Story = {
       timeout: 2000,
     });
 
-    const [downloadButton] = canvas.getAllByRole('button', { name: 'Choose download format' });
+    const [downloadButton] = canvas.getAllByRole('button', { name: /^Choose download format for / });
     await userEvent.click(downloadButton);
     const menu = within(document.body).getByRole('menu');
     await expect(within(menu).getByRole('menuitem', { name: /CSV/ })).toBeVisible();

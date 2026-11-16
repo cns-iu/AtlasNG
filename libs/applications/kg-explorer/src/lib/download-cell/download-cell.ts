@@ -15,6 +15,16 @@ export type KgExplorerDownloadFormats<
   TFormat extends VersionControlFileFormat = VersionControlFileFormat,
 > = readonly TFormat[] | ((row: TRow) => readonly TFormat[]);
 
+/**
+ * Returns the accessible name of a row's download button. It is called with
+ * the format for a button that downloads one format directly, and without a
+ * format for a button that opens the menu of formats.
+ */
+export type KgExplorerDownloadLabel<
+  TRow extends Row = Row,
+  TFormat extends VersionControlFileFormat = VersionControlFileFormat,
+> = (row: TRow, format?: TFormat) => string;
+
 /** Configuration for the download cell definition. */
 export interface KgExplorerDownloadCellConfig<
   TRow extends Row = Row,
@@ -32,6 +42,30 @@ export interface KgExplorerDownloadCellConfig<
    * @param format File format the user picked.
    */
   download: (row: TRow, format: TFormat) => void;
+  /**
+   * Accessible name of a row's download button. Defaults to naming the row by
+   * its `title`, for example "Download Heart atlas as CSV" and "Choose download
+   * format for Heart atlas". The visible tooltips name only the format.
+   */
+  label?: KgExplorerDownloadLabel<TRow, TFormat>;
+}
+
+/**
+ * Names a download button after the `title` of its row, or after the format
+ * alone when the row has no title.
+ *
+ * @param row Row the button downloads.
+ * @param format Format the button downloads directly; omitted for the button that opens the menu of formats.
+ * @returns The accessible name of the button.
+ */
+function titleDownloadLabel(row: Row, format?: VersionControlFileFormat): string {
+  const title: unknown = row['title'];
+  const name = typeof title === 'string' && title !== '' ? title : undefined;
+  if (format) {
+    return name === undefined ? `Download ${format.label}` : `Download ${name} as ${format.label}`;
+  }
+
+  return name === undefined ? 'Choose download format' : `Choose download format for ${name}`;
 }
 
 /**
@@ -61,6 +95,9 @@ export class KgExplorerDownloadCellDefinition<
 > extends CellDefinition<TRow, KgExplorerDownloadCellConfig<TRow, TFormat>> {
   /** Resolves the file formats offered for a row. */
   protected readonly getFormats = this.#createFormatsAccessor();
+
+  /** Resolves the accessible name of a row's download button. */
+  protected readonly getLabel: KgExplorerDownloadLabel<TRow, TFormat> = this.config.label ?? titleDownloadLabel;
 
   /**
    * Creates the accessor for the formats of a row from the configured formats.

@@ -93,8 +93,7 @@ describe('KgExplorerTableView', () => {
   it('emits a download request for the picked row and format', async () => {
     const { user, download } = await setup();
 
-    const [button] = await screen.findAllByRole('button', { name: 'Choose download format' });
-    await user.click(button);
+    await user.click(await screen.findByRole('button', { name: `Choose download format for ${ITEMS[0].title}` }));
     await user.click(await screen.findByRole('menuitem', { name: new RegExp(CSV_FILE_FORMAT.label) }));
 
     expect(download).toHaveBeenCalledWith({ item: ITEMS[0], format: CSV_FILE_FORMAT });
@@ -110,11 +109,33 @@ describe('KgExplorerTableView', () => {
   it('offers the download formats of each row', async () => {
     const { user, download } = await setup({ config: { downloadFormats: (item: TestItem) => item.formats } });
 
-    expect(await screen.findByRole('button', { name: 'Choose download format' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: `Choose download format for ${ITEMS[0].title}` }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'No downloads available' })).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: `Download ${CSV_FILE_FORMAT.label}` }));
+    await user.click(screen.getByRole('button', { name: `Download ${ITEMS[1].title} as ${CSV_FILE_FORMAT.label}` }));
 
     expect(download).toHaveBeenCalledWith({ item: ITEMS[1], format: CSV_FILE_FORMAT });
+  });
+
+  it('names the download column header without showing it', async () => {
+    await setup();
+
+    const header = await screen.findByRole('columnheader', { name: 'Download' });
+    expect(within(header).getByText('Download')).toHaveClass('cdk-visually-hidden');
+  });
+
+  it('uses the configured download labels', async () => {
+    await setup({
+      config: {
+        downloadFormats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
+        downloadColumnLabel: 'Files',
+        downloadLabel: (item: TestItem) => `Files of ${item.type}`,
+      },
+    });
+
+    expect(await screen.findByRole('columnheader', { name: 'Files' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: `Files of ${ITEMS[0].type}` })).toBeInTheDocument();
   });
 
   it('uses the provided configuration as defaults', async () => {

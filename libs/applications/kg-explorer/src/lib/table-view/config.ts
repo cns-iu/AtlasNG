@@ -3,7 +3,7 @@ import type { SearchFieldDefinition, SearchFieldSpec } from '@atlasng/cdk/search
 import { createConfigurationToken, type } from '@atlasng/core';
 import type { Row } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
-import type { KgExplorerDownloadFormats } from '../download-cell/download-cell';
+import type { KgExplorerDownloadFormats, KgExplorerDownloadLabel } from '../download-cell/download-cell';
 
 /**
  * Setup of the knowledge graph explorer table view. Every option is optional;
@@ -32,6 +32,15 @@ export interface KgExplorerTableViewConfig<
    * only shown when this is set.
    */
   downloadFormats?: KgExplorerDownloadFormats<TRow, TFormat>;
+  /** Accessible name of the download column's header, which is visually empty. Defaults to `Download`. */
+  downloadColumnLabel?: string;
+  /**
+   * Accessible name of a row's download button, called with the format for a
+   * button that downloads one format and without one for a button that opens
+   * the menu of formats. Defaults to naming the row by its `title`, for example
+   * "Download Heart atlas as CSV" and "Choose download format for Heart atlas".
+   */
+  downloadLabel?: KgExplorerDownloadLabel<TRow, TFormat>;
 }
 
 /** Suggests the `title` of each row when it is a string. */
@@ -58,6 +67,7 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
     searchDisabled: false,
     resultsCounterDisabled: false,
     endOfResultsDisabled: false,
+    downloadColumnLabel: 'Download',
   }),
   inherit: true,
 });
