@@ -1,3 +1,4 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { RichTooltip } from '@atlasng/design-system/rich-tooltip';
 import { SearchListOption } from '@atlasng/design-system/search-list';
 import { render, screen } from '@testing-library/angular';
@@ -173,6 +174,36 @@ describe('MultiSelectFilter', () => {
 
     expect(screen.getByRole('list', { name: 'Selected organs' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Clear Kidney' })).toBeInTheDocument();
+  });
+
+  it('announces the number of selected options when the selection changes in the search list', async () => {
+    const user = userEvent.setup();
+    const { fixture } = await setup({ selected: [kidney] });
+    const announce = vi.spyOn(fixture.debugElement.injector.get(LiveAnnouncer), 'announce');
+
+    await user.click(screen.getByRole('button', { name: 'Organ' }));
+    await user.click(screen.getByRole('option', { name: /Liver/ }));
+
+    expect(announce).toHaveBeenLastCalledWith('2 selected');
+  });
+
+  it('announces the number of selected options when a chip is removed', async () => {
+    const user = userEvent.setup();
+    const { fixture } = await setup({ selected: [liver, kidney], selectedCountText: 'organs selected' });
+    const announce = vi.spyOn(fixture.debugElement.injector.get(LiveAnnouncer), 'announce');
+
+    await user.click(screen.getByRole('button', { name: 'Remove Liver' }));
+
+    expect(announce).toHaveBeenLastCalledWith('1 organs selected');
+  });
+
+  it('does not announce selections set by the app', async () => {
+    const { fixture, rerender } = await setup();
+    const announce = vi.spyOn(fixture.debugElement.injector.get(LiveAnnouncer), 'announce');
+
+    await rerender({ inputs: { label: 'Organ', options, selected: [liver] } });
+
+    expect(announce).not.toHaveBeenCalled();
   });
 
   it('does not render chips without a selection', async () => {

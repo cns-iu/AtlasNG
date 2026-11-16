@@ -1,7 +1,17 @@
-import { CdkTrapFocus } from '@angular/cdk/a11y';
+import { CdkTrapFocus, LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition } from '@angular/cdk/overlay';
-import { DecimalPipe } from '@angular/common';
-import { booleanAttribute, Component, computed, inject, input, model, ViewEncapsulation } from '@angular/core';
+import { DecimalPipe, formatNumber } from '@angular/common';
+import {
+  booleanAttribute,
+  Component,
+  computed,
+  inject,
+  input,
+  LOCALE_ID,
+  model,
+  numberAttribute,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,11 +21,8 @@ import { IdGenerator } from '@atlasng/common';
 import { RichTooltip, RichTooltipTrigger } from '@atlasng/design-system/rich-tooltip';
 import { SearchList, SearchListOption } from '@atlasng/design-system/search-list';
 
-/** Positions of the search list panel: below the label button, or above it when there is no room. */
-const PANEL_POSITIONS: ConnectedPosition[] = [
-  { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
-  { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
-];
+/** Space above the search field inside the search list, in pixels. Matches the search list's top padding. */
+const SEARCH_FIELD_INSET = 16;
 
 /**
  * Multi-select filter: a label button that opens a {@link SearchList} flyout, a unique item
@@ -86,11 +93,42 @@ export class MultiSelectFilter<T extends SearchListOption> {
   /** Prefix of the accessible label of each chip's remove button, followed by the option label. */
   readonly removeFilterLabel = input('Remove');
 
+  /**
+   * Text announced to screen readers after the number of selected options whenever the user
+   * changes the selection, for example `3 selected`.
+   */
+  readonly selectedCountText = input('selected');
+
+  /**
+   * Horizontal distance, in pixels, from the end of the filter row to the search list panel.
+   * Increase it to open the panel past the edge of a container with padding, such as a drawer.
+   */
+  readonly panelOffsetX = input(8, { transform: numberAttribute });
+
   /** Unique id of the search list panel, referenced by the label button's `aria-controls`. */
   protected readonly panelId = inject(IdGenerator).getId('ang-multi-select-filter--panel');
 
-  /** Positions of the search list panel. */
-  protected readonly panelPositions = PANEL_POSITIONS;
+  /**
+   * Positions of the search list panel. It opens to the right of the filter row with its search
+   * field level with the row, and moves up when there is no room below. Where there is no room to
+   * the right, it falls back to below the row, or above it.
+   */
+  protected readonly panelPositions = computed((): ConnectedPosition[] => {
+    const offsetX = this.panelOffsetX();
+    const offsetY = this.disableSearch() ? 0 : -SEARCH_FIELD_INSET;
+    return [
+      { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX, offsetY },
+      { originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'bottom', offsetX },
+      { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+      { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+    ];
+  });
+
+  /** Announces selection changes to screen readers. */
+  readonly #announcer = inject(LiveAnnouncer);
+
+  /** Locale used to format the announced number of selected options. */
+  readonly #locale = inject(LOCALE_ID);
 
   /** Number shown by the unique item counter. */
   protected readonly displayedCount = computed(() => this.count() ?? this.options().length);
@@ -120,10 +158,26 @@ export class MultiSelectFilter<T extends SearchListOption> {
   }
 
   /**
+   * Updates the selection from the search list.
+   * @param selected Options selected in the search list
+   */
+  protected updateSelected(selected: T[]): void {
+    this.selected.set(selected);
+    this.announceSelectedCount();
+  }
+
+  /**
    * Deselects an option.
    * @param option Option whose chip was removed
    */
   protected removeFilter(option: T): void {
     this.selected.update((current) => current.filter((item) => item !== option));
+    this.announceSelectedCount();
+  }
+
+  /** Announces the number of selected options, for example `3 selected`. */
+  private announceSelectedCount(): void {
+    const count = formatNumber(this.selected().length, this.#locale);
+    void this.#announcer.announce(`${count} ${this.selectedCountText()}`);
   }
 }
