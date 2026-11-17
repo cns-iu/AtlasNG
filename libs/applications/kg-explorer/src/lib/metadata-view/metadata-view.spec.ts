@@ -4,7 +4,8 @@ import {
   VersionControlFileFormat,
   VersionControlItem,
 } from '@atlasng/design-system/version-control';
-import type { Provider } from '@angular/core';
+import type { EnvironmentProviders, Provider } from '@angular/core';
+import { provideAngIcons } from '@atlasng/design-system/icons';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { provideKgExplorerMetadataView } from './config';
@@ -45,12 +46,12 @@ describe('KgExplorerMetadataView', () => {
   const metadata: KgExplorerMetadata = {
     title: 'Metadata title',
     sections,
-    icons: [{ src: 'icon.svg', alt: 'Organ icon' }],
+    icons: [{ name: 'heart', label: 'Organ icon' }],
     url: 'https://example.com/entry',
     versions,
   };
 
-  async function setup(inputs: Record<string, unknown> = {}, providers: Provider[] = []) {
+  async function setup(inputs: Record<string, unknown> = {}, providers: (Provider | EnvironmentProviders)[] = []) {
     const user = userEvent.setup();
     const download = vi.fn();
     const result = await render(KgExplorerMetadataView, {
@@ -60,7 +61,7 @@ describe('KgExplorerMetadataView', () => {
         ...inputs,
       },
       on: { download },
-      providers,
+      providers: [provideAngIcons(), ...providers],
     });
 
     return { ...result, download, user };
@@ -76,7 +77,7 @@ describe('KgExplorerMetadataView', () => {
     await setup();
 
     expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeVisible();
-    expect(screen.getByRole('img', { name: 'Organ icon' })).toHaveAttribute('src', 'icon.svg');
+    expect(screen.getByRole('img', { name: 'Organ icon' })).toHaveAttribute('fontIcon', 'heart');
     expect(screen.getByText('example.com/entry')).toBeVisible();
     expect(screen.getByText('Digital object version')).toBeVisible();
   });
