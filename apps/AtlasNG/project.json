@@ -19,8 +19,44 @@
         }
       }
     },
+    "build-ssr-smoke": {
+      "executor": "@nx/angular:application",
+      "options": {
+        "server": "apps/AtlasNG/src/main.server.ts",
+        "ssr": {
+          "entry": "apps/AtlasNG/src/server.ts"
+        },
+        "outputMode": "server",
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/labs/src/sass", "libs/design-system/src/sass"]
+        },
+        "outputPath": "dist/ssr-smoke/apps/AtlasNG"
+      },
+      "defaultConfiguration": "development",
+      "metadata": {
+        "description": "Development build with prerendering for the SSR smoke check."
+      }
+    },
     "serve": {},
     "serve-static": {},
+    "ssr-smoke": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build-ssr-smoke"],
+      "cache": true,
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["jsdom", "vitest"]
+        }
+      ],
+      "options": {
+        "command": "node apps/AtlasNG/ssr-smoke/check.mjs dist/ssr-smoke/apps/AtlasNG"
+      },
+      "metadata": {
+        "description": "Renders every prerendered route on the server, hydrates it in jsdom, and fails on errors, hydration warnings, or DOM differences."
+      }
+    },
     "test": {
       "options": {
         "setupFiles": ["{projectRoot}/src/test-setup.ts"],
