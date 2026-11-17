@@ -156,20 +156,20 @@ export const WithHeader: Story = {
     props: { ...args, navigationItems: NAVIGATION_ITEMS },
     template: `
       <ang-header-shell
-        logoUrl="assets/illustration-placeholder.svg"
-        hasLocalNavigation="true"
+        logoSrc="assets/illustration-placeholder.svg"
+        localNavigation="true"
         [navigationItems]="navigationItems"
         [localNavigationExpanded]="navigation.leftMenuOpen()"
-        (localNavigationToggle)="navigation.localNavigationToggle()"
-        (appsMenuToggle)="navigation.appsMenuToggle()"
+        (localNavigationClick)="navigation.toggleLocalNavigation()"
+        (appsMenuClick)="navigation.toggleAppsMenu()"
       >
       </ang-header-shell>
 
       <ang-navigation-container
-        [navigationItems]="navigationItems"
-        [navRight]="navRight"
+        [leftNavigationItems]="navigationItems"
+        [rightNavigationItems]="rightNavigationItems"
         [email]="email"
-        [socialMediaIds]="socialMediaIds"
+        [socials]="socials"
         #navigation
       >
         <main id="main-content">

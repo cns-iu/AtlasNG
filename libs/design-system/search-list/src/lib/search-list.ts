@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 import { injectSearch, SearchHighlight, SearchRange, SearchResult } from '@atlasng/cdk/search';
+import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
 /** Search list option interface */
 export interface SearchListOption {
@@ -26,14 +27,19 @@ export interface SearchListOption {
  *
  * Selections are matched by option object identity and are kept while the
  * search filter hides the selected options.
+ *
+ * The options scroll in an `ang-scroll-area` below the search field. Constrain
+ * the height of the host so that the options can scroll.
  */
 @Component({
   selector: 'ang-search-list',
-  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule, SearchHighlight],
+  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule, ScrollArea, SearchHighlight],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
   host: {
     class: 'ang-search-list',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
   },
 })
 export class SearchList<T extends SearchListOption> {
@@ -47,10 +53,16 @@ export class SearchList<T extends SearchListOption> {
   readonly search = model<string>('');
 
   /** Whether to hide the search field */
-  readonly searchDisabled = input(false, { transform: booleanAttribute });
+  readonly disableSearch = input(false, { transform: booleanAttribute });
 
-  /** Accessible name of the options list, such as the name of the filter it belongs to */
-  readonly listLabel = input('Options');
+  /** Label of the search field */
+  readonly searchLabel = input('Search');
+
+  /** Accessible name of the option list, such as the name of the filter it belongs to */
+  readonly ariaLabel = input<string | null>('Options', { alias: 'aria-label' });
+
+  /** Space-separated ids of elements labelling the option list. Takes precedence over `aria-label`. */
+  readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
 
   /** Search over the options, in their original order */
   readonly #search = injectSearch({

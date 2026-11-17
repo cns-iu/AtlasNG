@@ -20,6 +20,8 @@ export interface SnackBarData {
   actionRow?: boolean;
   /** Flag to show/hide the close button */
   showClose?: boolean;
+  /** Accessible name of the close button. Defaults to "Close snack bar". */
+  closeLabel?: string;
   /**
    * Duration in milliseconds before the snackbar closes
    * @deprecated Never read. Set `duration` on the {@link SnackBarConfig} passed to {@link createSnackBarConfig} instead.
@@ -33,13 +35,14 @@ export interface SnackBarConfig extends MatSnackBarConfig<never>, Omit<SnackBarD
 /**
  * Creates a `MatSnackBar` configuration for opening the {@link Snackbar} component.
  * Snackbars with an action or close button stay open until dismissed.
+ * Use Material's `politeness` and `announcementMessage` options to control the screen-reader announcement.
  *
  * @param message Message to show in the snackbar
  * @param config Additional snackbar configuration
  * @returns Configuration to pass to `MatSnackBar.openFromComponent`
  */
 export function createSnackBarConfig(message: string, config: SnackBarConfig = {}): MatSnackBarConfig<SnackBarData> {
-  const { action, actionRow = false, showClose = false, panelClass = [] } = config;
+  const { action, actionRow = false, showClose = false, closeLabel, panelClass = [] } = config;
 
   const duration = action || showClose ? undefined : config.duration;
 
@@ -50,6 +53,7 @@ export function createSnackBarConfig(message: string, config: SnackBarConfig = {
       action,
       actionRow,
       showClose,
+      closeLabel,
     },
     duration,
     panelClass: [...(typeof panelClass === 'string' ? [panelClass] : panelClass), 'ang-snackbar--panel'],

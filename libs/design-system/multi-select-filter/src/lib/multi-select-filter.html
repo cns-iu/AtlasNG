@@ -1,13 +1,13 @@
 <div class="ang-multi-select-filter--header">
-  @let tooltip = infoTooltip();
+  @let tooltip = infoPanel();
   @if (tooltip) {
     <button
       type="button"
       class="ang-multi-select-filter--info"
       matIconButton
       angTrackClick
-      [attr.aria-label]="resolvedInfoLabel()"
-      [matTooltip]="infoTooltipText()"
+      [attr.aria-label]="resolvedInfoButtonLabel()"
+      [matTooltip]="infoTooltip()"
       [matTooltipDisabled]="infoTrigger.isOpen()"
       [angRichTooltipTriggerFor]="tooltip"
       #infoTrigger="angRichTooltipTrigger"
@@ -31,17 +31,17 @@
     {{ label() }}
   </button>
 
-  <span class="ang-multi-select-filter--counter" tabindex="0" [matTooltip]="countTooltipText()">
+  <span class="ang-multi-select-filter--counter" tabindex="0" [matTooltip]="countTooltip()">
     {{ displayedCount() | number }}
   </span>
 </div>
 
 @if (selected().length > 0) {
-  <mat-chip-set class="ang-multi-select-filter--chips" role="list" [attr.aria-label]="selectedLabel()">
+  <mat-chip-set class="ang-multi-select-filter--chips" role="list" [attr.aria-label]="selectedFiltersLabel()">
     @for (option of selected(); track option) {
       <mat-chip role="listitem" disableRipple (removed)="removeFilter(option)">
         {{ option.label }}
-        <button type="button" matChipRemove [attr.aria-label]="`${removeLabel()} ${option.label}`">
+        <button type="button" matChipRemove [attr.aria-label]="`${removeFilterLabel()} ${option.label}`">
           <mat-icon fontIcon="cancel" />
         </button>
       </mat-chip>
@@ -69,8 +69,8 @@
     <ang-search-list
       class="ang-multi-select-filter--search-list"
       [options]="options()"
-      [searchDisabled]="searchDisabled()"
-      [listLabel]="label()"
+      [disableSearch]="disableSearch()"
+      [aria-label]="label()"
       [(selected)]="selected"
       [(search)]="search"
     />

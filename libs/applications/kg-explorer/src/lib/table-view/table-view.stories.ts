@@ -95,7 +95,7 @@ const SAMPLE_COLUMNS: TableColumn<SampleItem>[] = [
 
 /** Type and Organ filters for the sample rows, with options derived from the rows. */
 const SAMPLE_FILTERS: KgExplorerFilter<SampleItem>[] = [
-  { id: 'type', label: 'Type', field: 'type', searchDisabled: true },
+  { id: 'type', label: 'Type', field: 'type', disableSearch: true },
   { id: 'organ', label: 'Organ', field: 'tags' },
 ];
 
@@ -237,7 +237,7 @@ export const WithFooter: Story = {
     template: explorerTemplate(
       args,
       `
-        <ang-footer logoImage="" organization="Organization">
+        <ang-footer logoSrc="" organization="Organization">
           <ang-footer-logo>Logo</ang-footer-logo>
           <a angFooterAction matButton>Privacy</a>
           <a angFooterAction matButton>Accessibility</a>

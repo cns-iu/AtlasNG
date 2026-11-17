@@ -18,8 +18,7 @@ const OPTIONS: SearchListOption[] = [
 ];
 
 interface SearchListInputs {
-  searchDisabled?: boolean;
-  listLabel?: string;
+  disableSearch?: boolean;
   search?: string;
   selected?: SearchListOption[];
 }
@@ -140,7 +139,7 @@ describe('SearchList', () => {
   });
 
   it('hides the search field when search is disabled', async () => {
-    await setup({ searchDisabled: true });
+    await setup({ disableSearch: true });
 
     expect(screen.queryByRole('textbox', { name: 'Search' })).not.toBeInTheDocument();
     expect(screen.getAllByRole('option')).toHaveLength(OPTIONS.length);
@@ -150,12 +149,6 @@ describe('SearchList', () => {
     await setup();
 
     expect(screen.getByRole('listbox', { name: 'Options' })).toBeInTheDocument();
-  });
-
-  it('names the options list with a custom list label', async () => {
-    await setup({ listLabel: 'Organ' });
-
-    expect(screen.getByRole('listbox', { name: 'Organ' })).toBeInTheDocument();
   });
 
   it('marks options from the selected input as selected', async () => {
@@ -207,5 +200,25 @@ describe('SearchList', () => {
     await user.click(screen.getByRole('option', { name: /^Beta/ }));
 
     expect(fixture.componentInstance.selected()).toEqual([OPTIONS[0], OPTIONS[1]]);
+  });
+
+  it('labels the search field and the option list', async () => {
+    await render('<ang-search-list searchLabel="Find tissue" aria-label="Tissues" [options]="options" />', {
+      imports: [SearchList],
+      componentProperties: { options: OPTIONS },
+    });
+
+    expect(screen.getByRole('textbox', { name: 'Find tissue' })).toBeInTheDocument();
+    expect(screen.getByRole('listbox', { name: 'Tissues' })).toBeInTheDocument();
+  });
+
+  it('labels the option list with aria-labelledby', async () => {
+    await render(
+      `<h2 id="heading">Organs</h2>
+      <ang-search-list aria-labelledby="heading" [options]="options" />`,
+      { imports: [SearchList], componentProperties: { options: OPTIONS } },
+    );
+
+    expect(screen.getByRole('listbox', { name: 'Organs' })).toBeInTheDocument();
   });
 });

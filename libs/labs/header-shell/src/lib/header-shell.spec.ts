@@ -16,40 +16,39 @@ describe('HeaderShell', () => {
   it('closes local navigation when the viewport enters the desktop breakpoint', async () => {
     const state$ = new BehaviorSubject<BreakpointState>({ matches: false, breakpoints: {} });
     await render(HeaderShell, {
-      inputs: { hasLocalNavigation: true, localNavigationExpanded: true },
+      inputs: { localNavigation: true, localNavigationExpanded: true },
       providers: [{ provide: BreakpointObserver, useValue: { observe: () => state$ } }],
     });
 
-    expect(screen.getByRole('button', { name: 'Collapse local navigation' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Local navigation', expanded: true })).toBeInTheDocument();
 
     state$.next({ matches: true, breakpoints: {} });
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Expand local navigation' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Local navigation', expanded: false })).toBeInTheDocument();
     });
   });
 
   it('keeps local navigation expanded below the desktop breakpoint', async () => {
     const state$ = new BehaviorSubject<BreakpointState>({ matches: false, breakpoints: {} });
     await render(HeaderShell, {
-      inputs: { hasLocalNavigation: true, localNavigationExpanded: true },
+      inputs: { localNavigation: true, localNavigationExpanded: true },
       providers: [{ provide: BreakpointObserver, useValue: { observe: () => state$ } }],
     });
 
     state$.next({ matches: false, breakpoints: {} });
 
-    expect(screen.getByRole('button', { name: 'Collapse local navigation' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Local navigation', expanded: true })).toBeInTheDocument();
   });
 
   it('does not render local navigation when disabled', async () => {
     await render(HeaderShell, {
       inputs: {
-        hasLocalNavigation: false,
+        localNavigation: false,
       },
     });
 
-    expect(screen.queryByRole('button', { name: 'Expand local navigation' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Collapse local navigation' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Local navigation' })).not.toBeInTheDocument();
   });
 
   it('renders app switcher button by default', async () => {
@@ -66,7 +65,7 @@ describe('HeaderShell', () => {
       },
     );
 
-    expect(screen.getByRole('button', { name: 'Open app switcher' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'App switcher' })).toBeInTheDocument();
   });
 
   it('hides help button when disabled', async () => {
@@ -110,9 +109,9 @@ describe('HeaderShell', () => {
     await render(
       `
         <ang-header-shell
-          [hasLocalNavigation]="true"
+          [localNavigation]="true"
           [localNavigationExpanded]="expanded"
-          (localNavigationToggle)="expanded = !expanded"
+          (localNavigationClick)="expanded = !expanded"
         />
       `,
       {
@@ -123,10 +122,10 @@ describe('HeaderShell', () => {
       },
     );
 
-    await user.click(screen.getByRole('button', { name: 'Expand local navigation' }));
+    await user.click(screen.getByRole('button', { name: 'Local navigation', expanded: false }));
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Collapse local navigation' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Local navigation', expanded: true })).toBeInTheDocument();
     });
   });
 
@@ -164,7 +163,7 @@ describe('HeaderShell', () => {
     );
 
     const action = screen.getByRole('button', { name: 'Change theme' });
-    const apps = screen.getByRole('button', { name: 'Open app switcher' });
+    const apps = screen.getByRole('button', { name: 'App switcher' });
 
     expect(action).toHaveClass('ang-header-shell--action');
     expect(action.compareDocumentPosition(apps) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -181,5 +180,40 @@ describe('HeaderShell', () => {
     );
 
     expect(screen.queryByRole('button', { name: 'Unmarked' })).not.toBeInTheDocument();
+  });
+
+  it('links the toggle buttons to the panels they control', async () => {
+    await render(HeaderShell, {
+      inputs: {
+        localNavigation: true,
+        localNavigationControls: 'local-menu',
+        appsMenuExpanded: true,
+        appsMenuControls: 'apps-menu',
+      },
+    });
+
+    expect(screen.getByRole('button', { name: 'Local navigation', expanded: false })).toHaveAttribute(
+      'aria-controls',
+      'local-menu',
+    );
+    expect(screen.getByRole('button', { name: 'App switcher', expanded: true })).toHaveAttribute(
+      'aria-controls',
+      'apps-menu',
+    );
+  });
+
+  it('uses custom labels', async () => {
+    await render(HeaderShell, {
+      inputs: {
+        localNavigation: true,
+        localNavigationLabel: 'Filters',
+        appsMenuLabel: 'Apps',
+        navigationLabel: 'Main',
+      },
+    });
+
+    expect(screen.getByRole('button', { name: 'Filters' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Apps' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { hidden: true })).toHaveAttribute('aria-label', 'Main');
   });
 });

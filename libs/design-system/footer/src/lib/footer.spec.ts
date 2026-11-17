@@ -12,43 +12,38 @@ const SOCIALS = ['linkedin', 'youtube', 'instagram'];
   imports: [Footer],
   template: `
     <ang-footer
-      [logoImage]="logoImage"
+      [logoSrc]="logoSrc"
       [socials]="socials"
       [organization]="organization"
-      [organizationLink]="organizationLink"
-      (openPrivacyPolicy)="openPrivacyPolicy()"
-      (openPrivacyPreferences)="openPrivacyPreferences()"
+      [logoLink]="logoLink"
+      (privacyPolicyClick)="privacyPolicyClick()"
+      (privacyPreferencesClick)="privacyPreferencesClick()"
     />
   `,
 })
 class FooterHost {
-  readonly logoImage = '/assets/wpp.svg';
+  readonly logoSrc = '/assets/wpp.svg';
   readonly socials = SOCIALS;
   readonly organization = 'Whole Person Physiome';
-  readonly organizationLink = 'https://www.cns.edu';
-  readonly openPrivacyPolicy = vi.fn();
-  readonly openPrivacyPreferences = vi.fn();
+  readonly logoLink = 'https://www.cns.edu';
+  readonly privacyPolicyClick = vi.fn();
+  readonly privacyPreferencesClick = vi.fn();
 }
 
 @Component({
   imports: [AnyLink, Footer, FooterAction, FooterLogo],
   template: `
-    <ang-footer
-      [logoImage]="logoImage"
-      [socials]="socials"
-      [organization]="organization"
-      [organizationLink]="organizationLink"
-    >
-      <a angFooterLogo target="_blank" [angAnyLink]="organizationLink">Projected logo</a>
+    <ang-footer [logoSrc]="logoSrc" [socials]="socials" [organization]="organization" [logoLink]="logoLink">
+      <a angFooterLogo target="_blank" [angAnyLink]="logoLink">Projected logo</a>
       <a angFooterAction target="_blank" href="https://example.com/privacy">Projected privacy policy</a>
     </ang-footer>
   `,
 })
 class FooterProjectionHost {
-  readonly logoImage = '/assets/wpp.svg';
+  readonly logoSrc = '/assets/wpp.svg';
   readonly socials = SOCIALS;
   readonly organization = 'Whole Person Physiome';
-  readonly organizationLink = 'https://www.cns.edu';
+  readonly logoLink = 'https://www.cns.edu';
 }
 
 describe('Footer', () => {
@@ -83,7 +78,7 @@ describe('Footer', () => {
 
   it('links the logo to the homepage when no organization link is set', async () => {
     await render(Footer, {
-      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome' },
+      inputs: { logoSrc: '/assets/wpp.svg', organization: 'Whole Person Physiome' },
       providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
     });
 
@@ -98,7 +93,7 @@ describe('Footer', () => {
 
   it('describes the logo link with a custom tooltip', async () => {
     await render(Footer, {
-      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome', logoTooltip: 'CNS website' },
+      inputs: { logoSrc: '/assets/wpp.svg', organization: 'Whole Person Physiome', logoTooltip: 'CNS website' },
       providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
     });
 
@@ -123,7 +118,7 @@ describe('Footer', () => {
 
   it.each([undefined, []])('omits the social media group when socials is %j', async (socials) => {
     await render(Footer, {
-      inputs: { logoImage: '/assets/wpp.svg', organization: 'Whole Person Physiome', socials },
+      inputs: { logoSrc: '/assets/wpp.svg', organization: 'Whole Person Physiome', socials },
       providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
     });
 
@@ -153,8 +148,8 @@ describe('Footer', () => {
     await user.click(screen.getByRole('button', { name: 'Privacy Policy' }));
     await user.click(screen.getByRole('button', { name: 'Privacy Preferences' }));
 
-    expect(fixture.componentInstance.openPrivacyPolicy).toHaveBeenCalledOnce();
-    expect(fixture.componentInstance.openPrivacyPreferences).toHaveBeenCalledOnce();
+    expect(fixture.componentInstance.privacyPolicyClick).toHaveBeenCalledOnce();
+    expect(fixture.componentInstance.privacyPreferencesClick).toHaveBeenCalledOnce();
   });
 
   it('renders copyright text with the current year and organization', async () => {
@@ -171,5 +166,21 @@ describe('Footer', () => {
 
     expect(screen.getByRole('link', { name: 'Projected logo' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Projected privacy policy' })).toBeInTheDocument();
+  });
+
+  it('uses custom logo and social media labels', async () => {
+    await render(Footer, {
+      inputs: {
+        logoSrc: '/assets/wpp.svg',
+        organization: 'Whole Person Physiome',
+        socials: SOCIALS,
+        logoLabel: 'WPP home',
+        socialsLabel: 'Follow us',
+      },
+      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    });
+
+    expect(screen.getByRole('link', { name: 'WPP home' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Follow us' })).toBeInTheDocument();
   });
 });

@@ -3,23 +3,25 @@
     class="ang-rich-tooltip"
     role="dialog"
     [id]="id"
-    [attr.aria-labelledby]="customTagline() || tagline() ? taglineId : null"
+    [attr.aria-label]="ariaLabel()"
+    [attr.aria-labelledby]="labelledby()"
+    [attr.aria-describedby]="describedby()"
   >
-    @if (customTagline() || tagline()) {
+    @if (hasTagline()) {
       <div class="ang-rich-tooltip--tagline-container" [id]="taglineId">
         <ng-content select="ang-rich-tooltip-tagline, [angRichTooltipTagline]">{{ tagline() }}</ng-content>
       </div>
     }
-    @if (customContent() || description()) {
-      <div class="ang-rich-tooltip--content-container">
+    @if (hasContent()) {
+      <div class="ang-rich-tooltip--content-container" [id]="contentId">
         <ng-content select="ang-rich-tooltip-content, [angRichTooltipContent]">{{ description() }}</ng-content>
       </div>
     }
-    @if (customActions().length || actionText()) {
+    @if (customActions().length || actionLabel()) {
       <div class="ang-rich-tooltip--actions">
         <ng-content select="ang-rich-tooltip-action, [angRichTooltipAction]">
           <button matButton type="button" class="ang-rich-tooltip--action" (click)="actionClick.emit()">
-            {{ actionText() }}
+            {{ actionLabel() }}
           </button>
         </ng-content>
       </div>

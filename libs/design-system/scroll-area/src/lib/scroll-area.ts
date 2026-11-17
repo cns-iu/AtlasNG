@@ -1,5 +1,6 @@
 import {
   afterNextRender,
+  afterRenderEffect,
   booleanAttribute,
   Component,
   DestroyRef,
@@ -31,6 +32,9 @@ export type { ScrollbarOrientation, ScrollbarPosition, ScrollbarVisibility };
  * or end), a fade in the container color covers that edge. The fade is removed once the
  * content is scrolled all the way to the edge. Horizontal fades follow the text direction,
  * so in right-to-left layouts the start fade sits on the right.
+ *
+ * Set `aria-label` or `aria-labelledby` to make the viewport a named, keyboard-focusable
+ * `region`, so keyboard users can scroll content that has no focusable elements.
  */
 @Component({
   selector: 'ang-scroll-area',
@@ -44,6 +48,8 @@ export type { ScrollbarOrientation, ScrollbarPosition, ScrollbarVisibility };
     '[class.ang-scroll-area--fade-bottom]': '!disableFade() && canScrollDown()',
     '[class.ang-scroll-area--fade-start]': '!disableFade() && canScrollStart()',
     '[class.ang-scroll-area--fade-end]': '!disableFade() && canScrollEnd()',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
   },
 })
 export class ScrollArea {
@@ -62,6 +68,12 @@ export class ScrollArea {
   /** Distance in pixels from an edge within which the content counts as scrolled to that edge. */
   readonly fadeEdgeThreshold = input(1);
 
+  /** Accessible name of the viewport. Makes the viewport a focusable region. */
+  readonly ariaLabel = input<string | null>(null, { alias: 'aria-label' });
+
+  /** Space-separated ids of elements labelling the viewport. Makes the viewport a focusable region. */
+  readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
+
   /** Whether the content is scrolled down from the top. */
   protected readonly canScrollUp = signal(false);
 
@@ -77,10 +89,34 @@ export class ScrollArea {
   /** The ngx-scrollbar instance that owns the scrolling viewport. */
   private readonly scrollbar = viewChild.required(NgScrollbar);
 
-  /** Sets up the scroll listener that keeps the edge fades in sync with the scroll position. */
+  /**
+   * Sets up the scroll listener that keeps the edge fades in sync with the scroll position,
+   * and applies the region semantics to the viewport when it is labelled.
+   */
   constructor() {
     const renderer = inject(Renderer2);
     const destroyRef = inject(DestroyRef);
+
+    afterRenderEffect({
+      write: () => {
+        const viewport = this.scrollbar().adapter.viewportElement;
+        const label = this.ariaLabel();
+        const labelledby = this.ariaLabelledby();
+        const attributes = {
+          role: label || labelledby ? 'region' : null,
+          tabindex: label || labelledby ? '0' : null,
+          'aria-label': label,
+          'aria-labelledby': labelledby,
+        };
+        for (const [name, value] of Object.entries(attributes)) {
+          if (value) {
+            renderer.setAttribute(viewport, name, value);
+          } else {
+            renderer.removeAttribute(viewport, name);
+          }
+        }
+      },
+    });
 
     afterNextRender(() => {
       const viewport = this.scrollbar().adapter.viewportElement;
