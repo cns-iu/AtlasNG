@@ -1,2 +1,10 @@
-<ang-nx-welcome />
-<router-outlet />
+<nav class="ang-app--nav" aria-label="Showcase pages">
+  <a routerLink="/" routerLinkActive="ang-app--active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+  @for (page of pages; track page.path) {
+    <a routerLinkActive="ang-app--active" [routerLink]="['/', page.path]">{{ page.title }}</a>
+  }
+</nav>
+
+<main id="main-content" class="ang-app--main" tabindex="-1">
+  <router-outlet />
+</main>

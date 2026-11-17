@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.ang-app--nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.ang-app--active {
+  font-weight: bold;
+}
+
+.ang-app--main {
+  display: block;
+  padding: 1rem;
+}
