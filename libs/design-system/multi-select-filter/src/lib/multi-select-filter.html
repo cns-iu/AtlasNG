@@ -45,9 +45,12 @@
 
 <ng-template
   cdkConnectedOverlay
+  cdkConnectedOverlayPanelClass="ang-multi-select-filter--panel-pane"
   [cdkConnectedOverlayOrigin]="panelOrigin"
   [cdkConnectedOverlayOpen]="expanded() && wide()"
   [cdkConnectedOverlayPositions]="panelPositions()"
+  [cdkConnectedOverlayFlexibleDimensions]="true"
+  [cdkConnectedOverlayViewportMargin]="16"
   (overlayOutsideClick)="close()"
   (overlayKeydown)="handlePanelKeydown($event)"
   (detach)="close()"

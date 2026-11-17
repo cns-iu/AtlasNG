@@ -36,7 +36,9 @@ const SEARCH_FIELD_INSET = 16;
  * Multi-select filter: a label button that opens a {@link SearchList} flyout, a unique item
  * counter, a removable chip for every selected option, and an optional info button.
  *
- * From the `medium` breakpoint (960px), the search list opens in a panel beside the filter.
+ * From the `medium` breakpoint (960px), the search list opens in a panel beside the filter. The
+ * panel is as tall as its options and only scrolls when they don't fit in the viewport. In short
+ * viewports, it stops shrinking at 15rem.
  * On smaller screens, it opens in a full-screen dialog with a title, such as `Organ filters`, the
  * search field, the options, a tray with the selected options as a single row of removable chips
  * that scrolls sideways, and a Done button. Chips and the tray animate in and out unless the user

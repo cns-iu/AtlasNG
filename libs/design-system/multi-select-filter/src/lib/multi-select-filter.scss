@@ -55,7 +55,12 @@
   display: flex;
   width: 22.5rem;
   max-width: 100vw;
-  max-height: 24rem;
+}
+
+// The overlay limits the panel to the space left in the viewport. Stops it from shrinking past
+// 15rem in short viewports, where it runs past the bottom instead.
+.cdk-overlay-pane.ang-multi-select-filter--panel-pane {
+  max-height: max(100%, 15rem);
 }
 
 .ang-multi-select-filter--dialog {
