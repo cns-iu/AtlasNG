@@ -1,28 +1,33 @@
 import { Component, computed, effect, inject, Injector, input, model, output, untracked } from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import { watchBreakpoint } from '@atlasng/cdk';
-import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
-import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
-import { KgExplorerTablePanel } from '../table-panel/table-panel';
 import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
 import { pickDefined } from '../utils/pick-defined';
-import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
-
-/** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
-const NO_SELECTION: SearchListOption[] = [];
-
-/** A filter with its options resolved. */
-type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: SearchListOption[] };
+import type {
+  KgExplorerDownloadRequest,
+  KgExplorerFilter,
+  KgExplorerFilterSelections,
+  KgExplorerResolvedFilter,
+  KgExplorerViewSettingValues,
+} from '../models';
+import { KgExplorerTablePanel } from '../table-panel/table-panel';
+import { KgExplorerFilterDrawer } from '../filter-drawer/filter-drawer';
+import { KG_EXPLORER_TABLE_VIEW_CONFIG, KgExplorerTableViewConfig } from './config';
 
 /**
- * White-label knowledge graph explorer in table view with a filter menu, a
+ * White-label knowledge graph explorer in table view with a filter drawer, a
  * searchable and sortable results table, and per-row downloads.
  *
- * The filter menu shows a multi-select filter for each of {@link filters}.
+ * The filter drawer shows the optional breadcrumbs, heading, and description of
+ * {@link config}, an optional "Customize view" section built from the config's
+ * `viewOptions` and `viewSettings`, and a multi-select filter for each of
+ * {@link filters}. View customizations are only reported through
+ * {@link view}, {@link viewSettingValues}, and {@link resetView}; the consumer
+ * applies them.
  * Filters with a `field` or `matches` narrow the rows after they are searched,
  * without rebuilding the search index; for other filters, read
  * {@link filterSelections} and pass the matching {@link items}. The menu is
@@ -37,7 +42,7 @@ type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: Sear
  */
 @Component({
   selector: 'ang-kg-explorer-table-view',
-  imports: [KgExplorerTablePanel, MatSidenav, MatSidenavContainer, MatSidenavContent, MultiSelectFilter],
+  imports: [KgExplorerFilterDrawer, KgExplorerTablePanel, MatSidenav, MatSidenavContainer, MatSidenavContent],
   templateUrl: './table-view.html',
   styleUrl: './table-view.scss',
   host: {
@@ -75,6 +80,12 @@ export class KgExplorerTableView<
    */
   readonly filtersOpen = model(false);
 
+  /** Value of the picked view option. */
+  readonly view = model<string>();
+
+  /** Picked value of each view setting, keyed by setting id. */
+  readonly viewSettingValues = model<KgExplorerViewSettingValues>({});
+
   /**
    * Search, download, and visibility options. Omitted options use the values
    * provided with `provideKgExplorerTableView` and then the built-in defaults.
@@ -83,6 +94,9 @@ export class KgExplorerTableView<
 
   /** Emits when a user picks a download format for a row. */
   readonly download = output<KgExplorerDownloadRequest<TRow, TFormat>>();
+
+  /** Emits when a user resets the view customizations from the filter drawer. */
+  readonly resetView = output<void>();
 
   /** Defaults provided with `provideKgExplorerTableView`, with the built-in defaults applied. */
   private readonly defaults = KG_EXPLORER_TABLE_VIEW_CONFIG.inject() as KgExplorerTableViewConfig<TRow, TFormat>;
@@ -94,7 +108,7 @@ export class KgExplorerTableView<
   }));
 
   /** Filters with the options of their search lists, derived from the items where a filter has none. */
-  protected readonly resolvedFilters = computed((): ResolvedFilter<TRow>[] => {
+  protected readonly resolvedFilters = computed((): KgExplorerResolvedFilter<TRow>[] => {
     const items = this.items();
     return this.filters().map((filter) => ({
       ...filter,
@@ -106,7 +120,7 @@ export class KgExplorerTableView<
    * Selected options of each filter, with selections replaced by the listed option of the same label so that
    * selections created elsewhere, or before the options were derived again, stay checked in the list.
    */
-  private readonly resolvedSelections = computed(() => {
+  protected readonly resolvedSelections = computed((): KgExplorerFilterSelections => {
     const selections = this.filterSelections();
     const resolved: Record<string, SearchListOption[]> = {};
     for (const { id, options } of this.resolvedFilters()) {
@@ -180,16 +194,6 @@ export class KgExplorerTableView<
     const downloadColumn = this.downloadColumn();
     return downloadColumn ? [downloadColumn, ...this.columns()] : this.columns();
   });
-
-  /**
-   * Looks up the selected options of a filter.
-   *
-   * @param filter Filter to look up.
-   * @returns The selected options, or an empty selection when the filter has none.
-   */
-  protected selectionFor(filter: KgExplorerFilter<TRow>): SearchListOption[] {
-    return this.resolvedSelections()[filter.id] ?? NO_SELECTION;
-  }
 
   /**
    * Updates the selected options of a filter.

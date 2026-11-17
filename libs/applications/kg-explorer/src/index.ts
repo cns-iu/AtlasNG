@@ -20,6 +20,9 @@ export type {
   KgExplorerFilter,
   KgExplorerFilterField,
   KgExplorerFilterSelections,
+  KgExplorerViewOption,
+  KgExplorerViewSetting,
+  KgExplorerViewSettingValues,
 } from './lib/models';
 export {
   KG_EXPLORER_TABLE_VIEW_CONFIG,

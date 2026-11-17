@@ -261,6 +261,60 @@ export const ExtraLargeFilterBreakpoint: Story = {
   },
 };
 
+export const FullFilterDrawer: Story = {
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=4935-3392',
+    },
+  },
+  args: {
+    filtersOpen: true,
+    config: {
+      downloadFormats: sampleFormatsFor,
+      breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Page', command: '/page' }, { name: 'App' }],
+      filtersHeading: 'Product Label',
+      filtersDescription: 'Supporting text here, if needed, but make it short and straightforward',
+      viewOptions: [
+        { value: 'table', label: 'Table' },
+        { value: 'cards', label: 'Cards' },
+        { value: 'graph', label: 'Graph' },
+      ],
+      viewSettings: [
+        {
+          id: 'view',
+          label: 'View as',
+          options: [
+            { value: 'table', label: 'Table' },
+            { value: 'cards', label: 'Cards' },
+          ],
+        },
+        {
+          id: 'sort',
+          label: 'Sort by',
+          options: [
+            { value: 'title', label: 'Title' },
+            { value: 'lastModified', label: 'Last modified' },
+          ],
+        },
+        {
+          id: 'group',
+          label: 'Group by',
+          options: [
+            { value: 'type', label: 'Type' },
+            { value: 'organ', label: 'Organ' },
+          ],
+        },
+      ],
+    },
+    view: 'table',
+    viewSettingValues: { view: 'table' },
+  },
+  argTypes: {
+    resetView: { action: 'resetView' },
+  },
+};
+
 export const NoResults: Story = {
   args: {
     search: 'no matching digital object',

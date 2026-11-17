@@ -184,9 +184,41 @@ describe('KgExplorerTableView', () => {
       filterSelections: { type: [dataset] },
     });
 
+    const [, noResultsClear] = await screen.findAllByRole('button', { name: 'Clear filters' });
+    await user.click(noResultsClear);
+
+    expect(fixture.componentInstance.filterSelections()).toEqual({});
+  });
+
+  it('resets the filter selections from the filter drawer', async () => {
+    const dataset = { label: ITEMS[0].type };
+    const { user, fixture } = await setup({ filterSelections: { type: [dataset] } });
+
     await user.click(await screen.findByRole('button', { name: 'Clear filters' }));
 
     expect(fixture.componentInstance.filterSelections()).toEqual({});
+  });
+
+  it('shows the drawer content of the config and forwards the view customizations', async () => {
+    const resetView = vi.fn();
+    const { user, fixture } = await setup({
+      config: {
+        filtersHeading: 'Explorer',
+        viewOptions: [
+          { value: 'table', label: 'Table' },
+          { value: 'grid', label: 'Grid' },
+        ],
+      },
+      view: 'table',
+    });
+    fixture.componentInstance.resetView.subscribe(resetView);
+
+    expect(await screen.findByRole('heading', { name: 'Explorer' })).toBeInTheDocument();
+    await user.click(screen.getByRole('radio', { name: 'Grid' }));
+    expect(fixture.componentInstance.view()).toBe('grid');
+
+    await user.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(resetView).toHaveBeenCalled();
   });
 
   it('shows only the rows that match the filter selections', async () => {

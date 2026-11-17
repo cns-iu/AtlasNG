@@ -1,0 +1,85 @@
+@let labels = config();
+
+@if (breadcrumbs().length > 0) {
+  <ang-breadcrumbs class="ang-kg-explorer-filter-drawer--breadcrumbs" [items]="breadcrumbs()" />
+}
+
+@if (heading() || description()) {
+  <div class="ang-kg-explorer-filter-drawer--intro">
+    @if (heading(); as text) {
+      <h2 class="ang-kg-explorer-filter-drawer--heading">{{ text }}</h2>
+    }
+    @if (description(); as text) {
+      <p class="ang-kg-explorer-filter-drawer--description">{{ text }}</p>
+    }
+  </div>
+}
+
+<div class="ang-kg-explorer-filter-drawer--sections">
+  @if (hasCustomizations()) {
+    <section class="ang-kg-explorer-filter-drawer--section">
+      <div class="ang-kg-explorer-filter-drawer--section-header">
+        <h3 class="ang-kg-explorer-filter-drawer--section-title">
+          {{ labels.customizeViewLabel ?? 'Customize view' }}
+        </h3>
+        <button type="button" class="ang-kg-explorer-filter-drawer--action" matButton (click)="resetClick.emit()">
+          {{ labels.resetViewLabel ?? 'Reset' }}
+        </button>
+      </div>
+
+      <div class="ang-kg-explorer-filter-drawer--view-options">
+        @if (viewOptions().length > 0) {
+          <mat-button-toggle-group
+            class="ang-kg-explorer-filter-drawer--view-toggle"
+            [attr.aria-label]="labels.viewOptionsLabel ?? 'View'"
+            [value]="view()"
+            (valueChange)="view.set($event)"
+          >
+            @for (option of viewOptions(); track option.value) {
+              <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+        }
+
+        @for (setting of viewSettings(); track setting.id) {
+          <mat-form-field class="ang-kg-explorer-filter-drawer--view-setting" subscriptSizing="dynamic">
+            <mat-icon matIconPrefix fontIcon="search" />
+            <mat-label>{{ setting.label }}</mat-label>
+            <mat-select [value]="viewSettingValues()[setting.id]" (valueChange)="setViewSetting(setting, $event)">
+              @for (option of setting.options; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+      </div>
+    </section>
+  }
+
+  @if (filters().length > 0) {
+    <section class="ang-kg-explorer-filter-drawer--section">
+      <div class="ang-kg-explorer-filter-drawer--section-header">
+        <h3 class="ang-kg-explorer-filter-drawer--section-title">{{ labels.filtersLabel ?? 'Filters' }}</h3>
+        @if (hasSelection()) {
+          <button type="button" class="ang-kg-explorer-filter-drawer--action" matButton (click)="clearClick.emit()">
+            {{ labels.clearFiltersLabel ?? 'Clear filters' }}
+          </button>
+        }
+      </div>
+
+      <div class="ang-kg-explorer-filter-drawer--filters">
+        @for (filter of filters(); track filter.id) {
+          <ang-multi-select-filter
+            class="ang-kg-explorer-filter-drawer--filter"
+            [label]="filter.label"
+            [options]="filter.options"
+            [count]="filter.count"
+            [disableSearch]="filter.disableSearch ?? false"
+            [selected]="selectionFor(filter)"
+            (selectedChange)="selectionChange.emit({ filter, selected: $event })"
+          />
+        }
+      </div>
+    </section>
+  }
+</div>

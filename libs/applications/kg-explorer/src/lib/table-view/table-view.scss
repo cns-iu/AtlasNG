@@ -26,13 +26,6 @@
     background-color: token-utils.sys-slot(surface-container-low);
   }
 
-  .ang-kg-explorer-table-view--filters {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.5rem 1.25rem;
-  }
-
   .ang-kg-explorer-table-view--content {
     min-width: 0;
     overflow: hidden;
