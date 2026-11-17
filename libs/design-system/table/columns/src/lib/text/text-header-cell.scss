@@ -9,6 +9,17 @@
   width: 100%;
   height: 100%;
   min-height: 44px;
+  padding: 0 16px;
+
+  // Trailing sort arrows sit in the end padding.
+  .datatable-header-cell.sortable &:not(.ang-table--text-header-align-end) {
+    padding-right: 0;
+  }
+
+  // The header carries the cell's padding so its ripple fills the cell.
+  .ang-table .datatable-header .datatable-header-cell:has(> .datatable-header-cell-template-wrap > &) {
+    padding: 0;
+  }
 
   &.ang-table--text-header-align-start {
     justify-content: flex-start;
@@ -21,8 +32,8 @@
   &.ang-table--text-header-align-end {
     justify-content: flex-end;
 
-    .datatable-header-cell:not(.sortable):has(&) {
-      padding-right: 24px;
+    .ang-table--sort-indicator {
+      order: -1;
     }
   }
 }

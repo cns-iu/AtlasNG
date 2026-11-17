@@ -1,0 +1,20 @@
+@use 'internal/token-utils';
+@use 'tokens/last-modified' as *;
+
+:host {
+  display: block;
+  color: token-utils.slot(color, $config);
+  font-family: token-utils.sys-slot(body-medium-font);
+  font-size: token-utils.sys-slot(body-medium-size);
+  font-weight: 600;
+  line-height: token-utils.sys-slot(body-medium-line-height);
+  letter-spacing: token-utils.sys-slot(body-medium-tracking);
+
+  .ang-last-modified--text {
+    margin: 0;
+  }
+}
+
+:host([hidden]) {
+  display: none;
+}
