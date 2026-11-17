@@ -100,6 +100,8 @@ export const appConfig: ApplicationConfig = {
 
 The font set alias `ang-icons` is always registered. `spriteUrl` and `literals` register SVG icons in the `ang` namespace (change it with `namespace`). `literals` accepts icon names (`{ heart: angIconHeart }`) or the `@atlasng/icons/literals` module namespace; export names are converted to icon names with `toAngIconName`.
 
+With server-side rendering, the server requests `spriteUrl` too. Angular resolves a relative URL against the request URL, so the sprite must be reachable from the server at that address; otherwise pass an absolute URL. `literals` need no request.
+
 ## Sass API
 
 Load the Sass API with `@use '@atlasng/design-system' as ds;`.

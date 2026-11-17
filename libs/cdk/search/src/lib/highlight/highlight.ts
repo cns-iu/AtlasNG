@@ -1,4 +1,5 @@
-import { Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { Directive, effect, ElementRef, inject, input, PLATFORM_ID, Renderer2 } from '@angular/core';
 import { mergeRanges } from '../text/ranges';
 import { SearchRange } from '../engine/types';
 
@@ -44,6 +45,9 @@ export function highlightSegments(text: string, ranges: readonly SearchRange[] =
  *
  * The content is built from text nodes, so the text is never parsed as HTML.
  *
+ * During server-side rendering, a host with template content keeps it, and the browser replaces it after
+ * hydration. Replacing it on the server would remove nodes that hydration expects.
+ *
  * @example
  * <span [angSearchHighlight]="match.value" [angSearchHighlightRanges]="match.ranges"></span>
  */
@@ -66,7 +70,17 @@ export class SearchHighlight {
 
   /** Rebuilds the host content when the text or ranges change. */
   constructor() {
-    effect(() => this.#render(highlightSegments(this.text(), this.ranges())));
+    const isServer = isPlatformServer(inject(PLATFORM_ID));
+    /** Whether to leave the host content alone, decided on the first run once the template content exists. */
+    let keepContent: boolean | undefined;
+
+    effect(() => {
+      const segments = highlightSegments(this.text(), this.ranges());
+      keepContent ??= isServer && this.#host.hasChildNodes();
+      if (!keepContent) {
+        this.#render(segments);
+      }
+    });
   }
 
   /**
