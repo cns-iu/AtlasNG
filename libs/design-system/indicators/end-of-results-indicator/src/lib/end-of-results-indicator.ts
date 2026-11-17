@@ -14,8 +14,8 @@ import { MatDividerModule } from '@angular/material/divider';
   host: { class: 'ang-end-of-results-indicator' },
 })
 export class EndOfResultsIndicator {
-  /** Label text placed before the results count */
-  readonly label = input('Results:');
+  /** Text placed before the results count */
+  readonly prefix = input('Results:');
 
   /** Description placed after the results count in its own text box */
   readonly description = input('End of results');

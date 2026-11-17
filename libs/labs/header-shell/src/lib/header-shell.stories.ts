@@ -21,7 +21,7 @@ const APP_MENU_ITEMS: HeaderShellNavigationItem[] = [
 const SOCIAL_MEDIA_IDS = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram', 'facebook', 'x'];
 
 interface WithMenuItems {
-  navRight?: HeaderShellNavigationItem[];
+  rightNavigationItems?: HeaderShellNavigationItem[];
   email?: string;
 }
 
@@ -46,24 +46,27 @@ function renderHeaderShell(actions = ''): Meta<HeaderShell & WithMenuItems>['ren
       ...args,
       leftMenuOpen: false,
       rightMenuOpen: false,
-      socialMediaIds: SOCIAL_MEDIA_IDS,
+      socials: SOCIAL_MEDIA_IDS,
       email: 'example@gmail.com',
     },
     template: `
       <ang-header-shell
-        ${argsToTemplate(args, { exclude: ['navRight'] })}
+        ${argsToTemplate(args, { exclude: ['rightNavigationItems'] })}
         [localNavigationExpanded]="navigation.leftMenuOpen()"
-        (localNavigationToggle)="navigation.localNavigationToggle()"
-        (appsMenuToggle)="navigation.appsMenuToggle()"
+        [localNavigationControls]="navigation.leftMenuId"
+        [appsMenuExpanded]="navigation.rightMenuOpen()"
+        [appsMenuControls]="navigation.rightMenuId"
+        (localNavigationClick)="navigation.toggleLocalNavigation()"
+        (appsMenuClick)="navigation.toggleAppsMenu()"
       >
         ${actions}
       </ang-header-shell>
 
       <ang-navigation-container
-        [navigationItems]="navigationItems"
-        [navRight]="navRight"
+        [leftNavigationItems]="navigationItems"
+        [rightNavigationItems]="rightNavigationItems"
         [email]="email"
-        [socialMediaIds]="socialMediaIds"
+        [socials]="socials"
         #navigation
       >
         <div class="content">
@@ -92,11 +95,11 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
   ],
   args: {
     logoLink: '/',
-    logoUrl: 'assets/placeholder.png',
-    hasLocalNavigation: true,
+    logoSrc: 'assets/placeholder.png',
+    localNavigation: true,
     localNavigationIcon: 'menu',
     navigationItems: NAVIGATION_ITEMS,
-    navRight: APP_MENU_ITEMS,
+    rightNavigationItems: APP_MENU_ITEMS,
   },
   render: renderHeaderShell(),
 };

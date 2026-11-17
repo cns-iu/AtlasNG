@@ -47,4 +47,10 @@ describe('Breadcrumbs', () => {
     expect(screen.getByRole('link', { name: 'Products' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByText('Current Page')).not.toHaveAttribute('aria-current');
   });
+
+  it('labels the navigation landmark with a custom aria-label', async () => {
+    await setup({ inputs: { items: [{ name: 'Home' }], 'aria-label': 'Brotkrumen' } as ComponentInput<Breadcrumbs> });
+
+    expect(screen.getByRole('navigation', { name: 'Brotkrumen' })).toBeInTheDocument();
+  });
 });

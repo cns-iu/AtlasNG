@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { EventScope } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
@@ -47,5 +47,17 @@ export class ProviderList {
   /**
    * Generates unique IDs for list item accessibility attributes.
    */
-  protected readonly idGenerator = inject(IdGenerator);
+  readonly #idGenerator = inject(IdGenerator);
+
+  /**
+   * Providers paired with the ids of their label and link text. The link is labelled by both,
+   * so its accessible name names the provider.
+   */
+  protected readonly items = computed(() =>
+    this.providers().map((provider) => ({
+      provider,
+      labelId: this.#idGenerator.getId('ang-provider-list--label'),
+      linkTextId: this.#idGenerator.getId('ang-provider-list--link-text'),
+    })),
+  );
 }

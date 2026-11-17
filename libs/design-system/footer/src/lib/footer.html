@@ -4,10 +4,10 @@
       <a
         class="ang-footer--logo"
         [matTooltip]="logoTooltip()"
-        [angAnyLink]="organizationLink()"
-        [attr.aria-label]="`Visit ${organization()}`"
+        [angAnyLink]="logoLink()"
+        [attr.aria-label]="resolvedLogoLabel()"
       >
-        <img class="ang-footer--logo-image" fill alt="Logo" [ngSrc]="logoImage()" />
+        <img class="ang-footer--logo-image" fill alt="Logo" [ngSrc]="logoSrc()" />
       </a>
     </ng-content>
   </div>
@@ -17,25 +17,21 @@
     <div
       class="ang-footer--social-icons"
       role="group"
-      aria-label="Social media"
+      [attr.aria-label]="socialsLabel()"
       [style.--ang-footer--social-icon-count]="socials.length"
     >
       @for (social of socials; track $index) {
-        @if (typeof social === 'string') {
-          <ang-social-media-button class="ang-footer--social-icon" [id]="social" />
-        } @else {
-          <ang-social-media-button class="ang-footer--social-icon" [definition]="social" />
-        }
+        <ang-social-media-button class="ang-footer--social-icon" [social]="social" />
       }
     </div>
   }
 
   <div class="ang-footer--actions">
     <ng-content select="ang-footer-action, [angFooterAction]">
-      <button type="button" matButton class="ang-footer--action" (click)="openPrivacyPreferences.emit()">
+      <button type="button" matButton class="ang-footer--action" (click)="privacyPreferencesClick.emit()">
         Privacy Preferences
       </button>
-      <button type="button" matButton class="ang-footer--action" (click)="openPrivacyPolicy.emit()">
+      <button type="button" matButton class="ang-footer--action" (click)="privacyPolicyClick.emit()">
         Privacy Policy
       </button>
     </ng-content>
