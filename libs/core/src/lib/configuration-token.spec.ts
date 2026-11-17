@@ -1,4 +1,4 @@
-import { Injector } from '@angular/core';
+import { inject, InjectionToken, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { createConfigurationToken, type } from './configuration-token';
 
@@ -87,6 +87,13 @@ describe('createConfigurationToken', () => {
     expect(TestBed.inject(TEST_CONFIG.token)).toBe(config);
   });
 
+  it('provides the config from a factory run in an injection context', () => {
+    const FOO = new InjectionToken<string>('FOO', { factory: () => 'injected' });
+    TestBed.configureTestingModule({ providers: [TEST_CONFIG.provide(() => ({ foo: inject(FOO) }))] });
+
+    expect(TestBed.runInInjectionContext(() => TEST_CONFIG.inject())).toEqual({ foo: 'injected', bar: 42 });
+  });
+
   it('injects from a given injector outside an injection context', () => {
     setup({ foo: 'custom-foo' });
 
@@ -113,6 +120,16 @@ describe('createConfigurationToken', () => {
 
       expect(child.get(INHERITED_CONFIG.token)).toEqual({ foo: 'root', bar: 2, baz: true });
       expect(grandchild.get(INHERITED_CONFIG.token)).toEqual({ foo: 'grandchild', bar: 2, baz: true });
+    });
+
+    it('merges a factory config over the parent config', () => {
+      TestBed.configureTestingModule({ providers: [INHERITED_CONFIG.provide({ foo: 'root', bar: 1 })] });
+      const child = Injector.create({
+        providers: [INHERITED_CONFIG.provide(() => ({ bar: 2 }))],
+        parent: TestBed.inject(Injector),
+      });
+
+      expect(child.get(INHERITED_CONFIG.token)).toEqual({ foo: 'root', bar: 2 });
     });
 
     it('keeps parent values for undefined properties', () => {
