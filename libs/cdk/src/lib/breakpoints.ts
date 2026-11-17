@@ -1,3 +1,4 @@
+import { coerceArray } from '@angular/cdk/coercion';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import {
   assertInInjectionContext,
@@ -13,7 +14,7 @@ import {
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { CdkErrorCode } from '@atlasng/cdk/errors';
 import { AngError } from '@atlasng/core';
-import { distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
+import { distinctUntilChanged, map, Observable, of, startWith, switchMap } from 'rxjs';
 
 /** Direction modifiers supported in a breakpoint expression. */
 export type BreakpointDirection = 'up' | 'down' | 'only';
@@ -180,9 +181,11 @@ export function breakpointQuery(
  *
  * @param expressions A breakpoint expression or a list of expressions, or a signal or function returning them.
  * @param options Watcher options.
- * @returns A signal that is true while any of the expressions match the viewport.
- * @throws AngError if no expressions are given or an expression is invalid. When the expressions are given
- * by a function, the error is thrown when the returned signal is read instead.
+ * @returns A signal that is true while any of the expressions match the viewport, or false while there
+ * are none.
+ * @throws AngError if an expression is invalid, or in dev mode if an empty list is given. When the
+ * expressions are given by a function, invalid expressions throw when the returned signal is read instead
+ * and empty lists do not throw.
  * @example
  * readonly isDesktop = watchBreakpoint('medium');
  * readonly isCompact = watchBreakpoint(['small down', 'x-large']);
@@ -200,49 +203,26 @@ export function watchBreakpoint(
   const observer = injector.get(BreakpointObserver);
 
   if (typeof expressions !== 'function') {
-    const queries = toQueries(expressions, breakpoints);
-    if (queries.includes('')) {
-      return signal(true).asReadonly();
+    const queries = breakpointQueries(expressions, breakpoints);
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && queries.length === 0) {
+      throw new AngError(
+        CdkErrorCode.MissingBreakpointExpression,
+        'watchBreakpoint() requires at least one breakpoint expression.',
+      );
     }
-
-    const state$ = observer.observe(queries);
-    return toSignal(state$.pipe(map((state) => state.matches)), { requireSync: true, injector });
+    return watchQueries(of(queries), observer, injector);
   }
 
   // Created on first read so that expressions from inputs are not read before the inputs are set.
   let watcher: Signal<boolean> | undefined;
   return computed(() => {
-    watcher ??= untracked(() => watchQueries(expressions, breakpoints, observer, injector));
+    watcher ??= untracked(() => {
+      const queries = computed(() => breakpointQueries(expressions(), breakpoints));
+      const source$ = toObservable(queries, { injector }).pipe(startWith(queries()));
+      return watchQueries(source$, observer, injector);
+    });
     return watcher();
   });
-}
-
-/**
- * Watches the media query conditions of expressions given by a signal or function, switching to the new
- * conditions whenever the expressions change. Must not be called in a reactive context.
- *
- * @param expressions A signal or function returning the breakpoint expressions.
- * @param breakpoints Named breakpoints to resolve names against.
- * @param observer Breakpoint observer of the media queries.
- * @param injector Injector that owns the watcher.
- * @returns A signal that is true while any of the expressions match the viewport.
- * @throws AngError if the initial expressions are empty or invalid.
- */
-function watchQueries(
-  expressions: () => BreakpointExpression | readonly BreakpointExpression[],
-  breakpoints: Breakpoints,
-  observer: BreakpointObserver,
-  injector: Injector,
-): Signal<boolean> {
-  const queries = computed(() => toQueries(expressions(), breakpoints), { equal: sameQueries });
-  const matches$ = toObservable(queries, { injector }).pipe(
-    startWith(queries()),
-    distinctUntilChanged(),
-    switchMap((current) =>
-      current.includes('') ? of(true) : observer.observe(current).pipe(map((state) => state.matches)),
-    ),
-  );
-  return toSignal(matches$, { requireSync: true, injector });
 }
 
 /**
@@ -280,21 +260,43 @@ export function watchActiveBreakpoint(options: WatchBreakpointOptions = {}): Sig
  * @param expressions A breakpoint expression or a list of expressions.
  * @param breakpoints Named breakpoints to resolve names against.
  * @returns A media query condition per expression.
- * @throws AngError if no expressions are given or an expression is invalid.
+ * @throws AngError if an expression is invalid.
  */
-function toQueries(
+function breakpointQueries(
   expressions: BreakpointExpression | readonly BreakpointExpression[],
   breakpoints: Breakpoints,
 ): string[] {
-  const queries = [expressions].flat().map((expression) => breakpointQuery(expression, breakpoints));
-  if (queries.length === 0) {
-    throw new AngError(
-      CdkErrorCode.MissingBreakpointExpression,
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
-        'watchBreakpoint() requires at least one breakpoint expression.',
-    );
-  }
-  return queries;
+  return coerceArray(expressions).map((expression) => breakpointQuery(expression, breakpoints));
+}
+
+/**
+ * Watches lists of media query conditions, switching to each new list as it is emitted.
+ *
+ * @param queries$ Lists of media query conditions; consecutive equal lists are ignored.
+ * @param observer Breakpoint observer of the media queries.
+ * @param injector Injector that owns the watcher.
+ * @returns A signal that is true while any condition of the latest list matches the viewport, or false
+ * when the list is empty.
+ */
+function watchQueries(
+  queries$: Observable<readonly string[]>,
+  observer: BreakpointObserver,
+  injector: Injector,
+): Signal<boolean> {
+  const matches$ = queries$.pipe(
+    distinctUntilChanged(queriesEqual),
+    switchMap((queries) => {
+      if (queries.length === 0) {
+        return of(false);
+      } else if (queries.includes('')) {
+        return of(true);
+      }
+
+      return observer.observe([...queries]).pipe(map((state) => state.matches));
+    }),
+  );
+
+  return toSignal(matches$, { requireSync: true, injector });
 }
 
 /**
@@ -304,7 +306,7 @@ function toQueries(
  * @param b Second list.
  * @returns Whether the lists contain the same conditions in the same order.
  */
-function sameQueries(a: readonly string[], b: readonly string[]): boolean {
+function queriesEqual(a: readonly string[], b: readonly string[]): boolean {
   return a.length === b.length && a.every((query, index) => query === b[index]);
 }
 

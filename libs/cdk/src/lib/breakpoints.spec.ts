@@ -2,6 +2,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { EnvironmentInjector, Injector, runInInjectionContext, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
+  BreakpointExpression,
   BREAKPOINTS,
   breakpointQuery,
   provideBreakpoints,
@@ -196,10 +197,16 @@ describe('watchBreakpoint', () => {
     expect(matches()).toBe(true);
   });
 
-  it('requires at least one expression from a signal when read', () => {
-    const matches = TestBed.runInInjectionContext(() => watchBreakpoint(signal([])));
+  it('does not match while a signal has no expressions', async () => {
+    const expression = signal<BreakpointExpression | BreakpointExpression[]>([]);
+    const matches = TestBed.runInInjectionContext(() => watchBreakpoint(expression));
+    await mediaMatcher.resize(1300);
 
-    expect(() => matches()).toThrow(/at least one/);
+    expect(matches()).toBe(false);
+
+    expression.set('medium');
+    TestBed.tick();
+    expect(matches()).toBe(true);
   });
 });
 
