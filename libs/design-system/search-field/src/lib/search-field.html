@@ -9,6 +9,8 @@
     [placeholder]="placeholder() ?? ''"
     [disabled]="disabled()"
     [value]="value()"
+    [attr.aria-labelledby]="ariaLabelledby()"
+    [aria-describedby]="ariaDescribedby() ?? ''"
     [matAutocomplete]="autocomplete"
     (input)="updateValue($event)"
     (keydown.escape)="handleEscape()"

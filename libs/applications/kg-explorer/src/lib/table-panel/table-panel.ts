@@ -51,7 +51,7 @@ export class KgExplorerTablePanel<TRow extends Row = Row> {
   readonly rowFilter = input<(row: TRow) => boolean>();
 
   /** Emits when the user clears the results from the no-results indicator. */
-  readonly clearResults = output<void>();
+  readonly clearClick = output<void>();
 
   /** Search over the rows, in their original order. */
   readonly #search = injectSearch<TRow>({
@@ -60,8 +60,8 @@ export class KgExplorerTablePanel<TRow extends Row = Row> {
     fields: () => this.config().searchFields,
     filter: this.rowFilter,
     suggestionField: () => {
-      const { searchSuggestionField, searchSuggestionsDisabled } = this.config();
-      return searchSuggestionsDisabled ? undefined : searchSuggestionField;
+      const { searchSuggestionField, disableSearchSuggestions } = this.config();
+      return disableSearchSuggestions ? undefined : searchSuggestionField;
     },
     order: 'source',
   });
@@ -78,6 +78,6 @@ export class KgExplorerTablePanel<TRow extends Row = Row> {
   /** Clears the search term and notifies listeners. */
   protected clear(): void {
     this.search.set('');
-    this.clearResults.emit();
+    this.clearClick.emit();
   }
 }

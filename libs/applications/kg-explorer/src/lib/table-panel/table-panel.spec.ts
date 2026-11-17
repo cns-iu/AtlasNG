@@ -6,6 +6,8 @@ import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { KgExplorerTablePanel } from './table-panel';
 
+const counter = (text: string) => screen.queryByText(text, { ignore: '.cdk-visually-hidden' });
+
 interface TestRow {
   title: string;
   tags: string[];
@@ -36,7 +38,7 @@ class TableEndHost {
   readonly rows = ROWS;
   readonly columns = COLUMNS;
   readonly shown = {};
-  readonly hidden = { endOfResultsDisabled: true };
+  readonly hidden = { disableEndOfResults: true };
   search = '';
   showEnd = true;
 }
@@ -44,47 +46,54 @@ class TableEndHost {
 describe('KgExplorerTablePanel', () => {
   async function setup(inputs: Record<string, unknown> = {}) {
     const user = userEvent.setup();
-    const clearResults = vi.fn();
+    const clearClick = vi.fn();
     const result = await render(KgExplorerTablePanel<TestRow>, {
-      inputs: { rows: ROWS, columns: COLUMNS, config: { searchSuggestionField: 'title' }, ...inputs },
-      on: { clearResults },
+      inputs: {
+        rows: ROWS,
+        columns: COLUMNS,
+        config: { searchSuggestionField: 'title', resultsCounterPrefix: 'Viewing' },
+        ...inputs,
+      },
+      on: { clearClick },
     });
 
-    return { ...result, user, clearResults };
+    return { ...result, user, clearClick };
   }
 
   it('shows the results counter and end of results', async () => {
     await setup();
 
-    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 3 of 3')).toBeInTheDocument();
     expect(screen.getByText('Results: 3')).toBeInTheDocument();
     expect(screen.getByText('End of results')).toBeInTheDocument();
   });
 
   it('filters rows by the search term and updates the counter', async () => {
-    const { user } = await setup({ config: { searchSuggestionField: 'title', searchSuggestionsDisabled: true } });
+    const { user } = await setup({
+      config: { searchSuggestionField: 'title', disableSearchSuggestions: true, resultsCounterPrefix: 'Viewing' },
+    });
 
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'kidney');
 
     expect(screen.queryByRole('option')).not.toBeInTheDocument();
 
-    expect(screen.getByText('Viewing 2 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 2 of 3')).toBeInTheDocument();
     expect(await screen.findByText('Kidney atlas')).toBeInTheDocument();
     expect(screen.queryByText('Heart atlas')).not.toBeInTheDocument();
   });
 
   it('searches only the given fields', async () => {
-    const { user } = await setup({ config: { searchFields: ['title'] } });
+    const { user } = await setup({ config: { searchFields: ['title'], resultsCounterPrefix: 'Viewing' } });
 
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'kidney');
 
-    expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 1 of 3')).toBeInTheDocument();
   });
 
   it('shows and suggests only rows that pass the row filter', async () => {
     const { user } = await setup({ rowFilter: (row: TestRow) => row.tags.includes('Heart') });
 
-    expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 1 of 3')).toBeInTheDocument();
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'atlas');
 
     expect(await screen.findAllByRole('option')).toHaveLength(1);
@@ -99,7 +108,7 @@ describe('KgExplorerTablePanel', () => {
     await user.click(screen.getByRole('option', { name: 'Heart atlas' }));
 
     expect(screen.getByRole('combobox', { name: 'Search' })).toHaveValue('Heart atlas');
-    expect(screen.getByText('Viewing 1 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 1 of 3')).toBeInTheDocument();
   });
 
   it('limits the suggestions to the configured maximum', async () => {
@@ -120,24 +129,24 @@ describe('KgExplorerTablePanel', () => {
     await user.click(screen.getByRole('button', { name: 'Clear search' }));
 
     expect(screen.getByRole('combobox', { name: 'Search' })).toHaveValue('');
-    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
+    expect(counter('Viewing 3 of 3')).toBeInTheDocument();
   });
 
   it('shows the no results indicator and clears the results from it', async () => {
-    const { user, clearResults } = await setup({ search: 'pancreas' });
+    const { user, clearClick } = await setup({ search: 'pancreas' });
 
     expect(screen.queryByText('End of results')).not.toBeInTheDocument();
     await user.click(await screen.findByRole('button', { name: 'Clear filters' }));
 
-    expect(clearResults).toHaveBeenCalledTimes(1);
-    expect(screen.getByText('Viewing 3 of 3')).toBeInTheDocument();
+    expect(clearClick).toHaveBeenCalledTimes(1);
+    expect(counter('Viewing 3 of 3')).toBeInTheDocument();
   });
 
   it('hides sections with the boolean inputs', async () => {
-    await setup({ config: { searchDisabled: true, resultsCounterDisabled: true, endOfResultsDisabled: true } });
+    await setup({ config: { disableSearch: true, disableResultsCounter: true, disableEndOfResults: true } });
 
     expect(screen.queryByRole('combobox', { name: 'Search' })).not.toBeInTheDocument();
-    expect(screen.queryByText('Viewing 3 of 3')).not.toBeInTheDocument();
+    expect(counter('Viewing 3 of 3')).not.toBeInTheDocument();
     expect(screen.queryByText('End of results')).not.toBeInTheDocument();
   });
 });
@@ -165,5 +174,19 @@ describe('KgExplorerTablePanel table end slot', () => {
 
     expect(screen.queryByText('End of results')).not.toBeInTheDocument();
     expect(screen.getByText('Table footer')).toBeInTheDocument();
+  });
+
+  it('names the table', async () => {
+    await render(KgExplorerTablePanel<TestRow>, { inputs: { rows: ROWS, columns: COLUMNS, config: {} } });
+
+    expect(screen.getByRole('table', { name: 'Results' })).toBeInTheDocument();
+  });
+
+  it('uses a configured table label', async () => {
+    await render(KgExplorerTablePanel<TestRow>, {
+      inputs: { rows: ROWS, columns: COLUMNS, config: { tableLabel: 'Datasets' } },
+    });
+
+    expect(screen.getByRole('table', { name: 'Datasets' })).toBeInTheDocument();
   });
 });

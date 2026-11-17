@@ -70,10 +70,10 @@ type Story = StoryObj<SocialMediaButton>;
 
 export const Default: Story = {
   args: {
-    id: IDS[0],
+    social: IDS[0],
   },
   argTypes: {
-    id: {
+    social: {
       control: 'select',
       options: IDS,
     },
@@ -86,5 +86,5 @@ export const CustomUrl: Story = {
     providers: [provideSocialMediaButtons(customDefinitions)],
     props: args,
   }),
-  args: { definition: customDefinitions[2] },
+  args: { social: customDefinitions[2] },
 };

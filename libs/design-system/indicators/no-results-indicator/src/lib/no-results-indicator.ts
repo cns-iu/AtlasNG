@@ -24,5 +24,5 @@ export class NoResultsIndicator {
   readonly label = input('Clear filters');
 
   /** Emitted when the action button is clicked. */
-  readonly clear = output<void>();
+  readonly clearClick = output<void>();
 }
