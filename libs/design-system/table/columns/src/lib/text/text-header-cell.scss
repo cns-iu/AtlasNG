@@ -44,11 +44,13 @@
     display: none;
   }
 
-  &:hover {
-    background-color: sass-utils.color-with-opacity(
-      token-utils.slot('header-state-layer-color', $config),
-      token-utils.sys-token(hover-state-layer-opacity)
-    );
+  @media (hover: hover) {
+    &:hover {
+      background-color: sass-utils.color-with-opacity(
+        token-utils.slot('header-state-layer-color', $config),
+        token-utils.sys-token(hover-state-layer-opacity)
+      );
+    }
   }
 
   &.cdk-program-focused,
@@ -75,8 +77,10 @@
       opacity: 0;
     }
 
-    &:hover .ang-table--sort-indicator {
-      opacity: 0.38;
+    @media (hover: hover) {
+      &:hover .ang-table--sort-indicator {
+        opacity: 0.38;
+      }
     }
   }
 
