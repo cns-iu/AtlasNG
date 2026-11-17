@@ -44,11 +44,11 @@ export class Footer {
   /** An array of social media platforms to display. */
   readonly socials = input<(string | SocialMediaButtonDefinition)[]>();
   /** The URL of the organization's logo. */
-  readonly logoImage = input.required<string>();
+  readonly logoSrc = input.required<string>();
   /** The name of the organization. */
   readonly organization = input.required<string>();
   /** A command for navigating to the organization's link. */
-  readonly organizationLink = input<AnyLinkCommand>('/');
+  readonly logoLink = input<AnyLinkCommand>('/');
   /** Year used for copyright purposes. */
   readonly copyrightYear = input<number>(new Date().getFullYear());
   /** Tooltip shown on the default logo link. Override it when the link does not lead to the homepage. */
@@ -58,9 +58,9 @@ export class Footer {
   /** Accessible name of the social media button group. */
   readonly socialsLabel = input('Social media');
   /** An event emitted when the privacy policy link is clicked. */
-  readonly openPrivacyPolicy = output();
+  readonly privacyPolicyClick = output();
   /** An event emitted when the privacy preferences link is clicked. */
-  readonly openPrivacyPreferences = output();
+  readonly privacyPreferencesClick = output();
 
   /** Accessible name of the default logo link with the organization fallback applied. */
   protected readonly resolvedLogoLabel = computed(() => this.logoLabel() ?? `Visit ${this.organization()}`);

@@ -9,9 +9,9 @@
     (openedChange)="leftMenuOpen.set($event)"
   >
     <ang-navigation-menu
-      [navigationItems]="navigationItems()"
+      [navigationItems]="leftNavigationItems()"
       [email]="email()"
-      [socialMediaIds]="socialMediaIds()"
+      [socials]="socials()"
       (linkClick)="leftMenuOpen.set(false)"
     />
   </mat-drawer>
@@ -27,9 +27,9 @@
     (openedChange)="rightMenuOpen.set($event)"
   >
     <ang-navigation-menu
-      [navigationItems]="navRight()"
+      [navigationItems]="rightNavigationItems()"
       [email]="email()"
-      [socialMediaIds]="socialMediaIds()"
+      [socials]="socials()"
       (linkClick)="rightMenuOpen.set(false)"
     />
   </mat-drawer>

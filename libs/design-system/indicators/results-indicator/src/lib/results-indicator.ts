@@ -14,7 +14,7 @@ import { Announce } from '@atlasng/cdk/a11y';
 @Component({
   selector: 'ang-results-indicator',
   imports: [Announce],
-  template: `<span [angAnnounce]="text()" [angAnnounceDisabled]="announceDisabled()">{{ text() }}</span>`,
+  template: `<span [angAnnounce]="text()" [angAnnounceDisabled]="disableAnnouncements()">{{ text() }}</span>`,
   styleUrl: './results-indicator.scss',
   host: {
     class: 'ang-results-indicator',
@@ -37,7 +37,7 @@ export class ResultsIndicator {
   readonly suffix = input('');
 
   /** Stops announcing changes to screen readers, for consumers that announce them another way. */
-  readonly announceDisabled = input(false, { transform: booleanAttribute });
+  readonly disableAnnouncements = input(false, { transform: booleanAttribute });
 
   /**
    * Final display string composed from prefix/value/separator/total/suffix.

@@ -17,7 +17,7 @@ describe('RichTooltip', () => {
     const actionClick = vi.fn();
     await render(
       `
-        <ang-rich-tooltip #tip tagline="Title" description="Description" actionText="Action" (actionClick)="actionClick()" />
+        <ang-rich-tooltip #tip tagline="Title" description="Description" actionLabel="Action" (actionClick)="actionClick()" />
         <button type="button" [angRichTooltipTriggerFor]="tip">Open</button>
       `,
       { imports: IMPORTS, componentProperties: { actionClick } },

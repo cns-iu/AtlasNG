@@ -1,4 +1,4 @@
-@if (!config().searchDisabled) {
+@if (!config().disableSearch) {
   <ang-search-field
     class="ang-kg-explorer-table-toolbar--search"
     [label]="config().searchLabel ?? 'Search'"
@@ -7,7 +7,7 @@
   />
 }
 
-@if (!config().resultsCounterDisabled) {
+@if (!config().disableResultsCounter) {
   <ang-results-indicator
     class="ang-kg-explorer-table-toolbar--counter"
     [prefix]="config().resultsCounterPrefix ?? ''"

@@ -48,7 +48,7 @@ const COLUMNS: TableColumn<TestItem>[] = [
 ];
 
 const FILTERS: KgExplorerFilter<TestItem>[] = [
-  { id: 'type', label: 'Type', field: 'type', searchDisabled: true },
+  { id: 'type', label: 'Type', field: 'type', disableSearch: true },
   { id: 'organ', label: 'Organ', field: 'tags' },
 ];
 
@@ -120,15 +120,15 @@ describe('KgExplorerTableView', () => {
   });
 
   it('uses the provided configuration as defaults', async () => {
-    await setup({}, true, [provideKgExplorerTableView({ resultsCounterDisabled: true, searchDisabled: true })]);
+    await setup({}, true, [provideKgExplorerTableView({ disableResultsCounter: true, disableSearch: true })]);
 
     expect(counter('Viewing 3 of 3')).not.toBeInTheDocument();
     expect(screen.queryByRole('combobox', { name: 'Search' })).not.toBeInTheDocument();
   });
 
   it('merges the config input over the provided configuration', async () => {
-    await setup({ config: { resultsCounterDisabled: false, searchDisabled: undefined } }, true, [
-      provideKgExplorerTableView({ resultsCounterDisabled: true, searchDisabled: true }),
+    await setup({ config: { disableResultsCounter: false, disableSearch: undefined } }, true, [
+      provideKgExplorerTableView({ disableResultsCounter: true, disableSearch: true }),
     ]);
 
     expect(counter('Viewing 3 of 3')).toBeInTheDocument();
@@ -148,7 +148,7 @@ describe('KgExplorerTableView', () => {
     await user.type(search, 'lorem');
     expect((await screen.findAllByRole('option')).length).toBeGreaterThan(0);
 
-    await rerender({ inputs: { config: { searchSuggestionsDisabled: true } }, partialUpdate: true });
+    await rerender({ inputs: { config: { disableSearchSuggestions: true } }, partialUpdate: true });
     expect(screen.queryByRole('option')).not.toBeInTheDocument();
   });
 

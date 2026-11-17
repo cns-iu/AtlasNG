@@ -38,7 +38,7 @@ class TableEndHost {
   readonly rows = ROWS;
   readonly columns = COLUMNS;
   readonly shown = {};
-  readonly hidden = { endOfResultsDisabled: true };
+  readonly hidden = { disableEndOfResults: true };
   search = '';
   showEnd = true;
 }
@@ -46,7 +46,7 @@ class TableEndHost {
 describe('KgExplorerTablePanel', () => {
   async function setup(inputs: Record<string, unknown> = {}) {
     const user = userEvent.setup();
-    const clearResults = vi.fn();
+    const clearClick = vi.fn();
     const result = await render(KgExplorerTablePanel<TestRow>, {
       inputs: {
         rows: ROWS,
@@ -54,10 +54,10 @@ describe('KgExplorerTablePanel', () => {
         config: { searchSuggestionField: 'title', resultsCounterPrefix: 'Viewing' },
         ...inputs,
       },
-      on: { clearResults },
+      on: { clearClick },
     });
 
-    return { ...result, user, clearResults };
+    return { ...result, user, clearClick };
   }
 
   it('shows the results counter and end of results', async () => {
@@ -70,7 +70,7 @@ describe('KgExplorerTablePanel', () => {
 
   it('filters rows by the search term and updates the counter', async () => {
     const { user } = await setup({
-      config: { searchSuggestionField: 'title', searchSuggestionsDisabled: true, resultsCounterPrefix: 'Viewing' },
+      config: { searchSuggestionField: 'title', disableSearchSuggestions: true, resultsCounterPrefix: 'Viewing' },
     });
 
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'kidney');
@@ -133,17 +133,17 @@ describe('KgExplorerTablePanel', () => {
   });
 
   it('shows the no results indicator and clears the results from it', async () => {
-    const { user, clearResults } = await setup({ search: 'pancreas' });
+    const { user, clearClick } = await setup({ search: 'pancreas' });
 
     expect(screen.queryByText('End of results')).not.toBeInTheDocument();
     await user.click(await screen.findByRole('button', { name: 'Clear filters' }));
 
-    expect(clearResults).toHaveBeenCalledTimes(1);
+    expect(clearClick).toHaveBeenCalledTimes(1);
     expect(counter('Viewing 3 of 3')).toBeInTheDocument();
   });
 
   it('hides sections with the boolean inputs', async () => {
-    await setup({ config: { searchDisabled: true, resultsCounterDisabled: true, endOfResultsDisabled: true } });
+    await setup({ config: { disableSearch: true, disableResultsCounter: true, disableEndOfResults: true } });
 
     expect(screen.queryByRole('combobox', { name: 'Search' })).not.toBeInTheDocument();
     expect(counter('Viewing 3 of 3')).not.toBeInTheDocument();

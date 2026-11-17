@@ -29,7 +29,7 @@ describe('NavigationToggle', () => {
     expect(icon).toHaveAttribute('data-mat-icon-name', 'expand_more');
   });
 
-  it('reflects the selected state with aria-expanded', async () => {
+  it('reflects the expanded state with aria-expanded', async () => {
     const { user } = await setup();
 
     await user.click(screen.getByRole('button', { name: 'Category', expanded: false }));

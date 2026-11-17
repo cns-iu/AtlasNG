@@ -44,7 +44,7 @@ describe('KgExplorerTableToolbar', () => {
   });
 
   it('hides parts with the disabled inputs', async () => {
-    await setup({ config: { searchDisabled: true, resultsCounterDisabled: true } });
+    await setup({ config: { disableSearch: true, disableResultsCounter: true } });
 
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(counter('Viewing 2 of 3')).not.toBeInTheDocument();

@@ -1,7 +1,7 @@
 <ang-skip-to-content-button anchorId="main-content" label="Skip to main content" />
 <header class="ang-header-shell">
   <div class="ang-header-shell-left">
-    @if (hasLocalNavigation()) {
+    @if (localNavigation()) {
       <button
         matIconButton
         angTrackClick
@@ -11,13 +11,18 @@
         [attr.aria-label]="localNavigationLabel()"
         [attr.aria-expanded]="localNavigationExpanded()"
         [attr.aria-controls]="localNavigationControls()"
-        (click)="localNavigationToggle.emit()"
+        (click)="localNavigationClick.emit()"
       >
         <mat-icon [fontIcon]="localNavigationIcon()" />
       </button>
     }
-    <a class="ang-header-shell-logo" aria-label="Go to homepage" matTooltip="Homepage" [angAnyLink]="logoLink()">
-      <img alt="App Logo" [src]="logoUrl()" />
+    <a
+      class="ang-header-shell-logo"
+      [attr.aria-label]="logoLabel()"
+      [matTooltip]="logoTooltip()"
+      [angAnyLink]="logoLink()"
+    >
+      <img alt="App Logo" [src]="logoSrc()" />
     </a>
     <mat-divider vertical class="ang-header-shell-divider" />
   </div>
@@ -57,7 +62,7 @@
         [attr.aria-label]="appsMenuLabel()"
         [attr.aria-expanded]="appsMenuExpanded()"
         [attr.aria-controls]="appsMenuControls()"
-        (click)="appsMenuToggle.emit()"
+        (click)="appsMenuClick.emit()"
       >
         <mat-icon fontIcon="apps" />
       </button>
