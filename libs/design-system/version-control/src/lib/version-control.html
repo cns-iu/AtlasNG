@@ -5,11 +5,7 @@
 
   <mat-form-field class="ang-version-control--version" subscriptSizing="dynamic">
     <mat-label>{{ versionLabel() }}</mat-label>
-    <mat-select
-      [disabled]="versions().length === 0"
-      [value]="version"
-      (selectionChange)="selectedVersion.set($event.value)"
-    >
+    <mat-select [disabled]="versions().length === 0" [value]="version" (selectionChange)="selectVersion($event.value)">
       @for (item of versions(); track item) {
         <mat-option [value]="item">{{ item.label }}</mat-option>
       }
@@ -27,6 +23,7 @@
           mat-list-item
           lines="3"
           class="ang-version-control--download-option"
+          angTrackClick
           (click)="download.emit({ item: version, format: option })"
         >
           <mat-icon matListItemIcon fontIcon="download" />

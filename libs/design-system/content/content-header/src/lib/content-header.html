@@ -4,7 +4,7 @@
   [id]="id()"
 >
   @if (id()) {
-    <a class="ang-content-header--link" angAnyLink="." [fragment]="id()">
+    <a class="ang-content-header--link" angTrackClick angAnyLink="." [fragment]="id()">
       {{ tagline() }}<mat-icon class="ang-content-header--icon" fontIcon="link" />
     </a>
   } @else {

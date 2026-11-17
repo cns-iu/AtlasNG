@@ -1,7 +1,15 @@
 <span matSnackBarLabel class="ang-snackbar--label">{{ data.message }}</span>
 <div matSnackBarActions class="ang-snackbar--actions">
   @if (data.action) {
-    <button type="button" matButton matSnackBarAction disableRipple (click)="snackbarRef.dismissWithAction()">
+    <button
+      type="button"
+      matButton
+      matSnackBarAction
+      angEventScope="action"
+      angTrackClick
+      disableRipple
+      (click)="snackbarRef.dismissWithAction()"
+    >
       {{ data.action }}
     </button>
   }
@@ -11,6 +19,8 @@
       type="button"
       matIconButton
       matSnackBarAction
+      angEventScope="close"
+      angTrackClick
       [attr.aria-label]="data.closeLabel ?? 'Close snack bar'"
       (click)="snackbarRef.dismiss()"
     >

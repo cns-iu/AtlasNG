@@ -19,7 +19,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { provideEventScope, TrackClick } from '@atlasng/analytics';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { IdGenerator } from '@atlasng/common';
 import { RESIZE_OBSERVER } from '@atlasng/core';
 
@@ -165,7 +165,7 @@ export class CookieBannerContainer {
  */
 @Component({
   selector: 'ang-cookie-banner',
-  imports: [MatButton, TrackClick],
+  imports: [EventScope, MatButton, TrackClick],
   templateUrl: './cookie-banner.html',
   styleUrl: './cookie-banner.scss',
   providers: [provideEventScope('cookie-banner')],

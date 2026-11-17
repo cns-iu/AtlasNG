@@ -24,6 +24,7 @@
       <button
         type="button"
         matButton="filled"
+        angEventScope="allow-all"
         angTrackClick
         class="ang-cookie-banner--action"
         (click)="handleClick(allowAll)"
@@ -33,6 +34,7 @@
       <button
         type="button"
         matButton="filled"
+        angEventScope="allow-necessary"
         angTrackClick
         class="ang-cookie-banner--action"
         (click)="handleClick(allowNecessary)"
@@ -42,6 +44,7 @@
       <button
         type="button"
         matButton="outlined"
+        angEventScope="customize"
         angTrackClick
         class="ang-cookie-banner--action"
         (click)="handleClick(customize)"

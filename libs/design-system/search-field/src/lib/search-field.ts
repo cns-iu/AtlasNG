@@ -4,6 +4,8 @@ import { MatIconButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
+import { injectTrackEvent, provideEventScope, TrackChange, TrackClick } from '@atlasng/analytics';
+import { CoreEvents } from '@atlasng/analytics/events';
 import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggestion } from '@atlasng/cdk/search';
 
 /**
@@ -29,9 +31,12 @@ import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggest
     MatPrefix,
     MatSuffix,
     SearchHighlight,
+    TrackChange,
+    TrackClick,
   ],
   templateUrl: './search-field.html',
   styleUrl: './search-field.scss',
+  providers: [provideEventScope('search-field')],
   host: {
     class: 'ang-search-field',
     '[attr.aria-labelledby]': 'null',
@@ -39,6 +44,9 @@ import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggest
   },
 })
 export class SearchField<T = string> {
+  /** Tracks selections that Angular Material reports through outputs rather than DOM events. */
+  readonly #track = injectTrackEvent();
+
   /** Items whose `suggestionField` values are suggested. Ignored when `suggestions` is set. */
   readonly items = input<readonly T[]>();
 
@@ -124,6 +132,7 @@ export class SearchField<T = string> {
    * @param suggestion Selected suggestion.
    */
   protected select(suggestion: string): void {
+    this.#track(CoreEvents.Change, { trigger: 'optionSelected' });
     this.value.set(suggestion);
     this.suggestionSelected.emit(suggestion);
   }

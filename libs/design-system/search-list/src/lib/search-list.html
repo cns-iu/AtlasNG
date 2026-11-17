@@ -2,7 +2,7 @@
   <mat-form-field class="ang-search-list--search" subscriptSizing="dynamic">
     <mat-label>{{ searchLabel() }}</mat-label>
     <mat-icon matPrefix fontIcon="search" />
-    <input matInput type="text" [(ngModel)]="search" />
+    <input matInput angTrackChange type="text" [(ngModel)]="search" />
   </mat-form-field>
 }
 

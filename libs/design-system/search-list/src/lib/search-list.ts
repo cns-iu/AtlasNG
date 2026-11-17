@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
+import { injectTrackEvent, provideEventScope, TrackChange } from '@atlasng/analytics';
+import { CoreEvents } from '@atlasng/analytics/events';
 import { injectSearch, SearchHighlight, SearchRange, SearchResult } from '@atlasng/cdk/search';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
@@ -33,9 +35,19 @@ export interface SearchListOption {
  */
 @Component({
   selector: 'ang-search-list',
-  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule, ScrollArea, SearchHighlight],
+  imports: [
+    DecimalPipe,
+    FormsModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    ScrollArea,
+    SearchHighlight,
+    TrackChange,
+  ],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
+  providers: [provideEventScope('search-list')],
   host: {
     class: 'ang-search-list',
     '[attr.aria-label]': 'null',
@@ -43,6 +55,9 @@ export interface SearchListOption {
   },
 })
 export class SearchList<T extends SearchListOption> {
+  /** Tracks selections that Angular Material reports through outputs rather than DOM events. */
+  readonly #track = injectTrackEvent();
+
   /** All filter options */
   readonly options = input.required<T[]>();
 
@@ -81,6 +96,7 @@ export class SearchList<T extends SearchListOption> {
    * @param event Selection change emitted by the selection list
    */
   protected updateSelection(event: MatSelectionListChange): void {
+    this.#track(CoreEvents.Change, { trigger: 'selectionChange' });
     this.selected.update((current) => {
       const selected = new Set(current);
       for (const option of event.options) {
