@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/angular';
-import 'storybook/test';
+import { argsToTemplate, Meta, StoryObj } from '@storybook/angular';
+import { expect } from 'storybook/test';
 import { SkipToContentButton } from './skip-to-content-button';
 
 const meta: Meta<SkipToContentButton> = {
@@ -29,5 +29,23 @@ type Story = StoryObj<SkipToContentButton>;
 export const Default: Story = {
   play: async ({ userEvent }) => {
     await userEvent.tab();
+  },
+};
+
+export const MovesFocusToTarget: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <ang-skip-to-content-button ${argsToTemplate(args)} />
+      <main id="main-content">
+        <h1>Main content</h1>
+        <p>Press Enter on the skip link to move focus here.</p>
+      </main>
+    `,
+  }),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.tab();
+    await userEvent.keyboard('{Enter}');
+    await expect(canvas.getByRole('main')).toHaveFocus();
   },
 };
