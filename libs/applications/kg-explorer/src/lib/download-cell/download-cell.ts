@@ -21,25 +21,24 @@ export type KgExplorerDownloadCellConfig<
   TRow extends Row = Row,
   TFormat extends VersionControlFileFormat = VersionControlFileFormat,
 > = Simplify<
-  {
-    /**
-     * File formats offered for a row. A function is called while rendering, so
-     * it should be cheap and return the same array for an unchanged row.
-     */
-    formats: KgExplorerDownloadFormats<TRow, TFormat>;
-    /**
-     * Invoked when a user picks a file format for a row.
-     *
-     * @param row Row the user chose to download.
-     * @param format File format the user picked.
-     */
-    download: (row: TRow, format: TFormat) => void;
-  } & RequireExactlyOne<
+  RequireExactlyOne<
     {
-      /** Function that derives the row name announced in the button labels. */
-      labelFn: (row: TRow) => string;
       /** Row property whose string value names the row in the button labels. */
       labelProp: keyof TRow;
+      /** Function that derives the row name announced in the button labels. */
+      labelFn: (row: TRow) => string;
+      /**
+       * File formats offered for a row. A function is called while rendering, so
+       * it should be cheap and return the same array for an unchanged row.
+       */
+      formats: KgExplorerDownloadFormats<TRow, TFormat>;
+      /**
+       * Invoked when a user picks a file format for a row.
+       *
+       * @param row Row the user chose to download.
+       * @param format File format the user picked.
+       */
+      download: (row: TRow, format: TFormat) => void;
     },
     'labelFn' | 'labelProp'
   >
