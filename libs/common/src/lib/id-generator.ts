@@ -1,4 +1,4 @@
-import { APP_ID, inject, isDevMode, Service } from '@angular/core';
+import { APP_ID, inject, isDevMode, makeStateKey, Service, TransferState } from '@angular/core';
 import { createConfigurationToken, type } from '@atlasng/core';
 
 /**
@@ -7,7 +7,8 @@ import { createConfigurationToken, type } from '@atlasng/core';
 export interface IdGeneratorConfig {
   /**
    * An infix to include in generated IDs.
-   * If `true`, a random hexadecimal infix will be used.
+   * If `true`, a random hexadecimal infix will be used. With server-side rendering, the server's infix
+   * is transferred to the browser so that hydrated IDs match.
    * If `false`, no infix will be included.
    */
   infix?: string | boolean;
@@ -22,6 +23,9 @@ const ID_GENERATOR_CONFIG = createConfigurationToken({
     infix: !isDevMode(),
   }),
 });
+
+/** Transfer state key of the random infix generated on the server. */
+const RANDOM_INFIX_KEY = makeStateKey<string>('atlasng-id-generator-infix');
 
 /**
  * Provides the {@link IdGeneratorConfig} for the application.
@@ -41,6 +45,9 @@ export class IdGenerator {
 
   /** Angular application ID. */
   readonly #appId = inject(APP_ID);
+
+  /** Transfer state carrying the random infix from the server to the browser. */
+  readonly #transferState = inject(TransferState);
 
   /** Infix for the ID generator or `false` when disabled. */
   readonly #infix = this.config.infix === true ? this.#getRandomInfix() : this.config.infix;
@@ -69,13 +76,21 @@ export class IdGenerator {
   }
 
   /**
-   * Creates a random hexadecimal infix.
+   * Reuses the random infix transferred from the server, or creates a new one and stores it for transfer.
+   * Transfer state is scoped by application ID, so applications on the same page keep separate infixes.
+   *
+   * @returns A random hexadecimal infix.
    */
   #getRandomInfix(): string {
     const RANDOM_INFIX_MAX = 0xffffff;
     const length = RANDOM_INFIX_MAX.toString(16).length;
-    return Math.floor(RANDOM_INFIX_MAX * Math.random())
-      .toString(16)
-      .padStart(length, '0');
+    const infix =
+      this.#transferState.get(RANDOM_INFIX_KEY, null) ??
+      Math.floor(RANDOM_INFIX_MAX * Math.random())
+        .toString(16)
+        .padStart(length, '0');
+
+    this.#transferState.set(RANDOM_INFIX_KEY, infix);
+    return infix;
   }
 }
