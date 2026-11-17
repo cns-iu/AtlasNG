@@ -46,7 +46,7 @@ describe('KgExplorerMetadataView', () => {
   const metadata: KgExplorerMetadata = {
     title: 'Metadata title',
     sections,
-    icons: [{ name: 'heart', label: 'Organ icon' }],
+    icons: [{ name: 'heart', label: 'Organ icon', color: 'primary' }],
     url: 'https://example.com/entry',
     versions,
   };
