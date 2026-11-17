@@ -12,8 +12,15 @@ $config: (
     counter-text-tracking: token-utils.sys-token(body-small-tracking),
     counter-shape: token-utils.sys-token(corner-full),
     counter-focus-outline-color: token-utils.sys-token(secondary),
-    dialog-container-color: token-utils.sys-token(surface),
+    dialog-container-color: token-utils.sys-token(surface-container),
+    dialog-footer-container-color: token-utils.sys-token(surface-container-high),
     dialog-container-shape: token-utils.sys-token(corner-none),
+    dialog-title-text-color: token-utils.sys-token(on-surface),
+    dialog-title-text-font: token-utils.sys-token(title-large-font),
+    dialog-title-text-size: token-utils.sys-token(title-large-size),
+    dialog-title-text-weight: token-utils.sys-token(title-large-weight),
+    dialog-title-text-line-height: token-utils.sys-token(title-large-line-height),
+    dialog-title-text-tracking: token-utils.sys-token(title-large-tracking),
   ),
 );
 

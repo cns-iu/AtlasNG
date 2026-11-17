@@ -3,7 +3,13 @@
 @use 'tokens/search-list' as *;
 @use 'tokens/scroll-area' as scroll;
 
-:host {
+$label-line-height: token-utils.slot(label-line-height, $config);
+$description-line-height: token-utils.slot(description-line-height, $config);
+$two-line-height: var(--mat-list-list-item-two-line-container-height, 4rem);
+
+// The component turns off view encapsulation, so these styles can reach the parts of each option
+// that Material renders, such as the checkbox and the two-line text.
+.ang-search-list {
   display: flex;
   flex-direction: column;
   min-width: 19.5rem;
@@ -11,8 +17,9 @@
   background: token-utils.slot(background, $config);
   box-shadow: 0px 5px 4px 0px token-utils.slot(elevation, $config);
 
+  // Lines the search field up with the content of the inset options.
   .ang-search-list--search {
-    padding: 1rem 1rem 0rem 1rem;
+    padding: 1rem 1.5rem 0;
   }
 
   .ang-search-list--scroll-area {
@@ -26,7 +33,10 @@
     );
   }
 
+  // Insets the options, so their rounded state layers clear the edges of the list.
   .ang-search-list--list {
+    padding-inline: 0.5rem;
+
     .ang-search-list--label-count {
       width: 100%;
       display: inline-flex;
@@ -44,6 +54,44 @@
       color: token-utils.slot(highlight-color, $config);
     }
 
+    // Replaces Material's 24px gap between the checkbox and the label.
+    .mdc-list-item--with-leading-checkbox .mdc-list-item__start {
+      margin-inline-end: 0.5rem;
+    }
+
+    // Material sets two-line text on fixed pixel baselines, which sit these type styles low in the
+    // option. Centers the lines instead and keeps the checkbox level with the label.
+    .mdc-list-item--with-two-lines {
+      .mdc-list-item__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .mdc-list-item__primary-text,
+      .mdc-list-item__secondary-text {
+        margin: 0;
+
+        &::before,
+        &::after {
+          display: none;
+        }
+      }
+
+      .mdc-list-item__primary-text {
+        line-height: $label-line-height;
+      }
+
+      .mdc-list-item__secondary-text {
+        line-height: $description-line-height;
+      }
+
+      // Centers the 2.5rem checkbox on the label's line.
+      .mdc-list-item__start {
+        margin-top: calc(($two-line-height - $description-line-height) / 2 - 1.25rem);
+      }
+    }
+
     .ang-search-list--count {
       color: token-utils.slot(count-color, $config);
       font-family: token-utils.slot(count-font, $config);
@@ -56,6 +104,7 @@
     @include mat.list-overrides(
       (
         list-item-one-line-container-height: 2.5rem,
+        list-item-container-shape: token-utils.slot(option-shape, $config),
         list-item-label-text-color: token-utils.slot(label-color, $config),
         list-item-label-text-font: token-utils.slot(label-font, $config),
         list-item-label-text-size: token-utils.slot(label-size, $config),

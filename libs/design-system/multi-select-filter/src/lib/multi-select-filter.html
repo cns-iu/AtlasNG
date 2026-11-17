@@ -45,7 +45,13 @@
   @if (selected().length > 0) {
     <mat-chip-set class="ang-multi-select-filter--chips" role="list" [attr.aria-label]="selectedLabel()">
       @for (option of selected(); track option) {
-        <mat-chip role="listitem" disableRipple (removed)="removeFilter(option)">
+        <mat-chip
+          role="listitem"
+          disableRipple
+          animate.enter="ang-multi-select-filter--chip-enter"
+          animate.leave="ang-multi-select-filter--chip-leave"
+          (removed)="removeFilter(option)"
+        >
           {{ option.label }}
           <button type="button" matChipRemove [attr.aria-label]="`${removeLabel()} ${option.label}`">
             <mat-icon fontIcon="cancel" />
@@ -85,7 +91,7 @@
 </ng-template>
 
 <ng-template #dialog>
-  <h2 mat-dialog-title>{{ label() }}</h2>
+  <h2 class="ang-multi-select-filter--dialog-title" mat-dialog-title>{{ resolvedDialogTitle() }}</h2>
   <mat-dialog-content class="ang-multi-select-filter--dialog-content">
     <ang-search-list
       class="ang-multi-select-filter--search-list"
@@ -94,15 +100,22 @@
       [selected]="selected()"
       [(search)]="search"
       (selectedChange)="updateSelected($event)"
-    >
-      @if (selected().length > 0) {
+    />
+  </mat-dialog-content>
+  <div class="ang-multi-select-filter--dialog-footer">
+    @if (selected().length > 0) {
+      <div
+        class="ang-multi-select-filter--chip-tray"
+        animate.enter="ang-multi-select-filter--chip-tray-enter"
+        animate.leave="ang-multi-select-filter--chip-tray-leave"
+      >
         <ang-scroll-area class="ang-multi-select-filter--chip-row" orientation="horizontal">
           <ng-container [ngTemplateOutlet]="chips" />
         </ang-scroll-area>
-      }
-    </ang-search-list>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button type="button" matButton mat-dialog-close angTrackClick>{{ doneLabel() }}</button>
-  </mat-dialog-actions>
+      </div>
+    }
+    <mat-dialog-actions class="ang-multi-select-filter--dialog-actions" align="end">
+      <button type="button" matButton="filled" mat-dialog-close angTrackClick>{{ doneLabel() }}</button>
+    </mat-dialog-actions>
+  </div>
 </ng-template>

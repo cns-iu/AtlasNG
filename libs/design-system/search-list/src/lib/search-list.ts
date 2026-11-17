@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { booleanAttribute, Component, computed, input, model } from '@angular/core';
+import { booleanAttribute, Component, computed, input, model, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -30,15 +30,13 @@ export interface SearchListOption {
  *
  * The options scroll in an `ang-scroll-area` below the search field. Constrain
  * the height of the host so that the options can scroll.
- *
- * Projected content is shown between the search field and the list, for
- * example the chips of the selected options.
  */
 @Component({
   selector: 'ang-search-list',
   imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule, ScrollArea, SearchHighlight],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-search-list',
   },

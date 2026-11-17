@@ -6,8 +6,6 @@
   </mat-form-field>
 }
 
-<ng-content />
-
 <ang-scroll-area class="ang-search-list--scroll-area" orientation="vertical">
   <mat-selection-list class="ang-search-list--list" (selectionChange)="updateSelection($event)">
     @for (result of results(); track result.item) {

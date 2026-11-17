@@ -39,8 +39,10 @@ const SEARCH_FIELD_INSET = 16;
  * counter, a removable chip for every selected option, and an optional info button.
  *
  * From the `medium` breakpoint (960px), the search list opens in a panel beside the filter.
- * On smaller screens, it opens in a full-screen dialog with the filter's name, the search field,
- * the selected options as a single row of removable chips that scrolls sideways, and a Done button.
+ * On smaller screens, it opens in a full-screen dialog with a title, such as `Organ filters`, the
+ * search field, the options, a tray with the selected options as a single row of removable chips
+ * that scrolls sideways, and a Done button. Chips and the tray animate in and out unless the user
+ * prefers reduced motion.
  *
  * Takes the same options as the search list. Selections are matched by option object identity,
  * and removing a chip deselects its option in the search list.
@@ -118,6 +120,9 @@ export class MultiSelectFilter<T extends SearchListOption> {
   /** Text of the button that closes the full-screen dialog on small screens. */
   readonly doneLabel = input('Done');
 
+  /** Title of the full-screen dialog on small screens. Defaults to `<label> filters`. */
+  readonly dialogTitle = input<string>();
+
   /**
    * Horizontal distance, in pixels, from the end of the filter row to the search list panel.
    * Increase it to open the panel past the edge of a container with padding, such as a drawer.
@@ -175,6 +180,9 @@ export class MultiSelectFilter<T extends SearchListOption> {
 
   /** Accessible label of the info button. */
   protected readonly resolvedInfoLabel = computed(() => this.infoLabel() ?? `${this.label()} info`);
+
+  /** Title of the full-screen dialog. */
+  protected readonly resolvedDialogTitle = computed(() => this.dialogTitle() ?? `${this.label()} filters`);
 
   /**
    * Opens the full-screen dialog while the filter is expanded below the `medium` breakpoint, and
