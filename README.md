@@ -57,6 +57,10 @@ npx nx affected -t lint,test,build
 
 Unit tests run with Vitest and enforce 85% coverage thresholds.
 
+### Server-side rendering
+
+The `AtlasNG` application is server-rendered, and its routes are prerendered at build time. Each route showcases one library's components. `npx nx ssr-smoke AtlasNG` builds the application in development mode, renders every route on the server, and hydrates it in jsdom. It fails when rendering or hydration logs an error or warning (including `NG05xx` hydration errors), or when the hydrated page differs from a client-only render. Known issues are listed in [check.mjs](apps/AtlasNG/ssr-smoke/check.mjs).
+
 ### Storybook
 
 ```sh
