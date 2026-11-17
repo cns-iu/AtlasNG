@@ -1,4 +1,5 @@
-import { Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { Directive, effect, ElementRef, inject, input, PLATFORM_ID, Renderer2 } from '@angular/core';
 
 /** Characters that {@link SeparatorWrap} breaks after by default: the separators of URLs, IRIs, IDs, and file names. */
 export const DEFAULT_SEPARATOR_WRAP_CHARACTERS: readonly string[] = ['/', '.', '_', '-', ':', '?', '=', '&', '#'];
@@ -47,6 +48,9 @@ function escapeRegExp(value: string): string {
  * The content is built from text nodes, so the text is never parsed as HTML, and `<wbr>` adds no characters, so
  * copied text matches the original string. The directive adds no styles.
  *
+ * During server-side rendering, a host with template content keeps it, and the browser replaces it after
+ * hydration. Replacing it on the server would remove nodes that hydration expects.
+ *
  * @example
  * <span [angSeparatorWrap]="iri"></span>
  * <span [angSeparatorWrap]="path" angSeparatorWrapCharacters="/"></span>
@@ -72,7 +76,17 @@ export class SeparatorWrap {
 
   /** Rebuilds the host content when the text or characters change. */
   constructor() {
-    effect(() => this.#render(separatorWrapSegments(this.text(), this.characters())));
+    const isServer = isPlatformServer(inject(PLATFORM_ID));
+    /** Whether to leave the host content alone, decided on the first run once the template content exists. */
+    let keepContent: boolean | undefined;
+
+    effect(() => {
+      const segments = separatorWrapSegments(this.text(), this.characters());
+      keepContent ??= isServer && this.#host.hasChildNodes();
+      if (!keepContent) {
+        this.#render(segments);
+      }
+    });
   }
 
   /**

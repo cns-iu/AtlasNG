@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { render, screen } from '@testing-library/angular';
 import { SeparatorWrap, separatorWrapSegments } from './separator-wrap';
 
@@ -41,11 +42,16 @@ describe('separatorWrapSegments', () => {
 });
 
 describe('SeparatorWrap', () => {
-  async function setup(text: string, characters?: string | readonly string[]) {
+  async function setup(
+    text: string,
+    characters?: string | readonly string[],
+    { platform = 'browser', content = 'stale' }: { platform?: string; content?: string } = {},
+  ) {
     const binding = characters === undefined ? '' : '[angSeparatorWrapCharacters]="characters"';
-    return render(`<span data-testid="host" [angSeparatorWrap]="text" ${binding}>stale</span>`, {
+    return render(`<span data-testid="host" [angSeparatorWrap]="text" ${binding}>${content}</span>`, {
       imports: [SeparatorWrap],
       componentProperties: { text, characters },
+      providers: [{ provide: PLATFORM_ID, useValue: platform }],
     });
   }
 
@@ -92,5 +98,15 @@ describe('SeparatorWrap', () => {
     const { rerender } = await setup('a/b', '/');
     await rerender({ componentProperties: { text: 'c.d', characters: '.' } });
     expect(nodes(screen.getByTestId('host'))).toEqual(['c.', '<wbr>', 'd']);
+  });
+
+  it('keeps template content on the server', async () => {
+    await setup('a/b', '/', { platform: 'server' });
+    expect(nodes(screen.getByTestId('host'))).toEqual(['stale']);
+  });
+
+  it('renders into an empty host on the server', async () => {
+    await setup('a/b', '/', { platform: 'server', content: '' });
+    expect(nodes(screen.getByTestId('host'))).toEqual(['a/', '<wbr>', 'b']);
   });
 });
