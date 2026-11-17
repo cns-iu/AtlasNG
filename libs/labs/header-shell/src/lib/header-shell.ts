@@ -33,8 +33,9 @@ export interface HeaderShellNavigationItem {
 }
 
 /**
- * Marks a projected element, typically a `matIconButton`, as an app-wide header action.
- * Actions render before the help and apps buttons and get the header's focus outline.
+ * Marks a projected element, typically a `matIconButton` or a component wrapping one, as an app-wide
+ * header action. Actions render before the help and apps buttons, and the action or its focused
+ * descendant gets the header's focus outline.
  * Reserve this slot for two or three app-wide actions such as a theme menu;
  * page-specific actions belong in the page itself.
  */
