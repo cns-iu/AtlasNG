@@ -4,6 +4,12 @@
 @use './../../sass/tokens/metadata-view' as *;
 
 :host {
+  @include text-link.overrides(
+    (
+      color: token-utils.slot(link-color, $config),
+    )
+  );
+
   display: block;
 
   .ang-kg-explorer-metadata-view--layout {
@@ -41,12 +47,6 @@
   }
 
   .ang-kg-explorer-metadata-view--breadcrumbs {
-    @include text-link.overrides(
-      (
-        color: token-utils.sys-slot(primary),
-      )
-    );
-
     margin-bottom: 2rem;
   }
 

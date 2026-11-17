@@ -33,8 +33,11 @@ export interface ConfigurationToken<TConfig extends object, TDefaults extends Pa
   token: InjectionToken<TConfig>;
   /** Injects the configuration with defaults applied, from the given injector or the current injection context. */
   inject: (options?: { injector?: Injector }) => ConfigurationWithDefaults<TConfig, TDefaults>;
-  /** Creates a provider for configuration overrides. */
-  provide: (config: TConfig) => Provider;
+  /**
+   * Creates a provider for configuration overrides. Accepts the configuration or a factory that runs in an injection
+   * context, so it can `inject()` other services such as a translation service.
+   */
+  provide: (config: TConfig | (() => TConfig)) => Provider;
 }
 
 /**
@@ -88,19 +91,23 @@ export function createConfigurationToken<TConfig extends object, const TDefaults
     return result as ConfigurationWithDefaults<TConfig, TDefaults>;
   }
 
-  /** Creates a provider for this token. */
-  function provideConfiguration(config: TConfig): Provider {
+  /**
+   * Creates a provider for this token.
+   *
+   * @param config Configuration, or a factory run in an injection context that returns it.
+   * @returns Provider for the token.
+   */
+  function provideConfiguration(config: TConfig | (() => TConfig)): Provider {
+    const resolve = typeof config === 'function' ? config : () => config;
+
     if (options.inherit) {
       return {
         provide: token,
-        useFactory: () => mergeDefined(inject(token, { optional: true, skipSelf: true }) ?? {}, config) as TConfig,
+        useFactory: () => mergeDefined(inject(token, { optional: true, skipSelf: true }) ?? {}, resolve()) as TConfig,
       };
     }
 
-    return {
-      provide: token,
-      useValue: config,
-    };
+    return { provide: token, useFactory: resolve };
   }
 
   return {

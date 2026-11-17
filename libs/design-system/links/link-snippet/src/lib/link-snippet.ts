@@ -27,6 +27,9 @@ export class LinkSnippet {
   /** Url to display */
   readonly url = input.required<string>();
 
+  /** Visually hidden hint announcing that the link opens in a new tab */
+  readonly newTabHint = input('Opens in a new tab');
+
   /** Label for the url with the URL prefix removed */
   protected readonly urlLabel = computed(() => this.url().replace(URL_PREFIX_REGEX, ''));
 

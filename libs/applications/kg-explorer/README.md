@@ -65,6 +65,8 @@ Give the table view a height (for example, fill the page below your header) and 
 | Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows. |
 | Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                        |
 
+Text links, such as the cells of `kgExplorerLinkColumn` columns, use the theme's `primary` color. Set `--ang-kg-explorer-table-view-link-color` to change it.
+
 ### Data and columns
 
 - `items` takes any row type, and `columns` (required) sets which properties the table shows. There are no built-in default columns.
@@ -80,14 +82,14 @@ filters: KgExplorerFilter<Dataset>[] = [
 ];
 ```
 
-| Property         | Description                                                                                                       |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `id`, `label`    | Key of the filter in `filterSelections`, and the name on its button.                                              |
-| `field`          | Row key, or function returning a row's value or values. A row matches when it has the label of a selected option. |
-| `matches`        | `(row, selected) => boolean`, used instead of the `field` comparison.                                             |
-| `options`        | Options of the filter. When omitted, the distinct `field` values of `items` are listed with their row counts.     |
-| `searchDisabled` | Hides the search field of the filter's list.                                                                      |
-| `count`          | Number shown by the filter's counter. Defaults to the number of options.                                          |
+| Property        | Description                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `id`, `label`   | Key of the filter in `filterSelections`, and the name on its button.                                              |
+| `field`         | Row key, or function returning a row's value or values. A row matches when it has the label of a selected option. |
+| `matches`       | `(row, selected) => boolean`, used instead of the `field` comparison.                                             |
+| `options`       | Options of the filter. When omitted, the distinct `field` values of `items` are listed with their row counts.     |
+| `disableSearch` | Hides the search field of the filter's list.                                                                      |
+| `count`         | Number shown by the filter's counter. Defaults to the number of options.                                          |
 
 - A row is shown when it matches every filter that has a selection; within one filter, any selected option is enough.
 - Filtering is applied by the search after the index is built, so changing a selection does not rebuild the index, and suggestions only come from rows that pass the filters. "Viewing X of Y" counts against all `items`.
@@ -117,20 +119,21 @@ Content projected into the table view, such as a footer, renders after the table
 
 `config` takes a `KgExplorerTableViewConfig`. Every option is optional.
 
-| Option                      | Default     | Description                                                                                         |
-| --------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
-| `searchFields`              | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them. |
-| `searchSuggestionField`     | row `title` | Field whose values are suggested below the search field.                                            |
-| `searchSuggestionsDisabled` | `false`     | Turns the suggestions off.                                                                          |
-| `searchDisabled`            | `false`     | Hides the search field.                                                                             |
-| `resultsCounterDisabled`    | `false`     | Hides the "Viewing X of Y" counter.                                                                 |
-| `endOfResultsDisabled`      | `false`     | Hides the end-of-results indicator.                                                                 |
-| `downloadFormats`           | none        | File formats of the download column. The column is only shown when this is set.                     |
+| Option                     | Default     | Description                                                                                         |
+| -------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| `searchFields`             | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them. |
+| `searchSuggestionField`    | row `title` | Field whose values are suggested below the search field.                                            |
+| `disableSearchSuggestions` | `false`     | Turns the suggestions off.                                                                          |
+| `disableSearch`            | `false`     | Hides the search field.                                                                             |
+| `disableResultsCounter`    | `false`     | Hides the "Viewing X of Y" counter.                                                                 |
+| `resultsCounterPrefix`     | `Viewing`   | Text before the numbers of the results counter.                                                     |
+| `disableEndOfResults`      | `false`     | Hides the end-of-results indicator.                                                                 |
+| `downloadFormats`          | none        | File formats of the download column. The column is only shown when this is set.                     |
 
 Set defaults for every table view below an injector with `provideKgExplorerTableView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
 
 ```ts
-providers: [provideKgExplorerTableView({ endOfResultsDisabled: true })];
+providers: [provideKgExplorerTableView({ disableEndOfResults: true })];
 ```
 
 #### Search
@@ -254,13 +257,14 @@ The page does not download files. Choosing a download option emits `download` wi
 - Below the `medium` breakpoint (960px), the page is a single column with 20px side padding, and the version control panel follows the first section.
 - From `medium` up, the version control panel is a 400px column beside the sections, with 40px padding. The layout is centered and at most 1600px wide.
 
-Spacing can be customized with these CSS variables:
+Spacing and the link color can be customized with these CSS variables:
 
-| Variable                                                 | Default  | Effect                                                                  |
-| -------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
-| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem` | Space between sections                                                  |
-| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem` | Page padding from `medium` up                                           |
-| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`   | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+| Variable                                                 | Default   | Effect                                                                  |
+| -------------------------------------------------------- | --------- | ----------------------------------------------------------------------- |
+| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem`  | Space between sections                                                  |
+| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem`  | Page padding from `medium` up                                           |
+| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`    | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+| `--ang-kg-explorer-metadata-view-link-color`             | `primary` | Color of the text links, including the breadcrumbs                      |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 

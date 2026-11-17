@@ -1,16 +1,16 @@
-@for (provider of providers(); track $index) {
-  @let id = idGenerator.getId('ang-providers-list');
+@for (item of items(); track $index) {
+  @let provider = item.provider;
 
   <div class="ang-provider-list--card" [angEventScope]="provider.label.toLowerCase()">
-    <span class="ang-provider-list--label" [attr.id]="id">{{ provider.label }}</span>
+    <span class="ang-provider-list--label" [attr.id]="item.labelId">{{ provider.label }}</span>
     <a
       class="ang-provider-list--link"
       angTextLink
       target="_blank"
       [angAnyLink]="provider.href"
-      [attr.aria-labelledby]="id"
+      [attr.aria-labelledby]="`${item.linkTextId} ${item.labelId}`"
     >
-      <span>Learn more about this provider</span>
+      <span [attr.id]="item.linkTextId">Learn more about this provider</span>
       <mat-icon fontIcon="open_in_new" />
     </a>
   </div>

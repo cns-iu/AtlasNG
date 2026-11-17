@@ -6,7 +6,7 @@
   justify-content: center;
   align-items: center;
   min-height: 3.5rem;
-  border-radius: 0.5rem;
+  border-radius: token-utils.slot(container-shape, $config);
   padding: 0 1rem;
 
   font-family: token-utils.slot(text-font, $config);

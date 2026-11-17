@@ -13,7 +13,7 @@ export interface BreadcrumbItem {
 /**
  * Breadcrumb trail showing the current page's location in the site hierarchy.
  *
- * Renders an ordered list inside a navigation landmark labelled "Breadcrumb".
+ * Renders an ordered list inside a navigation landmark labelled by `aria-label` ("Breadcrumb" by default).
  * Crumbs with a command render as links, and the link matching the current URL is
  * marked with `aria-current="page"`. Crumbs without a command render as plain text.
  */
@@ -22,7 +22,7 @@ export interface BreadcrumbItem {
   imports: [TextLink, AnyLink, AnyLinkActive],
   templateUrl: './breadcrumbs.html',
   styleUrl: './breadcrumbs.scss',
-  host: { class: 'ang-breadcrumbs' },
+  host: { class: 'ang-breadcrumbs', '[attr.aria-label]': 'null' },
 })
 export class Breadcrumbs {
   /** Crumbs to display */
@@ -30,4 +30,7 @@ export class Breadcrumbs {
 
   /** Separator to display between crumbs */
   readonly separator = input('/');
+
+  /** Accessible name of the navigation landmark */
+  readonly ariaLabel = input('Breadcrumb', { alias: 'aria-label' });
 }

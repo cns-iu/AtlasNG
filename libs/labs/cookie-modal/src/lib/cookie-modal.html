@@ -1,4 +1,6 @@
-<div matDialogTitle class="ang-cookie-modal--header" angEventScope="header">
+<h2 matDialogTitle class="cdk-visually-hidden">{{ title }}</h2>
+
+<div class="ang-cookie-modal--header" angEventScope="header">
   <div class="ang-cookie-modal--logo">
     @if (logoSrc) {
       <img [attr.src]="logoSrc" [attr.alt]="logoLabel ?? 'Logo'" />
@@ -21,7 +23,13 @@
 
 <mat-divider />
 
-<mat-tab-group matDialogContent class="ang-cookie-modal--tabs" angEventScope="tabs" [(selectedIndex)]="activeTab">
+<mat-tab-group
+  matDialogContent
+  class="ang-cookie-modal--tabs"
+  angEventScope="tabs"
+  [aria-label]="tabsLabel"
+  [(selectedIndex)]="activeTab"
+>
   <mat-tab label="Consent" angEventScope="consent-tab">
     <ang-scroll-area class="ang-cookie-modal--scroll-area">
       <div class="ang-cookie-modal--content">

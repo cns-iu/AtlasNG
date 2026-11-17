@@ -102,10 +102,10 @@ const meta: Meta<SearchList<SearchListOption>> = {
     },
   },
   args: {
-    searchDisabled: false,
+    disableSearch: false,
   },
   argTypes: {
-    searchDisabled: {
+    disableSearch: {
       control: 'boolean',
     },
   },
