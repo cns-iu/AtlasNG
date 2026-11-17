@@ -99,6 +99,7 @@
     @include search-list.overrides(
       (
         background: token-utils.slot(dialog-container-color, $config),
+        radius: 0,
         elevation: transparent,
         option-shape: token-utils.slot(dialog-option-shape, $config),
       )
