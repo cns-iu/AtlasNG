@@ -1,26 +1,33 @@
 <ang-skip-to-content-button anchorId="main-content" label="Skip to main content" />
 <header class="ang-header-shell">
   <div class="ang-header-shell-left">
-    @if (hasLocalNavigation()) {
+    @if (localNavigation()) {
       <button
         matIconButton
         angTrackClick
         type="button"
         class="ang-header-shell-menu-button"
         [matTooltip]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
-        [attr.aria-label]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
-        (click)="localNavigationToggle.emit()"
+        [attr.aria-label]="localNavigationLabel()"
+        [attr.aria-expanded]="localNavigationExpanded()"
+        [attr.aria-controls]="localNavigationControls()"
+        (click)="localNavigationClick.emit()"
       >
         <mat-icon [fontIcon]="localNavigationIcon()" />
       </button>
     }
-    <a class="ang-header-shell-logo" aria-label="Go to homepage" matTooltip="Homepage" [angAnyLink]="logoLink()">
-      <img alt="App Logo" [src]="logoUrl()" />
+    <a
+      class="ang-header-shell-logo"
+      [attr.aria-label]="logoLabel()"
+      [matTooltip]="logoTooltip()"
+      [angAnyLink]="logoLink()"
+    >
+      <img alt="App Logo" [src]="logoSrc()" />
     </a>
     <mat-divider vertical class="ang-header-shell-divider" />
   </div>
 
-  <nav class="ang-header-shell-desktop-nav" aria-label="Primary navigation">
+  <nav class="ang-header-shell-desktop-nav" [attr.aria-label]="navigationLabel()">
     @for (item of navigationItems(); track item.id) {
       @if (item.external) {
         <ang-navigation-button [link]="item.link">
@@ -35,6 +42,10 @@
   </nav>
 
   <div class="ang-header-shell-right">
+    <div class="ang-header-shell--actions">
+      <ng-content select="[angHeaderShellAction]" />
+    </div>
+
     @if (helpLink()) {
       <div class="ang-header-shell-right-fixed">
         <ang-help-button [link]="helpLink()" />
@@ -48,8 +59,10 @@
         type="button"
         class="ang-header-shell-icon-button"
         matTooltip="Apps"
-        [attr.aria-label]="'Open app switcher'"
-        (click)="appsMenuToggle.emit()"
+        [attr.aria-label]="appsMenuLabel()"
+        [attr.aria-expanded]="appsMenuExpanded()"
+        [attr.aria-controls]="appsMenuControls()"
+        (click)="appsMenuClick.emit()"
       >
         <mat-icon fontIcon="apps" />
       </button>

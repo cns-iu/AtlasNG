@@ -1,4 +1,7 @@
-import type { UrlCreationOptions, UrlTree } from '@angular/router';
+import { computed, Signal } from '@angular/core';
+import type { IsActiveMatchOptions, UrlCreationOptions, UrlTree } from '@angular/router';
+import type { UrlChangeMatchOptions } from '../handler';
+import { isUrlActive } from './compare-url';
 
 /**
  * Type guard for Angular `UrlTree`-like objects.
@@ -87,4 +90,32 @@ export function applyQueryParamsAndFragmentToUrl(url: URL, options: UrlCreationO
   if (!options.preserveFragment && options.fragment !== undefined) {
     url.hash = options.fragment;
   }
+}
+
+/**
+ * Converts URL change options into exact-or-ignored URL match options.
+ *
+ * @param options URL parts that count as a change.
+ * @returns Match options comparing the path exactly and each enabled part exactly.
+ */
+export function toIsActiveMatchOptions(options: UrlChangeMatchOptions = {}): IsActiveMatchOptions {
+  const { matrixParams = true, queryParams = true, fragment = true } = options;
+  return {
+    paths: 'exact',
+    matrixParams: matrixParams ? 'exact' : 'ignored',
+    queryParams: queryParams ? 'exact' : 'ignored',
+    fragment: fragment ? 'exact' : 'ignored',
+  };
+}
+
+/**
+ * Derives a URL signal that only notifies when the path or a part enabled in `options` changes.
+ *
+ * @param source Signal holding the current URL.
+ * @param options URL parts that count as a change.
+ * @returns A signal holding the URL as of the last change that counted.
+ */
+export function urlChangeSignal(source: Signal<string>, options?: UrlChangeMatchOptions): Signal<string> {
+  const matchOptions = toIsActiveMatchOptions(options);
+  return computed(source, { equal: (previous, next) => isUrlActive(next, previous, matchOptions) });
 }

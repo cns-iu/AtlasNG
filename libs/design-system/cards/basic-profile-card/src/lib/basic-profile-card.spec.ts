@@ -6,7 +6,7 @@ describe('BasicProfileCard', () => {
   type BasicProfileCardInputs = {
     image: string;
     name: string;
-    description: string | string[];
+    descriptions: string | string[];
     link?: AnyLinkCommand;
   };
 
@@ -15,7 +15,7 @@ describe('BasicProfileCard', () => {
       inputs: {
         image: '/profile.jpg',
         name: 'Jane Doe',
-        description: 'Design leader and accessibility advocate.',
+        descriptions: 'Design leader and accessibility advocate.',
         ...inputs,
       },
     });
@@ -40,7 +40,7 @@ describe('BasicProfileCard', () => {
 
   it('renders all description lines when description is an array', async () => {
     await setup({
-      description: ['Design leader', 'Accessibility advocate', 'Public speaker'],
+      descriptions: ['Design leader', 'Accessibility advocate', 'Public speaker'],
     });
 
     expect(screen.getByText('Design leader')).toBeVisible();
@@ -49,7 +49,7 @@ describe('BasicProfileCard', () => {
   });
 
   it('renders repeated description lines', async () => {
-    await setup({ description: ['Researcher', 'Researcher'] });
+    await setup({ descriptions: ['Researcher', 'Researcher'] });
 
     expect(screen.getAllByText('Researcher')).toHaveLength(2);
   });

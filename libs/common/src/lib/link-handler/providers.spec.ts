@@ -12,6 +12,10 @@ import { RouterLinkHandler } from './router-handler';
 import { RouterlessLinkHandler } from './routerless-handler';
 
 class MockLinkHandler implements LinkHandler {
+  currentUrl(): Signal<string> {
+    return signal('');
+  }
+
   prepareLink(command: LinkCommand): PreparedLink {
     return { href: String(command.command) };
   }

@@ -30,3 +30,19 @@ body:
     attributes:
       label: Cause and proposed fix
       description: If known, the code at fault, with permalinks, and how to fix it.
+  - type: textarea
+    id: figma
+    attributes:
+      label: Figma
+      description: Links to the expected design, such as the AtlasNG Components frame and the app's implementation frame.
+      placeholder: |
+        - AtlasNG Components: https://www.figma.com/design/...
+        - App implementation: https://www.figma.com/design/...
+  - type: textarea
+    id: wcag
+    attributes:
+      label: Web Content Accessibility Guidelines (WCAG)
+      description: For accessibility bugs, each WCAG 2.2 success criterion that fails, with its level and a link. Add the axe rule ID if a tool flagged it.
+      placeholder: |
+        - 1.4.3 Contrast (Minimum), AA (axe color-contrast): https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html
+        - 4.1.2 Name, Role, Value, A: https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html

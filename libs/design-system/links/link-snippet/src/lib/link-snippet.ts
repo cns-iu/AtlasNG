@@ -11,6 +11,7 @@ const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
 
 /**
  * Displays a link in a code-snippet-style presentation with an open-in-new-tab link and a copy button.
+ * A URL too long for the available width scrolls horizontally in an {@link ScrollArea}.
  */
 @Component({
   selector: 'ang-link-snippet',
@@ -25,6 +26,9 @@ const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
 export class LinkSnippet {
   /** Url to display */
   readonly url = input.required<string>();
+
+  /** Visually hidden hint announcing that the link opens in a new tab */
+  readonly newTabHint = input('Opens in a new tab');
 
   /** Label for the url with the URL prefix removed */
   protected readonly urlLabel = computed(() => this.url().replace(URL_PREFIX_REGEX, ''));

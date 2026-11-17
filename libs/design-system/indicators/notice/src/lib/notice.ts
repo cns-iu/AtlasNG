@@ -1,4 +1,5 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { IdGenerator } from '@atlasng/common';
 import { MatIconModule } from '@angular/material/icon';
 
 /** Visual and semantic tone of a notice. */
@@ -26,7 +27,8 @@ const VARIANT_CONFIGS: Record<NoticeVariant, NoticeVariantConfig> = {
  *
  * Each variant pairs a color treatment with a decorative icon, and a visually hidden
  * variant name (for example "Warning:") precedes the tagline or body so screen readers
- * convey the tone without relying on color. The host has the ARIA `note` role. The notice
+ * convey the tone without relying on color. The host has the ARIA `note` role and is labelled
+ * by the tagline when one is set. The notice
  * does not announce itself, so it suits content that is present when the page loads rather
  * than feedback to an action.
  */
@@ -39,6 +41,7 @@ const VARIANT_CONFIGS: Record<NoticeVariant, NoticeVariantConfig> = {
     class: 'ang-notice',
     role: 'note',
     '[class]': '"ang-notice--variant-" + variant()',
+    '[attr.aria-labelledby]': 'tagline() ? taglineId : null',
   },
 })
 export class Notice {
@@ -47,6 +50,9 @@ export class Notice {
 
   /** Optional title shown above the body. */
   readonly tagline = input<string>();
+
+  /** Id of the tagline, referenced by the host's `aria-labelledby`. */
+  protected readonly taglineId = inject(IdGenerator).getId('ang-notice--tagline');
 
   /** Icon and screen-reader label for the current variant. */
   protected readonly config = computed(() => VARIANT_CONFIGS[this.variant()]);

@@ -1,11 +1,11 @@
 import { computed, DestroyRef, inject, Injector, Service, Signal, signal } from '@angular/core';
 import type { IsActiveMatchOptions, NavigationBehaviorOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION, NAVIGATION, WINDOW } from '@atlasng/core';
-import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from './handler';
+import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink, UrlChangeMatchOptions } from './handler';
 import { isAnchorLikeElement } from './utils/anchor-element';
 import { RouterlessCommandSerializer } from './utils/command-serializer';
 import { isUrlActive } from './utils/compare-url';
-import { isSafeNavigationUrl } from './utils/url';
+import { isSafeNavigationUrl, urlChangeSignal } from './utils/url';
 
 /**
  * Link metadata prepared by the default routerless handler.
@@ -108,6 +108,16 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
 
     this.#updateCurrentUrl();
     return false;
+  }
+
+  /**
+   * Tracks the browser URL (`location.href`).
+   *
+   * @param matchOptions URL parts that count as a change. All parts count by default.
+   * @returns A signal holding the URL as of the last change that counted.
+   */
+  currentUrl(matchOptions?: UrlChangeMatchOptions): Signal<string> {
+    return urlChangeSignal(this.#currentUrl, matchOptions);
   }
 
   /**

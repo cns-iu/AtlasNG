@@ -1,10 +1,11 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { AnyLink } from '@atlasng/common';
-import { SocialMediaButton } from '@atlasng/design-system/buttons/social-media-button';
+import { SocialMediaButton, SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 import { HeaderShellNavigationItem } from '../header-shell';
 
 /** Supported social media IDs */
@@ -15,7 +16,15 @@ const SOCIAL_MEDIA_IDS = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram
  */
 @Component({
   selector: 'ang-navigation-menu',
-  imports: [MatIconModule, MatSidenavModule, MatButtonModule, MatExpansionModule, AnyLink, SocialMediaButton],
+  imports: [
+    MatDividerModule,
+    MatIconModule,
+    MatSidenavModule,
+    MatButtonModule,
+    MatExpansionModule,
+    AnyLink,
+    SocialMediaButton,
+  ],
   templateUrl: './navigation-menu.html',
   styleUrl: './navigation-menu.scss',
 })
@@ -27,5 +36,11 @@ export class NavigationMenu {
   readonly email = input<string>();
 
   /** List of supported social media IDs. */
-  readonly socialMediaIds = input<string[]>(SOCIAL_MEDIA_IDS);
+  readonly socials = input<(string | SocialMediaButtonDefinition)[]>(SOCIAL_MEDIA_IDS);
+
+  /** Accessible name of the social media link group. */
+  readonly socialsLabel = input('Social media links');
+
+  /** Emits the navigation item whose link was activated, including links to the current page. */
+  readonly linkClick = output<HeaderShellNavigationItem>();
 }

@@ -14,8 +14,8 @@ import {
 /**
  * Icon link to a social media profile.
  *
- * The link, label, and icon come from an explicit `definition`, or from the definition
- * matching `id` in the injected {@link SOCIAL_MEDIA_BUTTON_DEFINITIONS} or the built-in set.
+ * The link, label, and icon come from `social`: either an explicit definition, or the id of a
+ * definition in the injected {@link SOCIAL_MEDIA_BUTTON_DEFINITIONS} or the built-in set.
  */
 @Component({
   selector: 'ang-social-media-button',
@@ -26,61 +26,45 @@ import {
   host: { class: 'ang-social-media-button' },
 })
 export class SocialMediaButton {
-  /** Identifier used to resolve a definition from injected or built-in sets. */
-  readonly id = input<string>();
+  /** Explicit definition, or the id of a definition resolved from the injected or built-in sets. */
+  readonly social = input.required<string | SocialMediaButtonDefinition>();
 
-  /** Explicit definition with precedence over any `id`-based resolution. */
-  readonly definition = input<SocialMediaButtonDefinition>();
-
-  /** Resolved definition from either the explicit input or `id` lookup. */
+  /** Resolved definition from either the explicit definition or the id lookup. */
   protected readonly resolvedDefinition = computed(() => {
-    for (const definition of this.#getDefinitionCandidates()) {
-      if (definition) {
-        return definition;
-      }
+    const social = this.social();
+    if (typeof social !== 'string') {
+      return social;
     }
 
-    return FALLBACK_SOCIAL_MEDIA_BUTTON_DEFINITION;
+    return this.#findDefinition(social) ?? FALLBACK_SOCIAL_MEDIA_BUTTON_DEFINITION;
   });
 
   /** Optional groups of custom definitions provided via dependency injection. */
   readonly #definitionGroups = inject(SOCIAL_MEDIA_BUTTON_DEFINITIONS, { optional: true }) ?? [];
 
   /**
-   * Yields candidate definitions in precedence order:
-   * 1) explicit `definition` input
-   * 2) last injected definition matching `id`
-   * 3) built-in definition matching `id`
+   * Finds the definition for an id: the last injected match, then the built-in match.
    *
-   * In dev mode, missing inputs or unresolved `id` will throw.
-   *
-   * @returns Candidate definitions, which are `undefined` when a source has no match.
+   * @param id Id of the definition to find.
+   * @returns Matching definition, or undefined in production mode when none matches.
+   * @throws AngError In dev mode when no definition matches the id.
    */
-  *#getDefinitionCandidates(): Iterable<SocialMediaButtonDefinition | undefined> {
-    yield this.definition();
-
-    const id = this.id();
-    if (!id) {
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        throw new AngError(
-          DesignSystemErrorCode.MissingSocialMediaButtonInput,
-          'SocialMediaButton requires an id or definition input',
-        );
-      }
-
-      return;
-    }
-
+  #findDefinition(id: string): SocialMediaButtonDefinition | undefined {
     for (let index = this.#definitionGroups.length - 1; index >= 0; index--) {
-      yield this.#definitionGroups[index].findLast((definition) => definition.id === id);
+      const definition = this.#definitionGroups[index].findLast((candidate) => candidate.id === id);
+      if (definition) {
+        return definition;
+      }
     }
-    yield DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS.find((definition) => definition.id === id);
 
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    const definition = DEFAULT_SOCIAL_MEDIA_BUTTON_DEFINITIONS.find((candidate) => candidate.id === id);
+    if (!definition && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw new AngError(
         DesignSystemErrorCode.UnknownSocialMediaButtonId,
         `No definition found for SocialMediaButton with id "${id}"`,
       );
     }
+
+    return definition;
   }
 }

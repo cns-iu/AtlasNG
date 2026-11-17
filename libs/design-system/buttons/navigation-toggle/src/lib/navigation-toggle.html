@@ -4,13 +4,16 @@
   angTrackClick
   class="ang-navigation-toggle--button"
   disableRipple
-  [attr.aria-expanded]="selected()"
+  [attr.aria-expanded]="expanded()"
+  [attr.aria-label]="ariaLabel()"
+  [attr.aria-describedby]="ariaDescribedby()"
+  [attr.aria-controls]="ariaControls()"
 >
   <span class="ang-navigation-toggle--text"><ng-content /></span>
 
   <mat-icon
     iconPositionEnd
     class="ang-navigation-toggle--icon"
-    [fontIcon]="selected() ? 'expand_less' : 'expand_more'"
+    [fontIcon]="expanded() ? 'expand_less' : 'expand_more'"
   />
 </button>

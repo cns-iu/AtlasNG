@@ -30,7 +30,7 @@
     outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
   }
 
-  :is(&.ang-navigation-toggle--selected, &:hover, &:active),
+  :is(&.ang-navigation-toggle--expanded, &:hover, &:active),
   .ang-navigation-toggle--button:focus-visible {
     .ang-navigation-toggle--text {
       text-decoration: underline;

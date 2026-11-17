@@ -34,6 +34,8 @@ interface TestRow extends Row {
 }
 
 class MockLinkHandler implements LinkHandler {
+  readonly currentUrl = vi.fn(() => signal(''));
+
   readonly prepareLink = vi.fn((command: LinkCommand): PreparedLink => ({ href: String(command.command) }));
 
   readonly navigateTo = vi.fn((): boolean => false);
@@ -475,5 +477,19 @@ describe('Table', () => {
       expect(estimate).toHaveBeenCalledWith(ROWS[0]);
       expect(screen.getByText('Ada').closest('datatable-body-row')).toHaveStyle({ height: '60px' });
     });
+  });
+
+  it('forwards aria attributes to the table element', async () => {
+    await render(
+      `<span id="description">All people</span>
+      <ang-table aria-label="People" aria-describedby="description" [rows]="rows" [columns]="columns" />`,
+      {
+        imports: [Table],
+        componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS },
+      },
+    );
+
+    expect(screen.getByRole('table', { name: 'People' })).toHaveAccessibleDescription('All people');
+    expect(screen.getByRole('table').closest('ang-table')).not.toHaveAttribute('aria-label');
   });
 });
