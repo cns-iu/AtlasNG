@@ -49,4 +49,10 @@ describe('KgExplorerTableToolbar', () => {
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(counter('Viewing 2 of 3')).not.toBeInTheDocument();
   });
+
+  it('uses a configured search label', async () => {
+    await setup({ config: { searchLabel: 'Search datasets' } });
+
+    expect(screen.getByRole('combobox', { name: 'Search datasets' })).toBeInTheDocument();
+  });
 });

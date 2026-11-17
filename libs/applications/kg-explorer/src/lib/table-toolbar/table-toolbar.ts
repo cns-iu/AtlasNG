@@ -35,9 +35,13 @@ export class KgExplorerTableToolbar {
 
   /**
    * Table view configuration; `searchDisabled` and `resultsCounterDisabled` hide the parts of the toolbar,
+   * `searchLabel` labels the search field,
    * and `resultsCounterPrefix` is shown before the numbers of the counter.
    */
   readonly config = input<
-    Pick<KgExplorerTableViewConfig, 'searchDisabled' | 'resultsCounterDisabled' | 'resultsCounterPrefix'>
+    Pick<
+      KgExplorerTableViewConfig,
+      'searchDisabled' | 'searchLabel' | 'resultsCounterDisabled' | 'resultsCounterPrefix'
+    >
   >({});
 }

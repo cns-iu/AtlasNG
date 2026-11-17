@@ -1,5 +1,5 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, Directive, inject, input, model, output } from '@angular/core';
+import { booleanAttribute, Component, Directive, inject, input, model, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -46,6 +46,10 @@ export class HeaderShellAction {}
 
 /**
  * Sticky page header shell with responsive desktop/mobile navigation and dynamic icon action overflow.
+ *
+ * The local navigation and apps buttons expose their open state as `aria-expanded`. Set
+ * `localNavigationControls` and `appsMenuControls` to the ids of the panels they open,
+ * for example the `leftMenuId` and `rightMenuId` of an `ang-navigation-container`.
  */
 @Component({
   selector: 'ang-header-shell',
@@ -88,6 +92,24 @@ export class HeaderShell {
 
   /** Current local navigation open/closed state. */
   readonly localNavigationExpanded = model(false);
+
+  /** Whether the apps menu is open. */
+  readonly appsMenuExpanded = input(false, { transform: booleanAttribute });
+
+  /** Id of the panel opened by the local navigation button, referenced by its `aria-controls`. */
+  readonly localNavigationControls = input<string>();
+
+  /** Id of the panel opened by the apps button, referenced by its `aria-controls`. */
+  readonly appsMenuControls = input<string>();
+
+  /** Accessible name of the local navigation button. */
+  readonly localNavigationLabel = input('Local navigation');
+
+  /** Accessible name of the apps button. */
+  readonly appsMenuLabel = input('App switcher');
+
+  /** Accessible name of the primary navigation landmark. */
+  readonly navigationLabel = input('Primary navigation');
 
   /** Emits each time the local navigation toggle button is pressed. */
   readonly localNavigationToggle = output();

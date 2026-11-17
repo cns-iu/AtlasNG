@@ -53,6 +53,9 @@ function renderHeaderShell(actions = ''): Meta<HeaderShell & WithMenuItems>['ren
       <ang-header-shell
         ${argsToTemplate(args, { exclude: ['navRight'] })}
         [localNavigationExpanded]="navigation.leftMenuOpen()"
+        [localNavigationControls]="navigation.leftMenuId"
+        [appsMenuExpanded]="navigation.rightMenuOpen()"
+        [appsMenuControls]="navigation.rightMenuId"
         (localNavigationToggle)="navigation.localNavigationToggle()"
         (appsMenuToggle)="navigation.appsMenuToggle()"
       >

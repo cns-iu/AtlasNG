@@ -27,11 +27,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    // Material's dialog title strut would otherwise become a flex item and center the logo
-    &::before {
-      display: none;
-    }
+    padding: var(--mat-dialog-headline-padding);
   }
 
   .ang-cookie-modal--logo {

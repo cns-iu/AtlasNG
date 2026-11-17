@@ -1,5 +1,13 @@
 <mat-drawer-container class="example-container" hasBackdrop>
-  <mat-drawer mode="over" position="start" [opened]="leftMenuOpen()" (openedChange)="leftMenuOpen.set($event)">
+  <mat-drawer
+    mode="over"
+    position="start"
+    role="navigation"
+    [id]="leftMenuId"
+    [attr.aria-label]="leftMenuLabel()"
+    [opened]="leftMenuOpen()"
+    (openedChange)="leftMenuOpen.set($event)"
+  >
     <ang-navigation-menu
       [navigationItems]="navigationItems()"
       [email]="email()"
@@ -12,6 +20,9 @@
     class="right"
     mode="over"
     position="end"
+    role="navigation"
+    [id]="rightMenuId"
+    [attr.aria-label]="rightMenuLabel()"
     [opened]="rightMenuOpen()"
     (openedChange)="rightMenuOpen.set($event)"
   >
