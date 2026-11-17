@@ -128,6 +128,15 @@ describe('Table', () => {
     expect(fixture.nativeElement.querySelector('ang-table')).toHaveClass('ang-table--appearance-striped');
   });
 
+  it('skips hydration, because ngx-datatable cannot be hydrated', async () => {
+    const { fixture } = await render('<ang-table [rows]="rows" [columns]="columns" />', {
+      imports: [Table],
+      componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS },
+    });
+
+    expect(fixture.nativeElement.querySelector('ang-table')).toHaveAttribute('ngSkipHydration', 'true');
+  });
+
   it('switches appearance classes', async () => {
     const appearance = signal<TableAppearance>('striped');
     const { fixture } = await setup([{ name: 'Name', prop: 'name' }], { appearance });

@@ -133,6 +133,9 @@ function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TR
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-table',
+    // ngx-datatable forwards projected content to slots it only renders in some states, which hydration cannot
+    // serialize (NG0502), and it lays out rows from measurements, so the table renders again in the browser.
+    ngSkipHydration: 'true',
     '[class]': '"ang-table--appearance-" + appearance()',
     '[class.ang-table--summary-top]': 'summaryRow() && summaryPosition() === "top"',
     '[class.ang-table--summary-bottom]': 'summaryRow() && summaryPosition() === "bottom"',
