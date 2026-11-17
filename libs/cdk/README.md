@@ -83,19 +83,19 @@ Every `injectSearch` option accepts a value, a signal, or a function such as `()
 
 Use `provideSearch({ debounce, minLength, suggestionLimit }, withCustomEngine(...))` in application, route, or component providers to change the defaults or swap the engine. A nested configuration is merged over its parent's, and `withDefaultEngine()` restores the built-in engine below a custom one. Result limits are set per call only, so a global default never truncates a filter list. Engines implement `SearchEngine`, must honour the `filter` of a query and of `suggest`, and may return results synchronously or as a promise. As with every resource, `value()` throws while an asynchronous search is in the `'error'` status, so check `hasValue()` first or read `items()`, which is empty in that case. See the JSDoc in [libs/cdk/search/src](search/src) for the full API.
 
-### Friendly wrap
+### Separator wrap
 
-`angFriendlyWrap` from `@atlasng/cdk/friendly-wrap` renders a string into its host with a line break opportunity (`<wbr>`) after each run of break characters, so URLs, IRIs, IDs, and file names wrap at readable points instead of overflowing their container or breaking anywhere. By default it breaks after `/`, `.`, `_`, `-`, `:`, `?`, `=`, `&`, and `#`. Pass `angFriendlyWrapCharacters` to change the set, as a string of characters or a list of symbols. The content is built from text nodes, so it needs no sanitizer bypass, and `<wbr>` adds no characters, so copied text matches the original string. The directive adds no styles.
+`angSeparatorWrap` from `@atlasng/cdk/separator-wrap` renders a string into its host with a line break opportunity (`<wbr>`) after each run of break characters, so URLs, IRIs, IDs, and file names wrap at readable points instead of overflowing their container or breaking anywhere. By default it breaks after `/`, `.`, `_`, `-`, `:`, `?`, `=`, `&`, and `#`. Pass `angSeparatorWrapCharacters` to change the set, as a string of characters or a list of symbols. The content is built from text nodes, so it needs no sanitizer bypass, and `<wbr>` adds no characters, so copied text matches the original string. The directive adds no styles.
 
 ```ts
 import { Component } from '@angular/core';
-import { FriendlyWrap } from '@atlasng/cdk/friendly-wrap';
+import { SeparatorWrap } from '@atlasng/cdk/separator-wrap';
 
 @Component({
-  imports: [FriendlyWrap],
+  imports: [SeparatorWrap],
   template: `
-    <a [href]="iri"><span [angFriendlyWrap]="iri"></span></a>
-    <code [angFriendlyWrap]="path" angFriendlyWrapCharacters="/"></code>
+    <a [href]="iri"><span [angSeparatorWrap]="iri"></span></a>
+    <code [angSeparatorWrap]="path" angSeparatorWrapCharacters="/"></code>
   `,
 })
 export class OntologyLink {
@@ -104,7 +104,7 @@ export class OntologyLink {
 }
 ```
 
-`friendlyWrapSegments(text, characters)` returns the segments between the break opportunities for use outside a template.
+`separatorWrapSegments(text, characters)` returns the segments between the break opportunities for use outside a template.
 
 ### Error codes
 

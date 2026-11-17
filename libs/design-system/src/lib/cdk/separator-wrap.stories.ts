@@ -1,4 +1,4 @@
-import { DEFAULT_FRIENDLY_WRAP_CHARACTERS, FriendlyWrap } from '@atlasng/cdk/friendly-wrap';
+import { DEFAULT_SEPARATOR_WRAP_CHARACTERS, SeparatorWrap } from '@atlasng/cdk/separator-wrap';
 import { type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
 
 /** Inline styles of the narrow container that forces the text to wrap. */
@@ -12,12 +12,12 @@ const EXAMPLES = [
   { label: 'File name', text: 'hra_v2.3_asct-b_kidney-cortex_2026-11-12.final.xlsx' },
 ];
 
-const meta: Meta<FriendlyWrap> = {
-  component: FriendlyWrap,
-  title: 'CDK/Friendly Wrap',
+const meta: Meta<SeparatorWrap> = {
+  component: SeparatorWrap,
+  title: 'CDK/Separator Wrap',
   args: {
     text: EXAMPLES[0].text,
-    characters: [...DEFAULT_FRIENDLY_WRAP_CHARACTERS],
+    characters: [...DEFAULT_SEPARATOR_WRAP_CHARACTERS],
   },
   argTypes: {
     text: {
@@ -31,21 +31,21 @@ const meta: Meta<FriendlyWrap> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [FriendlyWrap],
+      imports: [SeparatorWrap],
     }),
   ],
   render: (args) => ({
     props: args,
     template: `
       <p style="${CONTAINER_STYLE}">
-        <span [angFriendlyWrap]="text" [angFriendlyWrapCharacters]="characters"></span>
+        <span [angSeparatorWrap]="text" [angSeparatorWrapCharacters]="characters"></span>
       </p>
     `,
   }),
 };
 
 export default meta;
-type Story = StoryObj<FriendlyWrap>;
+type Story = StoryObj<SeparatorWrap>;
 
 export const Default: Story = {};
 
@@ -59,7 +59,7 @@ export const Examples: Story = {
           <dt style="font: var(--mat-sys-label-medium); color: var(--mat-sys-on-surface-variant);">
             {{ example.label }}
           </dt>
-          <dd style="margin: 0 0 1rem;"><span [angFriendlyWrap]="example.text"></span></dd>
+          <dd style="margin: 0 0 1rem;"><span [angSeparatorWrap]="example.text"></span></dd>
         }
       </dl>
     `,
@@ -85,8 +85,8 @@ export const Comparison: Story = {
           <span>{{ text }}</span>
         </p>
         <p style="${CONTAINER_STYLE}">
-          <strong style="display: block; margin-bottom: 0.5rem;">Friendly wrap</strong>
-          <span [angFriendlyWrap]="text" [angFriendlyWrapCharacters]="characters"></span>
+          <strong style="display: block; margin-bottom: 0.5rem;">Separator wrap</strong>
+          <span [angSeparatorWrap]="text" [angSeparatorWrapCharacters]="characters"></span>
         </p>
       </div>
     `,

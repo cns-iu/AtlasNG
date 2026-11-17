@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/angular';
-import { FriendlyWrap, friendlyWrapSegments } from './friendly-wrap';
+import { SeparatorWrap, separatorWrapSegments } from './separator-wrap';
 
-describe('friendlyWrapSegments', () => {
+describe('separatorWrapSegments', () => {
   it('splits after each run of the default characters', () => {
-    expect(friendlyWrapSegments('https://example.com/a_b-c:d?e=f&g#h')).toEqual([
+    expect(separatorWrapSegments('https://example.com/a_b-c:d?e=f&g#h')).toEqual([
       'https://',
       'example.',
       'com/',
@@ -19,27 +19,27 @@ describe('friendlyWrapSegments', () => {
   });
 
   it('splits after custom characters and symbols', () => {
-    expect(friendlyWrapSegments('a/b.c', '.')).toEqual(['a/b.', 'c']);
-    expect(friendlyWrapSegments('fish and chips', ['and'])).toEqual(['fish and', ' chips']);
+    expect(separatorWrapSegments('a/b.c', '.')).toEqual(['a/b.', 'c']);
+    expect(separatorWrapSegments('fish and chips', ['and'])).toEqual(['fish and', ' chips']);
   });
 
   it('keeps plain words whole and ignores empty symbols', () => {
-    expect(friendlyWrapSegments('kidney')).toEqual(['kidney']);
-    expect(friendlyWrapSegments('a/b', '')).toEqual(['a/b']);
-    expect(friendlyWrapSegments('a/b', [''])).toEqual(['a/b']);
+    expect(separatorWrapSegments('kidney')).toEqual(['kidney']);
+    expect(separatorWrapSegments('a/b', '')).toEqual(['a/b']);
+    expect(separatorWrapSegments('a/b', [''])).toEqual(['a/b']);
   });
 
   it('does not split at the ends of the text', () => {
-    expect(friendlyWrapSegments('/path/')).toEqual(['/', 'path/']);
-    expect(friendlyWrapSegments('')).toEqual([]);
+    expect(separatorWrapSegments('/path/')).toEqual(['/', 'path/']);
+    expect(separatorWrapSegments('')).toEqual([]);
   });
 });
 
-describe('FriendlyWrap', () => {
+describe('SeparatorWrap', () => {
   async function setup(text: string, characters?: string | readonly string[]) {
-    const binding = characters === undefined ? '' : '[angFriendlyWrapCharacters]="characters"';
-    return render(`<span data-testid="host" [angFriendlyWrap]="text" ${binding}>stale</span>`, {
-      imports: [FriendlyWrap],
+    const binding = characters === undefined ? '' : '[angSeparatorWrapCharacters]="characters"';
+    return render(`<span data-testid="host" [angSeparatorWrap]="text" ${binding}>stale</span>`, {
+      imports: [SeparatorWrap],
       componentProperties: { text, characters },
     });
   }
@@ -53,7 +53,7 @@ describe('FriendlyWrap', () => {
   it('adds break opportunities after the default characters', async () => {
     await setup('https://example.com/path');
     const host = screen.getByTestId('host');
-    expect(host).toHaveClass('ang-friendly-wrap');
+    expect(host).toHaveClass('ang-separator-wrap');
     expect(nodes(host)).toEqual(['https://', '<wbr>', 'example.', '<wbr>', 'com/', '<wbr>', 'path']);
   });
 

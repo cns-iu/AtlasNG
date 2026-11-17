@@ -1,7 +1,7 @@
 import { Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
 
-/** Characters that {@link FriendlyWrap} breaks after by default: the separators of URLs, IRIs, IDs, and file names. */
-export const DEFAULT_FRIENDLY_WRAP_CHARACTERS: readonly string[] = ['/', '.', '_', '-', ':', '?', '=', '&', '#'];
+/** Characters that {@link SeparatorWrap} breaks after by default: the separators of URLs, IRIs, IDs, and file names. */
+export const DEFAULT_SEPARATOR_WRAP_CHARACTERS: readonly string[] = ['/', '.', '_', '-', ':', '?', '=', '&', '#'];
 
 /**
  * Splits text at its line break opportunities: after each run of break symbols, except at the end of the text.
@@ -12,9 +12,9 @@ export const DEFAULT_FRIENDLY_WRAP_CHARACTERS: readonly string[] = ['/', '.', '_
  * symbols longer than one character. Empty symbols are ignored.
  * @returns Consecutive segments that join back into the text. Empty text returns no segments.
  */
-export function friendlyWrapSegments(
+export function separatorWrapSegments(
   text: string,
-  characters: string | readonly string[] = DEFAULT_FRIENDLY_WRAP_CHARACTERS,
+  characters: string | readonly string[] = DEFAULT_SEPARATOR_WRAP_CHARACTERS,
 ): string[] {
   const symbols = [...characters].filter((symbol) => symbol.length > 0).sort((a, b) => b.length - a.length);
   const segments: string[] = [];
@@ -50,20 +50,20 @@ export function friendlyWrapSegments(
  * copied text matches the original string. The directive adds no styles.
  *
  * @example
- * <span [angFriendlyWrap]="iri"></span>
- * <span [angFriendlyWrap]="path" angFriendlyWrapCharacters="/"></span>
+ * <span [angSeparatorWrap]="iri"></span>
+ * <span [angSeparatorWrap]="path" angSeparatorWrapCharacters="/"></span>
  */
 @Directive({
-  selector: '[angFriendlyWrap]',
-  host: { class: 'ang-friendly-wrap' },
+  selector: '[angSeparatorWrap]',
+  host: { class: 'ang-separator-wrap' },
 })
-export class FriendlyWrap {
+export class SeparatorWrap {
   /** Text to render. */
-  readonly text = input.required<string>({ alias: 'angFriendlyWrap' });
+  readonly text = input.required<string>({ alias: 'angSeparatorWrap' });
 
-  /** Symbols to break after, as a string of characters or a list of symbols. See {@link friendlyWrapSegments}. */
-  readonly characters = input<string | readonly string[]>(DEFAULT_FRIENDLY_WRAP_CHARACTERS, {
-    alias: 'angFriendlyWrapCharacters',
+  /** Symbols to break after, as a string of characters or a list of symbols. See {@link separatorWrapSegments}. */
+  readonly characters = input<string | readonly string[]>(DEFAULT_SEPARATOR_WRAP_CHARACTERS, {
+    alias: 'angSeparatorWrapCharacters',
   });
 
   /** Host element. */
@@ -74,7 +74,7 @@ export class FriendlyWrap {
 
   /** Rebuilds the host content when the text or characters change. */
   constructor() {
-    effect(() => this.#render(friendlyWrapSegments(this.text(), this.characters())));
+    effect(() => this.#render(separatorWrapSegments(this.text(), this.characters())));
   }
 
   /**

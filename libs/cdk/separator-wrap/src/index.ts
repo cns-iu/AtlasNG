@@ -1,1 +1,1 @@
-export { DEFAULT_FRIENDLY_WRAP_CHARACTERS, FriendlyWrap, friendlyWrapSegments } from './lib/friendly-wrap';
+export { DEFAULT_SEPARATOR_WRAP_CHARACTERS, SeparatorWrap, separatorWrapSegments } from './lib/separator-wrap';
