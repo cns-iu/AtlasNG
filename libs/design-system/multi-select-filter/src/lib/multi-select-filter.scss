@@ -59,14 +59,14 @@
 }
 
 .ang-multi-select-filter--dialog {
-  // The search list's own inset lines the search field and the options up with the title.
+  // The search field and the option content line up with the title.
   @include mat.dialog-overrides(
     (
       container-color: token-utils.slot(dialog-container-color, $config),
       container-shape: token-utils.slot(dialog-container-shape, $config),
-      headline-padding: 1.5rem 1.5rem 0,
+      headline-padding: 1rem,
       with-actions-content-padding: 0,
-      actions-padding: 0 1.5rem,
+      actions-padding: 0 1rem,
       subhead-color: token-utils.slot(dialog-title-text-color, $config),
       subhead-font: token-utils.slot(dialog-title-text-font, $config),
       subhead-size: token-utils.slot(dialog-title-text-size, $config),
@@ -76,9 +76,14 @@
     )
   );
 
-  // Material's baseline strut adds space above the title.
-  .ang-multi-select-filter--dialog-title::before {
-    display: none;
+  .ang-multi-select-filter--dialog-title {
+    margin-bottom: 0;
+    background: token-utils.slot(dialog-header-container-color, $config);
+
+    // Material's baseline strut adds space above the title.
+    &::before {
+      display: none;
+    }
   }
 
   .ang-multi-select-filter--dialog-content {
@@ -95,14 +100,32 @@
       (
         background: token-utils.slot(dialog-container-color, $config),
         elevation: transparent,
+        option-shape: token-utils.slot(dialog-option-shape, $config),
       )
     );
+
+    // Continues the title's header bar behind the search field.
+    .ang-search-list--search {
+      padding: 0 1rem 1rem;
+      background: token-utils.slot(dialog-header-container-color, $config);
+    }
+
+    // Divides the list from the header bar, which ends at the title when the search field is hidden.
+    .ang-search-list--scroll-area {
+      border-top: 1px solid token-utils.slot(dialog-divider-color, $config);
+    }
+
+    // Runs the options' state layers to the edges of the dialog.
+    .ang-search-list--list {
+      padding-inline: 0;
+    }
   }
 
   // Sits below the list, so adding the first chip shortens the list instead of moving it down.
   .ang-multi-select-filter--dialog-footer {
     flex: none;
     padding-block: 0.75rem;
+    border-top: 1px solid token-utils.slot(dialog-divider-color, $config);
     background: token-utils.slot(dialog-footer-container-color, $config);
   }
 
@@ -115,11 +138,11 @@
     grid-template-rows: 1fr;
   }
 
-  // Starts the first chip level with the option checkboxes: the list's 0.5rem inset, Material's
-  // 0.5rem checkbox margin, and the 11px between the checkbox's state layer and its box.
+  // Starts the first chip level with the option checkboxes: Material's 0.5rem checkbox margin and
+  // the 11px between the checkbox's state layer and its box.
   .ang-multi-select-filter--chip-row {
     min-height: 0;
-    margin-inline: calc(1rem + 11px) 1.5rem;
+    margin-inline: calc(0.5rem + 11px) 1rem;
 
     @include scroll-area.overrides(
       (
