@@ -16,30 +16,28 @@ export function separatorWrapSegments(
   text: string,
   characters: string | readonly string[] = DEFAULT_SEPARATOR_WRAP_CHARACTERS,
 ): string[] {
-  const symbols = [...characters].filter((symbol) => symbol.length > 0).sort((a, b) => b.length - a.length);
-  const segments: string[] = [];
-  let start = 0;
-  let index = 0;
-  let inRun = false;
+  const symbols = [...characters]
+    .filter((symbol) => symbol.length > 0)
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegExp)
+    .join('|');
+  if (!symbols) {
+    return text ? [text] : [];
+  }
 
-  while (index < text.length) {
-    const symbol = symbols.find((candidate) => text.startsWith(candidate, index));
-    if (symbol) {
-      index += symbol.length;
-      inRun = true;
-    } else {
-      if (inRun) {
-        segments.push(text.slice(start, index));
-        start = index;
-        inRun = false;
-      }
-      index += 1;
-    }
-  }
-  if (start < text.length) {
-    segments.push(text.slice(start));
-  }
-  return segments;
+  // Shortest text ending in a run of symbols that is not followed by another symbol or the end, else the rest.
+  const segment = new RegExp(`.*?(?:${symbols})+(?!${symbols}|$)|.+`, 'gs');
+  return text.match(segment) ?? [];
+}
+
+/**
+ * Escapes characters that have a special meaning in regular expressions.
+ *
+ * @param value Literal text.
+ * @returns The escaped text.
+ */
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**

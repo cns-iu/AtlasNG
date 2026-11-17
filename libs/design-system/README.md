@@ -49,6 +49,7 @@ Every component has its own secondary entry point, so you only bundle what you i
 | `@atlasng/design-system/links/text-link`                     | `TextLink`                                                                |
 | `@atlasng/design-system/search-field`                        | `SearchField`                                                             |
 | `@atlasng/design-system/search-list`                         | `SearchList`, `SearchListOption`                                          |
+| `@atlasng/design-system/separator-wrap`                      | `SeparatorWrap`, `separatorWrapSegments`                                  |
 | `@atlasng/design-system/snackbar`                            | `Snackbar`, `createSnackBarConfig`, `SnackBarConfig`, `SnackBarData`      |
 | `@atlasng/design-system/table`                               | `Table` and its column and template APIs                                  |
 | `@atlasng/design-system/table/columns`                       | Ready-made header, cell, and summary definitions                          |
@@ -73,6 +74,7 @@ A few components with notable options:
 
 - **Table:** `Table` wraps `@swimlane/ngx-datatable`. `@atlasng/design-system/table/columns` provides text and checkbox headers (`TextHeaderCellDefinition`, `CheckboxHeaderCellDefinition`); text, number, checkbox, link, code, and chip cells (`TextCellDefinition`, `NumberCellDefinition`, `CheckboxCellDefinition`, `LinkCellDefinition`, `CodeCellDefinition`, `ChipCellDefinition`); and a number summary cell (`NumberSummaryCellDefinition`). Name row checkboxes with the checkbox cell's `labelFn` or `labelProp` config; otherwise they are named by row number. Tables default to the `striped` appearance and also support `grid`, `vertical-rules`, and `none`.
 - **Notice:** highlights static page content in the `info` (default), `success`, `warning`, `critical`, or `unavailable` variant. The non-default variants use the extended level colors described below.
+- **Separator wrap:** the `angSeparatorWrap` directive renders a string with a line break opportunity (`<wbr>`) after each run of separators, so URLs, IRIs, IDs, and file names wrap at readable points instead of overflowing. It breaks after `/`, `.`, `_`, `-`, `:`, `?`, `=`, `&`, and `#` by default; set `angSeparatorWrapCharacters` to a string of characters or a list of symbols to change them. Copied text matches the original string, and the directive adds no styles. `separatorWrapSegments` returns the same segments outside a template.
 - **Skeleton:** stands in for loading content as a `text` line (default), `circle`, or `rect`. Size it from the surrounding styles, and set `lines` to stack several text lines. It is hidden from assistive technology, so set `aria-busy` on the loading region.
 
 ## Icons

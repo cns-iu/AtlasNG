@@ -1,5 +1,5 @@
-import { DEFAULT_SEPARATOR_WRAP_CHARACTERS, SeparatorWrap } from '@atlasng/cdk/separator-wrap';
 import { type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
+import { DEFAULT_SEPARATOR_WRAP_CHARACTERS, SeparatorWrap } from './separator-wrap';
 
 /** Inline styles of the narrow container that forces the text to wrap. */
 const CONTAINER_STYLE = `width: 14rem; padding: 1rem; border: 1px dashed var(--mat-sys-outline-variant);
@@ -14,7 +14,7 @@ const EXAMPLES = [
 
 const meta: Meta<SeparatorWrap> = {
   component: SeparatorWrap,
-  title: 'CDK/Separator Wrap',
+  title: 'Design System/Separator Wrap',
   args: {
     text: EXAMPLES[0].text,
     characters: [...DEFAULT_SEPARATOR_WRAP_CHARACTERS],

@@ -23,6 +23,11 @@ describe('separatorWrapSegments', () => {
     expect(separatorWrapSegments('fish and chips', ['and'])).toEqual(['fish and', ' chips']);
   });
 
+  it('matches symbols literally, across line breaks', () => {
+    expect(separatorWrapSegments('a(b)|c', ['(', ')|'])).toEqual(['a(', 'b)|', 'c']);
+    expect(separatorWrapSegments('a/\nb/c', '/')).toEqual(['a/', '\nb/', 'c']);
+  });
+
   it('keeps plain words whole and ignores empty symbols', () => {
     expect(separatorWrapSegments('kidney')).toEqual(['kidney']);
     expect(separatorWrapSegments('a/b', '')).toEqual(['a/b']);
