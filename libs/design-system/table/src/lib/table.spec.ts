@@ -492,4 +492,42 @@ describe('Table', () => {
     expect(screen.getByRole('table', { name: 'People' })).toHaveAccessibleDescription('All people');
     expect(screen.getByRole('table').closest('ang-table')).not.toHaveAttribute('aria-label');
   });
+
+  it('updates and removes forwarded aria attributes when the inputs change', async () => {
+    const label = signal<string | null>('People');
+    const labelledby = signal<string | null>(null);
+    await render(
+      `<span id="heading">Team</span>
+      <ang-table [aria-label]="label()" [aria-labelledby]="labelledby()" [rows]="rows" [columns]="columns" />`,
+      {
+        imports: [Table],
+        componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS, label, labelledby },
+      },
+    );
+
+    label.set(null);
+    labelledby.set('heading');
+    await screen.findByRole('table', { name: 'Team' });
+
+    expect(screen.getByRole('table')).not.toHaveAttribute('aria-label');
+  });
+
+  describe('during server rendering', () => {
+    beforeEach(() => {
+      vi.stubGlobal('ngServerMode', true);
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('forwards aria attributes without render hooks', async () => {
+      await render(`<ang-table aria-label="People" [rows]="rows" [columns]="columns" />`, {
+        imports: [Table],
+        componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS },
+      });
+
+      expect(screen.getByRole('table', { name: 'People' })).toBeInTheDocument();
+    });
+  });
 });
