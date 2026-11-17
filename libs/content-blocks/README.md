@@ -170,7 +170,18 @@ The default names must be registered: in dev mode the content block throws when 
   to Angular's `ErrorHandler`.
 - The content block's host and each nested boundary's `ang-content-boundary` host have `aria-busy="true"` while they
   load.
-- Server-side rendering and hydration are not supported.
+
+### Server-side rendering
+
+- Each document rendering is a `PendingTasks` task until its top level content is shown or fails, so SSR and
+  prerendering wait for it. On the server, the content is shown only once every nested boundary has settled too, so
+  the page has no placeholders.
+- A data source settles with its first value: a loader that keeps streaming does not block the server, but one that
+  never emits does.
+- Server-rendered content is not hydrated. It stays visible, without event listeners, until the client has rendered the
+  whole document, nested boundaries included, and then replaces it. `rendered` emits after that replacement.
+- Data loads again on the client. `http` loader requests are served from Angular's HTTP transfer cache when it is
+  enabled, as it is by default with `provideClientHydration()`.
 
 ## Development
 

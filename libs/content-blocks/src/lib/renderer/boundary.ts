@@ -40,6 +40,20 @@ export type BoundaryTarget =
  */
 export type BoundaryOutcome = 'rendered' | 'failed' | 'destroyed';
 
+/** Optional settings of a {@link Boundary}. */
+export interface BoundaryOptions {
+  /**
+   * Nodes already in the host that the boundary owns, e.g. server-rendered content. They stay in place until the
+   * boundary first shows its content, error component, or placeholder, and are removed when it is destroyed.
+   */
+  adoptedNodes?: readonly Node[];
+  /**
+   * Whether to show the content only once its nested boundaries settled, so that their placeholders are never shown.
+   * Applies to nested boundaries too. Used for server-side rendering and when replacing server-rendered content.
+   */
+  awaitNested?: boolean;
+}
+
 /** Builds a boundary's DOM nodes once it is ready, creating components in the builder's scope. */
 type BuildFn = (builder: BoundaryBuilder) => Promise<Node[]>;
 
@@ -69,6 +83,8 @@ class BoundaryScope {
   readonly #refs: ComponentRef<unknown>[] = [];
   /** Nested boundaries. */
   readonly #boundaries: Boundary[] = [];
+  /** Outcomes of the nested boundaries' first rendering. */
+  readonly #outcomes: Promise<BoundaryOutcome>[] = [];
 
   /**
    * Creates a component, attaches it for change detection, and tracks it.
@@ -107,9 +123,20 @@ class BoundaryScope {
    * Tracks a nested boundary.
    *
    * @param boundary Boundary to track.
+   * @param outcome Settles with how the boundary's first rendering settled.
    */
-  addBoundary(boundary: Boundary): void {
+  addBoundary(boundary: Boundary, outcome: Promise<BoundaryOutcome>): void {
     this.#boundaries.push(boundary);
+    this.#outcomes.push(outcome);
+  }
+
+  /**
+   * Waits until every tracked boundary settled its first rendering.
+   *
+   * @returns Resolves once they settled.
+   */
+  async whenBoundariesSettled(): Promise<void> {
+    await Promise.all(this.#outcomes);
   }
 
   /** Destroys every tracked boundary and component. */
@@ -190,10 +217,14 @@ export class Boundary {
     const errors = members.map((member) => member.error());
     return errors.find<unknown>((error) => error !== undefined);
   });
+  /** Whether to show the content only once its nested boundaries settled. */
+  readonly #awaitNested: boolean;
   /** Scope of the currently mounted nodes. */
   #scope = new BoundaryScope();
+  /** Scope of content being built and not yet mounted. */
+  #building?: BoundaryScope;
   /** Currently mounted DOM nodes. */
-  #mounted: Node[] = [];
+  #mounted: Node[];
   /** Whether the boundary failed, so it shows its error component. */
   #failed = false;
   /** Whether {@link destroy} has been called. */
@@ -212,18 +243,22 @@ export class Boundary {
    * @param context Render context.
    * @param host Element the boundary's nodes are appended to.
    * @param target What the boundary renders.
+   * @param options Adopted nodes and whether to await nested boundaries.
    */
-  constructor(context: RenderContext, host: Element, target: BoundaryTarget) {
+  constructor(context: RenderContext, host: Element, target: BoundaryTarget, options: BoundaryOptions = {}) {
     this.host = host;
     this.#context = context;
     this.#target = target;
+    this.#mounted = [...(options.adoptedNodes ?? [])];
+    this.#awaitNested = options.awaitNested ?? false;
   }
 
   /**
    * Shows the placeholder, if any, then renders the content once ready. The host has `aria-busy="true"` meanwhile.
    *
    * @returns Settles once the content or the error component is shown, or the boundary is destroyed, with how it
-   *   settled. A rendered boundary can still fail later, e.g. on an invalid data emission.
+   *   settled. With `awaitNested`, content is shown once nested boundaries settled too. A rendered boundary can still
+   *   fail later, e.g. on an invalid data emission.
    * @throws {AngError} When the boundary was already started.
    */
   async start(): Promise<BoundaryOutcome> {
@@ -261,6 +296,7 @@ export class Boundary {
     this.#setBusy(false);
     this.#errorWatcher?.destroy();
     this.#unmount();
+    this.#building?.destroy();
     this.#scope.destroy();
   }
 
@@ -401,15 +437,21 @@ export class Boundary {
   }
 
   /**
-   * Builds the content in a new scope and mounts it, unless the boundary settled meanwhile.
+   * Builds the content in a new scope and mounts it, unless the boundary settled meanwhile. With `awaitNested`, mounts
+   * it once the nested boundaries settled.
    *
    * @param buildFn Builds the content's DOM nodes.
    * @returns Settles once the content is mounted or discarded. Rejects when building fails.
    */
   async #render(buildFn: BuildFn): Promise<void> {
     const scope = new BoundaryScope();
+    this.#building = scope;
     try {
-      const nodes = await buildFn(new BoundaryBuilder(this.#context, scope));
+      const nodes = await buildFn(new BoundaryBuilder(this.#context, scope, this.#awaitNested));
+      if (this.#awaitNested) {
+        await scope.whenBoundariesSettled();
+      }
+
       if (this.#settled) {
         scope.destroy();
       } else {
@@ -418,6 +460,8 @@ export class Boundary {
     } catch (error) {
       scope.destroy();
       throw error;
+    } finally {
+      this.#building = undefined;
     }
   }
 
@@ -499,16 +543,20 @@ class BoundaryBuilder {
   readonly #context: RenderContext;
   /** Scope owning the created components and nested boundaries. */
   readonly #scope: BoundaryScope;
+  /** Whether nested boundaries await their own nested boundaries. */
+  readonly #awaitNested: boolean;
 
   /**
    * Creates a builder.
    *
    * @param context Render context.
    * @param scope Scope owning the created components and nested boundaries.
+   * @param awaitNested Whether nested boundaries await their own nested boundaries.
    */
-  constructor(context: RenderContext, scope: BoundaryScope) {
+  constructor(context: RenderContext, scope: BoundaryScope, awaitNested: boolean) {
     this.#context = context;
     this.#scope = scope;
+    this.#awaitNested = awaitNested;
   }
 
   /**
@@ -643,9 +691,15 @@ class BoundaryBuilder {
     renderer.addClass(host, 'ang-content-boundary');
     renderer.setStyle(host, 'display', 'contents');
 
-    const boundary = new Boundary(this.#context, host, { kind: 'element', node, definition });
-    this.#scope.addBoundary(boundary);
-    void boundary.start();
+    const boundary = new Boundary(
+      this.#context,
+      host,
+      { kind: 'element', node, definition },
+      {
+        awaitNested: this.#awaitNested,
+      },
+    );
+    this.#scope.addBoundary(boundary, boundary.start());
     return host;
   }
 
