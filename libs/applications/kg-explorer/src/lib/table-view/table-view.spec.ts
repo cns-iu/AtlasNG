@@ -266,23 +266,23 @@ describe('KgExplorerTableView', () => {
   it('docks the filter menu from the large breakpoint by default', async () => {
     const { observer } = await setup();
 
-    expect(observer.observe).toHaveBeenCalledWith('(min-width: 1280px)');
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 1280px)']);
   });
 
   it('docks the filter menu from the configured breakpoint', async () => {
     const { observer, rerender, fixture } = await setup({ config: { filtersDockBreakpoint: 'x-large' } });
-    expect(observer.observe).toHaveBeenCalledWith('(min-width: 1920px)');
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 1920px)']);
 
     await rerender({ inputs: { config: { filtersDockBreakpoint: 'medium' } }, partialUpdate: true });
     await fixture.whenStable();
-    expect(observer.observe).toHaveBeenCalledWith('(min-width: 960px)');
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 960px)']);
   });
 
   it('docks the filter menu at every width for a breakpoint starting at zero', async () => {
     const { fixture, observer } = await setup({ config: { filtersDockBreakpoint: 'x-small' } }, false);
 
     expect(fixture.componentInstance.filtersOpen()).toBe(true);
-    expect(observer.observe).not.toHaveBeenCalledWith(expect.stringContaining('min-width'));
+    expect(observer.observe).not.toHaveBeenCalledWith([expect.stringContaining('min-width')]);
   });
 
   it('clears the search from the no results indicator', async () => {
