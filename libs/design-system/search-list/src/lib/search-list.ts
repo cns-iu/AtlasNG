@@ -59,8 +59,8 @@ export class SearchList<T extends SearchListOption> {
   /** Label of the search field */
   readonly searchLabel = input('Search');
 
-  /** Accessible name of the option list */
-  readonly ariaLabel = input<string | null>(null, { alias: 'aria-label' });
+  /** Accessible name of the option list, such as the name of the filter it belongs to */
+  readonly ariaLabel = input<string | null>('Options', { alias: 'aria-label' });
 
   /** Space-separated ids of elements labelling the option list. Takes precedence over `aria-label`. */
   readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
