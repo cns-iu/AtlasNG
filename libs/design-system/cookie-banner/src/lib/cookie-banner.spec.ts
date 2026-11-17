@@ -179,6 +179,22 @@ describe('CookieBanner', () => {
     expect(section).toHaveAttribute('aria-labelledby', 'custom-title');
   });
 
+  it('describes the section with the default description', async () => {
+    await setup();
+
+    expect(screen.getByRole('region', { name: 'Manage your privacy preferences' })).toHaveAccessibleDescription(
+      'Cookies and similar technologies are used to play videos and to improve this website.',
+    );
+  });
+
+  it('describes the section with projected description content', async () => {
+    await setupCustomContent();
+
+    expect(screen.getByRole('region', { name: 'Custom privacy title' })).toHaveAccessibleDescription(
+      'Custom cookie description',
+    );
+  });
+
   it('renders projected logo content', async () => {
     await setupCustomContent();
 

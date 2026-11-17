@@ -137,4 +137,29 @@ describe('ScrollArea', () => {
       expect(host).not.toHaveClass('ang-scroll-area--fade-end');
     });
   });
+
+  it('makes the viewport a focusable region when labelled', async () => {
+    const label = signal<string | null>('Results');
+    const { fixture } = await render('<ang-scroll-area [aria-label]="label()">Content</ang-scroll-area>', {
+      imports: [ScrollArea],
+      componentProperties: { label },
+    });
+
+    const region = screen.getByRole('region', { name: 'Results' });
+    expect(region).toHaveAttribute('tabindex', '0');
+    expect(region.closest('ang-scroll-area')).not.toHaveAttribute('aria-label');
+
+    label.set(null);
+    fixture.detectChanges();
+
+    expect(screen.queryByRole('region')).not.toBeInTheDocument();
+  });
+
+  it('labels the region with aria-labelledby', async () => {
+    await render('<h2 id="heading">Results</h2><ang-scroll-area aria-labelledby="heading">Content</ang-scroll-area>', {
+      imports: [ScrollArea],
+    });
+
+    expect(screen.getByRole('region', { name: 'Results' })).toHaveAttribute('tabindex', '0');
+  });
 });

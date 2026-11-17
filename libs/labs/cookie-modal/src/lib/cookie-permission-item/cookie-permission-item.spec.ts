@@ -40,7 +40,7 @@ describe('CookiePermissionItem', () => {
     await user.click(screen.getByRole('button', { name: 'Preferences' }));
 
     expect(screen.getByText('YouTube')).toBeVisible();
-    expect(screen.getByRole('link', { name: 'YouTube' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Learn more about this provider YouTube' })).toHaveAttribute(
       'href',
       'https://policies.google.com/privacy',
     );

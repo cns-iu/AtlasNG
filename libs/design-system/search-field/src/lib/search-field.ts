@@ -34,6 +34,8 @@ import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggest
   styleUrl: './search-field.scss',
   host: {
     class: 'ang-search-field',
+    '[attr.aria-labelledby]': 'null',
+    '[attr.aria-describedby]': 'null',
   },
 })
 export class SearchField<T = string> {
@@ -51,6 +53,12 @@ export class SearchField<T = string> {
 
   /** Label of the search field. */
   readonly label = input('Search');
+
+  /** Space-separated ids of elements labelling the search input. Replaces `label` as the accessible name. */
+  readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
+
+  /** Space-separated ids of elements describing the search input. */
+  readonly ariaDescribedby = input<string | null>(null, { alias: 'aria-describedby' });
 
   /** Placeholder of the search input. */
   readonly placeholder = input<string>();

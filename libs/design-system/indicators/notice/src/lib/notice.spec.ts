@@ -93,4 +93,16 @@ describe('Notice', () => {
 
     expect(screen.getByRole('link', { name: 'changelog' })).toHaveFocus();
   });
+
+  it('is labelled by its tagline', async () => {
+    await render('<ang-notice tagline="Maintenance">Body text</ang-notice>', { imports: [Notice] });
+
+    expect(screen.getByRole('note', { name: 'Maintenance' })).toBeInTheDocument();
+  });
+
+  it('has no label without a tagline', async () => {
+    await render('<ang-notice>Body text</ang-notice>', { imports: [Notice] });
+
+    expect(screen.getByRole('note')).not.toHaveAttribute('aria-labelledby');
+  });
 });

@@ -57,6 +57,16 @@ export class Gallery {
 
 The defaults match the design-system `$breakpoints` map. If an application reconfigures that map, provide the same values with `provideBreakpoints({ ... })`. Use `breakpointQuery` to get the media condition for an expression directly.
 
+### Announcements
+
+`@atlasng/cdk/a11y` provides the `angAnnounce` directive, which reads changes to a text to screen readers with the Angular CDK `LiveAnnouncer` once the text stops changing. Typing in a search field then queues one announcement instead of one per keystroke. The initial text and empty texts are not announced.
+
+```html
+<span [angAnnounce]="resultsText()" [angAnnounceDisabled]="quiet()">{{ resultsText() }}</span>
+```
+
+The delay defaults to 1000 ms. `politeness` and `duration` fall back to the `LiveAnnouncer` defaults. Change them per element with the `angAnnounceDelay`, `angAnnouncePoliteness`, and `angAnnounceDuration` inputs, or below an injector with `provideAnnounceConfig({ delay: 500, politeness: 'assertive' })`.
+
 ### Search
 
 `@atlasng/cdk/search` is a headless search layer. `injectSearch` searches a list with the injected `SearchEngine` and returns a read-only Angular `Resource` of the results (`value`, `status`, `error`, `isLoading`, `hasValue()`), plus an `items` signal, a `suggestions` resource, and `reload()` and `destroy()`. The default engine ignores case and accents, requires every word of the term to match, and ranks exact matches, then prefixes, then word prefixes, then other matches. Each result carries match ranges that the `angSearchHighlight` directive renders with `<mark>`.
