@@ -56,9 +56,14 @@ function whenRefLoaded(refId: string, callback: () => void): void {
 }
 
 /**
- * Forwards toolbar globals to composed refs. Storybook only sends them to the local preview
- * (storybookjs/storybook#15805), so themes and backgrounds picked in the composition would not reach library stories.
+ * Workaround that forwards toolbar globals to composed refs. Storybook only sends them to the local preview, so
+ * themes and backgrounds picked in the composition would not reach library stories. Remove this addon once Storybook
+ * forwards globals to composed refs itself.
  *
+ * @see https://github.com/storybookjs/storybook/issues/15805 `globalTypes` don't work with composition.
+ * @see https://github.com/storybookjs/storybook/issues/20001 Support for globals in composition. Its fix,
+ * storybookjs/storybook#36057, was closed without merging.
+ * @see https://github.com/storybookjs/storybook/issues/30058 Global decorators aren't updated in composed Storybooks.
  * @see https://github.com/cns-iu/AtlasNG/issues/301
  */
 addons.register('atlasng/ref-globals', (api) => {
