@@ -34,28 +34,14 @@
   </span>
 </div>
 
-<ng-container [ngTemplateOutlet]="chips" />
-
-<ng-template #chips>
-  @if (selected().length > 0) {
-    <mat-chip-set class="ang-multi-select-filter--chips" role="list" [attr.aria-label]="selectedFiltersLabel()">
-      @for (option of selected(); track option) {
-        <mat-chip
-          role="listitem"
-          disableRipple
-          animate.enter="ang-multi-select-filter--chip-enter"
-          animate.leave="ang-multi-select-filter--chip-leave"
-          (removed)="removeFilter(option)"
-        >
-          {{ option.label }}
-          <button type="button" matChipRemove [attr.aria-label]="`${removeFilterLabel()} ${option.label}`">
-            <mat-icon fontIcon="cancel" />
-          </button>
-        </mat-chip>
-      }
-    </mat-chip-set>
-  }
-</ng-template>
+@if (selected().length > 0) {
+  <ang-multi-select-filter-chip-list
+    [options]="selected()"
+    [label]="selectedFiltersLabel()"
+    [removeLabel]="removeFilterLabel()"
+    (removed)="removeFilter($event)"
+  />
+}
 
 <ng-template
   cdkConnectedOverlay
@@ -74,30 +60,14 @@
     [id]="panelId"
     [attr.aria-label]="label()"
   >
-    <ang-search-list
-      class="ang-multi-select-filter--search-list"
-      [options]="options()"
-      [disableSearch]="disableSearch()"
-      [aria-label]="label()"
-      [selected]="selected()"
-      [(search)]="search"
-      (selectedChange)="updateSelected($event)"
-    />
+    <ng-container [ngTemplateOutlet]="searchList" />
   </div>
 </ng-template>
 
 <ng-template #dialog>
   <h2 class="ang-multi-select-filter--dialog-title" mat-dialog-title>{{ resolvedDialogTitle() }}</h2>
   <mat-dialog-content class="ang-multi-select-filter--dialog-content">
-    <ang-search-list
-      class="ang-multi-select-filter--search-list"
-      [options]="options()"
-      [disableSearch]="disableSearch()"
-      [aria-label]="label()"
-      [selected]="selected()"
-      [(search)]="search"
-      (selectedChange)="updateSelected($event)"
-    />
+    <ng-container [ngTemplateOutlet]="searchList" />
   </mat-dialog-content>
   <div class="ang-multi-select-filter--dialog-footer">
     @if (selected().length > 0) {
@@ -107,7 +77,14 @@
         animate.leave="ang-multi-select-filter--chip-tray-leave"
       >
         <ang-scroll-area class="ang-multi-select-filter--chip-row" orientation="horizontal">
-          <ng-container [ngTemplateOutlet]="chips" />
+          <ang-multi-select-filter-chip-list
+            class="ang-multi-select-filter--dialog-chips"
+            singleRow
+            [options]="selected()"
+            [label]="selectedFiltersLabel()"
+            [removeLabel]="removeFilterLabel()"
+            (removed)="removeFilter($event)"
+          />
         </ang-scroll-area>
       </div>
     }
@@ -115,4 +92,16 @@
       <button type="button" matButton="filled" mat-dialog-close angTrackClick>{{ doneLabel() }}</button>
     </mat-dialog-actions>
   </div>
+</ng-template>
+
+<ng-template #searchList>
+  <ang-search-list
+    class="ang-multi-select-filter--search-list"
+    [options]="options()"
+    [disableSearch]="disableSearch()"
+    [aria-label]="label()"
+    [selected]="selected()"
+    [(search)]="search"
+    (selectedChange)="updateSelected($event)"
+  />
 </ng-template>

@@ -42,19 +42,6 @@
   }
 }
 
-// Replaces the default chip margins with a uniform gap. Material's chip set styles load after
-// these, so the selectors repeat the chip set class to win.
-.ang-multi-select-filter--chips.mat-mdc-chip-set {
-  .mdc-evolution-chip-set__chips {
-    gap: 0.5rem;
-    margin: 0;
-  }
-
-  .mdc-evolution-chip {
-    margin: 0;
-  }
-}
-
 // The panel and the dialog are rendered in overlays outside of the host element.
 .ang-multi-select-filter--panel,
 .ang-multi-select-filter--dialog {
@@ -142,14 +129,8 @@
   }
 
   // Leaves room below the chips for the scrollbar.
-  .ang-multi-select-filter--chips {
-    width: max-content;
-    min-width: 100%;
+  .ang-multi-select-filter--dialog-chips {
     padding-bottom: 0.75rem;
-
-    .mdc-evolution-chip-set__chips {
-      flex-wrap: nowrap;
-    }
 
     // Keeps a chip scrolled into view clear of the edge fades.
     .mat-mdc-chip {
@@ -159,27 +140,12 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .ang-multi-select-filter--chip-enter {
-    animation: ang-multi-select-filter--chip-in 200ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  }
-
-  .ang-multi-select-filter--chip-leave {
-    animation: ang-multi-select-filter--chip-in 150ms cubic-bezier(0.3, 0, 0.8, 0.15) reverse;
-  }
-
   .ang-multi-select-filter--chip-tray-enter {
     animation: ang-multi-select-filter--chip-tray-in 250ms cubic-bezier(0.05, 0.7, 0.1, 1);
   }
 
   .ang-multi-select-filter--chip-tray-leave {
     animation: ang-multi-select-filter--chip-tray-in 200ms cubic-bezier(0.3, 0, 0.8, 0.15) reverse;
-  }
-}
-
-@keyframes ang-multi-select-filter--chip-in {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
   }
 }
 

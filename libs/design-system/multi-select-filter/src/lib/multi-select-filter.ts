@@ -1,15 +1,13 @@
 import { CdkTrapFocus, LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition } from '@angular/cdk/overlay';
-import { DecimalPipe, DOCUMENT, formatNumber, NgTemplateOutlet } from '@angular/common';
+import { DecimalPipe, formatNumber, NgTemplateOutlet } from '@angular/common';
 import {
-  afterNextRender,
   booleanAttribute,
   Component,
   computed,
   DestroyRef,
   effect,
   inject,
-  Injector,
   input,
   LOCALE_ID,
   model,
@@ -20,7 +18,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -30,6 +27,7 @@ import { IdGenerator } from '@atlasng/common';
 import { RichTooltip, RichTooltipTrigger } from '@atlasng/design-system/rich-tooltip';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { SearchList, SearchListOption } from '@atlasng/design-system/search-list';
+import { MultiSelectFilterChipList } from './multi-select-filter-chip-list/multi-select-filter-chip-list';
 
 /** Space above the search field inside the search list, in pixels. Matches the search list's top padding. */
 const SEARCH_FIELD_INSET = 16;
@@ -55,10 +53,10 @@ const SEARCH_FIELD_INSET = 16;
     CdkOverlayOrigin,
     DecimalPipe,
     MatButtonModule,
-    MatChipsModule,
     MatDialogModule,
     MatIconModule,
     MatTooltipModule,
+    MultiSelectFilterChipList,
     NgTemplateOutlet,
     RichTooltipTrigger,
     ScrollArea,
@@ -163,12 +161,6 @@ export class MultiSelectFilter<T extends SearchListOption> {
   /** Full-screen dialog while it is open. */
   #dialogRef?: MatDialogRef<unknown>;
 
-  /** Document used to find the newest chip in the full-screen dialog. */
-  readonly #document = inject(DOCUMENT);
-
-  /** Injector used to scroll the newest chip into view after it renders. */
-  readonly #injector = inject(Injector);
-
   /** Announces selection changes to screen readers. */
   readonly #announcer = inject(LiveAnnouncer);
 
@@ -234,12 +226,8 @@ export class MultiSelectFilter<T extends SearchListOption> {
    * @param selected Options selected in the search list
    */
   protected updateSelected(selected: T[]): void {
-    const added = selected.length > this.selected().length;
     this.selected.set(selected);
     this.announceSelectedCount();
-    if (added) {
-      this.revealNewestDialogChip();
-    }
   }
 
   /**
@@ -275,25 +263,6 @@ export class MultiSelectFilter<T extends SearchListOption> {
         this.expanded.set(false);
       }
     });
-  }
-
-  /**
-   * Scrolls the chip row of the full-screen dialog to the newest chip once it renders, so the
-   * user sees the option they just selected. New selections are added at the end of the row.
-   */
-  private revealNewestDialogChip(): void {
-    const id = this.#dialogRef?.id;
-    if (!id) {
-      return;
-    }
-
-    afterNextRender(
-      () => {
-        const chip = this.#document.querySelector(`#${id} .ang-multi-select-filter--chip-row mat-chip:last-of-type`);
-        chip?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
-      },
-      { injector: this.#injector },
-    );
   }
 
   /** Closes the full-screen dialog if it is open. */
