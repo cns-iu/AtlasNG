@@ -58,6 +58,7 @@
 - Compodoc for libraries:
   - Build docs: `npx nx build-compodoc <project>`
   - Live docs: `npx nx compodoc <project>`
+- SSR smoke check (server render plus hydration of every `AtlasNG` route): `npx nx ssr-smoke AtlasNG`
 - Local npm registry target exists at workspace root:
   - `npx nx local-registry @atlasng/monorepo`
 

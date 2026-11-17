@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { SHOWCASE_PAGES } from './app.routes';
 
+/**
+ * Application shell: links to the showcase pages and renders the active one.
+ */
 @Component({
   selector: 'ang-root',
-  imports: [NxWelcome, RouterModule],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
-  protected title = 'AtlasNG';
+  /** Showcase pages listed in the navigation. */
+  protected readonly pages = SHOWCASE_PAGES;
 }

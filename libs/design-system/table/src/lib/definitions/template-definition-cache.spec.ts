@@ -1,9 +1,11 @@
 import {
+  ApplicationRef,
   Component,
   createEnvironmentInjector,
   DestroyRef,
   EnvironmentInjector,
   inject,
+  PLATFORM_ID,
   runInInjectionContext,
   type EmbeddedViewRef,
   type TemplateRef,
@@ -44,8 +46,13 @@ describe('TemplateDefinitionCache', () => {
     return { label, onDestroy: vi.fn() };
   }
 
-  function setup() {
-    TestBed.configureTestingModule({ providers: [{ provide: TABLE, useValue: {} as Table }] });
+  function setup(platformId = 'browser') {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: TABLE, useValue: {} as Table },
+        { provide: PLATFORM_ID, useValue: platformId },
+      ],
+    });
 
     const cache = TestBed.runInInjectionContext(() => new TemplateDefinitionCache<HeaderCellContext, TestConfig>());
     const getOrCreate = (key: object, labelOrConfig: string | TestConfig) => {
@@ -64,6 +71,23 @@ describe('TemplateDefinitionCache', () => {
     const { getOrCreate } = setup();
     const template = getOrCreate({}, 'First');
 
+    expect(renderText(template)).toBe('First');
+  });
+
+  it('attaches definitions to the application in the browser', () => {
+    const { getOrCreate } = setup();
+    const viewCount = TestBed.inject(ApplicationRef).viewCount;
+    getOrCreate({}, 'First');
+
+    expect(TestBed.inject(ApplicationRef).viewCount).toBe(viewCount + 1);
+  });
+
+  it('keeps definitions detached from the application on the server', () => {
+    const { getOrCreate } = setup('server');
+    const viewCount = TestBed.inject(ApplicationRef).viewCount;
+    const template = getOrCreate({}, 'First');
+
+    expect(TestBed.inject(ApplicationRef).viewCount).toBe(viewCount);
     expect(renderText(template)).toBe('First');
   });
 

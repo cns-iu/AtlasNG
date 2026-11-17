@@ -6,9 +6,11 @@ import {
   EnvironmentInjector,
   inject,
   Injector,
+  PLATFORM_ID,
   TemplateRef,
   Type,
 } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
 import { provideTableTemplateDefinition, TableTemplateDefinition } from './template-definition';
 
 /**
@@ -20,6 +22,12 @@ import { provideTableTemplateDefinition, TableTemplateDefinition } from './templ
 export class TemplateDefinitionCache<TContext, TConfig> {
   /** Application used to attach dynamically created definition views. */
   readonly #appRef = inject(ApplicationRef);
+
+  /**
+   * Whether definition views stay detached from the application. Hydration annotates every view attached to the
+   * application, and a definition's host element is never in the document, so attaching it fails server rendering.
+   */
+  readonly #detached = isPlatformServer(inject(PLATFORM_ID));
 
   /** Environment inherited by dynamically created definitions. */
   readonly #environmentInjector = inject(EnvironmentInjector);
@@ -88,7 +96,7 @@ export class TemplateDefinitionCache<TContext, TConfig> {
   }
 
   /**
-   * Creates, attaches, and initializes a definition component.
+   * Creates, attaches (in the browser), and initializes a definition component.
    *
    * @param type Definition component type to create.
    * @param config Configuration made available through the definition token.
@@ -107,7 +115,9 @@ export class TemplateDefinitionCache<TContext, TConfig> {
       elementInjector: injector,
     });
 
-    this.#appRef.attachView(ref.hostView);
+    if (!this.#detached) {
+      this.#appRef.attachView(ref.hostView);
+    }
     ref.changeDetectorRef.detectChanges();
     ref.onDestroy(() => injector.destroy());
 

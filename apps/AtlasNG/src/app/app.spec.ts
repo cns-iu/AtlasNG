@@ -1,20 +1,15 @@
-import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { render, screen } from '@testing-library/angular';
 import { App } from './app';
-import { NxWelcome } from './nx-welcome';
+import { SHOWCASE_PAGES } from './app.routes';
 
 describe('App', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [App, NxWelcome],
-    }).compileComponents();
-  });
+  it('links to the home page and every showcase page', async () => {
+    await render(App, { providers: [provideRouter([])] });
 
-  it('should render title', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Welcome AtlasNG',
-    );
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
+    for (const page of SHOWCASE_PAGES) {
+      expect(screen.getByRole('link', { name: page.title })).toHaveAttribute('href', `/${page.path}`);
+    }
   });
 });
