@@ -1,5 +1,5 @@
 import { MediaMatcher } from '@angular/cdk/layout';
-import { EnvironmentInjector, Injector, runInInjectionContext } from '@angular/core';
+import { EnvironmentInjector, Injector, runInInjectionContext, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
   BREAKPOINTS,
@@ -171,6 +171,35 @@ describe('watchBreakpoint', () => {
 
   it('requires at least one expression', () => {
     expect(() => TestBed.runInInjectionContext(() => watchBreakpoint([]))).toThrow(/at least one/);
+  });
+
+  it('follows expressions given by a signal', async () => {
+    const expression = signal<string | string[]>('medium');
+    const matches = TestBed.runInInjectionContext(() => watchBreakpoint(expression));
+
+    await mediaMatcher.resize(1000);
+    expect(matches()).toBe(true);
+
+    expression.set('large');
+    TestBed.tick();
+    expect(matches()).toBe(false);
+
+    await mediaMatcher.resize(1300);
+    expect(matches()).toBe(true);
+
+    expression.set(['small down']);
+    TestBed.tick();
+    expect(matches()).toBe(false);
+
+    expression.set('x-small');
+    TestBed.tick();
+    expect(matches()).toBe(true);
+  });
+
+  it('requires at least one expression from a signal when read', () => {
+    const matches = TestBed.runInInjectionContext(() => watchBreakpoint(signal([])));
+
+    expect(() => matches()).toThrow(/at least one/);
   });
 });
 

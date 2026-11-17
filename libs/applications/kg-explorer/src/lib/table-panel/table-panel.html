@@ -2,7 +2,7 @@
 @let options = config();
 
 <div class="ang-kg-explorer-table-panel--container">
-  @if (!options.searchDisabled || !options.resultsCounterDisabled) {
+  @if (!options.disableSearch || !options.disableResultsCounter) {
     <ang-kg-explorer-table-toolbar
       class="ang-kg-explorer-table-panel--toolbar"
       [suggestions]="suggestions()"
@@ -17,14 +17,15 @@
     class="ang-kg-explorer-table-panel--table"
     appearance="none"
     [class.no-results]="matches.length === 0"
+    [aria-label]="options.tableLabel ?? 'Results'"
     [rows]="matches"
     [columns]="columns()"
     [(sorts)]="sorts"
   >
-    <ang-no-results-indicator class="ang-kg-explorer-table-panel--empty" empty-content (clear)="clear()" />
+    <ang-no-results-indicator class="ang-kg-explorer-table-panel--empty" empty-content (clearClick)="clear()" />
   </ang-table>
 
-  @if (!options.endOfResultsDisabled && matches.length > 0) {
+  @if (!options.disableEndOfResults && matches.length > 0) {
     <ang-end-of-results-indicator class="ang-kg-explorer-table-panel--end" [count]="matches.length" />
   }
 

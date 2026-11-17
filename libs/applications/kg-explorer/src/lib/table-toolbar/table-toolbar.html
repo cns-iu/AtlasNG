@@ -1,8 +1,13 @@
-@if (!config().searchDisabled) {
-  <ang-search-field class="ang-kg-explorer-table-toolbar--search" [suggestions]="suggestions()" [(value)]="search" />
+@if (!config().disableSearch) {
+  <ang-search-field
+    class="ang-kg-explorer-table-toolbar--search"
+    [label]="config().searchLabel ?? 'Search'"
+    [suggestions]="suggestions()"
+    [(value)]="search"
+  />
 }
 
-@if (!config().resultsCounterDisabled) {
+@if (!config().disableResultsCounter) {
   <ang-results-indicator
     class="ang-kg-explorer-table-toolbar--counter"
     [prefix]="config().resultsCounterPrefix ?? ''"

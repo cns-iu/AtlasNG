@@ -1,9 +1,12 @@
 import {
+  afterRenderEffect,
   booleanAttribute,
   Component,
   computed,
   effect,
+  ElementRef,
   forwardRef,
+  inject,
   input,
   model,
   numberAttribute,
@@ -80,6 +83,9 @@ function optionalNumberAttribute(value: unknown): number | undefined {
   return value == null ? undefined : numberAttribute(value);
 }
 
+/** ARIA attributes forwarded from the table host to the inner `role="table"` element. */
+const FORWARDED_ARIA_ATTRIBUTES = ['aria-label', 'aria-labelledby', 'aria-describedby'] as const;
+
 /** Summary row height used when the body row height is not a fixed number. */
 const DEFAULT_SUMMARY_HEIGHT = 48;
 
@@ -131,6 +137,9 @@ function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TR
     '[class.ang-table--summary-top]': 'summaryRow() && summaryPosition() === "top"',
     '[class.ang-table--summary-bottom]': 'summaryRow() && summaryPosition() === "bottom"',
     '[class.ang-table--auto-row-height]': 'rowHeight() === "auto"',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
+    '[attr.aria-describedby]': 'null',
   },
 })
 export class Table<TRow extends Row = Row> {
@@ -173,6 +182,15 @@ export class Table<TRow extends Row = Row> {
   /** Placement of the summary row relative to the body rows. */
   readonly summaryPosition = input<TableSummaryPosition>('top');
 
+  /** Accessible name of the table. */
+  readonly ariaLabel = input<string | null>(null, { alias: 'aria-label' });
+
+  /** Space-separated ids of elements labelling the table, such as a visible heading. */
+  readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
+
+  /** Space-separated ids of elements describing the table. */
+  readonly ariaDescribedby = input<string | null>(null, { alias: 'aria-describedby' });
+
   /** Summary row height with the numeric body row height applied as a fallback. */
   protected readonly resolvedSummaryHeight = computed(() => {
     const rowHeight = this.rowHeight();
@@ -191,8 +209,29 @@ export class Table<TRow extends Row = Row> {
   /** Reusable summary-cell definition instances keyed by column identity. */
   readonly #summaryTemplateCache = new TemplateDefinitionCache<CellContext, unknown>();
 
-  /** Initializes automatic cache sweeping after each column-resolution cycle. */
+  /** Host element, searched for the `role="table"` element rendered by ngx-datatable. */
+  readonly #elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  /**
+   * Initializes automatic cache sweeping after each column-resolution cycle, and forwards
+   * the ARIA inputs to the `role="table"` element, which ngx-datatable offers no inputs for.
+   */
   constructor() {
+    afterRenderEffect({
+      write: () => {
+        const values = [this.ariaLabel(), this.ariaLabelledby(), this.ariaDescribedby()];
+        const table = this.#elementRef.nativeElement.querySelector('[role="table"]');
+        FORWARDED_ARIA_ATTRIBUTES.forEach((name, index) => {
+          const value = values[index];
+          if (value) {
+            table?.setAttribute(name, value);
+          } else {
+            table?.removeAttribute(name);
+          }
+        });
+      },
+    });
+
     effect(() => {
       this.resolvedColumns();
       this.#cellTemplateCache.sweep();

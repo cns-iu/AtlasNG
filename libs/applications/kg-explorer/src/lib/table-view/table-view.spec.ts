@@ -48,7 +48,7 @@ const COLUMNS: TableColumn<TestItem>[] = [
 ];
 
 const FILTERS: KgExplorerFilter<TestItem>[] = [
-  { id: 'type', label: 'Type', field: 'type', searchDisabled: true },
+  { id: 'type', label: 'Type', field: 'type', disableSearch: true },
   { id: 'organ', label: 'Organ', field: 'tags' },
 ];
 
@@ -121,15 +121,15 @@ describe('KgExplorerTableView', () => {
   });
 
   it('uses the provided configuration as defaults', async () => {
-    await setup({}, true, [provideKgExplorerTableView({ resultsCounterDisabled: true, searchDisabled: true })]);
+    await setup({}, true, [provideKgExplorerTableView({ disableResultsCounter: true, disableSearch: true })]);
 
     expect(counter('Viewing 3 of 3')).not.toBeInTheDocument();
     expect(screen.queryByRole('combobox', { name: 'Search' })).not.toBeInTheDocument();
   });
 
   it('merges the config input over the provided configuration', async () => {
-    await setup({ config: { resultsCounterDisabled: false, searchDisabled: undefined } }, true, [
-      provideKgExplorerTableView({ resultsCounterDisabled: true, searchDisabled: true }),
+    await setup({ config: { disableResultsCounter: false, disableSearch: undefined } }, true, [
+      provideKgExplorerTableView({ disableResultsCounter: true, disableSearch: true }),
     ]);
 
     expect(counter('Viewing 3 of 3')).toBeInTheDocument();
@@ -149,7 +149,7 @@ describe('KgExplorerTableView', () => {
     await user.type(search, 'lorem');
     expect((await screen.findAllByRole('option')).length).toBeGreaterThan(0);
 
-    await rerender({ inputs: { config: { searchSuggestionsDisabled: true } }, partialUpdate: true });
+    await rerender({ inputs: { config: { disableSearchSuggestions: true } }, partialUpdate: true });
     expect(screen.queryByRole('option')).not.toBeInTheDocument();
   });
 
@@ -266,23 +266,23 @@ describe('KgExplorerTableView', () => {
   it('docks the filter menu from the large breakpoint by default', async () => {
     const { observer } = await setup();
 
-    expect(observer.observe).toHaveBeenCalledWith('(min-width: 1280px)');
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 1280px)']);
   });
 
   it('docks the filter menu from the configured breakpoint', async () => {
     const { observer, rerender, fixture } = await setup({ config: { filtersDockBreakpoint: 'x-large' } });
-    expect(observer.observe).toHaveBeenCalledWith('(min-width: 1920px)');
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 1920px)']);
 
     await rerender({ inputs: { config: { filtersDockBreakpoint: 'medium' } }, partialUpdate: true });
     await fixture.whenStable();
-    expect(observer.observe).toHaveBeenCalledWith('(min-width: 960px)');
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 960px)']);
   });
 
   it('docks the filter menu at every width for a breakpoint starting at zero', async () => {
     const { fixture, observer } = await setup({ config: { filtersDockBreakpoint: 'x-small' } }, false);
 
     expect(fixture.componentInstance.filtersOpen()).toBe(true);
-    expect(observer.observe).not.toHaveBeenCalledWith(expect.stringContaining('min-width'));
+    expect(observer.observe).not.toHaveBeenCalledWith([expect.stringContaining('min-width')]);
   });
 
   it('clears the search from the no results indicator', async () => {

@@ -59,7 +59,7 @@ export class MultiSelectFilter<T extends SearchListOption> {
   readonly search = model('');
 
   /** Whether the search field of the search list is hidden, e.g. for categories with few options. */
-  readonly searchDisabled = input(false, { transform: booleanAttribute });
+  readonly disableSearch = input(false, { transform: booleanAttribute });
 
   /** Whether the search list panel is open. */
   readonly expanded = model(false);
@@ -68,22 +68,22 @@ export class MultiSelectFilter<T extends SearchListOption> {
   readonly count = input<number>();
 
   /** Rich tooltip opened by the info button. The info button is only shown when this is set. */
-  readonly infoTooltip = input<RichTooltip>();
+  readonly infoPanel = input<RichTooltip>();
 
   /** Plain tooltip text of the info button. */
-  readonly infoTooltipText = input('Info');
+  readonly infoTooltip = input('Info');
 
   /** Accessible label of the info button. Defaults to `<label> info`. */
-  readonly infoLabel = input<string>();
+  readonly infoButtonLabel = input<string>();
 
   /** Plain tooltip text of the unique item counter. */
-  readonly countTooltipText = input('Number of unique items per filter category');
+  readonly countTooltip = input('Number of unique items per filter category');
 
   /** Accessible label of the chip set with the selected options. */
-  readonly selectedLabel = input('Active filters');
+  readonly selectedFiltersLabel = input('Active filters');
 
   /** Prefix of the accessible label of each chip's remove button, followed by the option label. */
-  readonly removeLabel = input('Remove');
+  readonly removeFilterLabel = input('Remove');
 
   /** Unique id of the search list panel, referenced by the label button's `aria-controls`. */
   protected readonly panelId = inject(IdGenerator).getId('ang-multi-select-filter--panel');
@@ -95,7 +95,7 @@ export class MultiSelectFilter<T extends SearchListOption> {
   protected readonly displayedCount = computed(() => this.count() ?? this.options().length);
 
   /** Accessible label of the info button. */
-  protected readonly resolvedInfoLabel = computed(() => this.infoLabel() ?? `${this.label()} info`);
+  protected readonly resolvedInfoButtonLabel = computed(() => this.infoButtonLabel() ?? `${this.label()} info`);
 
   /** Toggles the search list panel. */
   protected toggle(): void {

@@ -36,23 +36,12 @@ describe('ProviderList', () => {
     expect(screen.getByText('Vimeo')).toBeInTheDocument();
     expect(links).toHaveLength(2);
 
-    const firstLink = screen.getByRole('link', { name: 'YouTube' });
-    const secondLink = screen.getByRole('link', { name: 'Vimeo' });
+    const firstLink = screen.getByRole('link', { name: 'Learn more about this provider YouTube' });
+    const secondLink = screen.getByRole('link', { name: 'Learn more about this provider Vimeo' });
 
     expect(firstLink).toHaveAttribute('href', 'https://policies.google.com/privacy');
     expect(firstLink).toHaveAttribute('target', '_blank');
     expect(secondLink).toHaveAttribute('href', 'https://vimeo.com/privacy');
     expect(secondLink).toHaveAttribute('target', '_blank');
-
-    const firstLabel = screen.getByText('YouTube');
-    const secondLabel = screen.getByText('Vimeo');
-    const firstLabelId = firstLabel.getAttribute('id');
-    const secondLabelId = secondLabel.getAttribute('id');
-
-    expect(firstLabelId).toBeTruthy();
-    expect(secondLabelId).toBeTruthy();
-    expect(firstLabelId).not.toBe(secondLabelId);
-    expect(firstLink).toHaveAttribute('aria-labelledby', firstLabelId);
-    expect(secondLink).toHaveAttribute('aria-labelledby', secondLabelId);
   });
 });
