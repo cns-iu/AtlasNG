@@ -95,7 +95,7 @@ const SAMPLE_COLUMNS: TableColumn<SampleItem>[] = [
 
 /** Type and Organ filters for the sample rows, with options derived from the rows. */
 const SAMPLE_FILTERS: KgExplorerFilter<SampleItem>[] = [
-  { id: 'type', label: 'Type', field: 'type', searchDisabled: true },
+  { id: 'type', label: 'Type', field: 'type', disableSearch: true },
   { id: 'organ', label: 'Organ', field: 'tags' },
 ];
 
@@ -170,13 +170,19 @@ export const Default: Story = {};
 
 export const Demo: Story = {
   play: async ({ canvas }) => {
-    await expect(canvas.getByText('Viewing 15 of 15')).toBeVisible();
+    await expect(canvas.getByText('Viewing 15 of 15', { ignore: '.cdk-visually-hidden' })).toBeVisible();
 
     await userEvent.type(canvas.getByRole('combobox', { name: 'Search' }), 'consectetur');
     // Give viewers time to see the filtered results and suggestions.
-    waitFor(() => expect(canvas.getByText(/^Viewing \d+ of 15$/)).not.toHaveTextContent('Viewing 15 of 15'), {
-      timeout: 2000,
-    });
+    waitFor(
+      () =>
+        expect(canvas.getByText(/^Viewing \d+ of 15$/, { ignore: '.cdk-visually-hidden' })).not.toHaveTextContent(
+          'Viewing 15 of 15',
+        ),
+      {
+        timeout: 2000,
+      },
+    );
 
     const [downloadButton] = canvas.getAllByRole('button', { name: 'Choose download format' });
     await userEvent.click(downloadButton);
@@ -231,7 +237,7 @@ export const WithFooter: Story = {
     template: explorerTemplate(
       args,
       `
-        <ang-footer logoImage="" organization="Organization">
+        <ang-footer logoSrc="" organization="Organization">
           <ang-footer-logo>Logo</ang-footer-logo>
           <a angFooterAction matButton>Privacy</a>
           <a angFooterAction matButton>Accessibility</a>

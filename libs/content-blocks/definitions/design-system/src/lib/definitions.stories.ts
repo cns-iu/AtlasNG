@@ -71,7 +71,7 @@ export const Cards: Story = {
           config: {
             image: 'https://github.com/cns-iu.png',
             name: 'CNS',
-            description: ['Cyberinfrastructure for Network Science Center', 'Indiana University'],
+            descriptions: ['Cyberinfrastructure for Network Science Center', 'Indiana University'],
             link: { command: 'https://github.com/cns-iu', fragment: 'repositories' },
           },
         },

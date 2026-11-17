@@ -11,7 +11,7 @@
           [label]="filter.label"
           [options]="filter.options"
           [count]="filter.count"
-          [searchDisabled]="filter.searchDisabled ?? false"
+          [disableSearch]="filter.disableSearch ?? false"
           [panelOffsetX]="filterPanelOffsetX"
           [selected]="selectionFor(filter)"
           (selectedChange)="select(filter, $event)"
@@ -28,7 +28,7 @@
       [config]="resolvedConfig()"
       [(search)]="search"
       [(sorts)]="sorts"
-      (clearResults)="clearAllFilters()"
+      (clearClick)="clearAllFilters()"
     >
       <ng-content />
     </ang-kg-explorer-table-panel>

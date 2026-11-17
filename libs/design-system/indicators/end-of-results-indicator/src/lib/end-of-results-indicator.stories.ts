@@ -27,7 +27,7 @@ export const Default: Story = {
 export const WithCustomLabels: Story = {
   args: {
     count: 25,
-    label: 'Total Found:',
+    prefix: 'Total Found:',
     description: 'No more items to display',
   },
 };

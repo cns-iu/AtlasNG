@@ -13,7 +13,11 @@ import { AnyLink, AnyLinkCommand } from '@atlasng/common';
   selector: 'ang-help-button',
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, TrackClick, AnyLink],
   templateUrl: './help-button.html',
-  host: { class: 'ang-help-button' },
+  host: {
+    class: 'ang-help-button',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-describedby]': 'null',
+  },
 })
 export class HelpButton {
   /** Optional menu attached to the help button trigger. */
@@ -21,4 +25,16 @@ export class HelpButton {
 
   /** Optional destination used when the help button acts as a link. */
   readonly link = input<AnyLinkCommand>();
+
+  /** Tooltip shown when hovering or focusing the button. */
+  readonly tooltip = input('Help & documentation');
+
+  /**
+   * Accessible name of the button. Defaults to "Open help menu" with a `menu`
+   * and "Open help page in a new tab" otherwise.
+   */
+  readonly ariaLabel = input<string | null>(null, { alias: 'aria-label' });
+
+  /** Space-separated ids of elements describing the button. */
+  readonly ariaDescribedby = input<string | null>(null, { alias: 'aria-describedby' });
 }

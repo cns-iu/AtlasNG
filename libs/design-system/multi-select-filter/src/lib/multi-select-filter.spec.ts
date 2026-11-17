@@ -24,7 +24,7 @@ describe('MultiSelectFilter', () => {
   async function setupWithInfo(attributes = '') {
     return render(
       `
-        <ang-multi-select-filter label="Organ" [options]="options" [infoTooltip]="info" ${attributes} />
+        <ang-multi-select-filter label="Organ" [options]="options" [infoPanel]="info" ${attributes} />
         <ang-rich-tooltip #info tagline="About organs" description="Filter by organ" />
       `,
       { imports: [MultiSelectFilter, RichTooltip], componentProperties: { options } },
@@ -46,7 +46,7 @@ describe('MultiSelectFilter', () => {
 
   it('makes the counter reachable by keyboard and describes it with its tooltip text', async () => {
     const user = userEvent.setup();
-    await setup({ count: 1000, countTooltipText: 'Unique organs' });
+    await setup({ count: 1000, countTooltip: 'Unique organs' });
 
     await user.tab();
     await user.tab();
@@ -69,7 +69,7 @@ describe('MultiSelectFilter', () => {
   });
 
   it('supports custom info button labels', async () => {
-    await setupWithInfo('infoLabel="About organs" infoTooltipText="More"');
+    await setupWithInfo('infoButtonLabel="About organs" infoTooltip="More"');
 
     expect(screen.getByRole('button', { name: 'About organs' })).toHaveAccessibleDescription('More');
   });
@@ -102,9 +102,9 @@ describe('MultiSelectFilter', () => {
     expect(expandedChange).toHaveBeenLastCalledWith(true);
   });
 
-  it('hides the search field when searchDisabled is set', async () => {
+  it('hides the search field when disableSearch is set', async () => {
     const user = userEvent.setup();
-    await setup({ searchDisabled: true });
+    await setup({ disableSearch: true });
 
     await user.click(screen.getByRole('button', { name: 'Organ' }));
 
@@ -161,7 +161,7 @@ describe('MultiSelectFilter', () => {
   });
 
   it('supports custom chip labels', async () => {
-    await setup({ selected: [kidney], selectedLabel: 'Selected organs', removeLabel: 'Clear' });
+    await setup({ selected: [kidney], selectedFiltersLabel: 'Selected organs', removeFilterLabel: 'Clear' });
 
     expect(screen.getByRole('list', { name: 'Selected organs' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Clear Kidney' })).toBeInTheDocument();
