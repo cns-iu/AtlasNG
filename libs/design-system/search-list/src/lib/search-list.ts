@@ -53,7 +53,7 @@ export class SearchList<T extends SearchListOption> {
   readonly search = model<string>('');
 
   /** Whether to hide the search field */
-  readonly searchDisabled = input(false, { transform: booleanAttribute });
+  readonly disableSearch = input(false, { transform: booleanAttribute });
 
   /** Label of the search field */
   readonly searchLabel = input('Search');

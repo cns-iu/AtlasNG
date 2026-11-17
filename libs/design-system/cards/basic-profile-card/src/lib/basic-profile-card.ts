@@ -21,8 +21,8 @@ export class BasicProfileCard {
   /** Field for profile name */
   readonly name = input.required<string>();
 
-  /** Field(s) for description */
-  readonly description = input.required({ transform: coerceArray<string> });
+  /** Description line or lines shown under the name */
+  readonly descriptions = input.required({ transform: coerceArray<string> });
 
   /** Field for profile name link */
   readonly link = input<AnyLinkCommand>();

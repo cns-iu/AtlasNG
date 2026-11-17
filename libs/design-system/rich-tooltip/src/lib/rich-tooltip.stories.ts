@@ -10,7 +10,7 @@ import { RichTooltipTrigger } from './rich-tooltip-trigger';
 type RichTooltipArgs = {
   tagline?: string;
   description?: string;
-  actionText?: string;
+  actionLabel?: string;
   actionClick: () => void;
 };
 
@@ -44,7 +44,7 @@ const meta: Meta<RichTooltipArgs> = {
   argTypes: {
     tagline: { control: 'text', description: 'Title of the simple variant.' },
     description: { control: 'text', description: 'Supporting text of the simple variant.' },
-    actionText: { control: 'text', description: 'Label of the action button. The button is hidden when empty.' },
+    actionLabel: { control: 'text', description: 'Label of the action button. The button is hidden when empty.' },
     actionClick: { control: false, description: 'Emits when the action button is clicked.' },
   },
   render: (args) => ({
@@ -54,7 +54,7 @@ const meta: Meta<RichTooltipArgs> = {
         #tip
         [tagline]="tagline"
         [description]="description"
-        [actionText]="actionText"
+        [actionLabel]="actionLabel"
         (actionClick)="actionClick()"
       />
       <button matIconButton aria-label="Show more information" [angRichTooltipTriggerFor]="tip">
@@ -73,7 +73,7 @@ export const Simple: Story = {};
 export const SimpleWithAction: Story = {
   name: 'Simple with action',
   args: {
-    actionText: 'Action',
+    actionLabel: 'Action',
   },
 };
 
@@ -83,7 +83,7 @@ export const CustomContent: Story = {
   argTypes: {
     tagline: { table: { disable: true } },
     description: { table: { disable: true } },
-    actionText: { table: { disable: true } },
+    actionLabel: { table: { disable: true } },
   },
   render: (args) => ({
     props: args,

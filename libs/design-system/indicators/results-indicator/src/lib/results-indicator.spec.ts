@@ -77,7 +77,7 @@ describe('ResultsIndicator', () => {
   });
 
   it('should not announce changes when announcements are disabled', async () => {
-    const { fixture } = await setup({ announceDisabled: true });
+    const { fixture } = await setup({ disableAnnouncements: true });
     const announce = vi.spyOn(TestBed.inject(LiveAnnouncer), 'announce').mockResolvedValue();
     vi.useFakeTimers();
     try {

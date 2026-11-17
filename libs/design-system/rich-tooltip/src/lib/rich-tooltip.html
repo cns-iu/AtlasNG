@@ -17,11 +17,11 @@
         <ng-content select="ang-rich-tooltip-content, [angRichTooltipContent]">{{ description() }}</ng-content>
       </div>
     }
-    @if (customActions().length || actionText()) {
+    @if (customActions().length || actionLabel()) {
       <div class="ang-rich-tooltip--actions">
         <ng-content select="ang-rich-tooltip-action, [angRichTooltipAction]">
           <button matButton type="button" class="ang-rich-tooltip--action" (click)="actionClick.emit()">
-            {{ actionText() }}
+            {{ actionLabel() }}
           </button>
         </ng-content>
       </div>

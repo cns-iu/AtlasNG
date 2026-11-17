@@ -16,7 +16,7 @@ describe('HeaderShell', () => {
   it('closes local navigation when the viewport enters the desktop breakpoint', async () => {
     const state$ = new BehaviorSubject<BreakpointState>({ matches: false, breakpoints: {} });
     await render(HeaderShell, {
-      inputs: { hasLocalNavigation: true, localNavigationExpanded: true },
+      inputs: { localNavigation: true, localNavigationExpanded: true },
       providers: [{ provide: BreakpointObserver, useValue: { observe: () => state$ } }],
     });
 
@@ -32,7 +32,7 @@ describe('HeaderShell', () => {
   it('keeps local navigation expanded below the desktop breakpoint', async () => {
     const state$ = new BehaviorSubject<BreakpointState>({ matches: false, breakpoints: {} });
     await render(HeaderShell, {
-      inputs: { hasLocalNavigation: true, localNavigationExpanded: true },
+      inputs: { localNavigation: true, localNavigationExpanded: true },
       providers: [{ provide: BreakpointObserver, useValue: { observe: () => state$ } }],
     });
 
@@ -44,7 +44,7 @@ describe('HeaderShell', () => {
   it('does not render local navigation when disabled', async () => {
     await render(HeaderShell, {
       inputs: {
-        hasLocalNavigation: false,
+        localNavigation: false,
       },
     });
 
@@ -109,9 +109,9 @@ describe('HeaderShell', () => {
     await render(
       `
         <ang-header-shell
-          [hasLocalNavigation]="true"
+          [localNavigation]="true"
           [localNavigationExpanded]="expanded"
-          (localNavigationToggle)="expanded = !expanded"
+          (localNavigationClick)="expanded = !expanded"
         />
       `,
       {
@@ -185,7 +185,7 @@ describe('HeaderShell', () => {
   it('links the toggle buttons to the panels they control', async () => {
     await render(HeaderShell, {
       inputs: {
-        hasLocalNavigation: true,
+        localNavigation: true,
         localNavigationControls: 'local-menu',
         appsMenuExpanded: true,
         appsMenuControls: 'apps-menu',
@@ -205,7 +205,7 @@ describe('HeaderShell', () => {
   it('uses custom labels', async () => {
     await render(HeaderShell, {
       inputs: {
-        hasLocalNavigation: true,
+        localNavigation: true,
         localNavigationLabel: 'Filters',
         appsMenuLabel: 'Apps',
         navigationLabel: 'Main',

@@ -21,7 +21,7 @@ describe('NavigationContainer', () => {
       },
     });
 
-    fixture.componentInstance.appsMenuToggle();
+    fixture.componentInstance.toggleAppsMenu();
 
     expect(fixture.componentInstance.rightMenuOpen()).toBe(true);
     expect(fixture.componentInstance.leftMenuOpen()).toBe(false);
@@ -35,7 +35,7 @@ describe('NavigationContainer', () => {
       },
     });
 
-    fixture.componentInstance.localNavigationToggle();
+    fixture.componentInstance.toggleLocalNavigation();
 
     expect(fixture.componentInstance.leftMenuOpen()).toBe(true);
     expect(fixture.componentInstance.rightMenuOpen()).toBe(false);
@@ -45,7 +45,7 @@ describe('NavigationContainer', () => {
     const user = userEvent.setup();
     const { fixture } = await render(NavigationContainer, {
       inputs: {
-        navigationItems: [{ id: 'about', label: 'About', link: 'https://example.com/about', external: true }],
+        leftNavigationItems: [{ id: 'about', label: 'About', link: 'https://example.com/about', external: true }],
         leftMenuOpen: true,
       },
     });
@@ -59,7 +59,7 @@ describe('NavigationContainer', () => {
     const user = userEvent.setup();
     const { fixture } = await render(NavigationContainer, {
       inputs: {
-        navRight: [{ id: 'app', label: 'App', link: 'https://example.com/app', external: true }],
+        rightNavigationItems: [{ id: 'app', label: 'App', link: 'https://example.com/app', external: true }],
         rightMenuOpen: true,
       },
     });

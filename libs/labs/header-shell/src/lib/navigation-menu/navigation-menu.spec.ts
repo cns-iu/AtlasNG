@@ -95,7 +95,7 @@ describe('NavigationMenu', () => {
   });
 
   it('groups the social media links under a label', async () => {
-    await render(NavigationMenu, { inputs: { socialMediaIds: ['github'], socialsLabel: 'Follow us' } });
+    await render(NavigationMenu, { inputs: { socials: ['github'], socialsLabel: 'Follow us' } });
 
     expect(screen.getByRole('group', { name: 'Follow us' })).toBeInTheDocument();
   });

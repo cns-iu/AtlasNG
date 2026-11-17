@@ -46,7 +46,7 @@ export class RichTooltipAction {}
 /**
  * Panel of a persistent rich tooltip, opened by a {@link RichTooltipTrigger}.
  *
- * Supply `tagline`, `description` and `actionText` for the simple variant, or project
+ * Supply `tagline`, `description` and `actionLabel` for the simple variant, or project
  * {@link RichTooltipTagline}, {@link RichTooltipContent} and {@link RichTooltipAction} elements
  * for custom content. The panel renders nothing in place; triggers attach its template to an overlay.
  * A single panel can be shared by several triggers.
@@ -72,7 +72,7 @@ export class RichTooltip {
   readonly description = input<string>();
 
   /** Label of the simple variant's action button. The button is only shown when this is set. */
-  readonly actionText = input<string>();
+  readonly actionLabel = input<string>();
 
   /** Accessible name of the panel. Use when the panel has no tagline. */
   readonly ariaLabel = input<string | null>(null, { alias: 'aria-label' });

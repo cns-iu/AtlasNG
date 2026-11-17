@@ -76,7 +76,13 @@ export class HeaderShell {
   readonly logoLink = input<AnyLinkCommand>('/');
 
   /** Image source URL used for the logo. */
-  readonly logoUrl = input();
+  readonly logoSrc = input<string>();
+
+  /** Tooltip shown on the logo link. Override it when the link does not lead to the homepage. */
+  readonly logoTooltip = input('Homepage');
+
+  /** Accessible name of the logo link. */
+  readonly logoLabel = input('Go to homepage');
 
   /** Optional help link destination when the help button acts as a link. */
   readonly helpLink = input<AnyLinkCommand>();
@@ -88,7 +94,7 @@ export class HeaderShell {
   readonly localNavigationIcon = input<'menu' | 'tune'>('menu');
 
   /** Whether the page has local navigation enabled. */
-  readonly hasLocalNavigation = input(false);
+  readonly localNavigation = input(false, { transform: booleanAttribute });
 
   /** Current local navigation open/closed state. */
   readonly localNavigationExpanded = model(false);
@@ -112,10 +118,10 @@ export class HeaderShell {
   readonly navigationLabel = input('Primary navigation');
 
   /** Emits each time the local navigation toggle button is pressed. */
-  readonly localNavigationToggle = output();
+  readonly localNavigationClick = output();
 
   /** Emits each time the apps menu toggle button is pressed. */
-  readonly appsMenuToggle = output();
+  readonly appsMenuClick = output();
 
   /** Closes the local navigation whenever the viewport enters the desktop breakpoint. */
   constructor() {
@@ -123,7 +129,7 @@ export class HeaderShell {
       .observe('(min-width: 960px)')
       .pipe(takeUntilDestroyed())
       .subscribe((state) => {
-        if (state.matches && this.hasLocalNavigation()) {
+        if (state.matches && this.localNavigation()) {
           this.localNavigationExpanded.set(false);
         }
       });
