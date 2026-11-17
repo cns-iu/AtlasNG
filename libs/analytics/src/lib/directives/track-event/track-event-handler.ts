@@ -1,7 +1,5 @@
-import { inject } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor } from '@atlasng/analytics/events';
-import { Analytics } from '../../analytics';
-import { EVENT_SCOPE } from '../../scope';
+import { injectTrackEvent } from '../../inject-track-event';
 import { isSingleTrackEventArgs, MultiTrackEventArgs, SingleTrackEventArgs, TrackEventArgs } from './track-event-args';
 
 /** Contract for resolving a DOM event handler for an analytics trigger. */
@@ -17,10 +15,8 @@ export interface ITrackEventHandler {
 
 /** Converts DOM trigger data into analytics tracking calls. */
 export class TrackEventHandler<E extends AnalyticsEvent> implements ITrackEventHandler {
-  /** The analytics service used to track events. */
-  readonly #analytics = inject(Analytics);
-  /** The current event scope used to construct tracked paths. */
-  readonly #scope = inject(EVENT_SCOPE);
+  /** Tracks events under the current event scope. */
+  readonly #track = injectTrackEvent();
   /** The arguments describing the events handled by this instance. */
   readonly #args: TrackEventArgs<E>;
   /** The single-event or multi-event handler selected for the supplied arguments. */
@@ -89,15 +85,6 @@ export class TrackEventHandler<E extends AnalyticsEvent> implements ITrackEventH
     trigger: string,
     triggerData: unknown,
   ): void {
-    this.#analytics.trackEvent(
-      event,
-      {
-        ...payload,
-        path: this.#scope.path(),
-        trigger,
-        triggerData,
-      },
-      options,
-    );
+    this.#track(event, { ...payload, trigger, triggerData }, options);
   }
 }

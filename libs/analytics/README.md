@@ -200,6 +200,16 @@ analytics.trackPageView();
 analytics.trackEvent(CoreEvents.Click, { target: 'download' });
 ```
 
+For interactions that do not fire DOM events, such as Angular Material `selectionChange` outputs, use `injectTrackEvent()`. It adds the current scope path, like the directives do:
+
+```ts
+readonly #track = injectTrackEvent();
+
+protected selectVersion(version: Version): void {
+  this.#track(CoreEvents.Change, { trigger: 'selectionChange' });
+}
+```
+
 ### Creating custom events
 
 Define custom events with `createAnalyticsEvent`. The payload type parameter makes `trackEvent` and the `TrackEvent` directive type-check the payload you pass.
