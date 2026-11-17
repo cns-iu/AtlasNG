@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   contentChild,
   contentChildren,
   Directive,
@@ -56,6 +57,11 @@ export class RichTooltipAction {}
   templateUrl: './rich-tooltip.html',
   styleUrl: './rich-tooltip.scss',
   encapsulation: ViewEncapsulation.None,
+  host: {
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
+    '[attr.aria-describedby]': 'null',
+  },
   exportAs: 'angRichTooltip',
 })
 export class RichTooltip {
@@ -67,6 +73,15 @@ export class RichTooltip {
 
   /** Label of the simple variant's action button. The button is only shown when this is set. */
   readonly actionText = input<string>();
+
+  /** Accessible name of the panel. Use when the panel has no tagline. */
+  readonly ariaLabel = input<string | null>(null, { alias: 'aria-label' });
+
+  /** Space-separated ids of elements labelling the panel. Defaults to the tagline row. */
+  readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
+
+  /** Space-separated ids of elements describing the panel. Defaults to the content row. */
+  readonly ariaDescribedby = input<string | null>(null, { alias: 'aria-describedby' });
 
   /** Emits when the simple variant's action button is clicked. */
   readonly actionClick = output<void>();
@@ -83,6 +98,9 @@ export class RichTooltip {
   /** Id of the tagline row, referenced by the panel's `aria-labelledby`. */
   protected readonly taglineId = inject(IdGenerator).getId('ang-rich-tooltip--tagline');
 
+  /** Id of the content row, referenced by the panel's `aria-describedby`. */
+  protected readonly contentId = inject(IdGenerator).getId('ang-rich-tooltip--content');
+
   /** Projected custom tagline, if any. */
   protected readonly customTagline = contentChild(RichTooltipTagline);
 
@@ -91,6 +109,22 @@ export class RichTooltip {
 
   /** Projected custom actions. */
   protected readonly customActions = contentChildren(RichTooltipAction);
+
+  /** Whether the panel renders a tagline row. */
+  protected readonly hasTagline = computed(() => !!(this.customTagline() || this.tagline()));
+
+  /** Whether the panel renders a content row. */
+  protected readonly hasContent = computed(() => !!(this.customContent() || this.description()));
+
+  /** Ids labelling the panel: the consumer's ids, else the tagline row unless an `aria-label` is set. */
+  protected readonly labelledby = computed(
+    () => this.ariaLabelledby() ?? (this.hasTagline() && !this.ariaLabel() ? this.taglineId : null),
+  );
+
+  /** Ids describing the panel: the consumer's ids, else the content row. */
+  protected readonly describedby = computed(
+    () => this.ariaDescribedby() ?? (this.hasContent() ? this.contentId : null),
+  );
 
   /** Requests every trigger that currently shows this panel to close it. */
   close(): void {

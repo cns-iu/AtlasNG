@@ -195,4 +195,24 @@ describe('SearchList', () => {
 
     expect(fixture.componentInstance.selected()).toEqual([OPTIONS[0], OPTIONS[1]]);
   });
+
+  it('labels the search field and the option list', async () => {
+    await render('<ang-search-list searchLabel="Find tissue" aria-label="Tissues" [options]="options" />', {
+      imports: [SearchList],
+      componentProperties: { options: OPTIONS },
+    });
+
+    expect(screen.getByRole('textbox', { name: 'Find tissue' })).toBeInTheDocument();
+    expect(screen.getByRole('listbox', { name: 'Tissues' })).toBeInTheDocument();
+  });
+
+  it('labels the option list with aria-labelledby', async () => {
+    await render(
+      `<h2 id="heading">Organs</h2>
+      <ang-search-list aria-labelledby="heading" [options]="options" />`,
+      { imports: [SearchList], componentProperties: { options: OPTIONS } },
+    );
+
+    expect(screen.getByRole('listbox', { name: 'Organs' })).toBeInTheDocument();
+  });
 });
