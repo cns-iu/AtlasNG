@@ -82,14 +82,14 @@ filters: KgExplorerFilter<Dataset>[] = [
 ];
 ```
 
-| Property         | Description                                                                                                       |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `id`, `label`    | Key of the filter in `filterSelections`, and the name on its button.                                              |
-| `field`          | Row key, or function returning a row's value or values. A row matches when it has the label of a selected option. |
-| `matches`        | `(row, selected) => boolean`, used instead of the `field` comparison.                                             |
-| `options`        | Options of the filter. When omitted, the distinct `field` values of `items` are listed with their row counts.     |
-| `searchDisabled` | Hides the search field of the filter's list.                                                                      |
-| `count`          | Number shown by the filter's counter. Defaults to the number of options.                                          |
+| Property        | Description                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `id`, `label`   | Key of the filter in `filterSelections`, and the name on its button.                                              |
+| `field`         | Row key, or function returning a row's value or values. A row matches when it has the label of a selected option. |
+| `matches`       | `(row, selected) => boolean`, used instead of the `field` comparison.                                             |
+| `options`       | Options of the filter. When omitted, the distinct `field` values of `items` are listed with their row counts.     |
+| `disableSearch` | Hides the search field of the filter's list.                                                                      |
+| `count`         | Number shown by the filter's counter. Defaults to the number of options.                                          |
 
 - A row is shown when it matches every filter that has a selection; within one filter, any selected option is enough.
 - Filtering is applied by the search after the index is built, so changing a selection does not rebuild the index, and suggestions only come from rows that pass the filters. "Viewing X of Y" counts against all `items`.
@@ -119,20 +119,21 @@ Content projected into the table view, such as a footer, renders after the table
 
 `config` takes a `KgExplorerTableViewConfig`. Every option is optional.
 
-| Option                      | Default     | Description                                                                                         |
-| --------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
-| `searchFields`              | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them. |
-| `searchSuggestionField`     | row `title` | Field whose values are suggested below the search field.                                            |
-| `searchSuggestionsDisabled` | `false`     | Turns the suggestions off.                                                                          |
-| `searchDisabled`            | `false`     | Hides the search field.                                                                             |
-| `resultsCounterDisabled`    | `false`     | Hides the "Viewing X of Y" counter.                                                                 |
-| `endOfResultsDisabled`      | `false`     | Hides the end-of-results indicator.                                                                 |
-| `downloadFormats`           | none        | File formats of the download column. The column is only shown when this is set.                     |
+| Option                     | Default     | Description                                                                                         |
+| -------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| `searchFields`             | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them. |
+| `searchSuggestionField`    | row `title` | Field whose values are suggested below the search field.                                            |
+| `disableSearchSuggestions` | `false`     | Turns the suggestions off.                                                                          |
+| `disableSearch`            | `false`     | Hides the search field.                                                                             |
+| `disableResultsCounter`    | `false`     | Hides the "Viewing X of Y" counter.                                                                 |
+| `resultsCounterPrefix`     | `Viewing`   | Text before the numbers of the results counter.                                                     |
+| `disableEndOfResults`      | `false`     | Hides the end-of-results indicator.                                                                 |
+| `downloadFormats`          | none        | File formats of the download column. The column is only shown when this is set.                     |
 
 Set defaults for every table view below an injector with `provideKgExplorerTableView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
 
 ```ts
-providers: [provideKgExplorerTableView({ endOfResultsDisabled: true })];
+providers: [provideKgExplorerTableView({ disableEndOfResults: true })];
 ```
 
 #### Search

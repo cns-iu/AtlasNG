@@ -97,4 +97,16 @@ describe('SnackbarComponent', () => {
     const label = await screen.findByText(MESSAGE);
     expect(label.closest('ang-snackbar')).not.toHaveClass('ang-snackbar--action-row');
   });
+
+  it('should label the close button', async () => {
+    matSnackBar.openFromComponent(Snackbar, createSnackBarConfig(MESSAGE, { showClose: true }));
+
+    expect(await screen.findByRole('button', { name: 'Close snack bar', hidden: true })).toBeInTheDocument();
+  });
+
+  it('should use a custom close button label', async () => {
+    matSnackBar.openFromComponent(Snackbar, createSnackBarConfig(MESSAGE, { showClose: true, closeLabel: 'Dismiss' }));
+
+    expect(await screen.findByRole('button', { name: 'Dismiss', hidden: true })).toBeInTheDocument();
+  });
 });

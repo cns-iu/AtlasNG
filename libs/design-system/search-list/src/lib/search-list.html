@@ -1,13 +1,18 @@
-@if (!searchDisabled()) {
+@if (!disableSearch()) {
   <mat-form-field class="ang-search-list--search" subscriptSizing="dynamic">
-    <mat-label>Search</mat-label>
+    <mat-label>{{ searchLabel() }}</mat-label>
     <mat-icon matPrefix fontIcon="search" />
     <input matInput type="text" [(ngModel)]="search" />
   </mat-form-field>
 }
 
 <ang-scroll-area class="ang-search-list--scroll-area" orientation="vertical">
-  <mat-selection-list class="ang-search-list--list" (selectionChange)="updateSelection($event)">
+  <mat-selection-list
+    class="ang-search-list--list"
+    [attr.aria-label]="ariaLabel()"
+    [attr.aria-labelledby]="ariaLabelledby()"
+    (selectionChange)="updateSelection($event)"
+  >
     @for (result of results(); track result.item) {
       @let option = result.item;
       <mat-list-option togglePosition="before" [value]="option" [selected]="selected().includes(option)">

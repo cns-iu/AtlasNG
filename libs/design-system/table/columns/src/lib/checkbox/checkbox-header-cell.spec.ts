@@ -27,4 +27,14 @@ describe('CheckboxHeaderCellDefinition', () => {
 
     expect(selectFn).toHaveBeenCalledOnce();
   });
+
+  it('uses a configured label', async () => {
+    const table = { rows: signal([ROW]), selected: signal([]) };
+    await renderDefinition(CheckboxHeaderCellDefinition, headerContext(), {
+      table,
+      config: { label: 'Select all people' },
+    });
+
+    expect(screen.getByRole('checkbox', { name: 'Select all people' })).toBeInTheDocument();
+  });
 });

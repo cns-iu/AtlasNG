@@ -63,10 +63,10 @@ const meta: Meta<MultiSelectFilter<SearchListOption>> = {
     label: 'Organ',
     options: ORGANS,
     selected: [ORGANS[0], ORGANS[2]],
-    searchDisabled: false,
+    disableSearch: false,
   },
   argTypes: {
-    infoTooltip: { table: { disable: true } },
+    infoPanel: { table: { disable: true } },
     count: { control: 'number' },
   },
   decorators: [
@@ -78,8 +78,8 @@ const meta: Meta<MultiSelectFilter<SearchListOption>> = {
     props: args,
     template: `
       <ang-multi-select-filter
-        ${argsToTemplate(args, { exclude: ['infoTooltip'] })}
-        [infoTooltip]="info"
+        ${argsToTemplate(args, { exclude: ['infoPanel'] })}
+        [infoPanel]="info"
         style="width: 18.5rem"
       />
       <ang-rich-tooltip
@@ -105,7 +105,7 @@ export const NoSelection: Story = {
 
 export const WithoutSearch: Story = {
   args: {
-    searchDisabled: true,
+    disableSearch: true,
   },
 };
 
@@ -134,7 +134,7 @@ export const WithoutInfo: Story = {
     props: args,
     template: `
       <ang-multi-select-filter
-        ${argsToTemplate(args, { exclude: ['infoTooltip'] })}
+        ${argsToTemplate(args, { exclude: ['infoPanel'] })}
         style="width: 18.5rem"
       />
     `,

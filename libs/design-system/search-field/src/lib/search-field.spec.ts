@@ -206,4 +206,15 @@ describe('SearchField', () => {
     ]);
     expect(within(options[0]).getByText('L')).toHaveClass('ang-search-highlight--match');
   });
+
+  it('forwards aria-labelledby and aria-describedby to the input', async () => {
+    await render(
+      `<h2 id="heading">Organs</h2>
+      <span id="hint">Search by organ name</span>
+      <ang-search-field aria-labelledby="heading" aria-describedby="hint" />`,
+      { imports: [SearchField] },
+    );
+
+    expect(getInput('Organs')).toHaveAccessibleDescription('Search by organ name');
+  });
 });

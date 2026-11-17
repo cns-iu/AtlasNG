@@ -39,6 +39,8 @@ export interface SearchListOption {
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-search-list',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
   },
 })
 export class SearchList<T extends SearchListOption> {
@@ -52,7 +54,16 @@ export class SearchList<T extends SearchListOption> {
   readonly search = model<string>('');
 
   /** Whether to hide the search field */
-  readonly searchDisabled = input(false, { transform: booleanAttribute });
+  readonly disableSearch = input(false, { transform: booleanAttribute });
+
+  /** Label of the search field */
+  readonly searchLabel = input('Search');
+
+  /** Accessible name of the option list */
+  readonly ariaLabel = input<string | null>(null, { alias: 'aria-label' });
+
+  /** Space-separated ids of elements labelling the option list. Takes precedence over `aria-label`. */
+  readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
 
   /** Search over the options, in their original order */
   readonly #search = injectSearch({

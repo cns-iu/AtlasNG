@@ -1,13 +1,13 @@
 import { MatIconRegistry } from '@angular/material/icon';
 import { FakeMatIconRegistry } from '@angular/material/icon/testing';
-import { ComponentInput, render, screen } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
 import { SocialMediaButton } from './social-media-button';
 import { provideSocialMediaButtons, type SocialMediaButtonDefinition } from './social-media-button-definitions';
 
 describe('SocialMediaButton', () => {
   type SetupOptions = {
     detectChangesOnRender?: boolean;
-    inputs?: ComponentInput<SocialMediaButton>;
+    inputs?: { social?: string | SocialMediaButtonDefinition };
     definitions?: SocialMediaButtonDefinition[][];
   };
 
@@ -25,7 +25,7 @@ describe('SocialMediaButton', () => {
   it('renders a built-in button definition by id', async () => {
     await setup({
       inputs: {
-        id: 'linkedin',
+        social: 'linkedin',
       },
     });
 
@@ -36,7 +36,7 @@ describe('SocialMediaButton', () => {
   it('renders a link when an explicit definition with an icon is provided', async () => {
     await setup({
       inputs: {
-        definition: {
+        social: {
           id: 'custom',
           label: 'Custom',
           url: 'https://example.com/custom',
@@ -50,27 +50,10 @@ describe('SocialMediaButton', () => {
     expect(link).toHaveAttribute('href', 'https://example.com/custom');
   });
 
-  it('prefers the explicit definition input over id lookup', async () => {
-    await setup({
-      inputs: {
-        id: 'linkedin',
-        definition: {
-          id: 'override',
-          label: 'Override Label',
-          url: 'https://example.com/override',
-          classes: 'override-class',
-        },
-      },
-    });
-
-    const link = screen.getByRole('link', { name: 'Override Label' });
-    expect(link).toHaveAttribute('href', 'https://example.com/override');
-  });
-
   it('uses injected definitions before built-in defaults', async () => {
     await setup({
       inputs: {
-        id: 'linkedin',
+        social: 'linkedin',
       },
       definitions: [
         [
@@ -91,7 +74,7 @@ describe('SocialMediaButton', () => {
   it('combines multiple registrations and prefers the last matching definition', async () => {
     await setup({
       inputs: {
-        id: 'mastodon',
+        social: 'mastodon',
       },
       definitions: [
         [
@@ -118,21 +101,11 @@ describe('SocialMediaButton', () => {
       }
     }
 
-    it('renders the fallback when neither id nor definition are provided', async () => {
-      const { fixture } = await setup({ detectChangesOnRender: false });
-
-      runWithProdMode(() => {
-        fixture.detectChanges();
-        const link = screen.getByRole('link', { name: 'Not available' });
-        expect(link).toHaveAttribute('href', '#');
-      });
-    });
-
     it('renders the fallback when id cannot be resolved', async () => {
       const { fixture } = await setup({
         detectChangesOnRender: false,
         inputs: {
-          id: 'not-a-real-platform',
+          social: 'not-a-real-platform',
         },
       });
 
@@ -145,17 +118,11 @@ describe('SocialMediaButton', () => {
   });
 
   describe('in development mode', () => {
-    it('throws when neither id nor definition are provided', async () => {
-      await expect(setup()).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[AngError: ANG4002: SocialMediaButton requires an id or definition input]`,
-      );
-    });
-
     it('throws when id cannot be resolved', async () => {
       await expect(
         setup({
           inputs: {
-            id: 'not-a-real-platform',
+            social: 'not-a-real-platform',
           },
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
