@@ -20,7 +20,7 @@
       type="button"
       class="ang-kg-explorer-download-cell--button"
       [matTooltip]="`Download ${format.label}`"
-      [attr.aria-label]="getLabel(row, format)"
+      [attr.aria-label]="`Download ${getName(row)} as ${format.label}`"
       (click)="config.download(row, format)"
     >
       <mat-icon fontIcon="download" />
@@ -31,7 +31,7 @@
       type="button"
       class="ang-kg-explorer-download-cell--button"
       matTooltip="Choose download format"
-      [attr.aria-label]="getLabel(row)"
+      [attr.aria-label]="`Choose download format for ${getName(row)}`"
       [matMenuTriggerFor]="menu"
     >
       <mat-icon fontIcon="download" />

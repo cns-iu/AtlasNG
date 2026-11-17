@@ -130,7 +130,7 @@ Content projected into the table view, such as a footer, renders after the table
 | `endOfResultsDisabled`      | `false`     | Hides the end-of-results indicator.                                                                 |
 | `downloadFormats`           | none        | File formats of the download column. The column is only shown when this is set.                     |
 | `downloadColumnLabel`       | `Download`  | Accessible name of the download column's header, which is visually empty.                           |
-| `downloadLabel`             | row `title` | `(row, format?) => string`: accessible name of each download button (see below).                    |
+| `downloadLabel`             | row `title` | Row key or `(row) => string` that names the row of each download button (see below).                |
 
 Set defaults for every table view below an injector with `provideKgExplorerTableView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
 
@@ -156,9 +156,9 @@ config = { downloadFormats: (dataset: Dataset) => dataset.formats };
 | One              | Downloads that format directly.                |
 | None             | Disabled, with a "No downloads available" tip. |
 
-Each button names its row for screen readers, for example "Download Heart atlas as CSV" or "Choose download format for Heart atlas", while its tooltip names only the format. `downloadLabel` replaces these names: it is called with the format for a button that downloads one format, and without one for a button that opens the menu.
+Each button names its row for screen readers, for example "Download Heart atlas as CSV" or "Choose download format for Heart atlas", while its tooltip names only the format. `downloadLabel` sets the row name, from a row key or a function.
 
-Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables, with the `label` option in place of `downloadLabel`. Pair it with `KgExplorerDownloadHeaderCellDefinition`, which keeps the header visually empty but gives it the column `name`.
+Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables, which requires a `labelFn` or `labelProp` in place of `downloadLabel`. Pair it with `KgExplorerDownloadHeaderCellDefinition`, which keeps the header visually empty but gives it the column `name`.
 
 ### Known limitations
 

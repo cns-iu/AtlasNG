@@ -132,12 +132,25 @@ describe('KgExplorerTableView', () => {
       config: {
         downloadFormats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
         downloadColumnLabel: 'Files',
-        downloadLabel: (item: TestItem) => `Files of ${item.type}`,
+        downloadLabel: 'type',
       },
     });
 
     expect(await screen.findByRole('columnheader', { name: 'Files' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: `Files of ${ITEMS[0].type}` })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: `Choose download format for ${ITEMS[0].type}` })).toBeInTheDocument();
+  });
+
+  it('names the download buttons with a label function', async () => {
+    await setup({
+      config: {
+        downloadFormats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
+        downloadLabel: (item: TestItem) => `${item.title} (${item.type})`,
+      },
+    });
+
+    expect(
+      await screen.findByRole('button', { name: `Choose download format for ${ITEMS[0].title} (${ITEMS[0].type})` }),
+    ).toBeInTheDocument();
   });
 
   it('uses the provided configuration as defaults', async () => {

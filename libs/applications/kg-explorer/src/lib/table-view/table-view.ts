@@ -128,7 +128,7 @@ export class KgExplorerTableView<
   /** Accessible name of the download column's header. */
   private readonly downloadColumnLabel = computed(() => this.resolvedConfig().downloadColumnLabel ?? '');
 
-  /** Accessible name of each row's download button, or `undefined` for the default. */
+  /** Names the row of each download button: a row key or a function. */
   private readonly downloadLabel = computed(() => this.resolvedConfig().downloadLabel);
 
   /** Whether the filter menu is docked beside the table. */
@@ -151,7 +151,9 @@ export class KgExplorerTableView<
   /** Download column, recreated only when its formats or labels change; `undefined` without download formats. */
   private readonly downloadColumn = computed((): TableColumn<TRow> | undefined => {
     const formats = this.downloadFormats();
-    if (formats === undefined) {
+    const label = this.downloadLabel();
+    // The configuration token defaults `downloadLabel` to `title`, so its check only narrows the type.
+    if (formats === undefined || label === undefined) {
       return undefined;
     }
 
@@ -166,7 +168,7 @@ export class KgExplorerTableView<
       cellConfig: {
         formats,
         download: (item, format) => this.download.emit({ item, format }),
-        label: this.downloadLabel(),
+        ...(typeof label === 'function' ? { labelFn: label } : { labelProp: label }),
       } satisfies KgExplorerDownloadCellConfig<TRow, TFormat>,
     };
   });

@@ -23,6 +23,9 @@
     "@atlasng/core": "^0.0.12",
     "@atlasng/design-system": "^0.0.12"
   },
+  "dependencies": {
+    "type-fest": "^5.9.0"
+  },
   "devDependencies": {
     "@storybook/addon-a11y": "*",
     "@storybook/addon-designs": "*",

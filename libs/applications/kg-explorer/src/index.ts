@@ -2,7 +2,6 @@ export {
   KgExplorerDownloadCellDefinition,
   type KgExplorerDownloadCellConfig,
   type KgExplorerDownloadFormats,
-  type KgExplorerDownloadLabel,
 } from './lib/download-cell/download-cell';
 export { KgExplorerDownloadHeaderCellDefinition } from './lib/download-cell/download-header-cell';
 export {
