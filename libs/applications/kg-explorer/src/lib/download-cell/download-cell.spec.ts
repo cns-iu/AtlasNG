@@ -80,7 +80,7 @@ describe('KgExplorerDownloadCellDefinition', () => {
   it('downloads the only format of a row without a menu', async () => {
     const { download, user } = await setup([CSV_FILE_FORMAT]);
 
-    await user.click(await screen.findByRole('button', { name: `Download Heart atlas as ${CSV_FILE_FORMAT.label}` }));
+    await user.click(await screen.findByRole('button', { name: `Download ${CSV_FILE_FORMAT.label} for Heart atlas` }));
 
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     expect(download).toHaveBeenCalledWith(ROW, CSV_FILE_FORMAT);
@@ -89,7 +89,7 @@ describe('KgExplorerDownloadCellDefinition', () => {
   it('disables the button of a row without formats', async () => {
     const { download, user } = await setup(() => []);
 
-    const button = await screen.findByRole('button', { name: 'No downloads available' });
+    const button = await screen.findByRole('button', { name: 'No downloads available for Heart atlas' });
     await user.click(button);
 
     expect(button).toHaveAttribute('aria-disabled', 'true');
@@ -100,7 +100,9 @@ describe('KgExplorerDownloadCellDefinition', () => {
     const labelFn = vi.fn((row: TestRow) => row.name);
     await setup([CSV_FILE_FORMAT], { labelFn });
 
-    expect(await screen.findByRole('button', { name: `Download Ada as ${CSV_FILE_FORMAT.label}` })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: `Download ${CSV_FILE_FORMAT.label} for Ada` }),
+    ).toBeInTheDocument();
     expect(labelFn).toHaveBeenCalledWith(ROW);
   });
 });

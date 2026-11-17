@@ -38,8 +38,8 @@ export interface KgExplorerTableViewConfig<
   downloadColumnLabel?: string;
   /**
    * Names the row of each download button: a row key or a function returning
-   * the name, announced as "Download <name> as CSV" or "Choose download format
-   * for <name>". Defaults to the row's `title`.
+   * the name, announced as "Download CSV for <name>", "Choose download format
+   * for <name>", or "No downloads available for <name>". Defaults to the row's `title`.
    */
   downloadLabel?: (keyof TRow & string) | ((row: TRow) => string);
 }

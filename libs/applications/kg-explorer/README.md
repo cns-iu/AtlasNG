@@ -156,7 +156,7 @@ config = { downloadFormats: (dataset: Dataset) => dataset.formats };
 | One              | Downloads that format directly.                |
 | None             | Disabled, with a "No downloads available" tip. |
 
-Each button names its row for screen readers, for example "Download Heart atlas as CSV" or "Choose download format for Heart atlas", while its tooltip names only the format. `downloadLabel` sets the row name, from a row key or a function.
+Each button names its row for screen readers, for example "Download CSV for Heart atlas", "Choose download format for Heart atlas", or "No downloads available for Heart atlas", while its tooltip leaves out the row. `downloadLabel` sets the row name, from a row key or a function.
 
 Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables, which requires a `labelFn` or `labelProp` in place of `downloadLabel`. Pair it with `KgExplorerDownloadHeaderCellDefinition`, which keeps the header visually empty but gives it the column `name`.
 

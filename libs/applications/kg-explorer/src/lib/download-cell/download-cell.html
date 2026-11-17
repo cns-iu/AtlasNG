@@ -7,9 +7,9 @@
       type="button"
       class="ang-kg-explorer-download-cell--button"
       matTooltip="No downloads available"
-      aria-label="No downloads available"
       disabled
       disabledInteractive
+      [attr.aria-label]="`No downloads available for ${getName(row)}`"
     >
       <mat-icon fontIcon="download" />
     </button>
@@ -20,7 +20,7 @@
       type="button"
       class="ang-kg-explorer-download-cell--button"
       [matTooltip]="`Download ${format.label}`"
-      [attr.aria-label]="`Download ${getName(row)} as ${format.label}`"
+      [attr.aria-label]="`Download ${format.label} for ${getName(row)}`"
       (click)="config.download(row, format)"
     >
       <mat-icon fontIcon="download" />
