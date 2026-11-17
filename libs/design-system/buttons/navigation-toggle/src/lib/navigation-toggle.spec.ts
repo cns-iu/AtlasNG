@@ -29,7 +29,7 @@ describe('NavigationToggle', () => {
     expect(icon).toHaveAttribute('data-mat-icon-name', 'expand_more');
   });
 
-  it('reflects the selected state with aria-expanded', async () => {
+  it('reflects the expanded state with aria-expanded', async () => {
     const { user } = await setup();
 
     await user.click(screen.getByRole('button', { name: 'Category', expanded: false }));
@@ -37,5 +37,20 @@ describe('NavigationToggle', () => {
 
     await user.keyboard('{Enter}');
     expect(screen.getByRole('button', { name: 'Category', expanded: false })).toBeInTheDocument();
+  });
+
+  it('forwards aria-label, aria-describedby and aria-controls to the button', async () => {
+    await render(
+      `<span id="hint">Shows the menu</span>
+      <ang-navigation-toggle aria-label="Products menu" aria-describedby="hint" aria-controls="menu">
+        Products
+      </ang-navigation-toggle>`,
+      { imports: [NavigationToggle] },
+    );
+
+    const button = screen.getByRole('button', { name: 'Products menu' });
+    expect(button).toHaveAccessibleDescription('Shows the menu');
+    expect(button).toHaveAttribute('aria-controls', 'menu');
+    expect(button.closest('ang-navigation-toggle')).not.toHaveAttribute('aria-controls');
   });
 });

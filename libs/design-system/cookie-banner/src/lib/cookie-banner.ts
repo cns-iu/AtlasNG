@@ -26,6 +26,9 @@ import { RESIZE_OBSERVER } from '@atlasng/core';
 /** Prefix used when generating a custom title id if one is not provided by the consumer. */
 const DEFAULT_TITLE_ID_PREFIX = 'ang-cookie-banner-title';
 
+/** Prefix used when generating a custom description id if one is not provided by the consumer. */
+const DEFAULT_DESCRIPTION_ID_PREFIX = 'ang-cookie-banner-description';
+
 /** Class applied to the external container that hosts banner spacing and animation state. */
 const CONTAINER_CLASS = 'ang-cookie-banner--container';
 /** Class toggled when the banner opens to drive enter animations. */
@@ -66,9 +69,17 @@ export class CookieBannerTitle {
  */
 @Directive({
   selector: 'ang-cookie-banner-description, [angCookieBannerDescription]',
-  host: { class: 'ang-cookie-banner--description' },
+  host: {
+    class: 'ang-cookie-banner--description',
+    '[attr.id]': 'id()',
+  },
 })
-export class CookieBannerDescription {}
+export class CookieBannerDescription {
+  /**
+   * Id referenced by the banner's aria-describedby. Defaults to a generated id.
+   */
+  readonly id = input(inject(IdGenerator).getId(DEFAULT_DESCRIPTION_ID_PREFIX));
+}
 
 /**
  * Marks projected privacy policy content inside the cookie banner.
@@ -168,6 +179,16 @@ export class CookieBanner {
   protected readonly titleId = computed(
     () => this.titleDir()?.id() ?? this.#idGenerator.getId(DEFAULT_TITLE_ID_PREFIX),
   );
+
+  /**
+   * Id used by aria-describedby. Falls back to a generated id if no description directive is projected.
+   */
+  protected readonly descriptionId = computed(
+    () => this.descriptionDir()?.id() ?? this.#idGenerator.getId(DEFAULT_DESCRIPTION_ID_PREFIX),
+  );
+
+  /** Reference to the projected description directive. */
+  protected readonly descriptionDir = contentChild(CookieBannerDescription, { descendants: true });
 
   /** Reference to the projected title directive. */
   protected readonly titleDir = contentChild(CookieBannerTitle, { descendants: true });

@@ -15,6 +15,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatActionList, MatListModule } from '@angular/material/list';
 import { MatSelect } from '@angular/material/select';
+import { IdGenerator } from '@atlasng/common';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
 /**
@@ -66,6 +67,12 @@ export class VersionControl<T extends VersionControlFileFormat = VersionControlF
   /** Heading displayed beside the version selector. */
   readonly tagline = input.required<string>();
 
+  /** Label of the version selector. */
+  readonly versionLabel = input('Version');
+
+  /** Heading displayed above the download options. */
+  readonly downloadTagline = input('Download options');
+
   /** Versions and their available file formats. */
   readonly versions = input.required<readonly VersionControlItem<T>[]>();
 
@@ -74,6 +81,12 @@ export class VersionControl<T extends VersionControlFileFormat = VersionControlF
 
   /** Emits the version and file format whenever a download option is chosen. */
   readonly download = output<VersionDownload<T>>();
+
+  /** Id of the tagline, labelling the version selector group. */
+  protected readonly taglineId = inject(IdGenerator).getId('ang-version-control--tagline');
+
+  /** Id of the download options heading, labelling the download list. */
+  protected readonly downloadHeadingId = inject(IdGenerator).getId('ang-version-control--download-heading');
 
   /** Host element of the version select. */
   private readonly versionSelect = viewChild.required<MatSelect, ElementRef<HTMLElement>>(MatSelect, {
