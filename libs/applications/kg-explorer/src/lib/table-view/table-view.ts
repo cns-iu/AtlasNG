@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, Injector, input, model, output, untracked } from '@angular/core';
+import { Component, computed, effect, input, model, output, untracked } from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import { watchBreakpoint } from '@atlasng/cdk';
 import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
@@ -125,20 +125,8 @@ export class KgExplorerTableView<
   /** File formats of the download column, or `undefined` when there is no download column. */
   private readonly downloadFormats = computed(() => this.resolvedConfig().downloadFormats);
 
-  /** Injector passed to {@link watchBreakpoint}, which runs outside the constructor's injection context. */
-  private readonly injector = inject(Injector);
-
-  /**
-   * Watcher of the dock breakpoint, recreated when the configured breakpoint changes.
-   * `untracked` is required because `watchBreakpoint` uses `toSignal`, which cannot run in a reactive context.
-   */
-  private readonly dockWatcher = computed(() => {
-    const breakpoint = this.resolvedConfig().filtersDockBreakpoint ?? 'large';
-    return untracked(() => watchBreakpoint(breakpoint, { injector: this.injector }));
-  });
-
   /** Whether the filter menu is docked beside the table. */
-  protected readonly docked = computed(() => this.dockWatcher()());
+  protected readonly docked = watchBreakpoint(() => this.resolvedConfig().filtersDockBreakpoint ?? 'large');
 
   /** Opens the filter menu when it is or becomes docked, and closes the drawer when it undocks. */
   constructor() {
