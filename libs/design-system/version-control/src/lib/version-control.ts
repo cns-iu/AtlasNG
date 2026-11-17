@@ -62,9 +62,6 @@ export interface VersionDownload<T extends VersionControlFileFormat> {
   providers: [provideEventScope('version-control')],
 })
 export class VersionControl<T extends VersionControlFileFormat = VersionControlFileFormat> {
-  /** Tracks version selections that Angular Material reports through outputs rather than DOM events. */
-  readonly #track = injectTrackEvent();
-
   /** Heading displayed beside the version selector. */
   readonly tagline = input.required<string>();
 
@@ -88,6 +85,9 @@ export class VersionControl<T extends VersionControlFileFormat = VersionControlF
 
   /** Id of the download options heading, labelling the download list. */
   protected readonly downloadHeadingId = inject(IdGenerator).getId('ang-version-control--download-heading');
+
+  /** Tracks version selections that Angular Material reports through outputs rather than DOM events. */
+  readonly #track = injectTrackEvent();
 
   /**
    * Selects a version from the version selector and tracks the change.

@@ -44,9 +44,6 @@ import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggest
   },
 })
 export class SearchField<T = string> {
-  /** Tracks selections that Angular Material reports through outputs rather than DOM events. */
-  readonly #track = injectTrackEvent();
-
   /** Items whose `suggestionField` values are suggested. Ignored when `suggestions` is set. */
   readonly items = input<readonly T[]>();
 
@@ -94,6 +91,9 @@ export class SearchField<T = string> {
 
   /** Autocomplete trigger of the search input. */
   private readonly trigger = viewChild.required(MatAutocompleteTrigger);
+
+  /** Tracks selections that Angular Material reports through outputs rather than DOM events. */
+  readonly #track = injectTrackEvent();
 
   /** Search over the items. */
   readonly #search = injectSearch<T>({

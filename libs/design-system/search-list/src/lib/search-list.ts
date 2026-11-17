@@ -55,9 +55,6 @@ export interface SearchListOption {
   },
 })
 export class SearchList<T extends SearchListOption> {
-  /** Tracks selections that Angular Material reports through outputs rather than DOM events. */
-  readonly #track = injectTrackEvent();
-
   /** All filter options */
   readonly options = input.required<T[]>();
 
@@ -78,6 +75,9 @@ export class SearchList<T extends SearchListOption> {
 
   /** Space-separated ids of elements labelling the option list. Takes precedence over `aria-label`. */
   readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
+
+  /** Tracks selections that Angular Material reports through outputs rather than DOM events. */
+  readonly #track = injectTrackEvent();
 
   /** Search over the options, in their original order */
   readonly #search = injectSearch({
