@@ -7,10 +7,33 @@
   "tags": ["application", "layer:application"],
   "targets": {
     "build": {
-      "executor": "@nx/angular:application"
+      "executor": "@nx/angular:application",
+      "options": {
+        "server": "apps/AtlasNG/src/main.server.ts",
+        "ssr": {
+          "entry": "apps/AtlasNG/src/server.ts"
+        },
+        "outputMode": "server",
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/labs/src/sass", "libs/design-system/src/sass"]
+        }
+      }
     },
     "serve": {},
     "serve-static": {},
-    "test": {}
+    "test": {
+      "options": {
+        "setupFiles": ["{projectRoot}/src/test-setup.ts"],
+        "coverageExclude": [
+          "{projectRoot}/**/index.ts",
+          "{projectRoot}/**/main.ts",
+          "{projectRoot}/**/test-setup.ts",
+          "{projectRoot}/.storybook/**/*.ts",
+          "{projectRoot}/**/*.stories.ts",
+          "{projectRoot}/src/main.server.ts",
+          "{projectRoot}/src/server.ts"
+        ]
+      }
+    }
   }
 }
