@@ -18,6 +18,7 @@
       class="ang-kg-explorer-table-panel--table"
       appearance="none"
       [class.no-results]="matches.length === 0"
+      [aria-label]="options.tableLabel ?? 'Results'"
       [rows]="matches"
       [columns]="columns()"
       [(sorts)]="sorts"

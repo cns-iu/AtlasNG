@@ -20,7 +20,7 @@
     }
   </mat-accordion>
 
-  <div class="ang-navigation-menu-social" aria-label="Social media links">
+  <div class="ang-navigation-menu-social" role="group" [attr.aria-label]="socialsLabel()">
     @for (id of socialMediaIds(); track id) {
       <ang-social-media-button class="ang-footer-social-icon" [id]="id" />
     }

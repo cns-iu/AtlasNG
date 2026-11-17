@@ -38,6 +38,9 @@ export class NavigationMenu {
   /** List of supported social media IDs. */
   readonly socialMediaIds = input<string[]>(SOCIAL_MEDIA_IDS);
 
+  /** Accessible name of the social media link group. */
+  readonly socialsLabel = input('Social media links');
+
   /** Emits the navigation item whose link was activated, including links to the current page. */
   readonly linkClick = output<HeaderShellNavigationItem>();
 }

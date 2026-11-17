@@ -128,4 +128,14 @@ describe('NavigationContainer', () => {
     expect(fixture.componentInstance.leftMenuOpen()).toBe(true);
     expect(fixture.componentInstance.rightMenuOpen()).toBe(true);
   });
+
+  it('exposes both drawers as labelled navigation landmarks with ids', async () => {
+    const { fixture } = await render(NavigationContainer, {
+      inputs: { leftMenuOpen: true, rightMenuOpen: true, leftMenuLabel: 'Sections', rightMenuLabel: 'Products' },
+    });
+    const { leftMenuId, rightMenuId } = fixture.componentInstance;
+
+    expect(screen.getByRole('navigation', { name: 'Sections' })).toHaveAttribute('id', leftMenuId);
+    expect(screen.getByRole('navigation', { name: 'Products' })).toHaveAttribute('id', rightMenuId);
+  });
 });

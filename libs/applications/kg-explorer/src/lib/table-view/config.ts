@@ -22,6 +22,10 @@ export interface KgExplorerTableViewConfig<
   searchSuggestionsDisabled?: boolean;
   /** Hides the search field. Defaults to `false`. */
   searchDisabled?: boolean;
+  /** Label of the search field. Defaults to "Search". */
+  searchLabel?: string;
+  /** Accessible name of the results table. Defaults to "Results". */
+  tableLabel?: string;
   /** Hides the "Viewing X of Y" results counter. Defaults to `false`. */
   resultsCounterDisabled?: boolean;
   /** Text before the numbers of the results counter. Defaults to `Viewing`. */

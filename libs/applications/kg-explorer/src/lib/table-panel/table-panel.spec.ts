@@ -175,4 +175,18 @@ describe('KgExplorerTablePanel table end slot', () => {
     expect(screen.queryByText('End of results')).not.toBeInTheDocument();
     expect(screen.getByText('Table footer')).toBeInTheDocument();
   });
+
+  it('names the table', async () => {
+    await render(KgExplorerTablePanel<TestRow>, { inputs: { rows: ROWS, columns: COLUMNS, config: {} } });
+
+    expect(screen.getByRole('table', { name: 'Results' })).toBeInTheDocument();
+  });
+
+  it('uses a configured table label', async () => {
+    await render(KgExplorerTablePanel<TestRow>, {
+      inputs: { rows: ROWS, columns: COLUMNS, config: { tableLabel: 'Datasets' } },
+    });
+
+    expect(screen.getByRole('table', { name: 'Datasets' })).toBeInTheDocument();
+  });
 });

@@ -8,7 +8,9 @@
         type="button"
         class="ang-header-shell-menu-button"
         [matTooltip]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
-        [attr.aria-label]="localNavigationExpanded() ? 'Collapse local navigation' : 'Expand local navigation'"
+        [attr.aria-label]="localNavigationLabel()"
+        [attr.aria-expanded]="localNavigationExpanded()"
+        [attr.aria-controls]="localNavigationControls()"
         (click)="localNavigationToggle.emit()"
       >
         <mat-icon [fontIcon]="localNavigationIcon()" />
@@ -20,7 +22,7 @@
     <mat-divider vertical class="ang-header-shell-divider" />
   </div>
 
-  <nav class="ang-header-shell-desktop-nav" aria-label="Primary navigation">
+  <nav class="ang-header-shell-desktop-nav" [attr.aria-label]="navigationLabel()">
     @for (item of navigationItems(); track item.id) {
       @if (item.external) {
         <ang-navigation-button [link]="item.link">
@@ -52,7 +54,9 @@
         type="button"
         class="ang-header-shell-icon-button"
         matTooltip="Apps"
-        [attr.aria-label]="'Open app switcher'"
+        [attr.aria-label]="appsMenuLabel()"
+        [attr.aria-expanded]="appsMenuExpanded()"
+        [attr.aria-controls]="appsMenuControls()"
         (click)="appsMenuToggle.emit()"
       >
         <mat-icon fontIcon="apps" />
