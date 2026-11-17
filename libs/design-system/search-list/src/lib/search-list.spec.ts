@@ -145,6 +145,12 @@ describe('SearchList', () => {
     expect(screen.getAllByRole('option')).toHaveLength(OPTIONS.length);
   });
 
+  it('names the options list "Options" by default', async () => {
+    await setup();
+
+    expect(screen.getByRole('listbox', { name: 'Options' })).toBeInTheDocument();
+  });
+
   it('marks options from the selected input as selected', async () => {
     await setup({ selected: [OPTIONS[1]] });
 
