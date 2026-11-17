@@ -121,6 +121,7 @@ $text-cell-padding: 0.5rem;
 
   .ang-kg-explorer-table-panel--end {
     @include table-padding;
+
     padding-top: 0;
 
     .mat-divider {
