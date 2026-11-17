@@ -101,6 +101,15 @@ describe('MultiSelectFilter', () => {
     expect(expandedChange).toHaveBeenLastCalledWith(true);
   });
 
+  it('names the search list options with the filter label', async () => {
+    const user = userEvent.setup();
+    await setup();
+
+    await user.click(screen.getByRole('button', { name: 'Organ' }));
+
+    expect(screen.getByRole('listbox', { name: 'Organ' })).toBeInTheDocument();
+  });
+
   it('hides the search field when disableSearch is set', async () => {
     const user = userEvent.setup();
     await setup({ disableSearch: true });
