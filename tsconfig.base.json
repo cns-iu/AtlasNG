@@ -75,6 +75,7 @@
       "@atlasng/design-system/scroll-area": ["./libs/design-system/scroll-area/src/index.ts"],
       "@atlasng/design-system/search-field": ["./libs/design-system/search-field/src/index.ts"],
       "@atlasng/design-system/search-list": ["./libs/design-system/search-list/src/index.ts"],
+      "@atlasng/design-system/separator-wrap": ["./libs/design-system/separator-wrap/src/index.ts"],
       "@atlasng/design-system/snackbar": ["./libs/design-system/snackbar/src/index.ts"],
       "@atlasng/design-system/table": ["./libs/design-system/table/src/index.ts"],
       "@atlasng/design-system/table-of-contents": ["./libs/design-system/table-of-contents/src/index.ts"],
