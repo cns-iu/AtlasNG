@@ -172,4 +172,20 @@ describe('Footer', () => {
     expect(screen.getByRole('link', { name: 'Projected logo' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Projected privacy policy' })).toBeInTheDocument();
   });
+
+  it('uses custom logo and social media labels', async () => {
+    await render(Footer, {
+      inputs: {
+        logoImage: '/assets/wpp.svg',
+        organization: 'Whole Person Physiome',
+        socials: SOCIALS,
+        logoLabel: 'WPP home',
+        socialsLabel: 'Follow us',
+      },
+      providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    });
+
+    expect(screen.getByRole('link', { name: 'WPP home' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Follow us' })).toBeInTheDocument();
+  });
 });

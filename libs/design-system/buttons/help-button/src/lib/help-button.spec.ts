@@ -42,4 +42,10 @@ describe('HelpButton', () => {
     const link = screen.getByRole('link', { name: 'Hilfe' });
     expect(link).toHaveAccessibleDescription(/^Opens the docs/);
   });
+
+  it('uses a custom tooltip', async () => {
+    await render(HelpButton, { inputs: { link: '/docs', tooltip: 'Hilfe' } });
+
+    expect(screen.getByRole('link', { name: 'Open help page in a new tab' })).toHaveAccessibleDescription('Hilfe');
+  });
 });

@@ -81,4 +81,13 @@ describe('LinkSnippet', () => {
 
     expect(screen.getByRole('button', { name: 'Copy' })).toHaveAccessibleDescription('example.com/resources/example');
   });
+
+  it('uses a custom new-tab hint', async () => {
+    await render(LinkSnippet, {
+      inputs: { url, newTabHint: 'Neuer Tab' },
+      providers: [{ provide: MatSnackBar, useValue: { open: vi.fn() } }],
+    });
+
+    expect(screen.getByRole('link')).toHaveAccessibleDescription('Neuer Tab');
+  });
 });

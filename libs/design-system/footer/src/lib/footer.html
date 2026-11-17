@@ -5,7 +5,7 @@
         class="ang-footer--logo"
         [matTooltip]="logoTooltip()"
         [angAnyLink]="organizationLink()"
-        [attr.aria-label]="`Visit ${organization()}`"
+        [attr.aria-label]="resolvedLogoLabel()"
       >
         <img class="ang-footer--logo-image" fill alt="Logo" [ngSrc]="logoImage()" />
       </a>
@@ -17,7 +17,7 @@
     <div
       class="ang-footer--social-icons"
       role="group"
-      aria-label="Social media"
+      [attr.aria-label]="socialsLabel()"
       [style.--ang-footer--social-icon-count]="socials.length"
     >
       @for (social of socials; track $index) {

@@ -26,6 +26,9 @@ export class HelpButton {
   /** Optional destination used when the help button acts as a link. */
   readonly link = input<AnyLinkCommand>();
 
+  /** Tooltip shown when hovering or focusing the button. */
+  readonly tooltip = input('Help & documentation');
+
   /**
    * Accessible name of the button. Defaults to "Open help menu" with a `menu`
    * and "Open help page in a new tab" otherwise.
