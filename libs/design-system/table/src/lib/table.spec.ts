@@ -478,4 +478,18 @@ describe('Table', () => {
       expect(screen.getByText('Ada').closest('datatable-body-row')).toHaveStyle({ height: '60px' });
     });
   });
+
+  it('forwards aria attributes to the table element', async () => {
+    await render(
+      `<span id="description">All people</span>
+      <ang-table aria-label="People" aria-describedby="description" [rows]="rows" [columns]="columns" />`,
+      {
+        imports: [Table],
+        componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS },
+      },
+    );
+
+    expect(screen.getByRole('table', { name: 'People' })).toHaveAccessibleDescription('All people');
+    expect(screen.getByRole('table').closest('ang-table')).not.toHaveAttribute('aria-label');
+  });
 });

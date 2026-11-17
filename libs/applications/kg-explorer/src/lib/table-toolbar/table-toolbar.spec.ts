@@ -44,9 +44,15 @@ describe('KgExplorerTableToolbar', () => {
   });
 
   it('hides parts with the disabled inputs', async () => {
-    await setup({ config: { searchDisabled: true, resultsCounterDisabled: true } });
+    await setup({ config: { disableSearch: true, disableResultsCounter: true } });
 
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(counter('Viewing 2 of 3')).not.toBeInTheDocument();
+  });
+
+  it('uses a configured search label', async () => {
+    await setup({ config: { searchLabel: 'Search datasets' } });
+
+    expect(screen.getByRole('combobox', { name: 'Search datasets' })).toBeInTheDocument();
   });
 });

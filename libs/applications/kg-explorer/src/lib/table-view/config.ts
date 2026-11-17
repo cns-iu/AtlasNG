@@ -19,15 +19,19 @@ export interface KgExplorerTableViewConfig<
   /** Field whose values are suggested below the search field. Defaults to the row's `title`. */
   searchSuggestionField?: SearchFieldSpec<TRow>;
   /** Disables the autocomplete suggestions of the search field. Defaults to `false`. */
-  searchSuggestionsDisabled?: boolean;
+  disableSearchSuggestions?: boolean;
   /** Hides the search field. Defaults to `false`. */
-  searchDisabled?: boolean;
+  disableSearch?: boolean;
+  /** Label of the search field. Defaults to "Search". */
+  searchLabel?: string;
+  /** Accessible name of the results table. Defaults to "Results". */
+  tableLabel?: string;
   /** Hides the "Viewing X of Y" results counter. Defaults to `false`. */
-  resultsCounterDisabled?: boolean;
+  disableResultsCounter?: boolean;
   /** Text before the numbers of the results counter. Defaults to `Viewing`. */
   resultsCounterPrefix?: string;
   /** Hides the end-of-results indicator below the table. Defaults to `false`. */
-  endOfResultsDisabled?: boolean;
+  disableEndOfResults?: boolean;
   /**
    * File formats each row can be downloaded in: the same formats for every
    * row, or a function returning the formats of a row. The download column is
@@ -64,11 +68,11 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
   config: type<KgExplorerTableViewConfig>(),
   defaults: () => ({
     searchSuggestionField: TITLE_SUGGESTION_FIELD,
-    searchSuggestionsDisabled: false,
-    searchDisabled: false,
-    resultsCounterDisabled: false,
+    disableSearchSuggestions: false,
+    disableSearch: false,
+    disableResultsCounter: false,
     resultsCounterPrefix: 'Viewing',
-    endOfResultsDisabled: false,
+    disableEndOfResults: false,
     downloadColumnLabel: 'Download',
     downloadLabel: 'title',
   }),

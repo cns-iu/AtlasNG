@@ -85,7 +85,7 @@ describe('CookiePermissions', () => {
 
     await user.click(screen.getByRole('button', { name: 'Marketing' }));
 
-    const providerLink = screen.getByRole('link', { name: 'Vimeo' });
+    const providerLink = screen.getByRole('link', { name: 'Learn more about this provider Vimeo' });
     expect(providerLink).toHaveAttribute('href', 'https://vimeo.com/privacy');
   });
 

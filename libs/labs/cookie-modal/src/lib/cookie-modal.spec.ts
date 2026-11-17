@@ -103,4 +103,18 @@ describe('CookieModal', () => {
       expect(opener.closedResult).toEqual(AnalyticsPermissions.DEFAULT);
     });
   });
+
+  it('names the dialog and the tab list', async () => {
+    await setup();
+
+    expect(screen.getByRole('dialog', { name: 'Manage your privacy preferences' })).toBeInTheDocument();
+    expect(screen.getByRole('tablist', { name: 'Cookie settings' })).toBeInTheDocument();
+  });
+
+  it('uses a custom title and tab list label', async () => {
+    await setup({ data: { permissions: AnalyticsPermissions.DEFAULT, title: 'Cookies', tabsLabel: 'Sections' } });
+
+    expect(screen.getByRole('dialog', { name: 'Cookies' })).toBeInTheDocument();
+    expect(screen.getByRole('tablist', { name: 'Sections' })).toBeInTheDocument();
+  });
 });

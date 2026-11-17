@@ -13,7 +13,7 @@ const meta: Meta<BasicProfileCard> = {
   args: {
     image: 'assets/profile-placeholder.png',
     name: 'Firstname Lastname',
-    description: [
+    descriptions: [
       'Occupation/Employer detail 1 that wraps as needed',
       'Occupation/Employer detail 2 that wraps as needed',
       'Occupation/Employer detail 3 that wraps as needed',

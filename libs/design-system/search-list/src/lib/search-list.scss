@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/search-list' as *;
+@use 'tokens/scroll-area' as scroll;
 
 :host {
   display: flex;
@@ -14,9 +15,18 @@
     padding: 1rem 1rem 0rem 1rem;
   }
 
-  .ang-search-list--list {
-    overflow-y: auto;
+  .ang-search-list--scroll-area {
+    flex: 1 1 auto;
+    min-height: 0;
 
+    @include scroll.overrides(
+      (
+        container-color: token-utils.slot(background, $config),
+      )
+    );
+  }
+
+  .ang-search-list--list {
     .ang-search-list--label-count {
       width: 100%;
       display: inline-flex;
