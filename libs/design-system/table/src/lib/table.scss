@@ -39,6 +39,14 @@
       // When every column is at its maximum width, the remaining width goes between the columns.
       justify-content: space-between;
     }
+
+    // ngx-datatable hides the cells' horizontal overflow, which makes every
+    // cell a vertical scroll container. Clipping keeps cells from scrolling.
+    // TODO: Remove once https://github.com/swimlane/ngx-datatable/issues/2298 is fixed.
+    .datatable-header-cell,
+    .datatable-body-cell {
+      overflow: clip;
+    }
   }
 
   .datatable-header-cell.sortable {
