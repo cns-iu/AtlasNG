@@ -10,6 +10,19 @@
       "executor": "@nx/angular:package"
     },
     "build-storybook": {
+      "dependsOn": [
+        "...",
+        {
+          "projects": ["icons"],
+          "target": "build"
+        }
+      ],
+      "inputs": [
+        "...",
+        {
+          "dependentTasksOutputFiles": "**/*"
+        }
+      ],
       "options": {
         "stylePreprocessorOptions": {
           "includePaths": ["libs/labs/src/sass", "libs/design-system/src/sass", "libs/internal/storybook/src/themes"]
@@ -18,6 +31,13 @@
     },
     "serve-static-storybook": {},
     "storybook": {
+      "dependsOn": [
+        "...",
+        {
+          "projects": ["icons"],
+          "target": "build"
+        }
+      ],
       "options": {
         "port": 4404,
         "stylePreprocessorOptions": {
