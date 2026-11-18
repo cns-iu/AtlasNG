@@ -1,22 +1,22 @@
 import { render, screen } from '@testing-library/angular';
-import { Eyebrow } from './eyebrow';
+import { Overline } from './overline';
 
-describe('Eyebrow', () => {
+describe('Overline', () => {
   it('renders projected text in its original case', async () => {
-    await render('<ang-eyebrow>Option 1</ang-eyebrow>', { imports: [Eyebrow] });
+    await render('<ang-overline>Option 1</ang-overline>', { imports: [Overline] });
 
-    expect(screen.getByText('Option 1')).toHaveClass('ang-eyebrow');
+    expect(screen.getByText('Option 1')).toHaveClass('ang-overline');
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
   });
 
   it('takes the semantics of the element it is applied to', async () => {
-    await render('<h3 angEyebrow>Processes</h3>', { imports: [Eyebrow] });
+    await render('<h3 angOverline>Processes</h3>', { imports: [Overline] });
 
-    expect(screen.getByRole('heading', { level: 3, name: 'Processes' })).toHaveClass('ang-eyebrow');
+    expect(screen.getByRole('heading', { level: 3, name: 'Processes' })).toHaveClass('ang-overline');
   });
 
   it('becomes part of the heading name when placed inside a heading', async () => {
-    await render('<h3><span angEyebrow>Option 1</span> Section heading</h3>', { imports: [Eyebrow] });
+    await render('<h3><span angOverline>Option 1</span> Section heading</h3>', { imports: [Overline] });
 
     expect(screen.getByRole('heading', { name: 'Option 1 Section heading' })).toContainElement(
       screen.getByText('Option 1'),
@@ -24,7 +24,7 @@ describe('Eyebrow', () => {
   });
 
   it('renders projected inline markup', async () => {
-    await render('<ang-eyebrow>New <em>beta</em></ang-eyebrow>', { imports: [Eyebrow] });
+    await render('<ang-overline>New <em>beta</em></ang-overline>', { imports: [Overline] });
 
     expect(screen.getByText('New', { exact: false })).toContainElement(screen.getByText('beta'));
   });

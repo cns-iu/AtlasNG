@@ -1,7 +1,7 @@
 @use '../internal/token-utils';
 
 $config: (
-  namespace: 'eyebrow',
+  namespace: 'overline',
   tokens: (
     color: token-utils.sys-token(primary),
   ),
