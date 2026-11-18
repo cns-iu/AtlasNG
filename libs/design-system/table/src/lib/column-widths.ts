@@ -10,6 +10,16 @@ export type ColumnSizing = Pick<NgxTableColumn, 'width' | 'minWidth' | 'maxWidth
 const DEFAULT_COLUMN_WIDTH = 150;
 
 /**
+ * Adds up numbers.
+ *
+ * @param values Numbers to add.
+ * @returns Their sum.
+ */
+function sum(values: readonly number[]): number {
+  return values.reduce((total, value) => total + value, 0);
+}
+
+/**
  * Clamps a width between a column's minimum and maximum widths. The minimum
  * wins when it is larger than the maximum, as in CSS.
  *
@@ -22,32 +32,31 @@ function clampWidth(column: ColumnSizing, width: number): number {
 }
 
 /**
- * Checks whether a column shares the table's free width.
+ * Checks whether a column shares the table's width.
  *
  * @param column Column to check.
  * @returns Whether the column grows with the table.
  */
-function isFlexible(column: ColumnSizing): boolean {
+function grows(column: ColumnSizing): boolean {
   return !column.fitContent && (column.flexGrow ?? 0) > 0 && column.canAutoResize !== false;
 }
 
 /**
- * Picks the width of a column that doesn't grow: its measured content width
- * when it fits its content, otherwise its `width`, within its limits.
+ * Picks the width of a column that doesn't grow: its content width when it
+ * fits its content, otherwise its `width`, within its limits.
  *
  * @param column Column to size.
  * @param contentWidth Measured `max-content` width of the column, if any.
  * @returns The column's width.
  */
 function fixedWidth(column: ColumnSizing, contentWidth: number | undefined): number {
-  if (column.fitContent) {
-    return clampWidth(
-      column,
-      Number.isFinite(contentWidth) ? (contentWidth as number) : (column.maxWidth ?? DEFAULT_COLUMN_WIDTH),
-    );
+  if (!column.fitContent) {
+    return clampWidth(column, column.width ?? DEFAULT_COLUMN_WIDTH);
   }
 
-  return clampWidth(column, column.width ?? DEFAULT_COLUMN_WIDTH);
+  // Until its content is measured, the column is as wide as it may be.
+  const width = contentWidth !== undefined && Number.isFinite(contentWidth) ? contentWidth : column.maxWidth;
+  return clampWidth(column, width ?? DEFAULT_COLUMN_WIDTH);
 }
 
 /**
@@ -66,8 +75,7 @@ function fixedWidth(column: ColumnSizing, contentWidth: number | undefined): num
  *   it between the columns.
  *
  * ngx-datatable's own `flex` column mode ignores `maxWidth` while it shares
- * the width, so a column capped at its maximum leaves its share unused instead
- * of passing it to the other columns
+ * the width
  * ({@link https://github.com/swimlane/ngx-datatable/issues/2297 | swimlane/ngx-datatable#2297}).
  *
  * @param columns Columns in display order.
@@ -80,29 +88,23 @@ export function resolveColumnWidths(
   availableWidth: number,
   contentWidths: readonly number[] = [],
 ): number[] {
-  const widths = columns.map((column, index) => (isFlexible(column) ? 0 : fixedWidth(column, contentWidths[index])));
-  const unfrozen = new Set(columns.map((_column, index) => index).filter((index) => isFlexible(columns[index])));
+  const widths = columns.map((column, index) => (grows(column) ? 0 : fixedWidth(column, contentWidths[index])));
+  let growing = columns.flatMap((column, index) => (grows(column) ? [index] : []));
 
-  while (unfrozen.size > 0) {
-    const usedWidth = widths.reduce((sum, width, index) => (unfrozen.has(index) ? sum : sum + width), 0);
+  while (growing.length > 0) {
+    const usedWidth = sum(widths.filter((_width, index) => !growing.includes(index)));
     const freeWidth = Math.max(availableWidth - usedWidth, 0);
-    const totalGrow = [...unfrozen].reduce((sum, index) => sum + (columns[index].flexGrow ?? 0), 0);
+    const totalGrow = sum(growing.map((index) => columns[index].flexGrow ?? 0));
+    const adjustments = growing.map((index) => {
+      const share = (freeWidth * (columns[index].flexGrow ?? 0)) / totalGrow;
+      widths[index] = clampWidth(columns[index], share);
+      return widths[index] - share;
+    });
 
-    // How far each column's clamped width moved from its share of the free width.
-    const adjustments = new Map<number, number>();
-    for (const index of unfrozen) {
-      const target = (freeWidth * (columns[index].flexGrow ?? 0)) / totalGrow;
-      widths[index] = clampWidth(columns[index], target);
-      adjustments.set(index, widths[index] - target);
-    }
-
-    // Like CSS flexbox, freeze the columns clamped in the direction of the
-    // total adjustment, or every column when none was clamped.
-    const total = [...adjustments.values()].reduce((sum, adjustment) => sum + adjustment, 0);
-    const toFreeze = [...adjustments].filter(([, adjustment]) => Math.sign(adjustment) === Math.sign(total));
-    for (const [index] of total === 0 || toFreeze.length === 0 ? adjustments : toFreeze) {
-      unfrozen.delete(index);
-    }
+    // Like CSS flexbox, stop the columns clamped in the direction of the
+    // total adjustment, or every column when the adjustments cancel out.
+    const direction = Math.sign(sum(adjustments));
+    growing = growing.filter((_index, i) => direction !== 0 && Math.sign(adjustments[i]) !== direction);
   }
 
   return widths;
@@ -110,11 +112,11 @@ export function resolveColumnWidths(
 
 /**
  * Builds a CSS grid `grid-template-columns` value from
- * {@link resolveColumnWidths}. Columns stopped at their minimum or maximum,
- * and columns that don't grow, get pixel tracks. Growing columns between their
- * limits get `fr` tracks in proportion to their `flexGrow`, so the grid shares
- * the exact remaining width without rounding overflow, and keeps sharing it
- * while the table resizes before the widths are resolved again.
+ * {@link resolveColumnWidths}. Growing columns between their limits get `fr`
+ * tracks in proportion to their `flexGrow`, so the grid shares the exact
+ * remaining width without rounding overflow, and keeps sharing it while the
+ * table resizes before the widths are resolved again. Every other column gets
+ * a pixel track.
  *
  * @param columns Columns in display order.
  * @param availableWidth Width the columns can fill, in pixels.
@@ -127,14 +129,18 @@ export function columnGridTemplate(
   contentWidths: readonly number[] = [],
 ): string {
   const widths = resolveColumnWidths(columns, availableWidth, contentWidths);
-  const isGrowing = (column: ColumnSizing, index: number): boolean =>
-    isFlexible(column) && widths[index] > (column.minWidth ?? 0) && widths[index] < (column.maxWidth ?? Infinity);
-  // Flex factors below 1 in total would leave part of the width unused, so the smallest factor becomes 1fr.
-  const smallestGrow = Math.min(...columns.filter(isGrowing).map((column) => column.flexGrow ?? 1));
+  const flexible = columns.map(
+    (column, index) =>
+      grows(column) && widths[index] > (column.minWidth ?? 0) && widths[index] < (column.maxWidth ?? Infinity),
+  );
+  // The smallest factor becomes 1fr, because factors adding up to less than 1 leave part of the width unused.
+  const smallestGrow = Math.min(
+    ...columns.filter((_column, index) => flexible[index]).map((column) => column.flexGrow ?? 1),
+  );
 
   return columns
     .map((column, index) =>
-      isGrowing(column, index) ? `minmax(0, ${(column.flexGrow ?? 1) / smallestGrow}fr)` : `${widths[index]}px`,
+      flexible[index] ? `minmax(0, ${(column.flexGrow ?? 1) / smallestGrow}fr)` : `${widths[index]}px`,
     )
     .join(' ');
 }

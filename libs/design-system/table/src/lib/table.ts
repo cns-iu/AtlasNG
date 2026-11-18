@@ -16,7 +16,6 @@ import {
   RendererStyleFlags2,
   TemplateRef,
   Type,
-  untracked,
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -32,7 +31,7 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { Simplify } from 'type-fest';
-import { columnGridTemplate, contentMeasureTemplate } from './column-widths';
+import { columnGridTemplate, contentMeasureTemplate, type ColumnSizing } from './column-widths';
 import {
   CellDefinition,
   HeaderCellDefinition,
@@ -107,6 +106,24 @@ const FORWARDED_ARIA_ATTRIBUTES = ['aria-label', 'aria-labelledby', 'aria-descri
  * ngx-datatable computes, which ignore `maxWidth` while sharing the width.
  */
 const COLUMN_TRACKS_VARIABLE = '--ang-table-column-tracks';
+
+/** Column settings that decide a column's width and its place in the grid. */
+type ColumnLayout = ColumnSizing & Pick<NgxTableColumn, 'frozenLeft' | 'frozenRight'>;
+
+/**
+ * Orders columns the way ngx-datatable renders them: frozen left, unfrozen,
+ * then frozen right.
+ *
+ * @param columns Columns in input order.
+ * @returns Columns in render order.
+ */
+function inRenderOrder<T extends ColumnLayout>(columns: readonly T[]): T[] {
+  return [
+    ...columns.filter((column) => column.frozenLeft),
+    ...columns.filter((column) => !column.frozenLeft && !column.frozenRight),
+    ...columns.filter((column) => !column.frozenLeft && column.frozenRight),
+  ];
+}
 
 /** Summary row height used when the body row height is not a fixed number. */
 const DEFAULT_SUMMARY_HEIGHT = 48;
@@ -281,7 +298,7 @@ export class Table<TRow extends Row = Row> {
       // Updating the tracks in the callback, before the browser paints, keeps the columns from flickering.
       const observer = new ResizeObserver(([entry]) => {
         this.#availableWidth = entry.contentBoxSize[0].inlineSize;
-        this.#updateColumnTracks(untracked(this.resolvedColumns));
+        this.#updateColumnTracks(this.resolvedColumns());
       });
       observer.observe(grid);
       destroyRef.onDestroy(() => observer.disconnect());
@@ -312,25 +329,20 @@ export class Table<TRow extends Row = Row> {
   }
 
   /**
-   * Writes the grid tracks of the columns for the measured width, in the
-   * order ngx-datatable renders them: frozen left, unfrozen, frozen right.
-   * Columns that fit their content are first laid out at their `max-content`
-   * width and read back from the grid. Until the width is measured,
-   * ngx-datatable's own tracks apply.
+   * Writes the grid tracks of the columns for the measured width. Columns that
+   * fit their content are first laid out at their `max-content` width and read
+   * back from the grid. Until the width is measured, ngx-datatable's own
+   * tracks apply.
    *
    * @param columns Resolved columns in input order.
    */
-  #updateColumnTracks(columns: (NgxTableColumn<TRow> & Pick<TableColumn<TRow>, 'fitContent'>)[]): void {
+  #updateColumnTracks(columns: readonly ColumnLayout[]): void {
     const grid = this.#grid;
     if (this.#availableWidth === undefined || !grid) {
       return;
     }
 
-    const ordered = [
-      ...columns.filter((column) => column.frozenLeft),
-      ...columns.filter((column) => !column.frozenLeft && !column.frozenRight),
-      ...columns.filter((column) => !column.frozenLeft && column.frozenRight),
-    ];
+    const ordered = inRenderOrder(columns);
     let contentWidths: number[] = [];
     if (ordered.some((column) => column.fitContent)) {
       this.#setColumnTracks(contentMeasureTemplate(ordered));
