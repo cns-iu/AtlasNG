@@ -291,7 +291,7 @@ describe('initializeTrackEvent', () => {
       return { event: CoreEvents.Click, on: () => ({}) };
     });
 
-    initializeTrackEvent({ event: CoreEvents.Change, on: () => ({ selectionChange: output }), injector });
+    initializeTrackEvent({ event: CoreEvents.Change, on: () => ({ selectionChange: output }) }, { injector });
     fixture.detectChanges();
     output.emit();
 

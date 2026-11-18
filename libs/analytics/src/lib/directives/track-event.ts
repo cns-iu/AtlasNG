@@ -1,7 +1,7 @@
 import { booleanAttribute, Directive, input } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor } from '@atlasng/analytics/events';
-import { debounceAttribute, triggersAttribute } from './track-event/track-event-transforms';
 import { initializeTrackEvent, TrackEventSource } from './track-event/initialize-track-event';
+import { debounceAttribute, triggersAttribute } from './track-event/track-event-transforms';
 
 /** Definition for tracking an analytics event using the MultiTrackEvent directive. */
 export interface AnalyticsEventTrackingDef<E extends AnalyticsEvent> {
@@ -42,14 +42,7 @@ export class TrackEvent<E extends AnalyticsEvent> {
 
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: this.event,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      debounce: this.debounce,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -68,10 +61,6 @@ export class MultiTrackEvent<E extends AnalyticsEvent> {
 
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      events: this.events,
-      debounce: this.debounce,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }

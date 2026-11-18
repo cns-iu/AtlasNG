@@ -35,6 +35,6 @@ export function injectTrackEvent(options?: { injector?: Injector }): TrackEventF
   const scope = injector.get(EVENT_SCOPE);
 
   return (event, payload, opts) => {
-    void analytics.trackEvent(event, { ...payload, path: scope.path() }, opts);
+    analytics.trackEvent(event, { ...payload, path: scope.path() }, opts);
   };
 }
