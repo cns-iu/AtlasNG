@@ -68,8 +68,7 @@
     outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
   }
 
-  // Projected actions carry the consumer's encapsulation attribute, so they need ::ng-deep.
-  .ang-header-shell--actions ::ng-deep .ang-header-shell--action:focus-visible {
+  .ang-header-shell--actions ::ng-deep .ang-header-shell--action :focus-visible {
     outline: solid 0.125rem token-utils.slot(focus-outline-color, $config);
   }
 
