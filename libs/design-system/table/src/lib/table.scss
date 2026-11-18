@@ -33,6 +33,14 @@
     flex-basis: auto !important;
   }
 
+  .ang-table--datatable {
+    .datatable-grid {
+      grid-template-columns: var(--ang-table-column-tracks, var(--ngx-datatable-grid-template-columns, auto));
+      // When every column is at its maximum width, the remaining width goes between the columns.
+      justify-content: space-between;
+    }
+  }
+
   .datatable-header-cell.sortable {
     cursor: pointer;
   }

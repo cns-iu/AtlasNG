@@ -6,7 +6,7 @@ import {
   type LinkCommand,
   type PreparedLink,
 } from '@atlasng/common';
-import { CUSTOM_ELEMENT_REGISTRY } from '@atlasng/core';
+import { CUSTOM_ELEMENT_REGISTRY, RESIZE_OBSERVER } from '@atlasng/core';
 import {
   CheckboxCellDefinition,
   CheckboxHeaderCellDefinition,
@@ -510,6 +510,99 @@ describe('Table', () => {
     await screen.findByRole('table', { name: 'Team' });
 
     expect(screen.getByRole('table')).not.toHaveAttribute('aria-label');
+  });
+
+  describe('column widths', () => {
+    async function setupWidths(columns: TableColumn<TestRow>[], resizeObserver: unknown = undefined) {
+      let callback: ResizeObserverCallback | undefined;
+      const observer = { observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn() };
+      class ResizeObserverMock {
+        constructor(cb: ResizeObserverCallback) {
+          callback = cb;
+          // eslint-disable-next-line no-constructor-return
+          return observer;
+        }
+      }
+      const columnState = signal(columns);
+      const result = await render('<ang-table [rows]="rows" [columns]="columns()" />', {
+        imports: [Table],
+        componentProperties: { columns: columnState, rows: ROWS },
+        providers: [
+          { provide: RESIZE_OBSERVER, useValue: resizeObserver === undefined ? ResizeObserverMock : resizeObserver },
+        ],
+      });
+      const table = result.fixture.nativeElement.querySelector('ang-table') as HTMLElement;
+
+      return {
+        ...result,
+        columns: columnState,
+        observer,
+        tracks: () => table.style.getPropertyValue('--ang-table-column-tracks'),
+        resize(inlineSize: number): void {
+          callback?.(
+            [{ contentBoxSize: [{ inlineSize }] } as unknown as ResizeObserverEntry],
+            observer as unknown as ResizeObserver,
+          );
+        },
+      };
+    }
+
+    it('lays out the columns for the measured grid width, honoring maxWidth', async () => {
+      const { observer, resize, tracks } = await setupWidths([
+        { name: 'Name', prop: 'name', minWidth: 100, maxWidth: 150 },
+        { name: 'Score', prop: 'score' },
+      ]);
+
+      expect(observer.observe).toHaveBeenCalledWith(expect.objectContaining({ classList: expect.anything() }));
+      expect(tracks()).toBe('');
+
+      resize(400);
+      expect(tracks()).toBe('150px minmax(0, 1fr)');
+    });
+
+    it('updates the layout when the columns change, in frozen column order', async () => {
+      const { columns, fixture, resize, tracks } = await setupWidths([{ name: 'Name', prop: 'name' }]);
+      resize(400);
+
+      columns.set([
+        { name: 'Name', prop: 'name', flexGrow: 0, width: 50 },
+        { name: 'Score', prop: 'score', flexGrow: 0, width: 60, frozenRight: true },
+        { name: 'Code', prop: 'code', flexGrow: 0, width: 70, frozenLeft: true },
+      ]);
+      fixture.detectChanges();
+
+      expect(tracks()).toBe('70px 50px 60px');
+    });
+
+    it('measures columns that fit their content before laying out the others', async () => {
+      const { fixture, resize, tracks } = await setupWidths([
+        { name: 'Name', prop: 'name', fitContent: true, maxWidth: 200 },
+        { name: 'Score', prop: 'score' },
+      ]);
+      const grid = fixture.nativeElement.querySelector('.datatable-grid') as HTMLElement;
+      const measured: string[] = [];
+      const getComputedStyle = window.getComputedStyle.bind(window);
+      const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation((element) => {
+        if (element !== grid) {
+          return getComputedStyle(element);
+        }
+        measured.push(tracks());
+        return { gridTemplateColumns: '120px 0px' } as CSSStyleDeclaration;
+      });
+
+      resize(400);
+
+      spy.mockRestore();
+
+      expect(measured).toEqual(['max-content 0px']);
+      expect(tracks()).toBe('120px minmax(0, 1fr)');
+    });
+
+    it("keeps ngx-datatable's layout without a ResizeObserver", async () => {
+      const { tracks } = await setupWidths([{ name: 'Name', prop: 'name' }], null);
+
+      expect(tracks()).toBe('');
+    });
   });
 
   describe('during server rendering', () => {

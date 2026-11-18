@@ -1,7 +1,10 @@
 import {
+  afterNextRender,
+  afterRenderEffect,
   booleanAttribute,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   forwardRef,
@@ -10,11 +13,14 @@ import {
   model,
   numberAttribute,
   Renderer2,
+  RendererStyleFlags2,
   TemplateRef,
   Type,
+  untracked,
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { RESIZE_OBSERVER } from '@atlasng/core';
 import {
   CellContext,
   DatatableComponent,
@@ -26,6 +32,7 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { Simplify } from 'type-fest';
+import { columnGridTemplate, contentMeasureTemplate } from './column-widths';
 import {
   CellDefinition,
   HeaderCellDefinition,
@@ -70,6 +77,14 @@ export type TableColumn<TRow extends Row = Row> = Simplify<
      * Replace the column object to apply a different configuration.
      */
     summaryConfig?: unknown;
+    /**
+     * Sizes the column to its widest header or body cell, within `minWidth`
+     * and `maxWidth`, instead of sharing the table's width; `flexGrow` and
+     * `width` don't apply. The width is measured from the rendered rows when
+     * the rows, columns, or table width change, so with a fixed `rowHeight`
+     * rows scrolled into view later don't widen the column.
+     */
+    fitContent?: boolean;
   }
 >;
 
@@ -86,6 +101,12 @@ function optionalNumberAttribute(value: unknown): number | undefined {
 
 /** ARIA attributes forwarded from the table host to the inner `role="table"` element. */
 const FORWARDED_ARIA_ATTRIBUTES = ['aria-label', 'aria-labelledby', 'aria-describedby'] as const;
+
+/**
+ * Custom property holding the table's column tracks. It replaces the tracks
+ * ngx-datatable computes, which ignore `maxWidth` while sharing the width.
+ */
+const COLUMN_TRACKS_VARIABLE = '--ang-table-column-tracks';
 
 /** Summary row height used when the body row height is not a fixed number. */
 const DEFAULT_SUMMARY_HEIGHT = 48;
@@ -147,7 +168,16 @@ export class Table<TRow extends Row = Row> {
   /** Rows displayed by the table. */
   readonly rows = input.required<TRow[] | null | undefined>();
 
-  /** Column definitions displayed by the table. */
+  /**
+   * Column definitions displayed by the table.
+   *
+   * Columns with a positive `flexGrow`, 1 by default, share the table's width
+   * in proportion to it, like flexbox items with a zero basis, and stay
+   * between their `minWidth` and `maxWidth`. Columns with `fitContent` hug
+   * their widest cell, and columns with `flexGrow: 0` keep their `width`. When the minimum widths don't fit, the table scrolls
+   * sideways; when every column is at its maximum, the remaining width goes
+   * between the columns.
+   */
   readonly columns = input.required<TableColumn<TRow>[]>();
 
   /** Visual treatment applied to rows and internal rules. */
@@ -216,12 +246,47 @@ export class Table<TRow extends Row = Row> {
   /** Renderer used to write attributes, so they are also applied during server rendering. */
   readonly #renderer = inject(Renderer2);
 
+  /** Host element, which holds the column tracks custom property. */
+  readonly #host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+  /** Scrolling grid of the wrapped ngx-datatable, whose width the columns fill; undefined until rendered. */
+  #grid: HTMLElement | undefined;
+
+  /** Width the columns can fill, measured from the scrolling grid; undefined until measured. */
+  #availableWidth: number | undefined;
+
   /**
    * Initializes automatic cache sweeping after each column-resolution cycle, and forwards
    * the ARIA inputs to the `role="table"` element, which ngx-datatable offers no inputs for.
    * The forwarding uses an effect rather than a render hook so it also runs on the server.
+   * Also lays out the columns whenever they or the table's width change.
    */
   constructor() {
+    const ResizeObserver = inject(RESIZE_OBSERVER);
+    const destroyRef = inject(DestroyRef);
+
+    // Runs after rendering, so columns that fit their content measure the current rows.
+    afterRenderEffect(() => {
+      this.rows();
+      this.#updateColumnTracks(this.resolvedColumns());
+    });
+
+    afterNextRender(() => {
+      const grid: HTMLElement | null | undefined = this.datatable()?.nativeElement.querySelector('.datatable-grid');
+      if (!ResizeObserver || !grid) {
+        return;
+      }
+
+      this.#grid = grid;
+      // Updating the tracks in the callback, before the browser paints, keeps the columns from flickering.
+      const observer = new ResizeObserver(([entry]) => {
+        this.#availableWidth = entry.contentBoxSize[0].inlineSize;
+        this.#updateColumnTracks(untracked(this.resolvedColumns));
+      });
+      observer.observe(grid);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+
     effect(() => {
       const values = [this.ariaLabel(), this.ariaLabelledby(), this.ariaDescribedby()];
       const table = this.datatable()?.nativeElement.querySelector('[role="table"]');
@@ -244,6 +309,44 @@ export class Table<TRow extends Row = Row> {
       this.#headerTemplateCache.sweep();
       this.#summaryTemplateCache.sweep();
     });
+  }
+
+  /**
+   * Writes the grid tracks of the columns for the measured width, in the
+   * order ngx-datatable renders them: frozen left, unfrozen, frozen right.
+   * Columns that fit their content are first laid out at their `max-content`
+   * width and read back from the grid. Until the width is measured,
+   * ngx-datatable's own tracks apply.
+   *
+   * @param columns Resolved columns in input order.
+   */
+  #updateColumnTracks(columns: (NgxTableColumn<TRow> & Pick<TableColumn<TRow>, 'fitContent'>)[]): void {
+    const grid = this.#grid;
+    if (this.#availableWidth === undefined || !grid) {
+      return;
+    }
+
+    const ordered = [
+      ...columns.filter((column) => column.frozenLeft),
+      ...columns.filter((column) => !column.frozenLeft && !column.frozenRight),
+      ...columns.filter((column) => !column.frozenLeft && column.frozenRight),
+    ];
+    let contentWidths: number[] = [];
+    if (ordered.some((column) => column.fitContent)) {
+      this.#setColumnTracks(contentMeasureTemplate(ordered));
+      contentWidths = getComputedStyle(grid).gridTemplateColumns.split(' ').map(parseFloat);
+    }
+
+    this.#setColumnTracks(columnGridTemplate(ordered, this.#availableWidth, contentWidths));
+  }
+
+  /**
+   * Sets the custom property holding the column tracks.
+   *
+   * @param tracks `grid-template-columns` value.
+   */
+  #setColumnTracks(tracks: string): void {
+    this.#renderer.setStyle(this.#host, COLUMN_TRACKS_VARIABLE, tracks, RendererStyleFlags2.DashCase);
   }
 
   /**
