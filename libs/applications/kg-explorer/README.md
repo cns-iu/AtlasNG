@@ -150,6 +150,8 @@ Content projected into the table view, such as a footer, renders after the table
 | `resultsCounterPrefix`     | `Viewing`   | Text before the numbers of the results counter.                                                                    |
 | `disableEndOfResults`      | `false`     | Hides the end-of-results indicator.                                                                                |
 | `downloadFormats`          | none        | File formats of the download column. The column is only shown when this is set.                                    |
+| `downloadColumnLabel`      | `Download`  | Accessible name of the download column's header, which is visually empty.                                          |
+| `downloadLabel`            | row `title` | Row key or `(row) => string` that names the row of each download button (see below).                               |
 | `filtersDockBreakpoint`    | `'large'`   | Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`, from which the filter menu is docked. |
 
 Set defaults for every table view below an injector with `provideKgExplorerTableView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
@@ -176,7 +178,9 @@ config = { downloadFormats: (dataset: Dataset) => dataset.formats };
 | One              | Downloads that format directly.                |
 | None             | Disabled, with a "No downloads available" tip. |
 
-Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables.
+Each button names its row for screen readers, for example "Download CSV for Heart atlas", "Choose download format for Heart atlas", or "No downloads available for Heart atlas", while its tooltip leaves out the row. `downloadLabel` sets the row name, from a row key or a function.
+
+Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables, which requires a `labelFn` or `labelProp` in place of `downloadLabel`. Pair it with `KgExplorerDownloadHeaderCellDefinition`, which keeps the header visually empty but gives it the column `name`.
 
 ### Known limitations
 
@@ -207,15 +211,40 @@ The search bar, counter, and table share one scroll area, and the table grows to
 
 `KgExplorerMetadata` describes one entry:
 
-| Property   | Required | Description                                                                        |
-| ---------- | -------- | ---------------------------------------------------------------------------------- |
-| `title`    | yes      | Page title, rendered as the `h1`.                                                  |
-| `sections` | yes      | `KgExplorerMetadataSection[]` rendered in order below the title.                   |
-| `url`      | no       | URL shown in a copyable link snippet.                                              |
-| `icons`    | no       | `KgExplorerMetadataIcon[]` (`{ src, alt }`) shown as 64px circles above the title. |
-| `versions` | no       | `VersionControlItem[]` from `@atlasng/design-system/version-control`.              |
+| Property   | Required | Description                                                                                                   |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `title`    | yes      | Page title, rendered as the `h1`.                                                                             |
+| `sections` | yes      | `KgExplorerMetadataSection[]` rendered in order below the title.                                              |
+| `url`      | no       | URL shown in a copyable link snippet.                                                                         |
+| `icons`    | no       | `KgExplorerMetadataIcon[]` (`{ name, label }`): `@atlasng/icons` names shown as 64px circles above the title. |
+| `versions` | no       | `VersionControlItem[]` from `@atlasng/design-system/version-control`.                                         |
 
 Breadcrumbs, icons, and the URL are hidden when they have no data; leave them out to hide them. The version control panel is always displayed; without versions its selector is disabled.
+
+### Icons
+
+Icons come from [`@atlasng/icons`](../../resources/icons/README.md) and render with its icon font as `<mat-icon fontSet="ang-icons" [fontIcon]="name">`, labelled with `label` for assistive technology. Install `@atlasng/icons`, load its CSS, and register the font set with `provideAngIcons` from `@atlasng/design-system/icons`:
+
+```json
+"styles": ["@atlasng/icons", "src/styles.scss"]
+```
+
+```ts
+providers: [provideAngIcons()];
+```
+
+```ts
+const entry: KgExplorerMetadata = {
+  title: 'Whole Person Physiome (WPP) table for cardiovascular system',
+  icons: [
+    { name: 'kg-explorer', label: 'Knowledge graph' },
+    { name: 'heart', label: 'Heart' },
+  ],
+  sections,
+};
+```
+
+Use any icon name from the `@atlasng/icons` manifest. The glyphs take the icon color on a filled circle; change both with the CSS variables under [Responsive layout](#responsive-layout).
 
 ### Configuration
 
@@ -279,14 +308,16 @@ The page does not download files. Choosing a download option emits `download` wi
 - Below the `medium` breakpoint (960px), the page is a single column with 20px side padding, and the version control panel follows the first section.
 - From `medium` up, the version control panel is a 400px column beside the sections, with 40px padding. The layout is centered and at most 1600px wide.
 
-Spacing and the link color can be customized with these CSS variables:
+Spacing, the link color, and the icon colors can be customized with these CSS variables:
 
-| Variable                                                 | Default   | Effect                                                                  |
-| -------------------------------------------------------- | --------- | ----------------------------------------------------------------------- |
-| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem`  | Space between sections                                                  |
-| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem`  | Page padding from `medium` up                                           |
-| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`    | Extra space kept clear above the sticky panel, e.g. for a sticky header |
-| `--ang-kg-explorer-metadata-view-link-color`             | `primary` | Color of the text links, including the breadcrumbs                      |
+| Variable                                                 | Default      | Effect                                                                  |
+| -------------------------------------------------------- | ------------ | ----------------------------------------------------------------------- |
+| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem`     | Space between sections                                                  |
+| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem`     | Page padding from `medium` up                                           |
+| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`       | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+| `--ang-kg-explorer-metadata-view-link-color`             | `primary`    | Color of the text links, including the breadcrumbs                      |
+| `--ang-kg-explorer-metadata-view-icon-background-color`  | `primary`    | Background of the icon circles                                          |
+| `--ang-kg-explorer-metadata-view-icon-color`             | `on-primary` | Color of the icon glyphs                                                |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 
@@ -299,4 +330,4 @@ Colors and typography come from the active Material theme, so the page follows t
 | Lint      | `npx nx lint kg-explorer`      |
 | Storybook | `npx nx storybook kg-explorer` |
 
-The Storybook stories under `Applications/KG Explorer` are the white-label demo and link to the Figma design.
+The Storybook stories under `Applications/KG Explorer` are the white-label demo and link to the Figma design. Storybook builds `icons` first and serves its output from `dist/libs/resources/icons` at `ang-icons/`, like the design-system Storybook; the metadata view stories load `ang-icons/index.css` for the icon font.

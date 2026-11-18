@@ -39,6 +39,14 @@ export interface KgExplorerTableViewConfig<
    * only shown when this is set.
    */
   downloadFormats?: KgExplorerDownloadFormats<TRow, TFormat>;
+  /** Accessible name of the download column's header, which is visually empty. Defaults to `Download`. */
+  downloadColumnLabel?: string;
+  /**
+   * Names the row of each download button: a row key or a function returning
+   * the name, announced as "Download CSV for <name>", "Choose download format
+   * for <name>", or "No downloads available for <name>". Defaults to the row's `title`.
+   */
+  downloadLabel?: (keyof TRow & string) | ((row: TRow) => string);
   /**
    * Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`,
    * from which the filter menu is docked beside the table instead of opening as
@@ -72,6 +80,8 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
     disableResultsCounter: false,
     resultsCounterPrefix: 'Viewing',
     disableEndOfResults: false,
+    downloadColumnLabel: 'Download',
+    downloadLabel: 'title',
     filtersDockBreakpoint: 'large',
   }),
   inherit: true,
