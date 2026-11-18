@@ -84,23 +84,37 @@ jobs:
       # Tags are either v<version> (fixed group) or <project>@<version> (independent project);
       # only the tagged group or project is published. A manual run on a branch publishes every
       # release project. Versions already on npm are skipped, so reruns are safe.
+      # The Nx CLI filters pull in dependents (version.updateDependents), so a v<version> run would
+      # also publish dependent projects and race their own tag runs. The programmatic API turns that
+      # off for publishing only. It runs from a file because Nx needs process.argv[1].
       - name: Publish packages
         run: |
-          args=(--access=public)
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-            if [[ "$GITHUB_REF_NAME" == *@* ]]; then
-              args+=(--projects="${GITHUB_REF_NAME%@*}")
-            else
-              args+=(--groups="$FIXED_GROUP")
-            fi
+          script="$RUNNER_TEMP/nx-release-publish.mjs"
+          cat > "$script" <<'EOF'
+          import { createRequire } from 'node:module';
 
-            version="${GITHUB_REF_NAME##*@}"
-            version="${version#v}"
-            if [[ "$version" == *-* ]]; then
-              args+=(--tag=next)
-            fi
-          fi
-          npx nx release publish "${args[@]}"
+          const { ReleaseClient } = createRequire(`${process.cwd()}/`)('nx/release');
+          const { GITHUB_REF_TYPE: refType, GITHUB_REF_NAME: refName, FIXED_GROUP: fixedGroup } = process.env;
+
+          const args = { access: 'public' };
+          if (refType === 'tag') {
+            if (refName.includes('@')) {
+              args.projects = [refName.slice(0, refName.lastIndexOf('@'))];
+            } else {
+              args.groups = [fixedGroup];
+            }
+
+            const version = refName.slice(refName.lastIndexOf('@') + 1).replace(/^v/, '');
+            if (version.includes('-')) {
+              args.tag = 'next';
+            }
+          }
+
+          const client = new ReleaseClient({ version: { updateDependents: 'never' } });
+          const results = await client.releasePublish(args);
+          process.exitCode = Object.values(results).every(({ code }) => code === 0) ? 0 : 1;
+          EOF
+          node "$script"
         env:
           FIXED_GROUP: ${{ inputs.fixed-group }}
           NPM_CONFIG_PROVENANCE: true
