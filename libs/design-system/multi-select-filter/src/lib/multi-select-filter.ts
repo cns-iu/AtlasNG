@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { provideEventScope, TrackClick } from '@atlasng/analytics';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { IdGenerator } from '@atlasng/common';
 import { RichTooltip, RichTooltipTrigger } from '@atlasng/design-system/rich-tooltip';
 import { SearchList, SearchListOption } from '@atlasng/design-system/search-list';
@@ -37,6 +37,7 @@ const PANEL_POSITIONS: ConnectedPosition[] = [
     MatTooltipModule,
     RichTooltipTrigger,
     SearchList,
+    EventScope,
     TrackClick,
   ],
   templateUrl: './multi-select-filter.html',

@@ -2,16 +2,19 @@
   <mat-form-field class="ang-search-list--search" subscriptSizing="dynamic">
     <mat-label>{{ searchLabel() }}</mat-label>
     <mat-icon matPrefix fontIcon="search" />
-    <input matInput type="text" [(ngModel)]="search" />
+    <input matInput angTrackChange type="text" [(ngModel)]="search" />
   </mat-form-field>
 }
 
 <ang-scroll-area class="ang-search-list--scroll-area" orientation="vertical">
   <mat-selection-list
     class="ang-search-list--list"
+    angTrackChange
     [attr.aria-label]="ariaLabel()"
     [attr.aria-labelledby]="ariaLabelledby()"
+    [angTrackChangeOn]="{ selectionChange: list.selectionChange }"
     (selectionChange)="updateSelection($event)"
+    #list
   >
     @for (result of results(); track result.item) {
       @let option = result.item;

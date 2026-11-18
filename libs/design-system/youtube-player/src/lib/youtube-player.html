@@ -33,7 +33,13 @@
 @if (!enabled()) {
   <ng-content select="[angYouTubePlayerEnableRequest]">
     <div class="ang-youtube-player--enable-request">
-      <button type="button" class="ang-youtube-player--enable-request-button" (click)="requestMarketing()">
+      <button
+        type="button"
+        class="ang-youtube-player--enable-request-button"
+        angEventScope="enable-request"
+        angTrackClick
+        (click)="requestMarketing()"
+      >
         Enable cookies
       </button>
       to watch videos

@@ -1,5 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { EventScope, TrackChange } from '@atlasng/analytics';
 import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-system/table';
 import { RequireOneOrNone, Simplify } from 'type-fest';
 
@@ -29,7 +30,7 @@ export type CheckboxCellConfig<TRow extends Row = Row> = Simplify<
  */
 @Component({
   selector: 'ang-table-checkbox-cell-definition',
-  imports: [CellTemplateContext, MatCheckbox],
+  imports: [CellTemplateContext, EventScope, MatCheckbox, TrackChange],
   template: `
     <ng-template
       let-disabled="disabled"
@@ -41,6 +42,8 @@ export type CheckboxCellConfig<TRow extends Row = Row> = Simplify<
     >
       <div class="ang-table--checkbox-cell">
         <mat-checkbox
+          angEventScope="select"
+          angTrackChange
           [aria-label]="getLabel(row, rowIndex)"
           [checked]="isSelected ?? false"
           [disabled]="disabled ?? false"
