@@ -1,12 +1,13 @@
 import {
   assertInInjectionContext,
+  computed,
   DestroyRef,
   effect,
   ElementRef,
   inject,
   Injector,
   Renderer2,
-  runInInjectionContext,
+  Signal,
   untracked,
 } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor } from '@atlasng/analytics/events';
@@ -61,113 +62,32 @@ export interface MultiTrackEventConfig<E extends AnalyticsEvent> extends BaseTra
   events: () => AnalyticsEventTrackingDef<E>[];
 }
 
-/** A trigger with the callback that tracks its events. */
-interface TriggerBinding {
+/** What a registration listens to: a trigger name and its source. */
+interface TriggerKey {
   /** The trigger name. */
-  name: string;
+  trigger: string;
   /** `true` for a DOM event on the host element, otherwise the source to subscribe to. */
   source: TrackEventSource | true;
+}
+
+/** A trigger with the callback that tracks its events. */
+interface TriggerBinding extends TriggerKey {
   /** Tracks the events for one activation of the trigger. */
   fire: (triggerData?: unknown) => void;
 }
 
 /**
- * Builds the payload sent for a trigger activation.
- *
- * @param payload The configured payload
- * @param trigger The trigger name
- * @param triggerData The DOM event, when the trigger is a DOM event
- * @returns The payload with trigger metadata
- */
-function withTrigger<P>(payload: P, trigger: string, triggerData: unknown): P {
-  return triggerData === undefined ? { ...payload, trigger } : { ...payload, trigger, triggerData };
-}
-
-/**
- * Creates the trigger bindings for a single-event configuration.
- *
- * @param config The configuration
- * @param track Tracks events under the current scope
- * @returns The bindings for the current triggers
- */
-function singleBindings<E extends AnalyticsEvent>(config: TrackEventConfig<E>, track: TrackEventFn): TriggerBinding[] {
-  const { event, payload, options } = config;
-  return Object.entries(config.on()).map(([name, source]) => ({
-    name,
-    source,
-    fire: (triggerData) => {
-      const eventValue = typeof event === 'function' ? event() : event;
-      const payloadValue = payload?.() ?? ({} as AnalyticsEventPayloadFor<E>);
-      track(eventValue, withTrigger(payloadValue, name, triggerData), options?.());
-    },
-  }));
-}
-
-/**
- * Creates the trigger bindings for a multi-event configuration, one per trigger name.
- *
- * @param config The configuration
- * @param track Tracks events under the current scope
- * @returns The bindings for the current definitions
- */
-function multiBindings<E extends AnalyticsEvent>(
-  config: MultiTrackEventConfig<E>,
-  track: TrackEventFn,
-): TriggerBinding[] {
-  const groups = new Map<string, AnalyticsEventTrackingDef<E>[]>();
-  for (const def of config.events()) {
-    groups.set(def.trigger, [...(groups.get(def.trigger) ?? []), def]);
-  }
-
-  return [...groups].map(([name, defs]) => ({
-    name,
-    source: defs.find((def) => def.source)?.source ?? true,
-    fire: (triggerData) => {
-      for (const def of defs) {
-        track(def.event, withTrigger(def.payload, name, triggerData), def.options);
-      }
-    },
-  }));
-}
-
-/**
- * Registers a trigger binding.
- *
- * @param binding The binding to register
- * @param element The host element for DOM triggers
- * @param renderer The renderer used to listen for DOM events
- * @param delay The debounce delay in milliseconds, if any
- * @returns A function that removes the registration
- */
-function register(binding: TriggerBinding, element: Element, renderer: Renderer2, delay?: number): () => void {
-  let timeout: ReturnType<typeof setTimeout> | undefined;
-  const fire = delay
-    ? (triggerData?: unknown) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => binding.fire(triggerData), delay);
-      }
-    : binding.fire;
-
-  const remove =
-    binding.source === true
-      ? renderer.listen(element, binding.name, (event: unknown) => fire(event))
-      : (() => {
-          const subscription = binding.source.subscribe(() => fire());
-          return () => subscription.unsubscribe();
-        })();
-
-  return () => {
-    clearTimeout(timeout);
-    remove();
-  };
-}
-
-/**
  * Initializes event tracking on the host element.
  *
- * Triggers are registered again whenever the triggers, debounce, or disabled state change.
- * Payloads and options are read when a trigger fires. On destroy, triggers are removed
- * after a macrotask so events dispatched during teardown, such as `blur`, are still tracked.
+ * Triggers are registered again only when the trigger names or sources, debounce, or disabled
+ * state change. Events, payloads, and options are read when a trigger fires. Values that sources
+ * emit synchronously on subscribe, such as a `BehaviorSubject` replay, are ignored.
+ *
+ * Pending debounced calls are flushed when triggers are registered again and on destroy, and
+ * dropped when tracking is disabled. On destroy, triggers are removed after a macrotask so events
+ * dispatched during teardown, such as `blur`, are still tracked.
+ *
+ * Triggers are registered on the first change detection, so events dispatched before it are not tracked.
  *
  * @param config The single-event or multi-event configuration
  * @throws When called outside an injection context without an `injector`
@@ -179,36 +99,207 @@ export function initializeTrackEvent<E extends AnalyticsEvent>(
     assertInInjectionContext(initializeTrackEvent);
   }
 
-  const setup = () => {
-    const element = inject(ElementRef).nativeElement as Element;
-    const renderer = inject(Renderer2);
-    const track = injectTrackEvent();
-    let cleanups: (() => void)[] = [];
-    const teardown = () => {
-      cleanups.forEach((cleanup) => cleanup());
-      cleanups = [];
-    };
-
-    effect(() => {
-      const bindings = config.disabled?.()
-        ? []
-        : 'events' in config
-          ? multiBindings(config, track)
-          : singleBindings(config, track);
-      const delay = config.debounce?.();
-
-      untracked(() => {
-        teardown();
-        cleanups = bindings.map((binding) => register(binding, element, renderer, delay));
-      });
-    });
-
-    inject(DestroyRef).onDestroy(() => setTimeout(teardown));
+  const injector = config.injector ?? inject(Injector);
+  const element = injector.get(ElementRef).nativeElement as Node;
+  const renderer = injector.get(Renderer2);
+  const track = injectTrackEvent({ injector });
+  const bindings = 'events' in config ? createMultiBindings(config, track) : createSingleBindings(config, track);
+  let cleanups: ((flush: boolean) => void)[] = [];
+  let warnedNonElementHost = false;
+  const teardown = (flush: boolean) => {
+    cleanups.forEach((cleanup) => cleanup(flush));
+    cleanups = [];
   };
 
-  if (config.injector) {
-    runInInjectionContext(config.injector, setup);
-  } else {
-    setup();
+  effect(
+    () => {
+      const disabled = config.disabled?.() ?? false;
+      const active = disabled ? [] : bindings();
+      const delay = config.debounce?.();
+
+      if (
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        !warnedNonElementHost &&
+        element.nodeType !== Node.ELEMENT_NODE &&
+        active.some((binding) => binding.source === true)
+      ) {
+        const triggerNames = active
+          .filter((binding) => binding.source === true)
+          .map((binding) => `'${binding.trigger}'`)
+          .join(', ');
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Analytics: DOM triggers (${triggerNames}) are registered on a host that is not an element, ` +
+            'such as <ng-container>, and will never fire. ' +
+            'Use a source instead or move the directive to an element.',
+        );
+
+        warnedNonElementHost = true;
+      }
+
+      untracked(() => {
+        teardown(!disabled);
+        cleanups = active.map((binding) => registerBinding(binding, element, renderer, delay));
+      });
+    },
+    { injector },
+  );
+
+  injector.get(DestroyRef).onDestroy(() => setTimeout(() => teardown(true)));
+}
+
+/**
+ * Creates the trigger bindings for a single-event configuration, one per trigger.
+ * Only the triggers are tracked; the event, payload, and options are read when a trigger fires.
+ *
+ * @param config The single-event configuration
+ * @param track Tracks events under the host's event scope
+ * @returns A signal of the bindings for the current triggers
+ */
+function createSingleBindings<E extends AnalyticsEvent>(
+  config: TrackEventConfig<E>,
+  track: TrackEventFn,
+): Signal<TriggerBinding[]> {
+  const { event, payload, options, on } = config;
+  const eventFn = typeof event === 'function' ? event : () => event;
+  const keys = computed(() => Object.entries(on()).map(([trigger, source]) => ({ trigger, source })), {
+    equal: triggerKeysEqual,
+  });
+
+  return computed(() =>
+    keys().map(({ trigger, source }) => ({
+      trigger,
+      source,
+      fire: (triggerData) => {
+        track(eventFn(), buildPayload(trigger, triggerData, payload?.()), options?.());
+      },
+    })),
+  );
+}
+
+/**
+ * Creates the trigger bindings for a multi-event configuration, one per distinct trigger and source.
+ * Only the triggers and sources are tracked, so definitions whose payloads change do not cause
+ * registrations, or pending debounced calls, to be reset. Definitions are read when a trigger fires.
+ *
+ * @param config The multi-event configuration
+ * @param track Tracks events under the host's event scope
+ * @returns A signal of the bindings for the current definitions
+ */
+function createMultiBindings<E extends AnalyticsEvent>(
+  config: MultiTrackEventConfig<E>,
+  track: TrackEventFn,
+): Signal<TriggerBinding[]> {
+  const { events } = config;
+  const keys = computed(
+    () => {
+      const result: TriggerKey[] = [];
+      for (const { trigger, source = true } of events()) {
+        if (!result.some((key) => key.trigger === trigger && key.source === source)) {
+          result.push({ trigger, source });
+        }
+      }
+
+      return result;
+    },
+    { equal: triggerKeysEqual },
+  );
+
+  return computed(() =>
+    keys().map(({ trigger, source }) => ({
+      trigger,
+      source,
+      fire: (triggerData) => {
+        for (const def of untracked(events)) {
+          if (def.trigger === trigger && (def.source ?? true) === source) {
+            track(def.event, buildPayload(trigger, triggerData, def.payload), def.options);
+          }
+        }
+      },
+    })),
+  );
+}
+
+/**
+ * Compares trigger keys by trigger name and source identity.
+ *
+ * @param a The previous keys
+ * @param b The next keys
+ * @returns Whether both lists register the same triggers in the same order
+ */
+function triggerKeysEqual(a: TriggerKey[], b: TriggerKey[]): boolean {
+  return (
+    a.length === b.length && a.every((key, index) => key.trigger === b[index].trigger && key.source === b[index].source)
+  );
+}
+
+/** Marks that a debounced binding has no pending call. */
+const NO_PENDING_CALL = Symbol('NO_PENDING_CALL');
+
+/**
+ * Listens for a binding's DOM event on the host element or subscribes to its source.
+ * Emissions delivered synchronously during `subscribe` are ignored, so replayed values are not tracked.
+ *
+ * @param binding The binding to register
+ * @param element The host element for DOM triggers
+ * @param renderer The renderer used to listen for DOM events
+ * @param delay The debounce delay in milliseconds; tracks immediately unless finite and positive
+ * @returns A function that removes the registration and either runs (`flush`) or cancels any pending debounced call
+ */
+function registerBinding(
+  binding: TriggerBinding,
+  element: Node,
+  renderer: Renderer2,
+  delay?: number,
+): (flush: boolean) => void {
+  let fire = binding.fire;
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  let pending: unknown = NO_PENDING_CALL;
+  let removeBinding: () => void;
+
+  if (delay !== undefined && Number.isFinite(delay) && delay > 0) {
+    fire = (triggerData) => {
+      clearTimeout(timeout);
+      pending = triggerData;
+      timeout = setTimeout(() => {
+        pending = NO_PENDING_CALL;
+        binding.fire(triggerData);
+      }, delay);
+    };
   }
+
+  if (binding.source === true) {
+    removeBinding = renderer.listen(element, binding.trigger, fire);
+  } else {
+    let subscribing = true;
+    const subscription = binding.source.subscribe(() => {
+      if (!subscribing) {
+        fire();
+      }
+    });
+    subscribing = false;
+    removeBinding = () => subscription.unsubscribe();
+  }
+
+  return (flush) => {
+    clearTimeout(timeout);
+    removeBinding();
+    if (flush && pending !== NO_PENDING_CALL) {
+      const triggerData = pending;
+      pending = NO_PENDING_CALL;
+      binding.fire(triggerData);
+    }
+  };
+}
+
+/**
+ * Adds trigger metadata to a payload.
+ *
+ * @param trigger The trigger name
+ * @param triggerData The DOM event, or `undefined` for source triggers
+ * @param payload The configured payload
+ * @returns A copy of the payload with `trigger`, and `triggerData` when defined
+ */
+function buildPayload<P>(trigger: string, triggerData: unknown, payload: P | undefined): P {
+  return (triggerData === undefined ? { ...payload, trigger } : { ...payload, trigger, triggerData }) as P;
 }
