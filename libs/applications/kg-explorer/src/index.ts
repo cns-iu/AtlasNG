@@ -3,6 +3,7 @@ export {
   type KgExplorerDownloadCellConfig,
   type KgExplorerDownloadFormats,
 } from './lib/download-cell/download-cell';
+export { KgExplorerDownloadHeaderCellDefinition } from './lib/download-cell/download-header-cell';
 export {
   KG_EXPLORER_METADATA_VIEW_CONFIG,
   provideKgExplorerMetadataView,

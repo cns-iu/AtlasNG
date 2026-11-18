@@ -59,11 +59,11 @@ Give the table view a height (for example, fill the page below your header) and 
 
 ### Layout
 
-| Area          | Behavior                                                                                                                                                                                                                              |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Filter menu   | Filter drawer (see [Filter drawer](#filter-drawer)). Docked on the left from the Angular Material large breakpoint (1280px) up; below that it is a drawer opened and closed through `[(filtersOpen)]`.                                |
-| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows. |
-| Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                        |
+| Area          | Behavior                                                                                                                                                                                                                                                                      |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Filter menu   | Shows an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from `filtersDockBreakpoint` (the large breakpoint, 1280px, by default) up; below that it is a drawer opened and closed through `[(filtersOpen)]` and the [filter toggle](#filter-toggle). |
+| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows.                                         |
+| Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                                                                |
 
 Text links, such as the cells of `kgExplorerLinkColumn` columns, use the theme's `primary` color. Set `--ang-kg-explorer-table-view-link-color` to change it.
 
@@ -96,52 +96,6 @@ filters: KgExplorerFilter<Dataset>[] = [
 - Derived option counts are the number of `items` with that value. They do not change with the search term or other filters.
 - A filter without `field` and `matches` does not narrow the rows. Read `filterSelections` and pass the matching `items` yourself, for example when filtering on a server.
 
-### Filter drawer
-
-The drawer shows these parts from top to bottom. Each one is hidden when it has no content:
-
-| Part           | Content                                                                                                                                                                                                               |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Breadcrumbs    | `config.breadcrumbs`, rendered with `ang-breadcrumbs`.                                                                                                                                                                |
-| Heading        | `config.filtersHeading` and the supporting text `config.filtersDescription`.                                                                                                                                          |
-| Customize view | A button toggle of `config.viewOptions` bound to `[(view)]`, a select for each of `config.viewSettings` bound to `[(viewSettingValues)]`, and a "Reset" button that emits `(resetView)`.                              |
-| Filters        | A "Filters" heading and an `ang-multi-select-filter` for each entry of `filters`, separated by dividers. The "Clear filters" button beside the heading is only shown while at least one filter has a selected option. |
-
-The table view does not apply view customizations itself. Read `view` and `viewSettingValues` and update `items`, `columns`, or `sorts` yourself:
-
-```ts
-config: KgExplorerTableViewConfig<Dataset> = {
-  breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Knowledge Graph Explorer' }],
-  filtersHeading: 'Knowledge Graph Explorer',
-  viewOptions: [
-    { value: 'table', label: 'Table' },
-    { value: 'cards', label: 'Cards' },
-  ],
-  viewSettings: [{ id: 'sort', label: 'Sort by', options: [{ value: 'title', label: 'Title' }] }],
-};
-```
-
-```html
-<ang-kg-explorer-table-view
-  [items]="items"
-  [columns]="columns"
-  [filters]="filters"
-  [config]="config"
-  [(view)]="view"
-  [(viewSettingValues)]="viewSettingValues"
-  (resetView)="resetView()"
-/>
-```
-
-Change the drawer's colors with these CSS variables:
-
-| Variable                                            | Default                | Description                                       |
-| --------------------------------------------------- | ---------------------- | ------------------------------------------------- |
-| `--ang-kg-explorer-filter-drawer-heading-color`     | `on-surface`           | Color of the drawer and section headings.         |
-| `--ang-kg-explorer-filter-drawer-description-color` | `on-surface-variant`   | Color of the supporting text.                     |
-| `--ang-kg-explorer-filter-drawer-action-color`      | `on-primary-container` | Color of the "Reset" and "Clear filters" buttons. |
-| `--ang-kg-explorer-filter-drawer-divider-color`     | `outline-variant`      | Color of the dividers between filters.            |
-
 ### Filter toggle
 
 The filter drawer has no built-in trigger. Add a button that toggles `[(filtersOpen)]`, for example in the action slot of `ang-header-shell` from `@atlasng/labs/header-shell`:
@@ -165,17 +119,14 @@ The filter drawer has no built-in trigger. Add a button that toggles `[(filtersO
 
 ### Inputs and outputs
 
-| Name                              | Description                                                          |
-| --------------------------------- | -------------------------------------------------------------------- |
-| `items`, `columns`                | Rows to display and the columns that show them.                      |
-| `filters`, `[(filterSelections)]` | Filter definitions and the selected options of each filter.          |
-| `config`                          | Search, download, visibility, and filter drawer options (see below). |
-| `[(search)]`, `[(sorts)]`         | Current search term and column sorts.                                |
-| `[(filtersOpen)]`                 | Whether the filter drawer is open below the large breakpoint.        |
-| `(download)`                      | Emits `{ item, format }` when a user downloads a row.                |
-| `[(view)]`                        | Picked value of the "Customize view" button toggle.                  |
-| `[(viewSettingValues)]`           | Picked value of each "Customize view" select, keyed by setting `id`. |
-| `(resetView)`                     | Emits when a user clicks "Reset" in the "Customize view" section.    |
+| Name                              | Description                                                  |
+| --------------------------------- | ------------------------------------------------------------ |
+| `items`, `columns`                | Rows to display and the columns that show them.              |
+| `filters`, `[(filterSelections)]` | Filter definitions and the selected options of each filter.  |
+| `config`                          | Search, download, and visibility options (see below).        |
+| `[(search)]`, `[(sorts)]`         | Current search term and column sorts.                        |
+| `[(filtersOpen)]`                 | Whether the filter drawer is open below the dock breakpoint. |
+| `(download)`                      | Emits `{ item, format }` when a user downloads a row.        |
 
 Content projected into the table view, such as a footer, renders after the table and the end-of-results indicator, and scrolls with them:
 
@@ -189,26 +140,19 @@ Content projected into the table view, such as a footer, renders after the table
 
 `config` takes a `KgExplorerTableViewConfig`. Every option is optional.
 
-| Option                     | Default          | Description                                                                                         |
-| -------------------------- | ---------------- | --------------------------------------------------------------------------------------------------- |
-| `searchFields`             | all values       | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them. |
-| `searchSuggestionField`    | row `title`      | Field whose values are suggested below the search field.                                            |
-| `disableSearchSuggestions` | `false`          | Turns the suggestions off.                                                                          |
-| `disableSearch`            | `false`          | Hides the search field.                                                                             |
-| `disableResultsCounter`    | `false`          | Hides the "Viewing X of Y" counter.                                                                 |
-| `resultsCounterPrefix`     | `Viewing`        | Text before the numbers of the results counter.                                                     |
-| `disableEndOfResults`      | `false`          | Hides the end-of-results indicator.                                                                 |
-| `downloadFormats`          | none             | File formats of the download column. The column is only shown when this is set.                     |
-| `breadcrumbs`              | none             | Breadcrumb trail at the top of the filter drawer.                                                   |
-| `filtersHeading`           | none             | Heading of the filter drawer.                                                                       |
-| `filtersDescription`       | none             | Supporting text below the filter drawer heading.                                                    |
-| `viewOptions`              | none             | Options of the "Customize view" button toggle.                                                      |
-| `viewSettings`             | none             | Selects of the "Customize view" section, such as "Sort by" or "Group by".                           |
-| `filtersLabel`             | `Filters`        | Heading of the filters section of the filter drawer.                                                |
-| `clearFiltersLabel`        | `Clear filters`  | Label of the button that clears every filter selection.                                             |
-| `customizeViewLabel`       | `Customize view` | Heading of the view customization section.                                                          |
-| `resetViewLabel`           | `Reset`          | Label of the button that resets the view customizations.                                            |
-| `viewOptionsLabel`         | `View`           | Accessible name of the view button toggle group.                                                    |
+| Option                     | Default     | Description                                                                                                        |
+| -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| `searchFields`             | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them.                |
+| `searchSuggestionField`    | row `title` | Field whose values are suggested below the search field.                                                           |
+| `disableSearchSuggestions` | `false`     | Turns the suggestions off.                                                                                         |
+| `disableSearch`            | `false`     | Hides the search field.                                                                                            |
+| `disableResultsCounter`    | `false`     | Hides the "Viewing X of Y" counter.                                                                                |
+| `resultsCounterPrefix`     | `Viewing`   | Text before the numbers of the results counter.                                                                    |
+| `disableEndOfResults`      | `false`     | Hides the end-of-results indicator.                                                                                |
+| `downloadFormats`          | none        | File formats of the download column. The column is only shown when this is set.                                    |
+| `downloadColumnLabel`      | `Download`  | Accessible name of the download column's header, which is visually empty.                                          |
+| `downloadLabel`            | row `title` | Row key or `(row) => string` that names the row of each download button (see below).                               |
+| `filtersDockBreakpoint`    | `'large'`   | Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`, from which the filter menu is docked. |
 
 Set defaults for every table view below an injector with `provideKgExplorerTableView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
 
@@ -234,7 +178,9 @@ config = { downloadFormats: (dataset: Dataset) => dataset.formats };
 | One              | Downloads that format directly.                |
 | None             | Disabled, with a "No downloads available" tip. |
 
-Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables.
+Each button names its row for screen readers, for example "Download CSV for Heart atlas", "Choose download format for Heart atlas", or "No downloads available for Heart atlas", while its tooltip leaves out the row. `downloadLabel` sets the row name, from a row key or a function.
+
+Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables, which requires a `labelFn` or `labelProp` in place of `downloadLabel`. Pair it with `KgExplorerDownloadHeaderCellDefinition`, which keeps the header visually empty but gives it the column `name`.
 
 ### Known limitations
 
@@ -265,15 +211,40 @@ The search bar, counter, and table share one scroll area, and the table grows to
 
 `KgExplorerMetadata` describes one entry:
 
-| Property   | Required | Description                                                                        |
-| ---------- | -------- | ---------------------------------------------------------------------------------- |
-| `title`    | yes      | Page title, rendered as the `h1`.                                                  |
-| `sections` | yes      | `KgExplorerMetadataSection[]` rendered in order below the title.                   |
-| `url`      | no       | URL shown in a copyable link snippet.                                              |
-| `icons`    | no       | `KgExplorerMetadataIcon[]` (`{ src, alt }`) shown as 64px circles above the title. |
-| `versions` | no       | `VersionControlItem[]` from `@atlasng/design-system/version-control`.              |
+| Property   | Required | Description                                                                                                   |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `title`    | yes      | Page title, rendered as the `h1`.                                                                             |
+| `sections` | yes      | `KgExplorerMetadataSection[]` rendered in order below the title.                                              |
+| `url`      | no       | URL shown in a copyable link snippet.                                                                         |
+| `icons`    | no       | `KgExplorerMetadataIcon[]` (`{ name, label }`): `@atlasng/icons` names shown as 64px circles above the title. |
+| `versions` | no       | `VersionControlItem[]` from `@atlasng/design-system/version-control`.                                         |
 
 Breadcrumbs, icons, and the URL are hidden when they have no data; leave them out to hide them. The version control panel is always displayed; without versions its selector is disabled.
+
+### Icons
+
+Icons come from [`@atlasng/icons`](../../resources/icons/README.md) and render with its icon font as `<mat-icon fontSet="ang-icons" [fontIcon]="name">`, labelled with `label` for assistive technology. Install `@atlasng/icons`, load its CSS, and register the font set with `provideAngIcons` from `@atlasng/design-system/icons`:
+
+```json
+"styles": ["@atlasng/icons", "src/styles.scss"]
+```
+
+```ts
+providers: [provideAngIcons()];
+```
+
+```ts
+const entry: KgExplorerMetadata = {
+  title: 'Whole Person Physiome (WPP) table for cardiovascular system',
+  icons: [
+    { name: 'kg-explorer', label: 'Knowledge graph' },
+    { name: 'heart', label: 'Heart' },
+  ],
+  sections,
+};
+```
+
+Use any icon name from the `@atlasng/icons` manifest. The glyphs take the icon color on a filled circle; change both with the CSS variables under [Responsive layout](#responsive-layout).
 
 ### Configuration
 
@@ -337,14 +308,16 @@ The page does not download files. Choosing a download option emits `download` wi
 - Below the `medium` breakpoint (960px), the page is a single column with 20px side padding, and the version control panel follows the first section.
 - From `medium` up, the version control panel is a 400px column beside the sections, with 40px padding. The layout is centered and at most 1600px wide.
 
-Spacing and the link color can be customized with these CSS variables:
+Spacing, the link color, and the icon colors can be customized with these CSS variables:
 
-| Variable                                                 | Default   | Effect                                                                  |
-| -------------------------------------------------------- | --------- | ----------------------------------------------------------------------- |
-| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem`  | Space between sections                                                  |
-| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem`  | Page padding from `medium` up                                           |
-| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`    | Extra space kept clear above the sticky panel, e.g. for a sticky header |
-| `--ang-kg-explorer-metadata-view-link-color`             | `primary` | Color of the text links, including the breadcrumbs                      |
+| Variable                                                 | Default      | Effect                                                                  |
+| -------------------------------------------------------- | ------------ | ----------------------------------------------------------------------- |
+| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem`     | Space between sections                                                  |
+| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem`     | Page padding from `medium` up                                           |
+| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`       | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+| `--ang-kg-explorer-metadata-view-link-color`             | `primary`    | Color of the text links, including the breadcrumbs                      |
+| `--ang-kg-explorer-metadata-view-icon-background-color`  | `primary`    | Background of the icon circles                                          |
+| `--ang-kg-explorer-metadata-view-icon-color`             | `on-primary` | Color of the icon glyphs                                                |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 
@@ -357,4 +330,4 @@ Colors and typography come from the active Material theme, so the page follows t
 | Lint      | `npx nx lint kg-explorer`      |
 | Storybook | `npx nx storybook kg-explorer` |
 
-The Storybook stories under `Applications/KG Explorer` are the white-label demo and link to the Figma design.
+The Storybook stories under `Applications/KG Explorer` are the white-label demo and link to the Figma design. Storybook builds `icons` first and serves its output from `dist/libs/resources/icons` at `ang-icons/`, like the design-system Storybook; the metadata view stories load `ang-icons/index.css` for the icon font.

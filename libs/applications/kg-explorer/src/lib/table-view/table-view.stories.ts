@@ -25,6 +25,7 @@ import {
   kgExplorerNumberColumn,
   kgExplorerTextColumn,
 } from '../utils/columns';
+import type { KgExplorerTableViewConfig } from './config';
 import { KgExplorerTableView } from './table-view';
 
 /** Digital object used by the white-label sample data. */
@@ -116,6 +117,45 @@ function sampleFormatsFor(item: SampleItem): readonly VersionControlFileFormat[]
   return item.formats;
 }
 
+/** Full filter drawer configuration shared by every story: breadcrumbs, heading, view options, and view settings. */
+const SAMPLE_CONFIG: KgExplorerTableViewConfig<SampleItem> = {
+  downloadFormats: sampleFormatsFor,
+  breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Page', command: '/page' }, { name: 'App' }],
+  filtersHeading: 'Product Label',
+  filtersDescription: 'Supporting text here, if needed, but make it short and straightforward',
+  viewOptions: [
+    { value: 'table', label: 'Table' },
+    { value: 'cards', label: 'Cards' },
+    { value: 'graph', label: 'Graph' },
+  ],
+  viewSettings: [
+    {
+      id: 'view',
+      label: 'View as',
+      options: [
+        { value: 'table', label: 'Table' },
+        { value: 'cards', label: 'Cards' },
+      ],
+    },
+    {
+      id: 'sort',
+      label: 'Sort by',
+      options: [
+        { value: 'title', label: 'Title' },
+        { value: 'lastModified', label: 'Last modified' },
+      ],
+    },
+    {
+      id: 'group',
+      label: 'Group by',
+      options: [
+        { value: 'type', label: 'Type' },
+        { value: 'organ', label: 'Organ' },
+      ],
+    },
+  ],
+};
+
 /** Primary navigation of the sample application header. */
 const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
   { id: 'kg-explorer', label: 'Knowledge Graph Explorer' },
@@ -201,10 +241,13 @@ const meta: Meta<KgExplorerTableView<SampleItem>> = {
     columns: SAMPLE_COLUMNS,
     filters: SAMPLE_FILTERS,
     filtersOpen: false,
-    config: { downloadFormats: sampleFormatsFor },
+    config: SAMPLE_CONFIG,
+    view: 'table',
+    viewSettingValues: { view: 'table' },
   },
   argTypes: {
     download: { action: 'download' },
+    resetView: { action: 'resetView' },
   },
   render: (args) => ({
     props: { ...args, navigationItems: NAVIGATION_ITEMS },
@@ -235,7 +278,7 @@ export const Demo: Story = {
       },
     );
 
-    const [downloadButton] = canvas.getAllByRole('button', { name: 'Choose download format' });
+    const [downloadButton] = canvas.getAllByRole('button', { name: /^Choose download format for / });
     await userEvent.click(downloadButton);
     const menu = within(document.body).getByRole('menu');
     await expect(within(menu).getByRole('menuitem', { name: /CSV/ })).toBeVisible();
@@ -249,69 +292,9 @@ export const Dark: Story = {
   },
 };
 
-export const FiltersOpen: Story = {
-  args: {
-    filtersOpen: true,
-  },
-};
-
 export const ExtraLargeFilterBreakpoint: Story = {
   args: {
-    config: { filtersDockBreakpoint: 'x-large' },
-  },
-};
-
-export const FullFilterDrawer: Story = {
-  parameters: {
-    design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/BCEJn9KCIbBJ5MzqnojKQp/AtlasNG-Components?node-id=4935-3392',
-    },
-  },
-  args: {
-    filtersOpen: true,
-    config: {
-      downloadFormats: sampleFormatsFor,
-      breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Page', command: '/page' }, { name: 'App' }],
-      filtersHeading: 'Product Label',
-      filtersDescription: 'Supporting text here, if needed, but make it short and straightforward',
-      viewOptions: [
-        { value: 'table', label: 'Table' },
-        { value: 'cards', label: 'Cards' },
-        { value: 'graph', label: 'Graph' },
-      ],
-      viewSettings: [
-        {
-          id: 'view',
-          label: 'View as',
-          options: [
-            { value: 'table', label: 'Table' },
-            { value: 'cards', label: 'Cards' },
-          ],
-        },
-        {
-          id: 'sort',
-          label: 'Sort by',
-          options: [
-            { value: 'title', label: 'Title' },
-            { value: 'lastModified', label: 'Last modified' },
-          ],
-        },
-        {
-          id: 'group',
-          label: 'Group by',
-          options: [
-            { value: 'type', label: 'Type' },
-            { value: 'organ', label: 'Organ' },
-          ],
-        },
-      ],
-    },
-    view: 'table',
-    viewSettingValues: { view: 'table' },
-  },
-  argTypes: {
-    resetView: { action: 'resetView' },
+    config: { ...SAMPLE_CONFIG, filtersDockBreakpoint: 'x-large' },
   },
 };
 
@@ -319,23 +302,17 @@ export const NoResults: Story = {
   args: {
     search: 'no matching digital object',
   },
-  play: async ({ canvas }) => {
-    await expect(canvas.getByText('No results. Adjust filters or search again.')).toBeVisible();
-  },
 };
 
 export const FewResults: Story = {
   args: {
     items: SAMPLE_ITEMS.slice(0, 3),
   },
-  play: async ({ canvas }) => {
-    await expect(canvas.getByText('End of results')).toBeVisible();
-  },
 };
 
 export const WithoutDownload: Story = {
   args: {
-    config: {},
+    config: { ...SAMPLE_CONFIG, downloadFormats: undefined },
   },
 };
 

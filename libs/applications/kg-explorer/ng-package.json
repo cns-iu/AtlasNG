@@ -4,5 +4,6 @@
   "lib": {
     "entryFile": "src/index.ts",
     "styleIncludePaths": ["../../design-system/src/sass"]
-  }
+  },
+  "allowedNonPeerDependencies": ["^type-fest$"]
 }

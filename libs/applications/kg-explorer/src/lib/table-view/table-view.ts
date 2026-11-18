@@ -1,12 +1,11 @@
-import { Component, computed, effect, inject, Injector, input, model, output, untracked } from '@angular/core';
+import { Component, computed, effect, input, model, output, untracked } from '@angular/core';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import { watchBreakpoint } from '@atlasng/cdk';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
-import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
-import { pickDefined } from '../utils/pick-defined';
+import { KgExplorerDownloadHeaderCellDefinition } from '../download-cell/download-header-cell';
 import type {
   KgExplorerDownloadRequest,
   KgExplorerFilter,
@@ -15,8 +14,10 @@ import type {
   KgExplorerViewSettingValues,
 } from '../models';
 import { KgExplorerTablePanel } from '../table-panel/table-panel';
+import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
+import { pickDefined } from '../utils/pick-defined';
+import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 import { KgExplorerFilterDrawer } from '../filter-drawer/filter-drawer';
-import { KG_EXPLORER_TABLE_VIEW_CONFIG, KgExplorerTableViewConfig } from './config';
 
 /**
  * White-label knowledge graph explorer in table view with a filter drawer, a
@@ -139,20 +140,14 @@ export class KgExplorerTableView<
   /** File formats of the download column, or `undefined` when there is no download column. */
   private readonly downloadFormats = computed(() => this.resolvedConfig().downloadFormats);
 
-  /** Injector passed to {@link watchBreakpoint}, which runs outside the constructor's injection context. */
-  private readonly injector = inject(Injector);
+  /** Accessible name of the download column's header. */
+  private readonly downloadColumnLabel = computed(() => this.resolvedConfig().downloadColumnLabel ?? '');
 
-  /**
-   * Watcher of the dock breakpoint, recreated when the configured breakpoint changes.
-   * `untracked` is required because `watchBreakpoint` uses `toSignal`, which cannot run in a reactive context.
-   */
-  private readonly dockWatcher = computed(() => {
-    const breakpoint = this.resolvedConfig().filtersDockBreakpoint ?? 'large';
-    return untracked(() => watchBreakpoint(breakpoint, { injector: this.injector }));
-  });
+  /** Names the row of each download button: a row key or a function. */
+  private readonly downloadLabel = computed(() => this.resolvedConfig().downloadLabel);
 
   /** Whether the filter menu is docked beside the table. */
-  protected readonly docked = computed(() => this.dockWatcher()());
+  protected readonly docked = watchBreakpoint(() => this.resolvedConfig().filtersDockBreakpoint ?? 'large');
 
   /** Opens the filter menu when it is or becomes docked, and closes the drawer when it undocks. */
   constructor() {
@@ -168,23 +163,27 @@ export class KgExplorerTableView<
     });
   }
 
-  /** Download column, recreated only when the download formats change; `undefined` without download formats. */
+  /** Download column, recreated only when its formats or labels change; `undefined` without download formats. */
   private readonly downloadColumn = computed((): TableColumn<TRow> | undefined => {
     const formats = this.downloadFormats();
-    if (formats === undefined) {
+    const label = this.downloadLabel();
+    // The configuration token defaults `downloadLabel` to `title`, so its check only narrows the type.
+    if (formats === undefined || label === undefined) {
       return undefined;
     }
 
     return {
-      name: '',
+      name: this.downloadColumnLabel(),
       prop: '$$download',
       width: 40,
       flexGrow: 0,
       sortable: false,
+      headerTemplate: KgExplorerDownloadHeaderCellDefinition,
       cellTemplate: KgExplorerDownloadCellDefinition,
       cellConfig: {
         formats,
         download: (item, format) => this.download.emit({ item, format }),
+        ...(typeof label === 'function' ? { labelFn: label } : { labelProp: label }),
       } satisfies KgExplorerDownloadCellConfig<TRow, TFormat>,
     };
   });

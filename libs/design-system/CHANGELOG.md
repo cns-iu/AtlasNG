@@ -1,3 +1,30 @@
+## 0.0.13 (2026-11-18)
+
+### 🚀 Features
+
+- **design-system:** add separator wrap directive for URLs and IDs ([#350](https://github.com/cns-iu/AtlasNG/pull/350))
+- **design-system:** make hardcoded aria labels configurable ([#423](https://github.com/cns-iu/AtlasNG/pull/423))
+- **design-system:** add aria label and description inputs to interactive components ([#422](https://github.com/cns-iu/AtlasNG/pull/422))
+- **cdk:** add announce directive for debounced live announcements ([#432](https://github.com/cns-iu/AtlasNG/pull/432))
+
+### 🩹 Fixes
+
+- **design-system:** small SSR fixes for table and cookie banner ([#437](https://github.com/cns-iu/AtlasNG/pull/437))
+- support server rendering in link handling, search highlights, ids and last modified dates ([#435](https://github.com/cns-iu/AtlasNG/pull/435))
+- **design-system:** show table header hover styles only on hover devices ([#433](https://github.com/cns-iu/AtlasNG/pull/433))
+- **design-system:** name the search list options list ([#414](https://github.com/cns-iu/AtlasNG/pull/414))
+- **design-system:** scroll search list options in a scroll area ([#410](https://github.com/cns-iu/AtlasNG/pull/410))
+- **design-system:** line up end-aligned table headers with their cells ([#415](https://github.com/cns-iu/AtlasNG/pull/415))
+- **design-system:** announce results indicator count changes ([#401](https://github.com/cns-iu/AtlasNG/pull/401))
+- **design-system:** fill results indicators with surface-container-low ([#398](https://github.com/cns-iu/AtlasNG/pull/398))
+- **design-system:** use outline-variant for the version control border ([#393](https://github.com/cns-iu/AtlasNG/pull/393))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- LibbyUX @LibbyUX
+
 ## 0.0.12 (2026-11-13)
 
 ### 🚀 Features
