@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import { Location, PlatformLocation } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import {
   DefaultUrlSerializer,
@@ -29,7 +29,7 @@ describe('RouterlessLinkHandler', () => {
     handler: RouterlessLinkHandler;
   }
 
-  function setup(currentPath = '/current/child?existing=1#old'): TestContext {
+  function setup(currentPath = '/current/child?existing=1#old', hasBrowserLocation = true): TestContext {
     const angularLocation = {
       path: vi.fn().mockReturnValue(currentPath),
       prepareExternalUrl: vi.fn((url: string) => `/base${url}`),
@@ -47,7 +47,8 @@ describe('RouterlessLinkHandler', () => {
       providers: [
         RouterlessLinkHandler,
         { provide: CUSTOM_ELEMENT_REGISTRY, useValue: customElementRegistry },
-        { provide: LOCATION, useValue: browserLocation },
+        { provide: LOCATION, useValue: hasBrowserLocation ? browserLocation : undefined },
+        { provide: PlatformLocation, useValue: { href: `${currentPath}?platform` } },
         { provide: Location, useValue: angularLocation },
         { provide: UrlSerializer, useValue: new DefaultUrlSerializer() },
       ],
@@ -147,6 +148,12 @@ describe('RouterlessLinkHandler', () => {
       expect(shouldContinueNativeNavigation).toBe(true);
       expect(browserLocation.assign).not.toHaveBeenCalled();
       expect(browserLocation.replace).not.toHaveBeenCalled();
+    });
+
+    it('allows native navigation without a browser location', () => {
+      const { handler } = setup('/current', false);
+
+      expect(handler.navigateTo(preparedLink(), new Event('click'), defaultOptions())).toBe(true);
     });
 
     it('assigns browser location for non-anchor hosts', () => {
@@ -407,6 +414,13 @@ describe('RouterlessLinkHandler', () => {
       window.dispatchEvent(new Event('popstate'));
 
       expect(active()).toBe(true);
+    });
+
+    it('compares against the platform location href without a browser location', () => {
+      const { handler } = setup('/server/path', false);
+
+      expect(handler.currentUrl()()).toBe('/server/path?platform');
+      expect(handler.isActive(preparedLink('/server/path'), { paths: 'exact' })()).toBe(true);
     });
 
     it('compares against the injected browser location href', () => {

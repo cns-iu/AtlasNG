@@ -27,11 +27,14 @@ export const WINDOW = new InjectionToken<(Window & typeof globalThis) | undefine
 });
 
 /**
- * Injection token for the current {@link Location} object.
+ * Injection token for the current {@link Location} object, when available.
+ *
+ * Resolves to `DOCUMENT.location`, falling back to the location of {@link WINDOW}, and to `undefined`
+ * when neither is available, for example during server-side rendering.
  */
-export const LOCATION = new InjectionToken<Location>('LOCATION', {
+export const LOCATION = new InjectionToken<Location | undefined>('LOCATION', {
   providedIn: 'root',
-  factory: () => inject(DOCUMENT).location,
+  factory: () => inject(DOCUMENT).location ?? inject(WINDOW)?.location ?? undefined,
 });
 
 /**

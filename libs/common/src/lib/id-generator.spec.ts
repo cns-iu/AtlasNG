@@ -1,4 +1,4 @@
-import { APP_ID } from '@angular/core';
+import { APP_ID, makeStateKey, TransferState } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { IdGenerator, IdGeneratorConfig, provideIdGeneratorConfig } from './id-generator';
 
@@ -51,5 +51,23 @@ describe('IdGenerator', () => {
     const id = generator.getId('field');
 
     expect(id).toBe('field-atlas-0');
+  });
+
+  it('reuses the random infix transferred from the server', () => {
+    const key = makeStateKey<string>('atlasng-id-generator-infix');
+    TestBed.configureTestingModule({
+      providers: [{ provide: APP_ID, useValue: 'ng' }, provideIdGeneratorConfig({ infix: true })],
+    });
+    TestBed.inject(TransferState).set(key, 'abc123');
+    const generator = TestBed.inject(IdGenerator);
+
+    expect(generator.getId('field')).toBe('field-abc123-0');
+  });
+
+  it('stores the random infix for transfer to the browser', () => {
+    const generator = setup({ randomValue: 0.5 });
+    const [, infix] = generator.getId('field').split('-');
+
+    expect(TestBed.inject(TransferState).get(makeStateKey<string>('atlasng-id-generator-infix'), null)).toBe(infix);
   });
 });

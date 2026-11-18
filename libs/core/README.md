@@ -18,7 +18,7 @@ Inject browser globals through tokens instead of referencing them directly. The 
 | ------------------------- | ------------------------------------------------------------------------------ |
 | `DOCUMENT`                | Re-export of Angular's `DOCUMENT` token                                        |
 | `WINDOW`                  | The global `window` object, or `undefined` when none is available              |
-| `LOCATION`                | `document.location`                                                            |
+| `LOCATION`                | `document.location`, or `undefined` when there is no window                    |
 | `LOCAL_STORAGE`           | `localStorage`, or `undefined` when storage is blocked or there is no window   |
 | `SESSION_STORAGE`         | `sessionStorage`, or `undefined` when storage is blocked or there is no window |
 | `SAFE_LOCAL_STORAGE`      | `SafeStorage` wrapping `LOCAL_STORAGE`                                         |
