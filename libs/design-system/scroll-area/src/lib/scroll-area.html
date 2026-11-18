@@ -1,14 +1,36 @@
-<ng-scrollbar
-  class="ang-scroll-area--viewport"
-  appearance="compact"
-  [orientation]="orientation()"
-  [visibility]="visibility()"
-  [position]="position()"
-  (afterInit)="updateFades()"
-  (afterUpdate)="updateFades()"
->
-  <ng-content />
-</ng-scrollbar>
+<ng-template #content><ng-content /></ng-template>
+
+@if (externalViewport(); as viewport) {
+  <ng-scrollbar
+    class="ang-scroll-area--viewport ang-scroll-area--external"
+    appearance="compact"
+    [externalViewport]="viewport"
+    [orientation]="orientation()"
+    [visibility]="visibility()"
+    [position]="position()"
+    (afterInit)="updateFades()"
+    (afterUpdate)="updateFades()"
+    #scrollbar
+  >
+    <ng-container [ngTemplateOutlet]="content" />
+  </ng-scrollbar>
+} @else {
+  <ng-scrollbar
+    class="ang-scroll-area--viewport"
+    appearance="compact"
+    [orientation]="orientation()"
+    [visibility]="visibility()"
+    [position]="position()"
+    (afterInit)="updateFades()"
+    (afterUpdate)="updateFades()"
+    #scrollbar
+  >
+    <ng-container [ngTemplateOutlet]="content" />
+  </ng-scrollbar>
+}
+@if (stickyScrollbar()) {
+  <ang-scroll-area-sticky-scrollbar [viewport]="adapter()" />
+}
 <div class="ang-scroll-area--fade ang-scroll-area--fade-top-overlay" aria-hidden="true"></div>
 <div class="ang-scroll-area--fade ang-scroll-area--fade-bottom-overlay" aria-hidden="true"></div>
 <div class="ang-scroll-area--fade ang-scroll-area--fade-start-overlay" aria-hidden="true"></div>

@@ -15,6 +15,7 @@ import {
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import {
   CellContext,
   DatatableComponent,
@@ -127,7 +128,7 @@ function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TR
  */
 @Component({
   selector: 'ang-table',
-  imports: [DatatableComponent],
+  imports: [DatatableComponent, ScrollArea],
   templateUrl: './table.html',
   styleUrl: './table.scss',
   providers: [{ provide: TABLE, useExisting: forwardRef(() => Table) }],
@@ -159,7 +160,10 @@ export class Table<TRow extends Row = Row> {
    */
   readonly rowHeight = input<TableRowHeight<TRow>, unknown>('auto', { transform: rowHeightAttribute });
 
-  /** Enables horizontal scrolling when columns exceed the available width. */
+  /**
+   * Enables horizontal scrolling when columns exceed the available width. The horizontal scrollbar
+   * stays at the bottom of the window while the table is taller than the screen.
+   */
   readonly scrollbarH = input(true, { transform: booleanAttribute });
 
   /** Selection behavior; omit to disable selection. */

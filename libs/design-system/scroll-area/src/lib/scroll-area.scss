@@ -38,6 +38,16 @@
     }
   }
 
+  // ngx-scrollbar leaves the host of an external viewport unstyled, which would make it inline.
+  > .ang-scroll-area--external {
+    display: block;
+  }
+
+  // A hidden overflow would make the host the scroll container that the sticky scrollbar sticks to.
+  &.ang-scroll-area--sticky {
+    overflow: clip;
+  }
+
   // Sits above the scrolling content but below the scrollbars.
   > .ang-scroll-area--fade {
     position: absolute;

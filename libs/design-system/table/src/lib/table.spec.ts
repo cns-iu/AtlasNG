@@ -1,4 +1,5 @@
 import { Component, signal, ViewEncapsulation, type WritableSignal } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import {
   LinkHandler,
   provideLinkHandler,
@@ -21,6 +22,7 @@ import {
 import type { Row, SelectionType, SortPropDir } from '@swimlane/ngx-datatable';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { NgScrollbarExt, ViewportAdapter } from 'ngx-scrollbar';
 import { SummaryCellTemplateContext } from './definitions/template-context';
 import { SummaryCellDefinition } from './definitions/template-definition';
 import { Table, type TableAppearance, type TableColumn, type TableSummaryPosition } from './table';
@@ -477,6 +479,29 @@ describe('Table', () => {
       expect(estimate).toHaveBeenCalledWith(ROWS[0]);
       expect(screen.getByText('Ada').closest('datatable-body-row')).toHaveStyle({ height: '60px' });
     });
+  });
+
+  it('scrolls the table element in a scroll area', async () => {
+    const { fixture } = await render('<ang-table [rows]="rows" [columns]="columns" />', {
+      imports: [Table],
+      componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS },
+    });
+
+    const scrollbar = fixture.debugElement.query(By.directive(NgScrollbarExt));
+    expect(scrollbar.nativeElement.closest('ang-scroll-area')).toHaveClass('ang-table--scroll-area');
+    expect(scrollbar.injector.get(ViewportAdapter).viewportElement).toBe(screen.getByRole('table'));
+    expect(screen.getByRole('table')).toHaveAttribute('orientation', 'auto');
+    expect(scrollbar.nativeElement.closest('ang-scroll-area')).toHaveClass('ang-scroll-area--sticky');
+  });
+
+  it('only scrolls vertically without horizontal scrolling', async () => {
+    const { fixture } = await render('<ang-table scrollbarH="false" [rows]="rows" [columns]="columns" />', {
+      imports: [Table],
+      componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS },
+    });
+
+    expect(screen.getByRole('table')).toHaveAttribute('orientation', 'vertical');
+    expect(fixture.nativeElement.querySelector('.ang-table--scroll-area')).not.toHaveClass('ang-scroll-area--sticky');
   });
 
   it('forwards aria attributes to the table element', async () => {

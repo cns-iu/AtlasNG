@@ -1,0 +1,26 @@
+// Overlays the bottom of the scroll area's viewport, where the viewport's own horizontal scrollbar
+// would be, and sticks to the bottom of the scrolling ancestor while the rest of the scroll area is
+// below it. The scroll area sets the ngx-scrollbar variables that size the scrollbar.
+.ang-scroll-area-sticky-scrollbar {
+  $height: calc(var(--scrollbar-track-thickness) + 2 * var(--scrollbar-container-offset));
+
+  display: block;
+  position: sticky;
+  inset-block-end: 0;
+  // Above the scroll area's fades.
+  z-index: 3;
+  flex: none;
+  height: $height;
+  margin-block-start: calc(-1 * $height);
+  pointer-events: none;
+
+  // Only the scrollbar itself takes pointer events, so the content beneath stays clickable.
+  > .ng-scrollbar {
+    height: 100%;
+    pointer-events: none;
+  }
+}
+
+.ang-scroll-area-sticky-scrollbar--viewport > .ng-scroll-content > scrollbars > scrollbar-x {
+  display: none;
+}

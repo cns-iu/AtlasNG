@@ -21,16 +21,61 @@
 
 .ang-table {
   display: block;
-  overflow: hidden;
+  isolation: isolate;
+  // A hidden overflow would keep the sticky horizontal scrollbar from sticking to the page.
+  overflow: clip;
 
-  .ang-table--datatable,
+  // The scroll area's viewport is ngx-datatable's own scroller, `.datatable-grid`,
+  // so the max height is passed down through every element in between.
+  > .ang-table--scroll-area {
+    max-height: inherit;
+    // Cells are transparent by default, so the table keeps showing the surface it sits on.
+    background-color: transparent;
+
+    > .ang-scroll-area--viewport,
+    > .ang-scroll-area--viewport > .ang-table--datatable {
+      max-height: inherit;
+    }
+
+    // Rows scrolled up slide beneath the sticky header, which marks the top edge instead.
+    > .ang-scroll-area--fade-top-overlay {
+      display: none;
+    }
+
+    // Sits above the sticky header (z-index 11) and below the scrollbars (z-index 100).
+    > .ang-scroll-area--fade {
+      z-index: 12;
+    }
+
+    > .ang-scroll-area-sticky-scrollbar {
+      z-index: 13;
+    }
+  }
+
+  // ngx-datatable and ngx-scrollbar's content wrapper are both stacking contexts, which would keep
+  // the scrollbars below the fades. The table host isolates the flattened z-indexes from the page.
+  .ang-table--datatable {
+    transform: none;
+  }
+
   .datatable-wrapper,
   .datatable-grid {
     max-height: inherit;
   }
 
-  .datatable-grid {
+  // ngx-scrollbar moves the header and body into a content wrapper inside `.datatable-grid`,
+  // so the wrapper takes over ngx-datatable's grid to keep them laid out as grid items.
+  // The extra parent selector outranks ngx-datatable's own grid styles, which load later.
+  .datatable-wrapper > .datatable-grid {
+    display: block;
     flex-basis: auto !important;
+
+    > .ng-scroll-content {
+      display: grid;
+      grid-template-columns: var(--ngx-datatable-grid-template-columns, auto);
+      grid-template-rows: auto 1fr;
+      z-index: auto;
+    }
   }
 
   .datatable-header-cell.sortable {

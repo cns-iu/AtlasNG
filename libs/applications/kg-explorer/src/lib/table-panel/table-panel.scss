@@ -63,8 +63,9 @@ $text-cell-padding: 0.5rem;
 
   // The datatable sizes its columns from its host's width, so the host keeps
   // the side spacing as margins. Its horizontal scroller, `.datatable-grid`,
-  // extends back to the panel's edges and holds the spacing as padding, so
-  // columns scroll to the screen edge instead of being cut off at the spacing.
+  // extends back to the panel's edges and its content wrapper holds the spacing
+  // as padding, so columns scroll to the screen edge instead of being cut off at
+  // the spacing.
   .ang-kg-explorer-table-panel--table {
     .ngx-datatable {
       @include side-space(margin-inline);
@@ -73,8 +74,11 @@ $text-cell-padding: 0.5rem;
 
     .datatable-grid {
       @include side-space(margin-inline, -1);
-      @include side-space(padding-inline);
       max-inline-size: none;
+
+      > .ng-scroll-content {
+        @include side-space(padding-inline);
+      }
     }
 
     @include table.overrides(

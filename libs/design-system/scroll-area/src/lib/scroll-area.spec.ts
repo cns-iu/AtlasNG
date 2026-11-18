@@ -1,8 +1,15 @@
 import { signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { fireEvent, render, screen } from '@testing-library/angular';
-import { NgScrollbar, type ScrollbarOrientation, type ScrollbarVisibility } from 'ngx-scrollbar';
+import {
+  NgScrollbar,
+  NgScrollbarExt,
+  type ScrollbarOrientation,
+  type ScrollbarVisibility,
+  ViewportAdapter,
+} from 'ngx-scrollbar';
 import { ScrollArea } from './scroll-area';
+import { ScrollAreaStickyScrollbar } from './scroll-area-sticky-scrollbar/scroll-area-sticky-scrollbar';
 
 describe('ScrollArea', () => {
   it('renders projected content inside the host', async () => {
@@ -153,6 +160,62 @@ describe('ScrollArea', () => {
     fixture.detectChanges();
 
     expect(screen.queryByRole('region')).not.toBeInTheDocument();
+  });
+
+  describe('external viewport', () => {
+    const template = `
+      <ang-scroll-area externalViewport=".list" aria-label="Ignored">
+        <div class="list" role="list" aria-label="Items"><p role="listitem">Item</p></div>
+      </ang-scroll-area>`;
+
+    it('scrolls an element of the projected content instead of wrapping it', async () => {
+      const { fixture } = await render(template, { imports: [ScrollArea] });
+
+      const scrollbar = fixture.debugElement.query(By.directive(NgScrollbarExt));
+      expect(scrollbar.nativeElement).toHaveClass('ang-scroll-area--viewport');
+      expect(scrollbar.injector.get(ViewportAdapter).viewportElement).toBe(screen.getByRole('list'));
+      expect(screen.getByRole('listitem')).toHaveTextContent('Item');
+    });
+
+    it('keeps the semantics of the external viewport', async () => {
+      await render(template, { imports: [ScrollArea] });
+
+      expect(screen.getByRole('list', { name: 'Items' })).not.toHaveAttribute('tabindex');
+      expect(screen.queryByRole('region')).not.toBeInTheDocument();
+    });
+
+    it('fades the edges of the external viewport as it scrolls', async () => {
+      const { fixture } = await render(template, { imports: [ScrollArea] });
+      const host = fixture.debugElement.query(By.directive(ScrollArea)).nativeElement as HTMLElement;
+      const viewport = screen.getByRole('list');
+      Object.defineProperty(viewport, 'scrollWidth', { configurable: true, value: 800 });
+      Object.defineProperty(viewport, 'clientWidth', { configurable: true, value: 400 });
+
+      viewport.scrollLeft = 200;
+      fireEvent.scroll(viewport);
+      fixture.detectChanges();
+
+      expect(host).toHaveClass('ang-scroll-area--fade-start');
+      expect(host).toHaveClass('ang-scroll-area--fade-end');
+    });
+  });
+
+  it('adds a sticky horizontal scrollbar for the viewport', async () => {
+    const { fixture } = await render('<ang-scroll-area stickyScrollbar>Content</ang-scroll-area>', {
+      imports: [ScrollArea],
+    });
+
+    const host = fixture.debugElement.query(By.directive(ScrollArea));
+    const sticky = host.query(By.directive(ScrollAreaStickyScrollbar)).componentInstance as ScrollAreaStickyScrollbar;
+    const viewport = host.query(By.css('.ang-scroll-area--viewport')).injector.get(ViewportAdapter);
+    expect(host.nativeElement).toHaveClass('ang-scroll-area--sticky');
+    expect(sticky.viewport()).toBe(viewport);
+  });
+
+  it('has no sticky scrollbar by default', async () => {
+    const { fixture } = await render('<ang-scroll-area>Content</ang-scroll-area>', { imports: [ScrollArea] });
+
+    expect(fixture.debugElement.query(By.directive(ScrollAreaStickyScrollbar))).toBeNull();
   });
 
   it('labels the region with aria-labelledby', async () => {

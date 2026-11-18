@@ -1,27 +1,34 @@
-<ngx-datatable
-  class="ang-table--datatable"
-  checkRowListChanges="false"
-  checkRowPropertyChanges="false"
-  columnMode="flex"
-  enableClearingSortState="true"
-  headerHeight="auto"
-  reorderable="false"
-  scrollbarVDynamic="true"
-  virtualization="true"
-  [scrollbarV]="rowHeight() !== 'auto'"
-  [columns]="resolvedColumns()"
-  [rows]="rows()"
-  [rowHeight]="rowHeight()"
-  [scrollbarH]="scrollbarH()"
-  [selectionType]="selectionType()"
-  [sortType]="sortType()"
-  [summaryRow]="summaryRow()"
-  [summaryHeight]="resolvedSummaryHeight()"
-  [summaryPosition]="summaryPosition()"
-  [(selected)]="selected"
-  [(sorts)]="sorts"
+<ang-scroll-area
+  class="ang-table--scroll-area"
+  externalViewport=".datatable-grid"
+  [orientation]="scrollbarH() ? 'auto' : 'vertical'"
+  [stickyScrollbar]="scrollbarH()"
 >
-  <ng-content select="[empty-content]" ngProjectAs="[empty-content]">
-    <!-- TODO default empty state -->
-  </ng-content>
-</ngx-datatable>
+  <ngx-datatable
+    class="ang-table--datatable"
+    checkRowListChanges="false"
+    checkRowPropertyChanges="false"
+    columnMode="flex"
+    enableClearingSortState="true"
+    headerHeight="auto"
+    reorderable="false"
+    scrollbarVDynamic="true"
+    virtualization="true"
+    [scrollbarV]="rowHeight() !== 'auto'"
+    [columns]="resolvedColumns()"
+    [rows]="rows()"
+    [rowHeight]="rowHeight()"
+    [scrollbarH]="scrollbarH()"
+    [selectionType]="selectionType()"
+    [sortType]="sortType()"
+    [summaryRow]="summaryRow()"
+    [summaryHeight]="resolvedSummaryHeight()"
+    [summaryPosition]="summaryPosition()"
+    [(selected)]="selected"
+    [(sorts)]="sorts"
+  >
+    <ng-content select="[empty-content]" ngProjectAs="[empty-content]">
+      <!-- TODO default empty state -->
+    </ng-content>
+  </ngx-datatable>
+</ang-scroll-area>
