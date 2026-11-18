@@ -17,7 +17,8 @@ import { KgExplorerTableToolbar } from '../table-toolbar/table-toolbar';
  * changing it does not rebuild the search index and suggestions only come from
  * rows that pass it.
  *
- * Projected content, such as a footer, is rendered at the end of the table.
+ * Projected content, such as a footer, is rendered after the table and spans
+ * the panel's full width.
  */
 @Component({
   selector: 'ang-kg-explorer-table-panel',

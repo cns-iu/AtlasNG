@@ -130,7 +130,7 @@ The filter drawer has no built-in trigger. Add a button that toggles `[(filtersO
 | `[(filtersOpen)]`                 | Whether the filter drawer is open below the dock breakpoint. |
 | `(download)`                      | Emits `{ item, format }` when a user downloads a row.        |
 
-Content projected into the table view, such as a footer, renders after the table and the end-of-results indicator, and scrolls with them:
+Content projected into the table view, such as a footer, renders after the table and the end-of-results indicator, spans the full width beside the filter menu, and scrolls with them:
 
 ```html
 <ang-kg-explorer-table-view [items]="items" [columns]="columns">

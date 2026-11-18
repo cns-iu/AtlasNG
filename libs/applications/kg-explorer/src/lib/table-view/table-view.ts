@@ -29,8 +29,8 @@ type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: Sear
  * docked from the `filtersDockBreakpoint` of {@link config} up (the large
  * breakpoint by default) and becomes a drawer controlled by {@link filtersOpen}
  * on smaller screens; `ang-kg-explorer-filter-toggle` opens and closes it.
- * Projected content, such as a footer, is rendered at the end of the table and
- * scrolls with it.
+ * Projected content, such as a footer, is rendered after the table, spans the
+ * width beside the filter menu, and scrolls with it.
  *
  * Search, download, and visibility options are set through {@link config},
  * which is merged over the defaults provided with `provideKgExplorerTableView`.
