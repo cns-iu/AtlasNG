@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { render, screen } from '@testing-library/angular';
 import { highlightSegments, SearchHighlight } from './highlight';
 import { SearchRange } from '../engine/types';
@@ -39,12 +40,17 @@ describe('highlightSegments', () => {
 });
 
 describe('SearchHighlight', () => {
-  async function setup(text: string, ranges?: readonly SearchRange[]) {
+  async function setup(
+    text: string,
+    ranges?: readonly SearchRange[],
+    { platform = 'browser', content = 'stale' }: { platform?: string; content?: string } = {},
+  ) {
     return render(
-      `<span data-testid="host" [angSearchHighlight]="text" [angSearchHighlightRanges]="ranges">stale</span>`,
+      `<span data-testid="host" [angSearchHighlight]="text" [angSearchHighlightRanges]="ranges">${content}</span>`,
       {
         imports: [SearchHighlight],
         componentProperties: { text, ranges },
+        providers: [{ provide: PLATFORM_ID, useValue: platform }],
       },
     );
   }
@@ -74,5 +80,16 @@ describe('SearchHighlight', () => {
     expect(host).toHaveTextContent(/^Kidney$/);
     expect(screen.queryByText('H')).not.toBeInTheDocument();
     expect(screen.queryAllByRole('mark')).toHaveLength(0);
+  });
+
+  it('keeps template content on the server', async () => {
+    await setup('Left Kidney', [[5, 8]], { platform: 'server' });
+    expect(screen.getByTestId('host')).toHaveTextContent(/^stale$/);
+  });
+
+  it('renders into an empty host on the server', async () => {
+    await setup('Left Kidney', [[5, 8]], { platform: 'server', content: '' });
+    expect(screen.getByTestId('host')).toHaveTextContent('Left Kidney');
+    expect(screen.getByText('Kid').tagName).toBe('MARK');
   });
 });
