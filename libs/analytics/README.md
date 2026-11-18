@@ -177,7 +177,21 @@ The quickest way to track interactions is with the directives for the built-in e
 <input angTrackInput angTrackInputOn="change" />
 ```
 
-Each directive accepts an optional payload, an `…On` input to override the DOM trigger events, an `…Options` input that is passed to the backend, and a `…Disabled` input.
+Each directive accepts an optional payload, an `…On` input to override the triggers, an `…Options` input that is passed to the backend, and a `…Disabled` input. `TrackChange`, `TrackInput`, `TrackEvent`, and `MultiTrackEvent` also accept a `…Debounce` delay in milliseconds.
+
+`…On` takes a DOM event name, an array of names, or a record of triggers. In a record, `true` listens for the DOM event of that name and a source, such as a component output or an observable, is subscribed to. This tracks components that report interactions through outputs instead of DOM events, such as Angular Material selects. Setting `…On` replaces the default trigger, so list DOM events in the record to keep them. Source emissions are not sent with the event.
+
+```html
+<mat-select #select angTrackChange [angTrackChangeOn]="{ selectionChange: select.selectionChange }" />
+<input
+  angTrackChange
+  [angTrackChangeOn]="{ change: true, optionSelected: auto.optionSelected }"
+  [matAutocomplete]="auto"
+/>
+<input angTrackInput angTrackInputDebounce="500" />
+```
+
+Custom directives can reuse the same behavior with `initializeTrackEvent({ event, payload, options, on, debounce, disabled })`, or with `initializeTrackEvent(this)` when the directive's members match those names. Pass `{ injector }` as the second argument to call it outside an injection context.
 
 Group events with scopes. A scope is set in a template with `angEventScope` or in a component with `provideEventScope()`; nested scopes are joined with dots, starting from `rootScope` (or `appName`) in the analytics configuration. Directive-tracked events report the full scope path in their `path` property.
 
@@ -198,6 +212,16 @@ const analytics = inject(Analytics);
 
 analytics.trackPageView();
 analytics.trackEvent(CoreEvents.Click, { target: 'download' });
+```
+
+When neither DOM events nor outputs on the element fit, for example a directive that listens on an ancestor element, use `injectTrackEvent()`. It adds the current scope path, like the directives do:
+
+```ts
+readonly #track = injectTrackEvent();
+
+protected sort(event: Event): void {
+  this.#track(CoreEvents.Click, { trigger: event.type, triggerData: event });
+}
 ```
 
 ### Creating custom events

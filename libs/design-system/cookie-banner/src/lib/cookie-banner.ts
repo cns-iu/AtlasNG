@@ -19,7 +19,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { provideEventScope, TrackClick } from '@atlasng/analytics';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { IdGenerator } from '@atlasng/common';
 import { RESIZE_OBSERVER } from '@atlasng/core';
 
@@ -140,10 +140,32 @@ export class CookieBannerContainer {
  *
  * Supports projected title/description/action content, emits user intent events,
  * and can auto-close when users activate action buttons.
+ *
+ * With server-side rendering, stored consent (for example in `AnalyticsPermissionsManager`, which
+ * reads `localStorage`) is only known in the browser, so a banner opened by default appears in the
+ * server HTML and may close again right after hydration. Render it closed or not at all on the
+ * server, and open it in the browser once consent is known.
+ *
+ * @example
+ * ```ts
+ * @Component({
+ *   imports: [CookieBanner],
+ *   template: `@if (showBanner()) { <ang-cookie-banner /> }`,
+ * })
+ * export class App {
+ *   readonly #permissions = inject(AnalyticsPermissionsManager);
+ *   readonly #rendered = signal(false);
+ *   protected readonly showBanner = computed(() => this.#rendered() && !this.#permissions.hasDecision());
+ *
+ *   constructor() {
+ *     afterNextRender(() => this.#rendered.set(true));
+ *   }
+ * }
+ * ```
  */
 @Component({
   selector: 'ang-cookie-banner',
-  imports: [MatButton, TrackClick],
+  imports: [EventScope, MatButton, TrackClick],
   templateUrl: './cookie-banner.html',
   styleUrl: './cookie-banner.scss',
   providers: [provideEventScope('cookie-banner')],

@@ -5,6 +5,7 @@ import { MatMenu, MatMenuContent, MatMenuItem, MatMenuTrigger } from '@angular/m
 import { MatTooltip } from '@angular/material/tooltip';
 import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
+import type { RequireExactlyOne, Simplify } from 'type-fest';
 
 /**
  * File formats a row can be downloaded in: the same formats for every row, or
@@ -16,23 +17,32 @@ export type KgExplorerDownloadFormats<
 > = readonly TFormat[] | ((row: TRow) => readonly TFormat[]);
 
 /** Configuration for the download cell definition. */
-export interface KgExplorerDownloadCellConfig<
+export type KgExplorerDownloadCellConfig<
   TRow extends Row = Row,
   TFormat extends VersionControlFileFormat = VersionControlFileFormat,
-> {
-  /**
-   * File formats offered for a row. A function is called while rendering, so
-   * it should be cheap and return the same array for an unchanged row.
-   */
-  formats: KgExplorerDownloadFormats<TRow, TFormat>;
-  /**
-   * Invoked when a user picks a file format for a row.
-   *
-   * @param row Row the user chose to download.
-   * @param format File format the user picked.
-   */
-  download: (row: TRow, format: TFormat) => void;
-}
+> = Simplify<
+  RequireExactlyOne<
+    {
+      /** Row property whose string value names the row in the button labels. */
+      labelProp: keyof TRow;
+      /** Function that derives the row name announced in the button labels. */
+      labelFn: (row: TRow) => string;
+      /**
+       * File formats offered for a row. A function is called while rendering, so
+       * it should be cheap and return the same array for an unchanged row.
+       */
+      formats: KgExplorerDownloadFormats<TRow, TFormat>;
+      /**
+       * Invoked when a user picks a file format for a row.
+       *
+       * @param row Row the user chose to download.
+       * @param format File format the user picked.
+       */
+      download: (row: TRow, format: TFormat) => void;
+    },
+    'labelFn' | 'labelProp'
+  >
+>;
 
 /**
  * Reusable body cell with a download icon button. A row with several formats
@@ -62,6 +72,9 @@ export class KgExplorerDownloadCellDefinition<
   /** Resolves the file formats offered for a row. */
   protected readonly getFormats = this.#createFormatsAccessor();
 
+  /** Resolves the name of a row, used in the accessible names of its download button. */
+  protected readonly getName = this.#createNameAccessor();
+
   /**
    * Creates the accessor for the formats of a row from the configured formats.
    *
@@ -74,5 +87,20 @@ export class KgExplorerDownloadCellDefinition<
 
     const formats = this.config.formats;
     return () => formats;
+  }
+
+  /**
+   * Creates the accessor for the name of a row from the configured label strategy.
+   *
+   * @returns The configured function, or a function reading the configured row property.
+   */
+  #createNameAccessor(): (row: TRow) => string {
+    const { config } = this;
+    if (config.labelFn !== undefined) {
+      return config.labelFn;
+    }
+
+    const { labelProp } = config;
+    return (row: TRow) => String(row[labelProp] ?? '');
   }
 }

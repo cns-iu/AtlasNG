@@ -8,7 +8,13 @@
       (removed)="removed.emit(option)"
     >
       {{ option.label }}
-      <button type="button" matChipRemove [attr.aria-label]="`${removeLabel()} ${option.label}`">
+      <button
+        type="button"
+        matChipRemove
+        angEventScope="remove-filter"
+        angTrackClick
+        [attr.aria-label]="`${removeLabel()} ${option.label}`"
+      >
         <mat-icon fontIcon="cancel" />
       </button>
     </mat-chip>

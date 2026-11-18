@@ -1,4 +1,4 @@
-import { DOCUMENT, LocationStrategy } from '@angular/common';
+import { LocationStrategy, PlatformLocation } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
 import { LinkHandler } from '@atlasng/common';
@@ -20,8 +20,8 @@ export class LastModifiedDates {
   /** Client used to load dates files. */
   readonly #http = inject(HttpClient);
 
-  /** Document whose base URL the current URL is resolved against. */
-  readonly #document = inject(DOCUMENT);
+  /** Platform location whose URL the current URL is resolved against; the request URL during server rendering. */
+  readonly #platformLocation = inject(PlatformLocation);
 
   /** Strategy providing the application base href. */
   readonly #locationStrategy = inject(LocationStrategy);
@@ -99,9 +99,9 @@ export class LastModifiedDates {
    * @returns The path with its matrix parameters, for example `dataset/heart;v=2` for the base `/app/`.
    */
   #toPath(url: string): string {
-    const { baseURI } = this.#document;
-    const { pathname } = new URL(url, baseURI);
-    const basePath = new URL(this.#locationStrategy.getBaseHref(), baseURI).pathname.replace(/\/?$/, '/');
+    const { href } = this.#platformLocation;
+    const { pathname } = new URL(url, href);
+    const basePath = new URL(this.#locationStrategy.getBaseHref(), href).pathname.replace(/\/?$/, '/');
     return pathname.startsWith(basePath) ? pathname.slice(basePath.length) : pathname;
   }
 }

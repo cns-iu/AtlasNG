@@ -25,6 +25,8 @@ export interface AngIconsOptions {
    * URL of `sprite.svg` from `@atlasng/icons`, copied into the application's assets.
    * When set, every icon in the sprite is available as `svgIcon="<namespace>:<name>"`.
    * The sprite is fetched lazily with `HttpClient` the first time an icon is requested.
+   * With server-side rendering, the server fetches it as well, resolving a relative URL against the request URL;
+   * use an absolute URL when the server cannot reach the sprite there.
    */
   spriteUrl?: string;
   /**

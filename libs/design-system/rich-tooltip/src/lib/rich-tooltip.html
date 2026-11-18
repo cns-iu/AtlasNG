@@ -20,7 +20,7 @@
     @if (customActions().length || actionLabel()) {
       <div class="ang-rich-tooltip--actions">
         <ng-content select="ang-rich-tooltip-action, [angRichTooltipAction]">
-          <button matButton type="button" class="ang-rich-tooltip--action" (click)="actionClick.emit()">
+          <button matButton angTrackClick type="button" class="ang-rich-tooltip--action" (click)="actionClick.emit()">
             {{ actionLabel() }}
           </button>
         </ng-content>

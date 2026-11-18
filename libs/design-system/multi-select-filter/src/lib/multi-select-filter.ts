@@ -21,7 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { provideEventScope, TrackClick } from '@atlasng/analytics';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { watchBreakpoint } from '@atlasng/cdk';
 import { IdGenerator } from '@atlasng/common';
 import { RichTooltip, RichTooltipTrigger } from '@atlasng/design-system/rich-tooltip';
@@ -63,6 +63,7 @@ const SEARCH_FIELD_INSET = 16;
     RichTooltipTrigger,
     ScrollArea,
     SearchList,
+    EventScope,
     TrackClick,
   ],
   templateUrl: './multi-select-filter.html',

@@ -1,5 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { booleanAttribute, Component, Directive, input } from '@angular/core';
+import { provideEventScope } from '@atlasng/analytics';
 
 /**
  * Marks an element for projection into a brand profile card's action area.
@@ -22,6 +23,7 @@ export class BrandProfileCardAction {}
   imports: [NgOptimizedImage],
   templateUrl: './brand-profile-card.html',
   styleUrl: './brand-profile-card.scss',
+  providers: [provideEventScope('brand-profile-card')],
   host: {
     class: 'ang-brand-profile-card',
     '[class.ang-brand-profile-card--centered]': 'centered()',

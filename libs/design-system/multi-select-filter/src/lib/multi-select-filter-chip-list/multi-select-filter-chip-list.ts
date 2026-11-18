@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { MatChip, MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { EventScope, TrackClick } from '@atlasng/analytics';
 import { SearchListOption } from '@atlasng/design-system/search-list';
 
 /**
@@ -22,7 +23,7 @@ import { SearchListOption } from '@atlasng/design-system/search-list';
  */
 @Component({
   selector: 'ang-multi-select-filter-chip-list',
-  imports: [MatChipsModule, MatIconModule],
+  imports: [EventScope, MatChipsModule, MatIconModule, TrackClick],
   templateUrl: './multi-select-filter-chip-list.html',
   styleUrl: './multi-select-filter-chip-list.scss',
   encapsulation: ViewEncapsulation.None,

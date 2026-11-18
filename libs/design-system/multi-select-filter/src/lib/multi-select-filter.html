@@ -5,6 +5,7 @@
       type="button"
       class="ang-multi-select-filter--info"
       matIconButton
+      angEventScope="info"
       angTrackClick
       [attr.aria-label]="resolvedInfoButtonLabel()"
       [matTooltip]="infoTooltip()"
@@ -20,6 +21,7 @@
     type="button"
     class="ang-multi-select-filter--label"
     matButton
+    angEventScope="toggle"
     angTrackClick
     aria-haspopup="dialog"
     [attr.aria-expanded]="expanded()"

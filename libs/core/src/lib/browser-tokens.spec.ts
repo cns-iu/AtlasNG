@@ -79,6 +79,22 @@ describe('browser tokens', () => {
 
       expect(TestBed.inject(LOCATION)).toBe(fakeLocation);
     });
+
+    it('should fall back to the window location', () => {
+      const fakeLocation = { href: 'https://atlasng.dev' } as Location;
+      const fakeWindow = { location: fakeLocation } as Window;
+
+      configureDocument({ defaultView: fakeWindow, location: null } as unknown as Document);
+
+      expect(TestBed.inject(LOCATION)).toBe(fakeLocation);
+    });
+
+    it('should return undefined when no window is available', () => {
+      vi.stubGlobal('window', undefined);
+      configureDocument({ defaultView: null, location: null } as unknown as Document);
+
+      expect(TestBed.inject(LOCATION)).toBeUndefined();
+    });
   });
 
   describe('CUSTOM_ELEMENT_REGISTRY', () => {

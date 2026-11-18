@@ -3,7 +3,7 @@ import { Component, computed, inject, input, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { EventScope, TrackClick } from '@atlasng/analytics';
+import { EventScope, TrackChange, TrackClick } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { IdGenerator } from '@atlasng/common';
 import { CookiePermissionProvider, ProviderList } from '../provider-list/provider-list';
@@ -38,7 +38,7 @@ export interface CookiePermissionInfo {
  */
 @Component({
   selector: 'ang-cookie-permission-item',
-  imports: [MatButtonModule, MatIconModule, MatSlideToggleModule, ProviderList, EventScope, TrackClick],
+  imports: [MatButtonModule, MatIconModule, MatSlideToggleModule, ProviderList, EventScope, TrackChange, TrackClick],
   templateUrl: './cookie-permission-item.html',
   styleUrl: './cookie-permission-item.scss',
   host: {

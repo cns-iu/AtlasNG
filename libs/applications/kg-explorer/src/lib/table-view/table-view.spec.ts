@@ -70,6 +70,7 @@ describe('KgExplorerTableView', () => {
     const user = userEvent.setup();
     const download = vi.fn();
     const state = new BehaviorSubject<BreakpointState>({ matches: docked, breakpoints: {} });
+    const observer = { observe: vi.fn(() => state), isMatched: vi.fn(() => state.value.matches) };
     const result = await render(KgExplorerTableView<TestItem>, {
       inputs: {
         items: ITEMS,
@@ -79,10 +80,10 @@ describe('KgExplorerTableView', () => {
         ...inputs,
       },
       on: { download },
-      providers: [{ provide: BreakpointObserver, useValue: { observe: () => state } }, ...providers],
+      providers: [{ provide: BreakpointObserver, useValue: observer }, ...providers],
     });
 
-    return { ...result, user, download, state };
+    return { ...result, user, download, state, observer };
   }
 
   it('renders the filter menu and the results table', async () => {
@@ -95,8 +96,7 @@ describe('KgExplorerTableView', () => {
   it('emits a download request for the picked row and format', async () => {
     const { user, download } = await setup();
 
-    const [button] = await screen.findAllByRole('button', { name: 'Choose download format' });
-    await user.click(button);
+    await user.click(await screen.findByRole('button', { name: `Choose download format for ${ITEMS[0].title}` }));
     await user.click(await screen.findByRole('menuitem', { name: new RegExp(CSV_FILE_FORMAT.label) }));
 
     expect(download).toHaveBeenCalledWith({ item: ITEMS[0], format: CSV_FILE_FORMAT });
@@ -112,11 +112,46 @@ describe('KgExplorerTableView', () => {
   it('offers the download formats of each row', async () => {
     const { user, download } = await setup({ config: { downloadFormats: (item: TestItem) => item.formats } });
 
-    expect(await screen.findByRole('button', { name: 'Choose download format' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'No downloads available' })).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: `Download ${CSV_FILE_FORMAT.label}` }));
+    expect(
+      await screen.findByRole('button', { name: `Choose download format for ${ITEMS[0].title}` }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: `No downloads available for ${ITEMS[2].title}` })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: `Download ${CSV_FILE_FORMAT.label} for ${ITEMS[1].title}` }));
 
     expect(download).toHaveBeenCalledWith({ item: ITEMS[1], format: CSV_FILE_FORMAT });
+  });
+
+  it('names the download column header without showing it', async () => {
+    await setup();
+
+    const header = await screen.findByRole('columnheader', { name: 'Download' });
+    expect(within(header).getByText('Download')).toHaveClass('cdk-visually-hidden');
+  });
+
+  it('uses the configured download labels', async () => {
+    await setup({
+      config: {
+        downloadFormats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
+        downloadColumnLabel: 'Files',
+        downloadLabel: 'type',
+      },
+    });
+
+    expect(await screen.findByRole('columnheader', { name: 'Files' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: `Choose download format for ${ITEMS[0].type}` })).toBeInTheDocument();
+  });
+
+  it('names the download buttons with a label function', async () => {
+    await setup({
+      config: {
+        downloadFormats: [CSV_FILE_FORMAT, JSON_FILE_FORMAT],
+        downloadLabel: (item: TestItem) => `${item.title} (${item.type})`,
+      },
+    });
+
+    expect(
+      await screen.findByRole('button', { name: `Choose download format for ${ITEMS[0].title} (${ITEMS[0].type})` }),
+    ).toBeInTheDocument();
   });
 
   it('uses the provided configuration as defaults', async () => {
@@ -260,6 +295,28 @@ describe('KgExplorerTableView', () => {
     const { fixture } = await setup({ filtersOpen: true }, false);
 
     expect(fixture.componentInstance.filtersOpen()).toBe(true);
+  });
+
+  it('docks the filter menu from the large breakpoint by default', async () => {
+    const { observer } = await setup();
+
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 1280px)']);
+  });
+
+  it('docks the filter menu from the configured breakpoint', async () => {
+    const { observer, rerender, fixture } = await setup({ config: { filtersDockBreakpoint: 'x-large' } });
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 1920px)']);
+
+    await rerender({ inputs: { config: { filtersDockBreakpoint: 'medium' } }, partialUpdate: true });
+    await fixture.whenStable();
+    expect(observer.observe).toHaveBeenCalledWith(['(min-width: 960px)']);
+  });
+
+  it('docks the filter menu at every width for a breakpoint starting at zero', async () => {
+    const { fixture, observer } = await setup({ config: { filtersDockBreakpoint: 'x-small' } }, false);
+
+    expect(fixture.componentInstance.filtersOpen()).toBe(true);
+    expect(observer.observe).not.toHaveBeenCalledWith([expect.stringContaining('min-width')]);
   });
 
   it('clears the search from the no results indicator', async () => {
