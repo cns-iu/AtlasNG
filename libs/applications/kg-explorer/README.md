@@ -67,7 +67,7 @@ The table view grows to fit its rows, so the page scrolls it. Give it a minimum 
 
 Text links, such as the cells of `kgExplorerLinkColumn` columns, use the theme's `primary` color. Set `--ang-kg-explorer-table-view-link-color` to change it.
 
-The filter menu sticks to the top of the window while the page scrolls. Set `--ang-kg-explorer-table-view-filters-offset` to the height of a sticky page header (for example, `3.5rem`) to keep the menu below it.
+The filter menu and the table's column headers stick to the top of the window while the page scrolls, and the table's horizontal scrollbar sticks to the bottom. Set `--ang-kg-explorer-table-view-filters-offset` to the height of a sticky page header (for example, `3.5rem`) to keep the menu and the column headers below it.
 
 ### Data and columns
 

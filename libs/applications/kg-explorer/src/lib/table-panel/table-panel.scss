@@ -100,6 +100,7 @@ $text-cell-padding: 0.5rem;
       padding-block: 2.5rem;
     }
 
+    // The rule sits on the cells, since the header's top fade starts at the header's bottom edge.
     .datatable-header {
       @include table.overrides(
         (
@@ -107,7 +108,9 @@ $text-cell-padding: 0.5rem;
         )
       );
 
-      border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+      .datatable-header-cell {
+        border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+      }
     }
 
     .datatable-body-row {

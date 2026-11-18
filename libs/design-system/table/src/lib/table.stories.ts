@@ -172,6 +172,35 @@ export const WithManyRows: Story = {
   },
 };
 
+/**
+ * Table that grows with its rows in a page that scrolls. The header sticks below the page's sticky
+ * header, which the `header-offset` token is set to, and the horizontal scrollbar sticks to the
+ * bottom of the window while any of the table is in view.
+ */
+export const InScrollingPage: Story = {
+  args: {
+    rows: MANY_ROWS,
+  },
+  parameters: {
+    layout: 'fullscreen',
+  },
+  render: (args) => ({
+    props: args,
+    template: `
+      <header
+        style="position: sticky; top: 0; z-index: 1; display: flex; align-items: center; height: 56px;
+          padding-inline: 16px; background: var(--mat-sys-surface-container); color: var(--mat-sys-on-surface);
+          font: var(--mat-sys-title-medium);"
+      >
+        Page header
+      </header>
+      <div style="max-width: 800px; padding: 16px;">
+        <ang-table style="--ang-table-header-offset: 56px;" ${argsToTemplate(args)} />
+      </div>
+    `,
+  }),
+};
+
 /** Frozen left and right columns that stay in place while the center columns scroll horizontally. */
 export const WithFrozenColumns: Story = {
   args: {

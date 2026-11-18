@@ -27,6 +27,7 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { Simplify } from 'type-fest';
+import { StickyHeader } from './behaviors/sticky-header';
 import {
   CellDefinition,
   HeaderCellDefinition,
@@ -125,10 +126,15 @@ function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TR
 /**
  * AtlasNG data table with curated appearance, sorting, selection, reusable
  * templates, and virtualization behavior.
+ *
+ * Columns wider than the table scroll sideways in a scroll area. In a page that scrolls the
+ * table, the header sticks below the `header-offset` token (`--ang-table-header-offset`), such as
+ * the height of a sticky page header, and the horizontal scrollbar sticks to the bottom of the
+ * window. Ancestors up to the scrolling one must clip rather than hide their overflow.
  */
 @Component({
   selector: 'ang-table',
-  imports: [DatatableComponent, ScrollArea],
+  imports: [DatatableComponent, ScrollArea, StickyHeader],
   templateUrl: './table.html',
   styleUrl: './table.scss',
   providers: [{ provide: TABLE, useExisting: forwardRef(() => Table) }],
@@ -160,10 +166,7 @@ export class Table<TRow extends Row = Row> {
    */
   readonly rowHeight = input<TableRowHeight<TRow>, unknown>('auto', { transform: rowHeightAttribute });
 
-  /**
-   * Enables horizontal scrolling when columns exceed the available width. The horizontal scrollbar
-   * stays at the bottom of the window while the table is taller than the screen.
-   */
+  /** Enables horizontal scrolling when columns exceed the available width. */
   readonly scrollbarH = input(true, { transform: booleanAttribute });
 
   /** Selection behavior; omit to disable selection. */

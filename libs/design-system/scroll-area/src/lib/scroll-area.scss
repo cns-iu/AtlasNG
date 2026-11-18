@@ -1,17 +1,6 @@
 @use 'internal/token-utils';
 @use 'tokens/scroll-area' as *;
 
-/// Builds the edge fade from the container color, matching the Figma overlay fade:
-/// two stacked gradients that are opaque at the edge and transparent toward the content.
-///
-/// @param {String} $direction - Direction from the edge toward the content, e.g. `to top`.
-@function fade-gradient($direction) {
-  $color: token-utils.slot(container-color, $config);
-
-  @return linear-gradient($direction, $color 0%, transparent 100%),
-    linear-gradient($direction, $color 0%, transparent 100%);
-}
-
 .ang-scroll-area {
   display: flex;
   position: relative;
