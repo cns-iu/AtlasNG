@@ -1,3 +1,4 @@
+@use 'breakpoints';
 @use 'internal/token-utils';
 @use 'tokens/table' as table;
 
@@ -7,7 +8,7 @@
 @mixin side-space($property, $factor: 1) {
   #{$property}: 1.25rem * $factor;
 
-  @media (min-width: 960px) {
+  @include breakpoints.breakpoint(medium) {
     #{$property}: 2rem * $factor;
   }
 }
@@ -58,7 +59,7 @@ $text-cell-padding: 0.5rem;
     @include table-padding;
     margin-top: 1.25rem;
 
-    @media (min-width: 960px) {
+    @include breakpoints.breakpoint(medium) {
       margin-top: 2rem;
     }
   }
@@ -152,7 +153,7 @@ $text-cell-padding: 0.5rem;
       margin-top: 0rem !important;
       margin-bottom: 1.25rem;
 
-      @media (min-width: 960px) {
+      @include breakpoints.breakpoint(medium) {
         margin-bottom: 2rem;
       }
     }
