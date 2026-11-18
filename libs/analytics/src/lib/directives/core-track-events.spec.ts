@@ -1,5 +1,5 @@
 import { AnalyticsPermissions, provideInitialAnalyticsPermissions } from '@atlasng/analytics/permissions';
-import { Type } from '@angular/core';
+import { EventEmitter, Type } from '@angular/core';
 import { fireEvent, render } from '@testing-library/angular';
 import { EventType } from '@testing-library/dom';
 import { provideAnalytics, withCustomBackend, withPermissionsConfig } from '../provider';
@@ -137,5 +137,66 @@ describe.for<SpecializedTrackEventTestCase>([
       expect(backend.track).toHaveBeenCalledTimes(1);
       expect(backend.track).toHaveBeenCalledWith(...buildTrackArgs(trigger));
     });
+  });
+});
+
+describe('TrackChange with sources', () => {
+  async function setup(on: unknown, debounce?: number) {
+    const backend = { page: vi.fn(), track: vi.fn() };
+    const result = await render(
+      `<input data-testid="host" angTrackChange [angTrackChangeOn]="on" [angTrackChangeDebounce]="debounce" />`,
+      {
+        imports: [TrackChange],
+        providers: [
+          provideAnalytics(
+            { rootScope: 'root' },
+            withCustomBackend(() => backend),
+            withPermissionsConfig({ storage: false, changeEventName: false, storageEvents: false }),
+          ),
+          provideInitialAnalyticsPermissions(AnalyticsPermissions.FULL),
+        ],
+        componentProperties: { on, debounce },
+      },
+    );
+
+    return { ...result, hostEl: result.getByTestId('host'), backend };
+  }
+
+  afterEach(() => vi.useRealTimers());
+
+  it('should replace the default DOM trigger with a source record', async () => {
+    const selectionChange = new EventEmitter<void>();
+    const { backend, hostEl } = await setup({ selectionChange });
+
+    fireEvent.change(hostEl);
+    selectionChange.emit();
+
+    expect(backend.track).toHaveBeenCalledOnce();
+    expect(backend.track).toHaveBeenCalledWith(
+      expect.any(String),
+      { path: 'root', trigger: 'selectionChange' },
+      undefined,
+    );
+  });
+
+  it('should mix DOM triggers and sources', async () => {
+    const selectionChange = new EventEmitter<void>();
+    const { backend, hostEl } = await setup({ change: true, selectionChange });
+
+    fireEvent.change(hostEl);
+    selectionChange.emit();
+
+    expect(backend.track).toHaveBeenCalledTimes(2);
+  });
+
+  it('should debounce triggers', async () => {
+    const { backend, hostEl } = await setup('change', 200);
+    vi.useFakeTimers();
+
+    fireEvent.change(hostEl);
+    fireEvent.change(hostEl);
+    vi.advanceTimersByTime(200);
+
+    expect(backend.track).toHaveBeenCalledOnce();
   });
 });

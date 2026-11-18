@@ -4,8 +4,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatActionList, MatListModule } from '@angular/material/list';
 import { MatSelect } from '@angular/material/select';
-import { injectTrackEvent, provideEventScope, TrackClick } from '@atlasng/analytics';
-import { CoreEvents } from '@atlasng/analytics/events';
+import { provideEventScope, TrackChange, TrackClick } from '@atlasng/analytics';
 import { IdGenerator } from '@atlasng/common';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
@@ -55,6 +54,7 @@ export interface VersionDownload<T extends VersionControlFileFormat> {
     MatOption,
     MatSelect,
     ScrollArea,
+    TrackChange,
     TrackClick,
   ],
   templateUrl: './version-control.html',
@@ -85,17 +85,4 @@ export class VersionControl<T extends VersionControlFileFormat = VersionControlF
 
   /** Id of the download options heading, labelling the download list. */
   protected readonly downloadHeadingId = inject(IdGenerator).getId('ang-version-control--download-heading');
-
-  /** Tracks version selections that Angular Material reports through outputs rather than DOM events. */
-  readonly #track = injectTrackEvent();
-
-  /**
-   * Selects a version from the version selector and tracks the change.
-   *
-   * @param version Version chosen by the user.
-   */
-  protected selectVersion(version: VersionControlItem<T>): void {
-    this.#track(CoreEvents.Change, { trigger: 'selectionChange' });
-    this.selectedVersion.set(version);
-  }
 }
