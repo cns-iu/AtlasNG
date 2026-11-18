@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule, MatMenuPanel } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TrackClick } from '@atlasng/analytics';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 
 /**
@@ -13,6 +13,7 @@ import { AnyLink, AnyLinkCommand } from '@atlasng/common';
   selector: 'ang-help-button',
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, TrackClick, AnyLink],
   templateUrl: './help-button.html',
+  providers: [provideEventScope('help-button')],
   host: {
     class: 'ang-help-button',
     '[attr.aria-label]': 'null',

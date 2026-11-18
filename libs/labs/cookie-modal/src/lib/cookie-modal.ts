@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
-import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
+import { EventScope, provideEventScope, TrackChange, TrackClick } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
@@ -75,6 +75,7 @@ export type CookieModalResult = AnalyticsPermissions | undefined;
     CookiePermissions,
     EventScope,
     ScrollArea,
+    TrackChange,
     TrackClick,
   ],
   templateUrl: './cookie-modal.html',

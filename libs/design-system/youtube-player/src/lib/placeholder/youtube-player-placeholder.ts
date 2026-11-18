@@ -1,6 +1,7 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 import { PlaceholderImageQuality } from '@angular/youtube-player';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink } from '@atlasng/common';
 
 /** Allowed characters in a YouTube video ID interpolated into a thumbnail URL. */
@@ -18,9 +19,10 @@ const VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
  */
 @Component({
   selector: 'ang-youtube-player-placeholder, [angYouTubePlayerPlaceholder]',
-  imports: [AnyLink, NgOptimizedImage],
+  imports: [AnyLink, NgOptimizedImage, TrackClick],
   templateUrl: './youtube-player-placeholder.html',
   styleUrl: './youtube-player-placeholder.scss',
+  providers: [provideEventScope('youtube-player-placeholder')],
   host: {
     class: 'ang-youtube-player-placeholder',
     '[style.width.px]': 'width()',

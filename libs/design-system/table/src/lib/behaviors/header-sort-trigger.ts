@@ -1,5 +1,7 @@
 import { FocusMonitor } from '@angular/cdk/a11y';
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, input, Renderer2 } from '@angular/core';
+import { injectTrackEvent, provideEventScope } from '@atlasng/analytics';
+import { CoreEvents } from '@atlasng/analytics/events';
 
 /**
  * Connects custom header content to an ngx-datatable sortable header.
@@ -7,9 +9,11 @@ import { afterNextRender, DestroyRef, Directive, ElementRef, inject, input, Rend
  * Apply the directive to content within a sortable ngx-datatable header. It monitors the
  * containing header for focus and invokes the supplied callback when the header is clicked or
  * activated with the Space key. (Enter key activation is handled by ngx-datatable)
+ * Each activation, including Enter, is tracked as a click in the `sort` event scope.
  */
 @Directive({
   selector: '[angHeaderSortTrigger]',
+  providers: [provideEventScope('sort')],
   host: {
     class: 'ang-table--header-sort-trigger',
   },
@@ -23,6 +27,9 @@ export class HeaderSortTrigger {
 
   /** Renderer used to register platform-safe event listeners. */
   readonly #renderer = inject(Renderer2);
+
+  /** Tracks sort activations in the `sort` event scope. */
+  readonly #track = injectTrackEvent();
 
   /** Focus monitor used to apply focus-origin classes to the sortable header. */
   readonly #focusMonitor = inject(FocusMonitor);
@@ -51,16 +58,22 @@ export class HeaderSortTrigger {
    * @param el Sortable ngx-datatable header element.
    */
   #attachListeners(el: HTMLElement): void {
-    const listener = () => this.sortFn()();
+    const track = (event: Event) => this.#track(CoreEvents.Click, { trigger: event.type, triggerData: event });
+    const listener = (event: Event) => {
+      track(event);
+      this.sortFn()();
+    };
     const cleanup: (() => void)[] = [];
     cleanup.push(this.#renderer.listen(el, 'click', listener));
     cleanup.push(
       this.#renderer.listen(el, 'keydown.space', (event: KeyboardEvent) => {
         // Prevent the default page scroll when activating the sort with Space
         event.preventDefault();
-        listener();
+        listener(event);
       }),
     );
+    // ngx-datatable sorts on Enter itself, so only track it here
+    cleanup.push(this.#renderer.listen(el, 'keydown.enter', track));
 
     this.#destroyRef.onDestroy(() => cleanup.forEach((fn) => fn()));
   }

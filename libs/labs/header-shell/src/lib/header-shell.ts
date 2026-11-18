@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { provideEventScope, TrackClick } from '@atlasng/analytics';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 import { HelpButton } from '@atlasng/design-system/buttons/help-button';
 import { NavigationButton } from '@atlasng/design-system/buttons/navigation-button';
@@ -62,6 +62,7 @@ export class HeaderShellAction {}
     MatMenuModule,
     MatTooltipModule,
     NavigationButton,
+    EventScope,
     TrackClick,
     MatSidenavModule,
     MatFormFieldModule,

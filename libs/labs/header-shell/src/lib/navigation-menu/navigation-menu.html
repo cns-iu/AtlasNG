@@ -7,6 +7,7 @@
       <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- angAnyLink sets href, so the link is focusable and Enter fires click -->
       <a
         matButton
+        angTrackClick
         class="ang-navigation-menu-link"
         [angAnyLink]="item.link"
         [target]="item.external ? '_blank' : undefined"
