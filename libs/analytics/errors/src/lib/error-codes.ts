@@ -3,7 +3,7 @@
  * code in the message, formatted as `ANG<code>`.
  *
  * Codes are grouped by entry point: `30xx` for the main entry point and generic errors, `31xx` for `events`, `32xx`
- * for `permissions`, and `33xx` for `default-backend`.
+ * for `permissions`, `33xx` for `default-backend`, and `34xx` for `forms`.
  */
 export enum AnalyticsErrorCode {
   /** More than one custom analytics backend was provided. */
@@ -20,4 +20,8 @@ export enum AnalyticsErrorCode {
   MissingEventFilterPlugin = 3302,
   /** The telemetry plugin received a payload type it cannot convert. */
   UnsupportedTelemetryPayload = 3303,
+  /** `angTrackControlChange` was used on an element without a form control directive. */
+  MissingFormControl = 3401,
+  /** `angTrackControlChange` was used with a form control directive that has no `ControlValueAccessor`. */
+  MissingValueAccessor = 3402,
 }
