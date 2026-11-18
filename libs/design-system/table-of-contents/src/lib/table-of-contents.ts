@@ -1,5 +1,6 @@
 import { Component, inject, input, model } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, IdGenerator } from '@atlasng/common';
 
 /** Information used to render one page item in the table of contents. */
@@ -21,9 +22,10 @@ export interface TableOfContentsItem {
  */
 @Component({
   selector: 'ang-table-of-contents',
-  imports: [AnyLink, MatListModule],
+  imports: [AnyLink, MatListModule, TrackClick],
   templateUrl: './table-of-contents.html',
   styleUrl: './table-of-contents.scss',
+  providers: [provideEventScope('table-of-contents')],
   host: { class: 'ang-table-of-contents' },
 })
 export class TableOfContents {

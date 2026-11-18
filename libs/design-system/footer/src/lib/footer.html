@@ -3,6 +3,8 @@
     <ng-content select="ang-footer-logo, [angFooterLogo]">
       <a
         class="ang-footer--logo"
+        angEventScope="logo"
+        angTrackClick
         [matTooltip]="logoTooltip()"
         [angAnyLink]="logoLink()"
         [attr.aria-label]="resolvedLogoLabel()"
@@ -28,10 +30,24 @@
 
   <div class="ang-footer--actions">
     <ng-content select="ang-footer-action, [angFooterAction]">
-      <button type="button" matButton class="ang-footer--action" (click)="privacyPreferencesClick.emit()">
+      <button
+        type="button"
+        matButton
+        class="ang-footer--action"
+        angEventScope="privacy-preferences"
+        angTrackClick
+        (click)="privacyPreferencesClick.emit()"
+      >
         Privacy Preferences
       </button>
-      <button type="button" matButton class="ang-footer--action" (click)="privacyPolicyClick.emit()">
+      <button
+        type="button"
+        matButton
+        class="ang-footer--action"
+        angEventScope="privacy-policy"
+        angTrackClick
+        (click)="privacyPolicyClick.emit()"
+      >
         Privacy Policy
       </button>
     </ng-content>

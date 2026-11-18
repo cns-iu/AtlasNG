@@ -4,8 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
-import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
-import { AnalyticsEventCategory } from '@atlasng/analytics/events';
+import { EventScope, injectTrackEvent, provideEventScope, TrackClick } from '@atlasng/analytics';
+import { AnalyticsEventCategory, CoreEvents } from '@atlasng/analytics/events';
 import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { CookiePermissions } from './cookie-permissions/cookie-permissions';
@@ -96,6 +96,9 @@ export class CookieModal {
    */
   private readonly data = inject<CookieModalData>(MAT_DIALOG_DATA);
 
+  /** Tracks tab switches that Angular Material reports through outputs rather than DOM events. */
+  readonly #track = injectTrackEvent();
+
   /**
    * Active tab index shown in the modal.
    */
@@ -158,5 +161,10 @@ export class CookieModal {
    */
   constructor() {
     this.dialogRef.addPanelClass('ang-cookie-modal--panel');
+  }
+
+  /** Tracks a switch between the consent and details tabs. */
+  protected trackTabChange(): void {
+    this.#track(CoreEvents.Change, { trigger: 'selectedTabChange' });
   }
 }

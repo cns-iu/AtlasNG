@@ -4,6 +4,7 @@
     @if (localNavigation()) {
       <button
         matIconButton
+        angEventScope="local-navigation"
         angTrackClick
         type="button"
         class="ang-header-shell-menu-button"
@@ -18,6 +19,8 @@
     }
     <a
       class="ang-header-shell-logo"
+      angEventScope="logo"
+      angTrackClick
       [attr.aria-label]="logoLabel()"
       [matTooltip]="logoTooltip()"
       [angAnyLink]="logoLink()"
@@ -34,7 +37,14 @@
           {{ item.label }}
         </ang-navigation-button>
       } @else {
-        <a matButton angTrackClick class="ang-header-shell-navigation-button" disableRipple [angAnyLink]="item.link">
+        <a
+          matButton
+          angEventScope="navigation"
+          angTrackClick
+          class="ang-header-shell-navigation-button"
+          disableRipple
+          [angAnyLink]="item.link"
+        >
           <span class="ang-header-shell-navigation-text">{{ item.label }}</span>
         </a>
       }
@@ -55,6 +65,7 @@
     <div class="ang-header-shell-apps">
       <button
         matIconButton
+        angEventScope="apps"
         angTrackClick
         type="button"
         class="ang-header-shell-icon-button"

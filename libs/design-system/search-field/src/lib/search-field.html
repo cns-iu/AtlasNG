@@ -4,6 +4,7 @@
   <input
     class="ang-search-field--input"
     matInput
+    angTrackChange
     type="search"
     autocomplete="off"
     [placeholder]="placeholder() ?? ''"
@@ -21,6 +22,7 @@
       class="ang-search-field--clear"
       matIconButton
       matSuffix
+      angTrackClick
       type="button"
       aria-label="Clear search"
       (click)="clear()"

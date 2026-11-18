@@ -1,4 +1,6 @@
 import { FocusMonitor } from '@angular/cdk/a11y';
+import { Analytics } from '@atlasng/analytics';
+import { CoreEvents } from '@atlasng/analytics/events';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { HeaderSortTrigger } from './header-sort-trigger';
@@ -14,6 +16,7 @@ describe('HeaderSortTrigger', () => {
     const monitor = vi.fn();
     const stopMonitoring = vi.fn();
     const sortFn = vi.fn();
+    const trackEvent = vi.fn((_event: unknown, _payload: { path?: string; trigger?: string }) => Promise.resolve());
     const user = userEvent.setup();
     const result = await render(template, {
       imports: [HeaderSortTrigger],
@@ -23,10 +26,11 @@ describe('HeaderSortTrigger', () => {
           provide: FocusMonitor,
           useValue: { monitor, stopMonitoring },
         },
+        { provide: Analytics, useValue: { trackEvent } },
       ],
     });
 
-    return { ...result, monitor, sortFn, stopMonitoring, user };
+    return { ...result, monitor, sortFn, stopMonitoring, trackEvent, user };
   }
 
   it('applies its host class and monitors the containing sortable header', async () => {
@@ -49,6 +53,23 @@ describe('HeaderSortTrigger', () => {
     header.focus();
     await user.keyboard(' ');
     expect(sortFn).toHaveBeenCalledOnce();
+  });
+
+  it('tracks clicks, Space, and Enter activations in the sort scope', async () => {
+    const { sortFn, trackEvent, user } = await setup();
+    const header = screen.getByRole('button', { name: 'Sort' });
+
+    await user.click(header);
+    header.focus();
+    await user.keyboard(' ');
+    await user.keyboard('{Enter}');
+
+    expect(sortFn).toHaveBeenCalledTimes(2);
+    expect(trackEvent.mock.calls.map(([event, payload]) => [event, payload.trigger, payload.path])).toEqual([
+      [CoreEvents.Click, 'click', 'sort'],
+      [CoreEvents.Click, 'keydown', 'sort'],
+      [CoreEvents.Click, 'keydown', 'sort'],
+    ]);
   });
 
   it('prevents the default page scroll when activated with Space', async () => {

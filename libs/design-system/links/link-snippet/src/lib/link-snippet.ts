@@ -3,6 +3,7 @@ import { Component, computed, inject, input, ViewEncapsulation } from '@angular/
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, IdGenerator } from '@atlasng/common';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
@@ -15,9 +16,10 @@ const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
  */
 @Component({
   selector: 'ang-link-snippet',
-  imports: [AnyLink, MatIconModule, MatButtonModule, ScrollArea],
+  imports: [AnyLink, MatIconModule, MatButtonModule, ScrollArea, EventScope, TrackClick],
   templateUrl: './link-snippet.html',
   styleUrl: './link-snippet.scss',
+  providers: [provideEventScope('link-snippet')],
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-link-snippet',

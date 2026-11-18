@@ -29,6 +29,7 @@
   angEventScope="tabs"
   [aria-label]="tabsLabel"
   [(selectedIndex)]="activeTab"
+  (selectedTabChange)="trackTabChange()"
 >
   <mat-tab label="Consent" angEventScope="consent-tab">
     <ang-scroll-area class="ang-cookie-modal--scroll-area">

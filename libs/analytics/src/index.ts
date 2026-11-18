@@ -28,4 +28,5 @@ export {
   withPermissionsConfig,
   type AnalyticsFeature,
 } from './lib/provider';
+export { injectTrackEvent, type TrackEventFn } from './lib/inject-track-event';
 export { EVENT_SCOPE, EventScope, provideEventScope, type IEventScope } from './lib/scope';
