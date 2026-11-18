@@ -1,5 +1,6 @@
-import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
 import { ContentBlock } from '@atlasng/content-blocks';
 import { provideDefinitions } from '@atlasng/content-blocks/definitions';
 import { provideDesignSystemDefinitions } from '@atlasng/content-blocks/definitions/design-system';
@@ -39,12 +40,19 @@ interface KgExplorerMetadataSectionView {
   document: ContentDocument;
 }
 
-/** An icon displayed above the page title, for example a product or organ icon. */
+/**
+ * An `@atlasng/icons` icon displayed above the page title, for example a product or organ icon.
+ *
+ * Icons are rendered with the `@atlasng/icons` icon font as `<mat-icon fontSet="ang-icons" fontIcon="<name>">`, so the
+ * application must load the `@atlasng/icons` CSS and include `provideAngIcons()` from `@atlasng/design-system/icons`.
+ */
 export interface KgExplorerMetadataIcon {
-  /** Icon image source URL. */
-  src: string;
-  /** Alternative text describing the icon. */
-  alt: string;
+  /** Name of the `@atlasng/icons` icon, e.g. `'heart'` or `'kg-explorer'`. */
+  name: string;
+  /** Accessible label describing the icon. */
+  label: string;
+  /** Color of the icon wrapper, which is a circle behind the icon. */
+  color: 'primary' | 'secondary' | 'tertiary';
 }
 
 /** The data entry displayed by the metadata view, such as a knowledge graph digital object. */
@@ -80,16 +88,7 @@ const NO_VERSIONS: readonly never[] = [];
  */
 @Component({
   selector: 'ang-kg-explorer-metadata-view',
-  imports: [
-    Breadcrumbs,
-    ContentBlock,
-    ContentSection,
-    Heading,
-    LinkSnippet,
-    NgOptimizedImage,
-    NgTemplateOutlet,
-    VersionControl,
-  ],
+  imports: [Breadcrumbs, ContentBlock, ContentSection, Heading, LinkSnippet, MatIcon, NgTemplateOutlet, VersionControl],
   templateUrl: './metadata-view.html',
   styleUrl: './metadata-view.scss',
   providers: [provideDesignSystemDefinitions(), provideDefinitions(KG_EXPLORER_METADATA_DEFINITIONS)],

@@ -1,3 +1,21 @@
+## 0.0.13 (2026-11-18)
+
+### 🚀 Features
+
+- **kg-explorer:** add filter toggle to header and configurable dock breakpoint ([#402](https://github.com/cns-iu/AtlasNG/pull/402))
+- **labs:** label header shell, navigation drawers and cookie modal ([#428](https://github.com/cns-iu/AtlasNG/pull/428))
+
+### 🩹 Fixes
+
+- **labs:** move focus to the skip link target instead of routing ([#268](https://github.com/cns-iu/AtlasNG/pull/268))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- Edward Lu @edlu77
+- LibbyUX @LibbyUX
+
 ## 0.0.12 (2026-11-13)
 
 ### 🚀 Features

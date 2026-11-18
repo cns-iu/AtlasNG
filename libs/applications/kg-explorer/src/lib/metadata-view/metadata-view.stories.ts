@@ -10,8 +10,9 @@ import {
   VersionControlFileFormat,
   VersionControlItem,
 } from '@atlasng/design-system/version-control';
+import { provideAngIcons } from '@atlasng/design-system/icons';
 import { HeaderShell, HeaderShellNavigationItem, NavigationContainer } from '@atlasng/labs/header-shell';
-import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { applicationConfig, argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { expect } from 'storybook/test';
 import { KgExplorerMetadataView, KgExplorerMetadataSection } from './metadata-view';
 
@@ -90,9 +91,32 @@ const VERSIONS: VersionControlItem<VersionControlFileFormat>[] = [
   },
 ];
 
+/**
+ * Adds the `@atlasng/icons` stylesheet, which provides the icon font, to the document once.
+ *
+ * @returns An empty object, as loaded story data.
+ */
+function loadIconStylesheet(): Record<string, never> {
+  const id = 'ang-icons-stylesheet';
+  if (!document.getElementById(id)) {
+    const stylesheet = document.createElement('link');
+    stylesheet.id = id;
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = `ang-icons/index.css`;
+    document.head.appendChild(stylesheet);
+  }
+  return {};
+}
+
 const meta: Meta<KgExplorerMetadataView> = {
   title: 'Applications/KG Explorer/Metadata View',
   component: KgExplorerMetadataView,
+  decorators: [
+    applicationConfig({
+      providers: [provideAngIcons()],
+    }),
+  ],
+  loaders: [loadIconStylesheet],
   parameters: {
     design: {
       type: 'figma',
@@ -107,8 +131,8 @@ const meta: Meta<KgExplorerMetadataView> = {
     metadata: {
       title: 'Whole Person Physiome (WPP) table for cardiovascular system',
       icons: [
-        { src: 'assets/product-icon-placeholder.svg', alt: 'Knowledge graph' },
-        { src: 'assets/organ-icon-placeholder.svg', alt: 'Heart' },
+        { name: 'kg-explorer', label: 'Knowledge graph', color: 'secondary' },
+        { name: 'heart', label: 'Heart', color: 'tertiary' },
       ],
       url: 'https://purl.wholepersonphysiome.org/wpp/cardiovascular-system',
       sections: SECTIONS,
