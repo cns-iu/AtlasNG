@@ -24,6 +24,11 @@
       "implementation": "./src/executors/generate-typography-scss/executor",
       "schema": "./src/executors/generate-typography-scss/schema.json",
       "description": "Generates typography SCSS maps from Figma font and typescale tokens JSON files."
+    },
+    "last-modified-dates": {
+      "implementation": "./src/executors/last-modified-dates/executor",
+      "schema": "./src/executors/last-modified-dates/schema.json",
+      "description": "Writes a JSON file that maps page routes to the timestamp of the last Git commit that changed each page's source file."
     }
   }
 }

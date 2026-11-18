@@ -65,7 +65,7 @@ describe('design-system definitions', () => {
         config: {
           image: 'ada.png',
           name: 'Ada Lovelace',
-          description: ['Mathematician', 'Writer'],
+          descriptions: ['Mathematician', 'Writer'],
           link: { command: ['/people', 'ada'], fragment: 'bio' },
         },
       },

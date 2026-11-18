@@ -4,6 +4,12 @@
 @use './../../sass/tokens/metadata-view' as *;
 
 :host {
+  @include text-link.overrides(
+    (
+      color: token-utils.slot(link-color, $config),
+    )
+  );
+
   display: block;
 
   .ang-kg-explorer-metadata-view--layout {
@@ -41,12 +47,6 @@
   }
 
   .ang-kg-explorer-metadata-view--breadcrumbs {
-    @include text-link.overrides(
-      (
-        color: token-utils.sys-slot(primary),
-      )
-    );
-
     margin-bottom: 2rem;
   }
 
@@ -58,14 +58,33 @@
   }
 
   .ang-kg-explorer-metadata-view--icon-wrapper {
-    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 4rem;
     height: 4rem;
+    border-radius: 50%;
+
+    &[color='primary'] {
+      background-color: token-utils.sys-slot(primary);
+      color: token-utils.sys-slot(on-primary);
+    }
+
+    &[color='secondary'] {
+      background-color: token-utils.sys-slot(secondary);
+      color: token-utils.sys-slot(on-secondary);
+    }
+
+    &[color='tertiary'] {
+      background-color: token-utils.sys-slot(tertiary);
+      color: token-utils.sys-slot(on-tertiary);
+    }
   }
 
   .ang-kg-explorer-metadata-view--icon {
-    border-radius: 50%;
-    object-fit: cover;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 2.5rem;
   }
 
   .ang-kg-explorer-metadata-view--title {

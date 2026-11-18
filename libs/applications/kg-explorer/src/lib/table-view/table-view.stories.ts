@@ -1,8 +1,7 @@
 import type { Type } from '@angular/core';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Footer, FooterAction, FooterLogo } from '@atlasng/design-system/footer';
-import { type Args, argsToTemplate, type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
-import { expect, userEvent, waitFor, within } from 'storybook/test';
 import type { Row, TableColumn } from '@atlasng/design-system/table';
 import {
   CSV_FILE_FORMAT,
@@ -10,6 +9,14 @@ import {
   JSON_LD_FILE_FORMAT,
   type VersionControlFileFormat,
 } from '@atlasng/design-system/version-control';
+import {
+  HeaderShell,
+  HeaderShellAction,
+  type HeaderShellNavigationItem,
+  NavigationContainer,
+} from '@atlasng/labs/header-shell';
+import { type Args, argsToTemplate, type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import type { KgExplorerFilter } from '../models';
 import {
   kgExplorerChipColumn,
@@ -95,7 +102,7 @@ const SAMPLE_COLUMNS: TableColumn<SampleItem>[] = [
 
 /** Type and Organ filters for the sample rows, with options derived from the rows. */
 const SAMPLE_FILTERS: KgExplorerFilter<SampleItem>[] = [
-  { id: 'type', label: 'Type', field: 'type', searchDisabled: true },
+  { id: 'type', label: 'Type', field: 'type', disableSearch: true },
   { id: 'organ', label: 'Organ', field: 'tags' },
 ];
 
@@ -109,8 +116,15 @@ function sampleFormatsFor(item: SampleItem): readonly VersionControlFileFormat[]
   return item.formats;
 }
 
+/** Primary navigation of the sample application header. */
+const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
+  { id: 'kg-explorer', label: 'Knowledge Graph Explorer' },
+  { id: 'about', label: 'About' },
+];
+
 /**
- * Builds the table view template.
+ * Builds the table view template below the application header, whose action
+ * slot holds the filter toggle.
  *
  * @param args Story args.
  * @param content Content projected into the table view.
@@ -118,18 +132,61 @@ function sampleFormatsFor(item: SampleItem): readonly VersionControlFileFormat[]
  */
 function explorerTemplate(args: Args, content = ''): string {
   return `
-    <ang-kg-explorer-table-view ${argsToTemplate(args)}>
-      ${content}
-    </ang-kg-explorer-table-view>
+    <ang-header-shell
+      logoUrl="assets/illustration-placeholder.svg"
+      hasLocalNavigation="true"
+      [navigationItems]="navigationItems"
+      [localNavigationExpanded]="navigation.leftMenuOpen()"
+      (localNavigationToggle)="navigation.localNavigationToggle()"
+      (appsMenuToggle)="navigation.appsMenuToggle()"
+    >
+      <button
+        matIconButton
+        angHeaderShellAction
+        type="button"
+        class="ang-kg-explorer-filter-toggle--button"
+        [attr.aria-label]="'Filters'"
+        [attr.aria-expanded]="explorer.filtersOpen()"
+        (click)="explorer.filtersOpen.update((open) => !open)"
+      >
+        <mat-icon fontIcon="tune" />
+      </button>
+    </ang-header-shell>
+
+    <ang-navigation-container [navigationItems]="navigationItems" #navigation>
+      <main id="main-content" class="explorer-main">
+        <ang-kg-explorer-table-view ${argsToTemplate(args)} #explorer>
+          ${content}
+        </ang-kg-explorer-table-view>
+      </main>
+    </ang-navigation-container>
   `;
 }
+
+/** Styles that fit the table view into the height below the header. */
+const EXPLORER_STYLES = [
+  `ang-header-shell img { height: 100%; }`,
+  `.explorer-main { display: flex; flex: 1; flex-direction: column; min-height: 0; }`,
+  `.ang-kg-explorer-table-view { flex: 1; min-height: 0; }`,
+  `.ang-footer {z-index: 3;}`,
+];
 
 const meta: Meta<KgExplorerTableView<SampleItem>> = {
   component: KgExplorerTableView as Type<KgExplorerTableView<SampleItem>>,
   title: 'Applications/KG Explorer/Table View',
   decorators: [
     moduleMetadata({
-      imports: [Footer, FooterAction, FooterLogo, MatButton],
+      imports: [
+        Footer,
+        FooterAction,
+        FooterLogo,
+        HeaderShell,
+        HeaderShellAction,
+        MatButton,
+        NavigationContainer,
+        MatIconModule,
+        MatButtonModule,
+      ],
     }),
   ],
   parameters: {
@@ -150,15 +207,9 @@ const meta: Meta<KgExplorerTableView<SampleItem>> = {
     download: { action: 'download' },
   },
   render: (args) => ({
-    props: args,
+    props: { ...args, navigationItems: NAVIGATION_ITEMS },
     template: explorerTemplate(args),
-    styles: [
-      `
-        .ang-kg-explorer-table-view {
-          height: 100vh;
-        }
-      `,
-    ],
+    styles: EXPLORER_STYLES,
   }),
 };
 
@@ -170,15 +221,21 @@ export const Default: Story = {};
 
 export const Demo: Story = {
   play: async ({ canvas }) => {
-    await expect(canvas.getByText('Viewing 15 of 15')).toBeVisible();
+    await expect(canvas.getByText('Viewing 15 of 15', { ignore: '.cdk-visually-hidden' })).toBeVisible();
 
     await userEvent.type(canvas.getByRole('combobox', { name: 'Search' }), 'consectetur');
     // Give viewers time to see the filtered results and suggestions.
-    waitFor(() => expect(canvas.getByText(/^Viewing \d+ of 15$/)).not.toHaveTextContent('Viewing 15 of 15'), {
-      timeout: 2000,
-    });
+    waitFor(
+      () =>
+        expect(canvas.getByText(/^Viewing \d+ of 15$/, { ignore: '.cdk-visually-hidden' })).not.toHaveTextContent(
+          'Viewing 15 of 15',
+        ),
+      {
+        timeout: 2000,
+      },
+    );
 
-    const [downloadButton] = canvas.getAllByRole('button', { name: 'Choose download format' });
+    const [downloadButton] = canvas.getAllByRole('button', { name: /^Choose download format for / });
     await userEvent.click(downloadButton);
     const menu = within(document.body).getByRole('menu');
     await expect(within(menu).getByRole('menuitem', { name: /CSV/ })).toBeVisible();
@@ -195,6 +252,12 @@ export const Dark: Story = {
 export const FiltersOpen: Story = {
   args: {
     filtersOpen: true,
+  },
+};
+
+export const ExtraLargeFilterBreakpoint: Story = {
+  args: {
+    config: { filtersDockBreakpoint: 'x-large' },
   },
 };
 
@@ -227,17 +290,18 @@ export const WithFooter: Story = {
     items: SAMPLE_ITEMS,
   },
   render: (args) => ({
-    props: args,
+    props: { ...args, navigationItems: NAVIGATION_ITEMS },
     template: explorerTemplate(
       args,
       `
-        <ang-footer logoImage="" organization="Organization">
+        <ang-footer logoSrc="" organization="Organization">
           <ang-footer-logo>Logo</ang-footer-logo>
           <a angFooterAction matButton>Privacy</a>
           <a angFooterAction matButton>Accessibility</a>
         </ang-footer>
       `,
     ),
+    styles: EXPLORER_STYLES,
   }),
   play: async ({ canvas }) => {
     const footer = canvas.getByRole('contentinfo');

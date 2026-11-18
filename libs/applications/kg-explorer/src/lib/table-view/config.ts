@@ -1,4 +1,5 @@
 import type { Provider } from '@angular/core';
+import type { BreakpointExpression } from '@atlasng/cdk';
 import type { SearchFieldDefinition, SearchFieldSpec } from '@atlasng/cdk/search';
 import { createConfigurationToken, type } from '@atlasng/core';
 import type { Row } from '@atlasng/design-system/table';
@@ -19,19 +20,39 @@ export interface KgExplorerTableViewConfig<
   /** Field whose values are suggested below the search field. Defaults to the row's `title`. */
   searchSuggestionField?: SearchFieldSpec<TRow>;
   /** Disables the autocomplete suggestions of the search field. Defaults to `false`. */
-  searchSuggestionsDisabled?: boolean;
+  disableSearchSuggestions?: boolean;
   /** Hides the search field. Defaults to `false`. */
-  searchDisabled?: boolean;
+  disableSearch?: boolean;
+  /** Label of the search field. Defaults to "Search". */
+  searchLabel?: string;
+  /** Accessible name of the results table. Defaults to "Results". */
+  tableLabel?: string;
   /** Hides the "Viewing X of Y" results counter. Defaults to `false`. */
-  resultsCounterDisabled?: boolean;
+  disableResultsCounter?: boolean;
+  /** Text before the numbers of the results counter. Defaults to `Viewing`. */
+  resultsCounterPrefix?: string;
   /** Hides the end-of-results indicator below the table. Defaults to `false`. */
-  endOfResultsDisabled?: boolean;
+  disableEndOfResults?: boolean;
   /**
    * File formats each row can be downloaded in: the same formats for every
    * row, or a function returning the formats of a row. The download column is
    * only shown when this is set.
    */
   downloadFormats?: KgExplorerDownloadFormats<TRow, TFormat>;
+  /** Accessible name of the download column's header, which is visually empty. Defaults to `Download`. */
+  downloadColumnLabel?: string;
+  /**
+   * Names the row of each download button: a row key or a function returning
+   * the name, announced as "Download CSV for <name>", "Choose download format
+   * for <name>", or "No downloads available for <name>". Defaults to the row's `title`.
+   */
+  downloadLabel?: (keyof TRow & string) | ((row: TRow) => string);
+  /**
+   * Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`,
+   * from which the filter menu is docked beside the table instead of opening as
+   * a drawer. Defaults to `'large'` (1280px).
+   */
+  filtersDockBreakpoint?: BreakpointExpression;
 }
 
 /** Suggests the `title` of each row when it is a string. */
@@ -54,10 +75,14 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
   config: type<KgExplorerTableViewConfig>(),
   defaults: () => ({
     searchSuggestionField: TITLE_SUGGESTION_FIELD,
-    searchSuggestionsDisabled: false,
-    searchDisabled: false,
-    resultsCounterDisabled: false,
-    endOfResultsDisabled: false,
+    disableSearchSuggestions: false,
+    disableSearch: false,
+    disableResultsCounter: false,
+    resultsCounterPrefix: 'Viewing',
+    disableEndOfResults: false,
+    downloadColumnLabel: 'Download',
+    downloadLabel: 'title',
+    filtersDockBreakpoint: 'large',
   }),
   inherit: true,
 });

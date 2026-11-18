@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import { Location, PlatformLocation } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import {
   DefaultUrlSerializer,
@@ -29,7 +29,7 @@ describe('RouterlessLinkHandler', () => {
     handler: RouterlessLinkHandler;
   }
 
-  function setup(currentPath = '/current/child?existing=1#old'): TestContext {
+  function setup(currentPath = '/current/child?existing=1#old', hasBrowserLocation = true): TestContext {
     const angularLocation = {
       path: vi.fn().mockReturnValue(currentPath),
       prepareExternalUrl: vi.fn((url: string) => `/base${url}`),
@@ -47,7 +47,8 @@ describe('RouterlessLinkHandler', () => {
       providers: [
         RouterlessLinkHandler,
         { provide: CUSTOM_ELEMENT_REGISTRY, useValue: customElementRegistry },
-        { provide: LOCATION, useValue: browserLocation },
+        { provide: LOCATION, useValue: hasBrowserLocation ? browserLocation : undefined },
+        { provide: PlatformLocation, useValue: { href: `${currentPath}?platform` } },
         { provide: Location, useValue: angularLocation },
         { provide: UrlSerializer, useValue: new DefaultUrlSerializer() },
       ],
@@ -149,6 +150,12 @@ describe('RouterlessLinkHandler', () => {
       expect(browserLocation.replace).not.toHaveBeenCalled();
     });
 
+    it('allows native navigation without a browser location', () => {
+      const { handler } = setup('/current', false);
+
+      expect(handler.navigateTo(preparedLink(), new Event('click'), defaultOptions())).toBe(true);
+    });
+
     it('assigns browser location for non-anchor hosts', () => {
       const { browserLocation, handler } = setup();
 
@@ -243,6 +250,62 @@ describe('RouterlessLinkHandler', () => {
       });
 
       expect(warnSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('currentUrl', () => {
+    it('updates when the browser URL changes', () => {
+      const { browserLocation, handler } = setup('/current');
+      const currentUrl = handler.currentUrl();
+
+      browserLocation.href = '/other';
+      window.dispatchEvent(new Event('popstate'));
+
+      expect(currentUrl()).toBe('/other');
+    });
+
+    it('tracks query, matrix, and fragment changes by default', () => {
+      const { browserLocation, handler } = setup('/current');
+      const currentUrl = handler.currentUrl();
+
+      browserLocation.href = '/current;view=list?page=2#top';
+      window.dispatchEvent(new Event('hashchange'));
+
+      expect(currentUrl()).toBe('/current;view=list?page=2#top');
+    });
+
+    it('ignores changes to disabled URL parts', () => {
+      const { browserLocation, handler } = setup('/current?page=1#old');
+      const currentUrl = handler.currentUrl({ matrixParams: false, queryParams: false, fragment: false });
+      expect(currentUrl()).toBe('/current?page=1#old');
+
+      browserLocation.href = '/current;view=list?page=2#new';
+      window.dispatchEvent(new Event('popstate'));
+
+      expect(currentUrl()).toBe('/current?page=1#old');
+    });
+
+    it('updates on path changes when other URL parts are disabled', () => {
+      const { browserLocation, handler } = setup('/current?page=1');
+      const currentUrl = handler.currentUrl({ queryParams: false, fragment: false });
+      expect(currentUrl()).toBe('/current?page=1');
+
+      browserLocation.href = '/other?page=1';
+      window.dispatchEvent(new Event('popstate'));
+
+      expect(currentUrl()).toBe('/other?page=1');
+    });
+
+    it('updates after the handler navigates', () => {
+      const { browserLocation, handler } = setup('/current');
+      const currentUrl = handler.currentUrl();
+      browserLocation.assign.mockImplementation((url) => {
+        browserLocation.href = String(url);
+      });
+
+      handler.navigateTo({ href: '/next', isAnchorLikeElement: false }, new Event('click'), defaultOptions());
+
+      expect(currentUrl()).toBe('/next');
     });
   });
 
@@ -351,6 +414,13 @@ describe('RouterlessLinkHandler', () => {
       window.dispatchEvent(new Event('popstate'));
 
       expect(active()).toBe(true);
+    });
+
+    it('compares against the platform location href without a browser location', () => {
+      const { handler } = setup('/server/path', false);
+
+      expect(handler.currentUrl()()).toBe('/server/path?platform');
+      expect(handler.isActive(preparedLink('/server/path'), { paths: 'exact' })()).toBe(true);
     });
 
     it('compares against the injected browser location href', () => {

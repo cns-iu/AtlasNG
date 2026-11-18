@@ -3,8 +3,9 @@
     type="button"
     matIconButton
     angTrackClick
-    aria-label="Open help menu"
-    matTooltip="Help & documentation"
+    [matTooltip]="tooltip()"
+    [attr.aria-label]="ariaLabel() ?? 'Open help menu'"
+    [attr.aria-describedby]="ariaDescribedby()"
     [matMenuTriggerFor]="menuRef"
   >
     <mat-icon fontIcon="help" />
@@ -13,9 +14,10 @@
   <a
     matIconButton
     angTrackClick
-    aria-label="Open help page in a new tab"
-    matTooltip="Help & documentation"
     target="_blank"
+    [matTooltip]="tooltip()"
+    [attr.aria-label]="ariaLabel() ?? 'Open help page in a new tab'"
+    [attr.aria-describedby]="ariaDescribedby()"
     [angAnyLink]="link()"
   >
     <mat-icon fontIcon="help" />

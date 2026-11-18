@@ -58,6 +58,12 @@ bootstrapApplication(App, {
 
 The routerless handler still imports `UrlSerializer` and `UrlTree` from `@angular/router`, so the package must be installed, but no router configuration is required. It ignores URLs with unsafe schemes such as `javascript:` instead of passing them to `location.assign`, drops `null` and `undefined` query params the same way the Router does, and updates active state on `popstate`, `hashchange`, and its own navigations.
 
+Use `currentUrl()` to react to URL changes, including browser back and forward. It returns a signal that changes when the path changes, plus any matrix params, query params, or fragment that are not disabled:
+
+```ts
+const pageUrl = inject(LinkHandler).currentUrl({ matrixParams: false, queryParams: false, fragment: false });
+```
+
 Only one handler feature may be passed; development builds throw if more are provided. Router-only inputs such as `state` or `skipLocationChange` produce a development warning when used with the routerless handler.
 
 ### ID generator

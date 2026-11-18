@@ -17,7 +17,7 @@ import {
 /**
  * `BasicProfileCard`: `BasicProfileCard`, a profile picture, name, and description(s).
  *
- * Config: `image` URL, `name`, `description` (a string or a list of paragraphs), and an optional `link` for the name,
+ * Config: `image` URL, `name`, `descriptions` (a string or a list of paragraphs), and an optional `link` for the name,
  * e.g. `"/people/ada"`, `["/people", 42]`, or `{ "command": "https://example.com", "fragment": "bio" }`.
  */
 export const BASIC_PROFILE_CARD_DEFINITION = {
@@ -26,7 +26,7 @@ export const BASIC_PROFILE_CARD_DEFINITION = {
   config: {
     image: string(),
     name: string(),
-    description: arrayable(string()),
+    descriptions: arrayable(string()),
     link: optional(link()),
   },
 } satisfies ContentDefinition;

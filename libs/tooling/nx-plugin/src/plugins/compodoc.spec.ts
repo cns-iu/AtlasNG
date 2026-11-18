@@ -96,7 +96,7 @@ describe('compodoc plugin', () => {
     expect(targets['build-storybook-compodoc']).toEqual({
       executor: 'nx:run-commands',
       cache: true,
-      inputs: ['default', { externalDependencies: ['@compodoc/compodoc'] }],
+      inputs: ['production', { externalDependencies: ['@compodoc/compodoc'] }],
       outputs: ['{projectRoot}/.storybook/compodoc/documentation.json'],
       options: {
         commands: [

@@ -34,6 +34,8 @@ interface TestRow extends Row {
 }
 
 class MockLinkHandler implements LinkHandler {
+  readonly currentUrl = vi.fn(() => signal(''));
+
   readonly prepareLink = vi.fn((command: LinkCommand): PreparedLink => ({ href: String(command.command) }));
 
   readonly navigateTo = vi.fn((): boolean => false);
@@ -474,6 +476,58 @@ describe('Table', () => {
       expect(datatable).toHaveClass('scroll-vertical');
       expect(estimate).toHaveBeenCalledWith(ROWS[0]);
       expect(screen.getByText('Ada').closest('datatable-body-row')).toHaveStyle({ height: '60px' });
+    });
+  });
+
+  it('forwards aria attributes to the table element', async () => {
+    await render(
+      `<span id="description">All people</span>
+      <ang-table aria-label="People" aria-describedby="description" [rows]="rows" [columns]="columns" />`,
+      {
+        imports: [Table],
+        componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS },
+      },
+    );
+
+    expect(screen.getByRole('table', { name: 'People' })).toHaveAccessibleDescription('All people');
+    expect(screen.getByRole('table').closest('ang-table')).not.toHaveAttribute('aria-label');
+  });
+
+  it('updates and removes forwarded aria attributes when the inputs change', async () => {
+    const label = signal<string | null>('People');
+    const labelledby = signal<string | null>(null);
+    await render(
+      `<span id="heading">Team</span>
+      <ang-table [aria-label]="label()" [aria-labelledby]="labelledby()" [rows]="rows" [columns]="columns" />`,
+      {
+        imports: [Table],
+        componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS, label, labelledby },
+      },
+    );
+
+    label.set(null);
+    labelledby.set('heading');
+    await screen.findByRole('table', { name: 'Team' });
+
+    expect(screen.getByRole('table')).not.toHaveAttribute('aria-label');
+  });
+
+  describe('during server rendering', () => {
+    beforeEach(() => {
+      vi.stubGlobal('ngServerMode', true);
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('forwards aria attributes without render hooks', async () => {
+      await render(`<ang-table aria-label="People" [rows]="rows" [columns]="columns" />`, {
+        imports: [Table],
+        componentProperties: { columns: [{ name: 'Name', prop: 'name' }], rows: ROWS },
+      });
+
+      expect(screen.getByRole('table', { name: 'People' })).toBeInTheDocument();
     });
   });
 });

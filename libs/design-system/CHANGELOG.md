@@ -1,3 +1,67 @@
+## 0.0.13 (2026-11-18)
+
+### 🚀 Features
+
+- **design-system:** add separator wrap directive for URLs and IDs ([#350](https://github.com/cns-iu/AtlasNG/pull/350))
+- **design-system:** make hardcoded aria labels configurable ([#423](https://github.com/cns-iu/AtlasNG/pull/423))
+- **design-system:** add aria label and description inputs to interactive components ([#422](https://github.com/cns-iu/AtlasNG/pull/422))
+- **cdk:** add announce directive for debounced live announcements ([#432](https://github.com/cns-iu/AtlasNG/pull/432))
+
+### 🩹 Fixes
+
+- **design-system:** small SSR fixes for table and cookie banner ([#437](https://github.com/cns-iu/AtlasNG/pull/437))
+- support server rendering in link handling, search highlights, ids and last modified dates ([#435](https://github.com/cns-iu/AtlasNG/pull/435))
+- **design-system:** show table header hover styles only on hover devices ([#433](https://github.com/cns-iu/AtlasNG/pull/433))
+- **design-system:** name the search list options list ([#414](https://github.com/cns-iu/AtlasNG/pull/414))
+- **design-system:** scroll search list options in a scroll area ([#410](https://github.com/cns-iu/AtlasNG/pull/410))
+- **design-system:** line up end-aligned table headers with their cells ([#415](https://github.com/cns-iu/AtlasNG/pull/415))
+- **design-system:** announce results indicator count changes ([#401](https://github.com/cns-iu/AtlasNG/pull/401))
+- **design-system:** fill results indicators with surface-container-low ([#398](https://github.com/cns-iu/AtlasNG/pull/398))
+- **design-system:** use outline-variant for the version control border ([#393](https://github.com/cns-iu/AtlasNG/pull/393))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- LibbyUX @LibbyUX
+
+## 0.0.12 (2026-11-13)
+
+### 🚀 Features
+
+- add last modified component and executor ([#248](https://github.com/cns-iu/AtlasNG/pull/248))
+- **design-system:** scroll long link snippet URLs in a scroll area ([#294](https://github.com/cns-iu/AtlasNG/pull/294))
+- **design-system:** add material tree story ([#349](https://github.com/cns-iu/AtlasNG/pull/349))
+- **design-system:** add dialog, expansion panel, sidenav, and bottom sheet stories ([#348](https://github.com/cns-iu/AtlasNG/pull/348))
+- **kg-explorer:** add metadata page layout ([#189](https://github.com/cns-iu/AtlasNG/pull/189))
+- **design-system:** add skeleton component ([#286](https://github.com/cns-iu/AtlasNG/pull/286))
+- **design-system:** use the shared search engine in the search list ([#299](https://github.com/cns-iu/AtlasNG/pull/299))
+- **design-system:** add search field component with autocomplete ([#300](https://github.com/cns-iu/AtlasNG/pull/300))
+- add coded AngError and guard error messages with ngDevMode ([#296](https://github.com/cns-iu/AtlasNG/pull/296))
+- **design-system:** add Material stories and track defaults ([#271](https://github.com/cns-iu/AtlasNG/pull/271))
+
+### 🩹 Fixes
+
+- **design-system:** let text links wrap with the surrounding text ([#344](https://github.com/cns-iu/AtlasNG/pull/344))
+- **design-system:** include the border in the version control width ([#343](https://github.com/cns-iu/AtlasNG/pull/343))
+- set type="button" on buttons that would otherwise submit a form ([#346](https://github.com/cns-iu/AtlasNG/pull/346))
+- **design-system:** request marketing consent from the YouTube button ([#267](https://github.com/cns-iu/AtlasNG/pull/267))
+- **design-system:** wrap long table of contents entries ([#266](https://github.com/cns-iu/AtlasNG/pull/266))
+- use the shadow color for cookie banner and modal shadows ([#265](https://github.com/cns-iu/AtlasNG/pull/265))
+- **design-system:** follow text link color in cookie banner policy link ([#245](https://github.com/cns-iu/AtlasNG/pull/245))
+- **design-system:** inherit surrounding font weight in text links ([#236](https://github.com/cns-iu/AtlasNG/pull/236))
+- **design-system:** support fontIcon with the ang-icons font set ([#231](https://github.com/cns-iu/AtlasNG/pull/231))
+
+### ❤️ Thank You
+
+- Claude
+- Claude Fable 5.1
+- Claude Fable 5.2
+- Claude Opus 5.5
+- Daniel Bolin
+- Edward Lu @edlu77
+- LibbyUX @LibbyUX
+
 ## 0.0.11 (2026-10-30)
 
 ### 🚀 Features

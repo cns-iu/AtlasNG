@@ -1,4 +1,6 @@
-import { Component, input, model, output } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { booleanAttribute, Component, Directive, inject, input, model, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,13 +28,29 @@ export interface HeaderShellNavigationItem {
   icon?: string;
   /** Whether the link is external. */
   external?: boolean;
+  /** Whether to render a divider above this item, separating it from the preceding items. */
+  divider?: boolean;
 }
 
-/** Screen size breakpoint to disable desktop navigation (px). */
-const DESKTOP_BREAKPOINT = 960;
+/**
+ * Marks a projected element, typically a `matIconButton` or a component wrapping one, as an app-wide
+ * header action. Actions render before the help and apps buttons, and the action or its focused
+ * descendant gets the header's focus outline.
+ * Reserve this slot for two or three app-wide actions such as a theme menu;
+ * page-specific actions belong in the page itself.
+ */
+@Directive({
+  selector: '[angHeaderShellAction]',
+  host: { class: 'ang-header-shell--action' },
+})
+export class HeaderShellAction {}
 
 /**
  * Sticky page header shell with responsive desktop/mobile navigation and dynamic icon action overflow.
+ *
+ * The local navigation and apps buttons expose their open state as `aria-expanded`. Set
+ * `localNavigationControls` and `appsMenuControls` to the ids of the panels they open,
+ * for example the `leftMenuId` and `rightMenuId` of an `ang-navigation-container`.
  */
 @Component({
   selector: 'ang-header-shell',
@@ -53,16 +71,19 @@ const DESKTOP_BREAKPOINT = 960;
   templateUrl: './header-shell.html',
   styleUrl: './header-shell.scss',
   providers: [provideEventScope('header-shell')],
-  host: {
-    '(window:resize)': 'closeLocalNavigationOnDesktop()',
-  },
 })
 export class HeaderShell {
   /** Homepage destination used by the logo button. */
   readonly logoLink = input<AnyLinkCommand>('/');
 
   /** Image source URL used for the logo. */
-  readonly logoUrl = input();
+  readonly logoSrc = input<string>();
+
+  /** Tooltip shown on the logo link. Override it when the link does not lead to the homepage. */
+  readonly logoTooltip = input('Homepage');
+
+  /** Accessible name of the logo link. */
+  readonly logoLabel = input('Go to homepage');
 
   /** Optional help link destination when the help button acts as a link. */
   readonly helpLink = input<AnyLinkCommand>();
@@ -74,25 +95,44 @@ export class HeaderShell {
   readonly localNavigationIcon = input<'menu' | 'tune'>('menu');
 
   /** Whether the page has local navigation enabled. */
-  readonly hasLocalNavigation = input(false);
+  readonly localNavigation = input(false, { transform: booleanAttribute });
 
   /** Current local navigation open/closed state. */
   readonly localNavigationExpanded = model(false);
 
+  /** Whether the apps menu is open. */
+  readonly appsMenuExpanded = input(false, { transform: booleanAttribute });
+
+  /** Id of the panel opened by the local navigation button, referenced by its `aria-controls`. */
+  readonly localNavigationControls = input<string>();
+
+  /** Id of the panel opened by the apps button, referenced by its `aria-controls`. */
+  readonly appsMenuControls = input<string>();
+
+  /** Accessible name of the local navigation button. */
+  readonly localNavigationLabel = input('Local navigation');
+
+  /** Accessible name of the apps button. */
+  readonly appsMenuLabel = input('App switcher');
+
+  /** Accessible name of the primary navigation landmark. */
+  readonly navigationLabel = input('Primary navigation');
+
   /** Emits each time the local navigation toggle button is pressed. */
-  readonly localNavigationToggle = output();
+  readonly localNavigationClick = output();
 
   /** Emits each time the apps menu toggle button is pressed. */
-  readonly appsMenuToggle = output();
+  readonly appsMenuClick = output();
 
-  /**
-   * Closes the local navigation menu if the window is resized above the desktop breakpoint
-   * @returns local navigation on desktop
-   */
-  protected closeLocalNavigationOnDesktop(): void {
-    if (!this.hasLocalNavigation() || window.innerWidth <= DESKTOP_BREAKPOINT) {
-      return;
-    }
-    this.localNavigationExpanded.set(false);
+  /** Closes the local navigation whenever the viewport enters the desktop breakpoint. */
+  constructor() {
+    inject(BreakpointObserver)
+      .observe('(min-width: 960px)')
+      .pipe(takeUntilDestroyed())
+      .subscribe((state) => {
+        if (state.matches && this.localNavigation()) {
+          this.localNavigationExpanded.set(false);
+        }
+      });
   }
 }

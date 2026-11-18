@@ -1,11 +1,12 @@
+import { PlatformLocation } from '@angular/common';
 import { computed, DestroyRef, inject, Injector, Service, Signal, signal } from '@angular/core';
 import type { IsActiveMatchOptions, NavigationBehaviorOptions } from '@angular/router';
 import { CUSTOM_ELEMENT_REGISTRY, LOCATION, NAVIGATION, WINDOW } from '@atlasng/core';
-import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink } from './handler';
+import type { LinkAttributes, LinkCommand, LinkHandler, PreparedLink, UrlChangeMatchOptions } from './handler';
 import { isAnchorLikeElement } from './utils/anchor-element';
 import { RouterlessCommandSerializer } from './utils/command-serializer';
 import { isUrlActive } from './utils/compare-url';
-import { isSafeNavigationUrl } from './utils/url';
+import { isSafeNavigationUrl, urlChangeSignal } from './utils/url';
 
 /**
  * Link metadata prepared by the default routerless handler.
@@ -26,9 +27,16 @@ export interface RouterlessPreparedLink extends PreparedLink {
 @Service()
 export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink> {
   /**
-   * Browser location object used for hard navigations.
+   * Browser location object used for hard navigations, or `undefined` when none is available,
+   * for example during server-side rendering.
    */
   readonly #location = inject(LOCATION);
+
+  /**
+   * Platform location used to read the current URL when no browser location is available,
+   * for example the request URL during server-side rendering.
+   */
+  readonly #platformLocation = inject(PlatformLocation);
 
   /**
    * Optional registry for resolving custom elements that behave like anchors.
@@ -43,7 +51,7 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
   /**
    * Current browser URL, refreshed whenever the browser reports a URL change.
    */
-  readonly #currentUrl = signal(this.#location.href);
+  readonly #currentUrl = signal(this.#readUrl());
 
   /**
    * Starts tracking browser URL changes for reactive active-state checks.
@@ -82,14 +90,15 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
    * @param link Prepared link to navigate to.
    * @param _event Triggering event (unused).
    * @param options Navigation behavior options.
-   * @returns `true` when native navigation should continue, otherwise `false`.
+   * @returns `true` when native navigation should continue, otherwise `false`. Always `true` without a browser location.
    */
   navigateTo(link: RouterlessPreparedLink, _event: Event, options: NavigationBehaviorOptions): boolean {
     this.#checkUnsupportedOption('skipLocationChange', options.skipLocationChange);
     this.#checkUnsupportedOption('state', options.state);
     this.#checkUnsupportedOption('browserUrl', options.browserUrl);
 
-    if (link.isAnchorLikeElement) {
+    const location = this.#location;
+    if (link.isAnchorLikeElement || !location) {
       return true;
     } else if (!isSafeNavigationUrl(link.href)) {
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -101,13 +110,23 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
     }
 
     if (options.replaceUrl) {
-      this.#location.replace(link.href);
+      location.replace(link.href);
     } else {
-      this.#location.assign(link.href);
+      location.assign(link.href);
     }
 
     this.#updateCurrentUrl();
     return false;
+  }
+
+  /**
+   * Tracks the browser URL (`location.href`).
+   *
+   * @param matchOptions URL parts that count as a change. All parts count by default.
+   * @returns A signal holding the URL as of the last change that counted.
+   */
+  currentUrl(matchOptions?: UrlChangeMatchOptions): Signal<string> {
+    return urlChangeSignal(this.#currentUrl, matchOptions);
   }
 
   /**
@@ -133,7 +152,16 @@ export class RouterlessLinkHandler implements LinkHandler<RouterlessPreparedLink
    * Re-reads the browser URL into the current URL signal.
    */
   #updateCurrentUrl(): void {
-    this.#currentUrl.set(this.#location.href);
+    this.#currentUrl.set(this.#readUrl());
+  }
+
+  /**
+   * Reads the current URL from the browser location, or from the platform location when there is none.
+   *
+   * @returns The current URL.
+   */
+  #readUrl(): string {
+    return this.#location?.href ?? this.#platformLocation.href;
   }
 
   /**

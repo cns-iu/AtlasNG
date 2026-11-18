@@ -5,12 +5,13 @@ import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
-import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
-import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
-import { pickDefined } from '../utils/pick-defined';
+import { KgExplorerDownloadHeaderCellDefinition } from '../download-cell/download-header-cell';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { KgExplorerTablePanel } from '../table-panel/table-panel';
+import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
+import { pickDefined } from '../utils/pick-defined';
+import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
@@ -26,8 +27,9 @@ type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: Sear
  * Filters with a `field` or `matches` narrow the rows after they are searched,
  * without rebuilding the search index; for other filters, read
  * {@link filterSelections} and pass the matching {@link items}. The menu is
- * docked from the Angular Material large breakpoint up and becomes a drawer
- * controlled by {@link filtersOpen} on smaller screens.
+ * docked from the `filtersDockBreakpoint` of {@link config} up (the large
+ * breakpoint by default) and becomes a drawer controlled by {@link filtersOpen}
+ * on smaller screens; `ang-kg-explorer-filter-toggle` opens and closes it.
  * Projected content, such as a footer, is rendered at the end of the table and
  * scrolls with it.
  *
@@ -124,10 +126,16 @@ export class KgExplorerTableView<
   /** File formats of the download column, or `undefined` when there is no download column. */
   private readonly downloadFormats = computed(() => this.resolvedConfig().downloadFormats);
 
-  /** Whether the filter menu is docked beside the table. */
-  protected readonly docked = watchBreakpoint('large');
+  /** Accessible name of the download column's header. */
+  private readonly downloadColumnLabel = computed(() => this.resolvedConfig().downloadColumnLabel ?? '');
 
-  /** Opens the filter menu when it is or becomes docked and closes the drawer when it undocks. */
+  /** Names the row of each download button: a row key or a function. */
+  private readonly downloadLabel = computed(() => this.resolvedConfig().downloadLabel);
+
+  /** Whether the filter menu is docked beside the table. */
+  protected readonly docked = watchBreakpoint(() => this.resolvedConfig().filtersDockBreakpoint ?? 'large');
+
+  /** Opens the filter menu when it is or becomes docked, and closes the drawer when it undocks. */
   constructor() {
     let previous: boolean | undefined;
     effect(() => {
@@ -141,23 +149,27 @@ export class KgExplorerTableView<
     });
   }
 
-  /** Download column, recreated only when the download formats change; `undefined` without download formats. */
+  /** Download column, recreated only when its formats or labels change; `undefined` without download formats. */
   private readonly downloadColumn = computed((): TableColumn<TRow> | undefined => {
     const formats = this.downloadFormats();
-    if (formats === undefined) {
+    const label = this.downloadLabel();
+    // The configuration token defaults `downloadLabel` to `title`, so its check only narrows the type.
+    if (formats === undefined || label === undefined) {
       return undefined;
     }
 
     return {
-      name: '',
+      name: this.downloadColumnLabel(),
       prop: '$$download',
       width: 40,
       flexGrow: 0,
       sortable: false,
+      headerTemplate: KgExplorerDownloadHeaderCellDefinition,
       cellTemplate: KgExplorerDownloadCellDefinition,
       cellConfig: {
         formats,
         download: (item, format) => this.download.emit({ item, format }),
+        ...(typeof label === 'function' ? { labelFn: label } : { labelProp: label }),
       } satisfies KgExplorerDownloadCellConfig<TRow, TFormat>,
     };
   });

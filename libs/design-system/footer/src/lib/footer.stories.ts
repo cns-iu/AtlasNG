@@ -34,7 +34,7 @@ const meta: Meta = {
   ],
   args: {
     socials: SOCIALS,
-    logoImage: 'assets/logo-placeholder.svg',
+    logoSrc: 'assets/logo-placeholder.svg',
     organization: 'Cyberinfrastructure for Network Science Center',
   },
 };

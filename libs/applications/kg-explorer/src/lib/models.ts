@@ -52,7 +52,7 @@ export interface KgExplorerFilter<TRow extends Row = Row, T extends SearchListOp
    */
   options?: T[];
   /** Whether to hide the search field of the search list, e.g. for filters with few options. */
-  searchDisabled?: boolean;
+  disableSearch?: boolean;
   /** Number of unique items shown by the filter's counter. Defaults to the number of options. */
   count?: number;
 }

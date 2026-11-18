@@ -36,6 +36,16 @@ export interface CookieModalData {
   logoLabel?: string;
 
   /**
+   * Visually hidden dialog title, used as the dialog's accessible name. Defaults to "Manage your privacy preferences".
+   */
+  title?: string;
+
+  /**
+   * Accessible name of the tab list. Defaults to "Cookie settings".
+   */
+  tabsLabel?: string;
+
+  /**
    * Optional providers grouped by category for display in the details tab.
    */
   providers?: CookiePermissionProvidersByCategory;
@@ -105,6 +115,16 @@ export class CookieModal {
    * Accessible label for the optional logo.
    */
   protected readonly logoLabel = this.data.logoLabel;
+
+  /**
+   * Visually hidden dialog title, used as the dialog's accessible name.
+   */
+  protected readonly title = this.data.title ?? 'Manage your privacy preferences';
+
+  /**
+   * Accessible name of the tab list.
+   */
+  protected readonly tabsLabel = this.data.tabsLabel ?? 'Cookie settings';
 
   /**
    * Providers grouped by category for the permissions view.

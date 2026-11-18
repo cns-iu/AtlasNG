@@ -105,9 +105,12 @@
     "build-storybook": {
       "dependsOn": ["build-storybook-compodoc"],
       "inputs": [
-        "default",
+        "production",
         "^production",
         "{projectRoot}/.storybook/**/*",
+        "{projectRoot}/tsconfig.storybook.json",
+        "{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
+        "{projectRoot}/**/*.mdx",
         {
           "externalDependencies": ["storybook", "@storybook/angular"]
         }
