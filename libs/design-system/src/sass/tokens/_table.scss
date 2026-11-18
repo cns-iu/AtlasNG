@@ -15,6 +15,7 @@ $config: (
     header-text-weight: token-utils.sys-token(title-small-weight),
     header-state-layer-color: token-utils.sys-token(on-surface-variant),
     cell-background-color: transparent,
+    cell-horizontal-padding: 16px,
     cell-text-color: token-utils.sys-token(on-surface-variant),
     cell-text-font: token-utils.sys-token(body-medium-font),
     cell-text-line-height: token-utils.sys-token(body-medium-line-height),

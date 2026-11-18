@@ -71,7 +71,7 @@
     .datatable-header-cell {
       box-sizing: border-box;
       height: 100%;
-      padding: 0 16px;
+      padding: 0 token-utils.slot('cell-horizontal-padding', $config);
 
       &.sortable {
         padding-right: 0;
@@ -97,7 +97,7 @@
       display: flex;
       align-items: center;
       height: 100%;
-      padding: 0 16px;
+      padding: 0 token-utils.slot('cell-horizontal-padding', $config);
 
       .datatable-body-cell-label {
         flex-grow: 1;
