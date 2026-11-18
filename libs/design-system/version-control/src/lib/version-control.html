@@ -5,7 +5,14 @@
 
   <mat-form-field class="ang-version-control--version" subscriptSizing="dynamic">
     <mat-label>{{ versionLabel() }}</mat-label>
-    <mat-select [disabled]="versions().length === 0" [value]="version" (selectionChange)="selectVersion($event.value)">
+    <mat-select
+      angTrackChange
+      [angTrackChangeOn]="{ selectionChange: select.selectionChange }"
+      [disabled]="versions().length === 0"
+      [value]="version"
+      (selectionChange)="selectedVersion.set($event.value)"
+      #select
+    >
       @for (item of versions(); track item) {
         <mat-option [value]="item">{{ item.label }}</mat-option>
       }
