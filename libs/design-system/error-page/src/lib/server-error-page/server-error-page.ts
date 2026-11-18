@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 import { ErrorPage, ErrorPageAction, ErrorPageDescription, ErrorPageTitle } from '../error-page';
 
@@ -8,9 +9,19 @@ import { ErrorPage, ErrorPageAction, ErrorPageDescription, ErrorPageTitle } from
  */
 @Component({
   selector: 'ang-server-error-page',
-  imports: [ErrorPage, ErrorPageTitle, ErrorPageDescription, ErrorPageAction, MatButtonModule, AnyLink],
+  imports: [
+    ErrorPage,
+    ErrorPageTitle,
+    ErrorPageDescription,
+    ErrorPageAction,
+    MatButtonModule,
+    AnyLink,
+    EventScope,
+    TrackClick,
+  ],
   templateUrl: './server-error-page.html',
   styleUrl: './server-error-page.scss',
+  providers: [provideEventScope('server-error-page')],
 })
 export class ServerErrorPage {
   /** Link for the report issue CTA */

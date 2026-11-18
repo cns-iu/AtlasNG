@@ -27,8 +27,11 @@
   matDialogContent
   class="ang-cookie-modal--tabs"
   angEventScope="tabs"
+  angTrackChange
   [aria-label]="tabsLabel"
+  [angTrackChangeOn]="{ selectedTabChange: tabs.selectedTabChange }"
   [(selectedIndex)]="activeTab"
+  #tabs
 >
   <mat-tab label="Consent" angEventScope="consent-tab">
     <ang-scroll-area class="ang-cookie-modal--scroll-area">

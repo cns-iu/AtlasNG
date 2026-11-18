@@ -7,9 +7,12 @@
     <mat-label>{{ versionLabel() }}</mat-label>
     <mat-select
       panelClass="ang-version-control--version-panel"
+      angTrackChange
+      [angTrackChangeOn]="{ selectionChange: select.selectionChange }"
       [disabled]="versions().length === 0"
       [value]="version"
       (selectionChange)="selectedVersion.set($event.value)"
+      #select
     >
       <ang-scroll-area class="ang-version-control--version-scroll-area" orientation="vertical">
         @for (item of versions(); track item) {
@@ -30,6 +33,7 @@
           mat-list-item
           lines="3"
           class="ang-version-control--download-option"
+          angTrackClick
           (click)="download.emit({ item: version, format: option })"
         >
           <mat-icon matListItemIcon fontIcon="download" />

@@ -1,4 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
+import { EventScope } from '@atlasng/analytics';
 import { AnyLink } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/links/text-link';
 import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-system/table';
@@ -26,10 +27,10 @@ export type LinkCellConfig<TRow extends Row = Row> = Simplify<
  */
 @Component({
   selector: 'ang-table-link-cell-definition',
-  imports: [AnyLink, CellTemplateContext, TextLink],
+  imports: [AnyLink, CellTemplateContext, EventScope, TextLink],
   template: `
     <ng-template let-row="row" let-value="value" [angCellTemplateContext]="rowType">
-      <a angTextLink class="ang-table--link-cell" [angAnyLink]="value">{{ getLabel(row) }}</a>
+      <a angTextLink angEventScope="link" class="ang-table--link-cell" [angAnyLink]="value">{{ getLabel(row) }}</a>
     </ng-template>
   `,
   encapsulation: ViewEncapsulation.None,

@@ -4,8 +4,10 @@
   <input
     class="ang-search-field--input"
     matInput
+    angTrackChange
     type="search"
     autocomplete="off"
+    [angTrackChangeOn]="{ change: true, optionSelected: autocomplete.optionSelected }"
     [placeholder]="placeholder() ?? ''"
     [disabled]="disabled()"
     [value]="value()"
@@ -21,6 +23,7 @@
       class="ang-search-field--clear"
       matIconButton
       matSuffix
+      angTrackClick
       type="button"
       aria-label="Clear search"
       (click)="clear()"

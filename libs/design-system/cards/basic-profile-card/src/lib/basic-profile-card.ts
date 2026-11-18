@@ -1,6 +1,7 @@
 import { coerceArray } from '@angular/cdk/coercion';
 import { NgOptimizedImage } from '@angular/common';
 import { Component, input } from '@angular/core';
+import { provideEventScope } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/links/text-link';
 
@@ -12,6 +13,7 @@ import { TextLink } from '@atlasng/design-system/links/text-link';
   imports: [NgOptimizedImage, TextLink, AnyLink],
   templateUrl: './basic-profile-card.html',
   styleUrl: './basic-profile-card.scss',
+  providers: [provideEventScope('basic-profile-card')],
   host: { class: 'ang-basic-profile-card' },
 })
 export class BasicProfileCard {

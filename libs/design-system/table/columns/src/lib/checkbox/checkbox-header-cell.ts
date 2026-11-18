@@ -1,5 +1,6 @@
 import { Component, computed, ViewEncapsulation } from '@angular/core';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { EventScope, TrackChange } from '@atlasng/analytics';
 import { HeaderCellDefinition, HeaderCellTemplateContext } from '@atlasng/design-system/table';
 
 /** Configuration for the checkbox header-cell definition. */
@@ -16,11 +17,13 @@ export interface CheckboxHeaderCellConfig {
  */
 @Component({
   selector: 'ang-table-checkbox-header-cell-definition',
-  imports: [HeaderCellTemplateContext, MatCheckbox],
+  imports: [EventScope, HeaderCellTemplateContext, MatCheckbox, TrackChange],
   template: `
     <ng-template let-allRowsSelected="allRowsSelected" let-selectFn="selectFn" angHeaderCellTemplateContext>
       <div class="ang-table--checkbox-header">
         <mat-checkbox
+          angEventScope="select-all"
+          angTrackChange
           [aria-label]="config?.label ?? 'Select all rows'"
           [checked]="allRowsSelected ?? false"
           [indeterminate]="!allRowsSelected && someRowsSelected()"
