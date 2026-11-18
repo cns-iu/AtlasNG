@@ -18,15 +18,12 @@ export class TrackBlur {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackBlurDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Blur;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Blur,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -47,16 +44,12 @@ export class TrackChange {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackChangeDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Change;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Change,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      debounce: this.debounce,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -75,15 +68,12 @@ export class TrackClick {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackClickDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Click;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Click,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -102,15 +92,12 @@ export class TrackDoubleClick {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackDoubleClickDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.DoubleClick;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.DoubleClick,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -129,15 +116,12 @@ export class TrackError {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackErrorDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Error;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Error,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -156,15 +140,12 @@ export class TrackFocus {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackFocusDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Focus;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Focus,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -183,15 +164,12 @@ export class TrackHover {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackHoverDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Hover;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Hover,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -212,16 +190,12 @@ export class TrackInput {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackInputDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Input;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Input,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      debounce: this.debounce,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -240,15 +214,12 @@ export class TrackKeyboard {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackKeyboardDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Keyboard;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Keyboard,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -267,15 +238,12 @@ export class TrackReset {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackResetDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Reset;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Reset,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }
 
@@ -294,14 +262,11 @@ export class TrackSubmit {
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackSubmitDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Submit;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent({
-      event: CoreEvents.Submit,
-      payload: this.payload,
-      options: this.options,
-      on: this.on,
-      disabled: this.disabled,
-    });
+    initializeTrackEvent(this);
   }
 }

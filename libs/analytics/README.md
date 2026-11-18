@@ -191,7 +191,7 @@ Each directive accepts an optional payload, an `…On` input to override the tri
 <input angTrackInput angTrackInputDebounce="500" />
 ```
 
-Custom directives can reuse the same behavior with `initializeTrackEvent({ event, payload, options, on, debounce, disabled })`. Pass `injector` to call it outside an injection context.
+Custom directives can reuse the same behavior with `initializeTrackEvent({ event, payload, options, on, debounce, disabled })`, or with `initializeTrackEvent(this)` when the directive's members match those names. Pass `{ injector }` as the second argument to call it outside an injection context.
 
 Group events with scopes. A scope is set in a template with `angEventScope` or in a component with `provideEventScope()`; nested scopes are joined with dots, starting from `rootScope` (or `appName`) in the analytics configuration. Directive-tracked events report the full scope path in their `path` property.
 

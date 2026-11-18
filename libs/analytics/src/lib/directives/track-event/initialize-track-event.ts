@@ -40,8 +40,6 @@ interface BaseTrackEventConfig {
   debounce?: () => number | undefined;
   /** Whether tracking is disabled. */
   disabled?: () => boolean;
-  /** Injector to use instead of the current injection context. */
-  injector?: Injector;
 }
 
 /** Configuration for tracking a single analytics event. */
@@ -89,17 +87,19 @@ interface TriggerBinding extends TriggerKey {
  *
  * Triggers are registered on the first change detection, so events dispatched before it are not tracked.
  *
- * @param config The single-event or multi-event configuration
+ * @param config The single-event or multi-event configuration, such as a directive whose members match it
+ * @param options Additional options which can include an `injector` to use instead of the current injection context
  * @throws When called outside an injection context without an `injector`
  */
 export function initializeTrackEvent<E extends AnalyticsEvent>(
   config: TrackEventConfig<E> | MultiTrackEventConfig<E>,
+  options?: { injector?: Injector },
 ): void {
-  if (!config.injector) {
+  if (!options?.injector) {
     assertInInjectionContext(initializeTrackEvent);
   }
 
-  const injector = config.injector ?? inject(Injector);
+  const injector = options?.injector ?? inject(Injector);
   const element = injector.get(ElementRef).nativeElement as Node;
   const renderer = injector.get(Renderer2);
   const track = injectTrackEvent({ injector });
