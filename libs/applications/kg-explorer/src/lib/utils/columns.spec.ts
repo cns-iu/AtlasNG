@@ -37,7 +37,7 @@ describe('kgExplorer column builders', () => {
     expect(byLabel.flexGrow).toBe(2);
   });
 
-  it('builds content-sized text columns and growing number and date columns with Figma width limits', () => {
+  it('builds content-sized text columns and growing number and date columns', () => {
     expect(kgExplorerTextColumn<TestRow>('Name', 'name')).toMatchObject({
       cellTemplate: TextCellDefinition,
       maxWidth: 240,
@@ -47,13 +47,13 @@ describe('kgExplorer column builders', () => {
       cellTemplate: NumberCellDefinition,
       headerConfig: { align: 'end' },
       minWidth: 98,
-      maxWidth: 132,
+      maxWidth: 148,
       flexGrow: 1,
     });
     expect(kgExplorerDateColumn<TestRow>('Date', 'date')).toMatchObject({
       cellConfig: { align: 'end' },
-      minWidth: 112,
-      maxWidth: 132,
+      minWidth: 120,
+      maxWidth: 152,
       flexGrow: 1,
     });
   });

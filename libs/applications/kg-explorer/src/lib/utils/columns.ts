@@ -108,8 +108,8 @@ export function kgExplorerChipColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates an end-aligned, localized number column, sized like the Figma number
- * columns: 98px to 132px wide.
+ * Creates an end-aligned, localized number column, 98px to 148px wide, so a
+ * label like "#Biomarkers" and its sort arrow fit on one line.
  *
  * @param name Header label.
  * @param prop Row property holding the number.
@@ -125,7 +125,7 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
     name,
     prop,
     minWidth: 98,
-    maxWidth: 132,
+    maxWidth: 148,
     flexGrow: 1,
     cellTemplate: NumberCellDefinition,
     ...END_HEADER,
@@ -134,8 +134,8 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates an end-aligned date column for preformatted values, sized like the
- * Figma date column: 112px to 132px wide.
+ * Creates an end-aligned date column for preformatted values, 120px to 152px
+ * wide, so a label like "Last modified" and its sort arrow fit on one line.
  *
  * @param name Header label.
  * @param prop Row property holding the formatted date.
@@ -150,8 +150,8 @@ export function kgExplorerDateColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 112,
-    maxWidth: 132,
+    minWidth: 120,
+    maxWidth: 152,
     flexGrow: 1,
     cellTemplate: TextCellDefinition,
     cellConfig: { align: 'end' },

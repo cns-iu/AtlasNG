@@ -90,51 +90,51 @@ const SAMPLE_ITEMS: SampleItem[] = SAMPLE_TITLES.map((title, index) => ({
   formats: SAMPLE_FORMATS[index % SAMPLE_FORMATS.length],
 }));
 
-/** Builders of the sample columns, keyed by the prefix of their width controls. */
-const SAMPLE_COLUMN_BUILDERS = {
-  title: (overrides) => kgExplorerLinkColumn('Title', 'url', { labelProp: 'title' }, overrides),
-  type: (overrides) => kgExplorerTextColumn('Type', 'type', overrides),
-  organs: (overrides) => kgExplorerChipColumn('Organs', 'tags', overrides),
-  cellTypes: (overrides) => kgExplorerNumberColumn('#Cell types', 'cellTypeCount', overrides),
-  // Wide enough for the label and sort arrow on one line in every brand.
-  biomarkers: (overrides) => kgExplorerNumberColumn('#Biomarkers', 'biomarkerCount', { maxWidth: 148, ...overrides }),
-  lastModified: (overrides) => kgExplorerDateColumn('Last modified', 'lastModified', { maxWidth: 152, ...overrides }),
-} satisfies Record<string, (overrides?: Partial<TableColumn<SampleItem>>) => TableColumn<SampleItem>>;
+/** Sample columns that mirror the Figma table view, keyed by the prefix of their width controls. */
+const SAMPLE_COLUMNS_BY_KEY = {
+  title: kgExplorerLinkColumn<SampleItem>('Title', 'url', { labelProp: 'title' }),
+  type: kgExplorerTextColumn<SampleItem>('Type', 'type'),
+  organs: kgExplorerChipColumn<SampleItem>('Organs', 'tags'),
+  cellTypes: kgExplorerNumberColumn<SampleItem>('#Cell types', 'cellTypeCount'),
+  // Keeps the one-word label and its sort arrow on one line, even on phones.
+  biomarkers: kgExplorerNumberColumn<SampleItem>('#Biomarkers', 'biomarkerCount', { minWidth: 148 }),
+  lastModified: kgExplorerDateColumn<SampleItem>('Last modified', 'lastModified'),
+};
 
-/** Prefix of a sample column's width controls. */
-type SampleColumnKey = keyof typeof SAMPLE_COLUMN_BUILDERS;
+/** Sample columns with the prefixes of their width controls. */
+const SAMPLE_COLUMN_ENTRIES = Object.entries(SAMPLE_COLUMNS_BY_KEY) as [
+  keyof typeof SAMPLE_COLUMNS_BY_KEY,
+  TableColumn<SampleItem>,
+][];
 
 /** Story-only args setting each sample column's minimum and maximum width, such as `titleMinWidth`. */
-type ColumnWidthArgs = Record<`${SampleColumnKey}${'Min' | 'Max'}Width`, number>;
+type ColumnWidthArgs = Partial<Record<`${keyof typeof SAMPLE_COLUMNS_BY_KEY}${'Min' | 'Max'}Width`, number>>;
+
+/** Column width args with the sample columns' widths. */
+const COLUMN_WIDTH_DEFAULTS: ColumnWidthArgs = Object.fromEntries(
+  SAMPLE_COLUMN_ENTRIES.flatMap(([key, column]) => [
+    [`${key}MinWidth`, column.minWidth],
+    [`${key}MaxWidth`, column.maxWidth],
+  ]),
+);
 
 /** Names of the column width args, kept out of the table view's inputs. */
-const COLUMN_WIDTH_ARGS = (Object.keys(SAMPLE_COLUMN_BUILDERS) as SampleColumnKey[]).flatMap((key) => [
-  `${key}MinWidth` as const,
-  `${key}MaxWidth` as const,
-]);
-
-/** Columns for {@link SAMPLE_ITEMS} that mirror the Figma table view. */
-const SAMPLE_COLUMNS: TableColumn<SampleItem>[] = Object.values(SAMPLE_COLUMN_BUILDERS).map((build) => build({}));
+const COLUMN_WIDTH_ARGS = Object.keys(COLUMN_WIDTH_DEFAULTS);
 
 /**
- * Builds the sample columns with the widths set by the story's controls.
+ * Applies the story's width controls to the sample columns. A cleared control
+ * removes that limit.
  *
  * @param args Story args holding the column width controls.
  * @returns Sample columns with the controlled minimum and maximum widths.
  */
-function sampleColumnsFor(args: Partial<ColumnWidthArgs>): TableColumn<SampleItem>[] {
-  return (
-    Object.entries(SAMPLE_COLUMN_BUILDERS) as [SampleColumnKey, (typeof SAMPLE_COLUMN_BUILDERS)[SampleColumnKey]][]
-  ).map(([key, build]) => build({ minWidth: args[`${key}MinWidth`], maxWidth: args[`${key}MaxWidth`] }));
+function sampleColumnsFor(args: ColumnWidthArgs): TableColumn<SampleItem>[] {
+  return SAMPLE_COLUMN_ENTRIES.map(([key, column]) => ({
+    ...column,
+    minWidth: args[`${key}MinWidth`],
+    maxWidth: args[`${key}MaxWidth`],
+  }));
 }
-
-/** Default column width args, read from the column helpers. */
-const COLUMN_WIDTH_DEFAULTS = Object.fromEntries(
-  (Object.keys(SAMPLE_COLUMN_BUILDERS) as SampleColumnKey[]).flatMap((key, index) => [
-    [`${key}MinWidth`, SAMPLE_COLUMNS[index].minWidth],
-    [`${key}MaxWidth`, SAMPLE_COLUMNS[index].maxWidth],
-  ]),
-) as ColumnWidthArgs;
 
 /** Type and Organ filters for the sample rows, with options derived from the rows. */
 const SAMPLE_FILTERS: KgExplorerFilter<SampleItem>[] = [
@@ -252,7 +252,7 @@ const meta: Meta<StoryArgs> = {
   },
   args: {
     items: SAMPLE_ITEMS,
-    columns: SAMPLE_COLUMNS,
+    columns: Object.values(SAMPLE_COLUMNS_BY_KEY),
     filters: SAMPLE_FILTERS,
     filtersOpen: false,
     config: { downloadFormats: sampleFormatsFor },
