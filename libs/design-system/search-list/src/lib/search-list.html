@@ -9,9 +9,12 @@
 <ang-scroll-area class="ang-search-list--scroll-area" orientation="vertical">
   <mat-selection-list
     class="ang-search-list--list"
+    angTrackChange
     [attr.aria-label]="ariaLabel()"
     [attr.aria-labelledby]="ariaLabelledby()"
+    [angTrackChangeOn]="{ selectionChange: list.selectionChange }"
     (selectionChange)="updateSelection($event)"
+    #list
   >
     @for (result of results(); track result.item) {
       @let option = result.item;
