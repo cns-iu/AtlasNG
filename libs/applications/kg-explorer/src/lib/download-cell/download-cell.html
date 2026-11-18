@@ -7,21 +7,20 @@
       type="button"
       class="ang-kg-explorer-download-cell--button"
       matTooltip="No downloads available"
-      aria-label="No downloads available"
       disabled
       disabledInteractive
+      [attr.aria-label]="`No downloads available for ${getName(row)}`"
     >
       <mat-icon fontIcon="download" />
     </button>
   } @else if (formats.length === 1) {
     @let format = formats[0];
-    @let label = `Download ${format.label}`;
     <button
       matIconButton
       type="button"
       class="ang-kg-explorer-download-cell--button"
-      [matTooltip]="label"
-      [attr.aria-label]="label"
+      [matTooltip]="`Download ${format.label}`"
+      [attr.aria-label]="`Download ${format.label} for ${getName(row)}`"
       (click)="config.download(row, format)"
     >
       <mat-icon fontIcon="download" />
@@ -32,7 +31,7 @@
       type="button"
       class="ang-kg-explorer-download-cell--button"
       matTooltip="Choose download format"
-      aria-label="Choose download format"
+      [attr.aria-label]="`Choose download format for ${getName(row)}`"
       [matMenuTriggerFor]="menu"
     >
       <mat-icon fontIcon="download" />
