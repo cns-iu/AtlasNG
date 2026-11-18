@@ -1,4 +1,5 @@
 import { Component, Directive, ViewEncapsulation } from '@angular/core';
+import { provideEventScope } from '@atlasng/analytics';
 
 /** Marks projected content as the error page title. Works as an element or an attribute. */
 @Directive({
@@ -28,6 +29,7 @@ export class ErrorPageAction {}
   selector: 'ang-error-page',
   templateUrl: './error-page.html',
   styleUrl: './error-page.scss',
+  providers: [provideEventScope('error-page')],
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-error-page',

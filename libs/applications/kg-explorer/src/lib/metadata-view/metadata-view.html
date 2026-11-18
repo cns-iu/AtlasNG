@@ -9,8 +9,15 @@
     @if (entry.icons?.length) {
       <div class="ang-kg-explorer-metadata-view--icons">
         @for (icon of entry.icons; track $index) {
-          <div class="ang-kg-explorer-metadata-view--icon-wrapper">
-            <img class="ang-kg-explorer-metadata-view--icon" fill [ngSrc]="icon.src" [alt]="icon.alt" />
+          <div class="ang-kg-explorer-metadata-view--icon-wrapper" [attr.color]="icon.color">
+            <mat-icon
+              class="ang-kg-explorer-metadata-view--icon"
+              fontSet="ang-icons"
+              role="img"
+              aria-hidden="false"
+              [fontIcon]="icon.name"
+              [attr.aria-label]="icon.label"
+            />
           </div>
         }
       </div>

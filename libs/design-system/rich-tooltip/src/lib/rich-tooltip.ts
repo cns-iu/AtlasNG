@@ -12,6 +12,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { IdGenerator } from '@atlasng/common';
 
 /**
@@ -53,9 +54,10 @@ export class RichTooltipAction {}
  */
 @Component({
   selector: 'ang-rich-tooltip',
-  imports: [MatButton],
+  imports: [MatButton, TrackClick],
   templateUrl: './rich-tooltip.html',
   styleUrl: './rich-tooltip.scss',
+  providers: [provideEventScope('rich-tooltip')],
   encapsulation: ViewEncapsulation.None,
   host: {
     '[attr.aria-label]': 'null',

@@ -1,6 +1,8 @@
 <div class="ang-link-snippet--link">
   <a
     matIconButton
+    angEventScope="open"
+    angTrackClick
     target="_blank"
     rel="noopener noreferrer"
     [angAnyLink]="url()"
@@ -20,6 +22,8 @@
   type="button"
   matButton="outlined"
   class="ang-link-snippet--copy"
+  angEventScope="copy"
+  angTrackClick
   [attr.aria-describedby]="labelId"
   (click)="copyUrl()"
 >

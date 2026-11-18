@@ -1,6 +1,7 @@
 import { booleanAttribute, Component, input } from '@angular/core';
 import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink } from '@atlasng/common';
 import { Heading } from '@atlasng/design-system/content/heading';
 
@@ -12,9 +13,10 @@ import { Heading } from '@atlasng/design-system/content/heading';
  */
 @Component({
   selector: 'ang-content-header',
-  imports: [AnyLink, Heading, MatDivider, MatIcon],
+  imports: [AnyLink, Heading, MatDivider, MatIcon, TrackClick],
   templateUrl: './content-header.html',
   styleUrl: './content-header.scss',
+  providers: [provideEventScope('content-header')],
   host: {
     class: 'ang-content-header',
     '[attr.id]': 'null',
