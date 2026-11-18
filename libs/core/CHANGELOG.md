@@ -1,3 +1,18 @@
+## 0.0.13 (2026-11-18)
+
+### 🚀 Features
+
+- **cdk:** add announce directive for debounced live announcements ([#432](https://github.com/cns-iu/AtlasNG/pull/432))
+
+### 🩹 Fixes
+
+- support server rendering in link handling, search highlights, ids and last modified dates ([#435](https://github.com/cns-iu/AtlasNG/pull/435))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
 ## 0.0.12 (2026-11-13)
 
 ### 🚀 Features
