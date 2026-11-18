@@ -15,6 +15,7 @@ import {
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { provideEventScope } from '@atlasng/analytics';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import {
   CellContext,
@@ -137,7 +138,7 @@ function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TR
   imports: [DatatableComponent, ScrollArea, StickyHeader],
   templateUrl: './table.html',
   styleUrl: './table.scss',
-  providers: [{ provide: TABLE, useExisting: forwardRef(() => Table) }],
+  providers: [{ provide: TABLE, useExisting: forwardRef(() => Table) }, provideEventScope('table')],
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-table',

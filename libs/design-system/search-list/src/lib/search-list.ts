@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
+import { provideEventScope, TrackChange } from '@atlasng/analytics';
 import { injectSearch, SearchHighlight, SearchRange, SearchResult } from '@atlasng/cdk/search';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
@@ -33,9 +34,19 @@ export interface SearchListOption {
  */
 @Component({
   selector: 'ang-search-list',
-  imports: [DecimalPipe, FormsModule, MatIconModule, MatInputModule, MatListModule, ScrollArea, SearchHighlight],
+  imports: [
+    DecimalPipe,
+    FormsModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    ScrollArea,
+    SearchHighlight,
+    TrackChange,
+  ],
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
+  providers: [provideEventScope('search-list')],
   host: {
     class: 'ang-search-list',
     '[attr.aria-label]': 'null',

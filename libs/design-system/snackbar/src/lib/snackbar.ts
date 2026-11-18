@@ -9,6 +9,7 @@ import {
   MatSnackBarLabel,
   MatSnackBarRef,
 } from '@angular/material/snack-bar';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 
 /** Data passed to the {@link Snackbar} component */
 export interface SnackBarData {
@@ -63,9 +64,19 @@ export function createSnackBarConfig(message: string, config: SnackBarConfig = {
 /** Snackbar component */
 @Component({
   selector: 'ang-snackbar',
-  imports: [MatButton, MatIcon, MatIconButton, MatSnackBarAction, MatSnackBarActions, MatSnackBarLabel],
+  imports: [
+    EventScope,
+    MatButton,
+    MatIcon,
+    MatIconButton,
+    MatSnackBarAction,
+    MatSnackBarActions,
+    MatSnackBarLabel,
+    TrackClick,
+  ],
   templateUrl: './snackbar.html',
   styleUrl: './snackbar.scss',
+  providers: [provideEventScope('snackbar')],
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-snackbar',

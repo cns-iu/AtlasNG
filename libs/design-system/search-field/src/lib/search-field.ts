@@ -4,6 +4,7 @@ import { MatIconButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
+import { provideEventScope, TrackChange, TrackClick } from '@atlasng/analytics';
 import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggestion } from '@atlasng/cdk/search';
 
 /**
@@ -29,9 +30,12 @@ import { injectSearch, SearchHighlight, type SearchFieldSpec, type SearchSuggest
     MatPrefix,
     MatSuffix,
     SearchHighlight,
+    TrackChange,
+    TrackClick,
   ],
   templateUrl: './search-field.html',
   styleUrl: './search-field.scss',
+  providers: [provideEventScope('search-field')],
   host: {
     class: 'ang-search-field',
     '[attr.aria-labelledby]': 'null',

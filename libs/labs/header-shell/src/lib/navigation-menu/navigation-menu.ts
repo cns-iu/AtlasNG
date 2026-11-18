@@ -4,6 +4,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink } from '@atlasng/common';
 import { SocialMediaButton, SocialMediaButtonDefinition } from '@atlasng/design-system/buttons/social-media-button';
 import { HeaderShellNavigationItem } from '../header-shell';
@@ -24,9 +25,11 @@ const SOCIAL_MEDIA_IDS = ['linkedin', 'youtube', 'github', 'bluesky', 'instagram
     MatExpansionModule,
     AnyLink,
     SocialMediaButton,
+    TrackClick,
   ],
   templateUrl: './navigation-menu.html',
   styleUrl: './navigation-menu.scss',
+  providers: [provideEventScope('navigation-menu')],
 })
 export class NavigationMenu {
   /** Navigation items rendered in the desktop rail and mobile fallback. */

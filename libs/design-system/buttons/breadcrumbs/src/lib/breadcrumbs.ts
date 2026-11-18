@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { provideEventScope } from '@atlasng/analytics';
 import { AnyLink, AnyLinkActive, AnyLinkCommand } from '@atlasng/common';
 import { TextLink } from '@atlasng/design-system/links/text-link';
 
@@ -22,6 +23,7 @@ export interface BreadcrumbItem {
   imports: [TextLink, AnyLink, AnyLinkActive],
   templateUrl: './breadcrumbs.html',
   styleUrl: './breadcrumbs.scss',
+  providers: [provideEventScope('breadcrumbs')],
   host: { class: 'ang-breadcrumbs', '[attr.aria-label]': 'null' },
 })
 export class Breadcrumbs {

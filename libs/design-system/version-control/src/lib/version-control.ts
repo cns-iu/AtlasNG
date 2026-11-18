@@ -4,6 +4,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatActionList, MatListModule } from '@angular/material/list';
 import { MatSelect } from '@angular/material/select';
+import { provideEventScope, TrackChange, TrackClick } from '@atlasng/analytics';
 import { IdGenerator } from '@atlasng/common';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
@@ -44,9 +45,21 @@ export interface VersionDownload<T extends VersionControlFileFormat> {
  */
 @Component({
   selector: 'ang-version-control',
-  imports: [MatActionList, MatFormField, MatIcon, MatLabel, MatListModule, MatOption, MatSelect, ScrollArea],
+  imports: [
+    MatActionList,
+    MatFormField,
+    MatIcon,
+    MatLabel,
+    MatListModule,
+    MatOption,
+    MatSelect,
+    ScrollArea,
+    TrackChange,
+    TrackClick,
+  ],
   templateUrl: './version-control.html',
   styleUrl: './version-control.scss',
+  providers: [provideEventScope('version-control')],
 })
 export class VersionControl<T extends VersionControlFileFormat = VersionControlFileFormat> {
   /** Heading displayed beside the version selector. */
