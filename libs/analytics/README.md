@@ -25,6 +25,7 @@ Apps that only use `withCustomBackend()` don't need them.
 | `@atlasng/analytics/permissions`     | `AnalyticsPermissions` and `AnalyticsPermissionsManager`                 |
 | `@atlasng/analytics/default-backend` | `withDefaultBackend` and related types. Requires `analytics` and `qs`    |
 | `@atlasng/analytics/errors`          | `AnalyticsErrorCode`, also re-exported from `@atlasng/analytics`         |
+| `@atlasng/analytics/forms`           | `TrackControlChange` for form controls. Requires `@angular/forms`        |
 
 ## Usage
 
@@ -213,6 +214,15 @@ const analytics = inject(Analytics);
 analytics.trackPageView();
 analytics.trackEvent(CoreEvents.Click, { target: 'download' });
 ```
+
+For controls bound with `ngModel`, `formControl`, or `formControlName`, `TrackControlChange` from `@atlasng/analytics/forms` tracks the changes the user makes as `change` events, with the trigger `valueChange`. Values set from code are ignored, and the value itself is never sent. It works with any control that has a `ControlValueAccessor`, including Angular Material selects, checkboxes, and toggles. Text inputs report every keystroke, so add a debounce:
+
+```html
+<mat-select [formControl]="sort" angTrackControlChange />
+<input [(ngModel)]="name" angTrackControlChange angTrackControlChangeDebounce="500" />
+```
+
+Signal forms (`[formField]`) are not supported yet, because they do not tell user edits apart from values set in code.
 
 When neither DOM events nor outputs on the element fit, for example a directive that listens on an ancestor element, use `injectTrackEvent()`. It adds the current scope path, like the directives do:
 

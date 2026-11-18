@@ -37,15 +37,16 @@ Skip the sub-scope when the event type or trigger already tells the controls apa
 
 ## 3. Track each control
 
-| Control                                                      | Tracking                                                                                  |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| `<button>`, `<a>`, `matButton`, `mat-list-item` links        | `angTrackClick`                                                                           |
-| `<a angTextLink>`                                            | Already tracked by the `TextLink` host directive; add only a scope                        |
-| Native `<input>` / `matInput`                                | `angTrackChange` (fires on commit; avoid `angTrackInput`, which fires on every keystroke) |
-| `mat-checkbox`                                               | `angTrackChange` (the inner native input's `change` bubbles)                              |
-| `mat-slide-toggle`                                           | `angTrackChange angTrackChangeOn="click"` (keyboard activation of the switch also clicks) |
-| `mat-select`, `mat-selection-list`, `mat-autocomplete`, tabs | `angTrackChange` with the output in a `…On` record (see below)                            |
-| Host listeners in directives (`host: { '(click)': ... }`)    | `injectTrackEvent()` in the handler (last resort)                                         |
+| Control                                                            | Tracking                                                                                               |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `<button>`, `<a>`, `matButton`, `mat-list-item` links              | `angTrackClick`                                                                                        |
+| `<a angTextLink>`                                                  | Already tracked by the `TextLink` host directive; add only a scope                                     |
+| Native `<input>` / `matInput`                                      | `angTrackChange` (fires on commit; avoid `angTrackInput`, which fires on every keystroke)              |
+| `mat-checkbox`                                                     | `angTrackChange` (the inner native input's `change` bubbles)                                           |
+| `mat-slide-toggle`                                                 | `angTrackChange angTrackChangeOn="click"` (keyboard activation of the switch also clicks)              |
+| Any control bound with `ngModel`, `formControl`, `formControlName` | `angTrackControlChange` from `@atlasng/analytics/forms` (add `angTrackControlChangeDebounce` for text) |
+| `mat-select`, `mat-selection-list`, `mat-autocomplete`, tabs       | `angTrackChange` with the output in a `…On` record (see below)                                         |
+| Host listeners in directives (`host: { '(click)': ... }`)          | `injectTrackEvent()` in the handler (last resort)                                                      |
 
 The directives listen for DOM events by default. Angular Material outputs such as `selectionChange`, `optionSelected`, and `selectedTabChange` are not DOM events, so pass them as sources in a `…On` record with a template reference:
 
