@@ -16,7 +16,7 @@ import type {
 import { KgExplorerTablePanel } from '../table-panel/table-panel';
 import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
 import { pickDefined } from '../utils/pick-defined';
-import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
+import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig, type TableFiltersConfig } from './config';
 import { KgExplorerFilterDrawer } from '../filter-drawer/filter-drawer';
 
 /**
@@ -24,15 +24,15 @@ import { KgExplorerFilterDrawer } from '../filter-drawer/filter-drawer';
  * searchable and sortable results table, and per-row downloads.
  *
  * The filter drawer shows the optional breadcrumbs, heading, and description of
- * {@link config}, an optional "Customize view" section built from the config's
- * `viewOptions` and `viewSettings`, and a multi-select filter for each of
+ * the `filterOptions` of {@link config}, an optional "Customize view" section
+ * built from their `viewOptions` and `viewSettings`, and a multi-select filter for each of
  * {@link filters}. View customizations are only reported through
  * {@link view}, {@link viewSettingValues}, and {@link resetView}; the consumer
  * applies them.
  * Filters with a `field` or `matches` narrow the rows after they are searched,
  * without rebuilding the search index; for other filters, read
  * {@link filterSelections} and pass the matching {@link items}. The menu is
- * docked from the `filtersDockBreakpoint` of {@link config} up (the large
+ * docked from the `filterOptions.filtersDockBreakpoint` of {@link config} up (the large
  * breakpoint by default) and becomes a drawer controlled by {@link filtersOpen}
  * on smaller screens; `ang-kg-explorer-filter-toggle` opens and closes it.
  * Projected content, such as a footer, is rendered at the end of the table and
@@ -103,10 +103,20 @@ export class KgExplorerTableView<
   private readonly defaults = KG_EXPLORER_TABLE_VIEW_CONFIG.inject() as KgExplorerTableViewConfig<TRow, TFormat>;
 
   /** The {@link config} input merged over the provided defaults. */
-  protected readonly resolvedConfig = computed((): KgExplorerTableViewConfig<TRow, TFormat> => ({
-    ...this.defaults,
-    ...pickDefined(this.config()),
-  }));
+  protected readonly resolvedConfig = computed((): KgExplorerTableViewConfig<TRow, TFormat> => {
+    const config = this.config();
+    return {
+      ...this.defaults,
+      ...pickDefined(config),
+      filterOptions: {
+        ...pickDefined(this.defaults.filterOptions ?? {}),
+        ...pickDefined(config.filterOptions ?? {}),
+      },
+    };
+  });
+
+  /** Filter drawer options of the {@link resolvedConfig}. */
+  protected readonly filterOptions = computed((): TableFiltersConfig => this.resolvedConfig().filterOptions ?? {});
 
   /** Filters with the options of their search lists, derived from the items where a filter has none. */
   protected readonly resolvedFilters = computed((): KgExplorerResolvedFilter<TRow>[] => {
@@ -147,7 +157,7 @@ export class KgExplorerTableView<
   private readonly downloadLabel = computed(() => this.resolvedConfig().downloadLabel);
 
   /** Whether the filter menu is docked beside the table. */
-  protected readonly docked = watchBreakpoint(() => this.resolvedConfig().filtersDockBreakpoint ?? 'large');
+  protected readonly docked = watchBreakpoint(() => this.filterOptions().filtersDockBreakpoint ?? 'large');
 
   /** Opens the filter menu when it is or becomes docked, and closes the drawer when it undocks. */
   constructor() {

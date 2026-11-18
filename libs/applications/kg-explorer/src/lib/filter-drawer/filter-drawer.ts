@@ -15,7 +15,7 @@ import type {
   KgExplorerViewSetting,
   KgExplorerViewSettingValues,
 } from '../models';
-import type { KgExplorerTableViewConfig } from '../table-view/config';
+import type { TableFiltersConfig } from '../table-view/config';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
@@ -87,8 +87,8 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
   /** Selected options of each filter, keyed by filter id. */
   readonly filterSelections = input<KgExplorerFilterSelections>({});
 
-  /** Resolved table view configuration, used for the drawer's labels. */
-  readonly config = input<KgExplorerTableViewConfig<TRow>>({});
+  /** Resolved filter drawer options, used for the drawer's labels. */
+  readonly config = input<TableFiltersConfig>({});
 
   /** Emits when the user changes the selected options of a filter. */
   readonly selectionChange = output<KgExplorerFilterSelectionChange<TRow>>();

@@ -5,7 +5,7 @@
     [opened]="filtersOpen()"
     (openedChange)="this.filtersOpen.set($event)"
   >
-    @let options = resolvedConfig();
+    @let options = filterOptions();
     <ang-kg-explorer-filter-drawer
       [breadcrumbs]="options.breadcrumbs ?? []"
       [heading]="options.filtersHeading"

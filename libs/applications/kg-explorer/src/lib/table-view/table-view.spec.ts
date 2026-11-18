@@ -237,11 +237,13 @@ describe('KgExplorerTableView', () => {
     const resetView = vi.fn();
     const { user, fixture } = await setup({
       config: {
-        filtersHeading: 'Explorer',
-        viewOptions: [
-          { value: 'table', label: 'Table' },
-          { value: 'grid', label: 'Grid' },
-        ],
+        filterOptions: {
+          filtersHeading: 'Explorer',
+          viewOptions: [
+            { value: 'table', label: 'Table' },
+            { value: 'grid', label: 'Grid' },
+          ],
+        },
       },
       view: 'table',
     });
@@ -336,16 +338,21 @@ describe('KgExplorerTableView', () => {
   });
 
   it('docks the filter menu from the configured breakpoint', async () => {
-    const { observer, rerender, fixture } = await setup({ config: { filtersDockBreakpoint: 'x-large' } });
+    const { observer, rerender, fixture } = await setup({
+      config: { filterOptions: { filtersDockBreakpoint: 'x-large' } },
+    });
     expect(observer.observe).toHaveBeenCalledWith(['(min-width: 1920px)']);
 
-    await rerender({ inputs: { config: { filtersDockBreakpoint: 'medium' } }, partialUpdate: true });
+    await rerender({ inputs: { config: { filterOptions: { filtersDockBreakpoint: 'medium' } } }, partialUpdate: true });
     await fixture.whenStable();
     expect(observer.observe).toHaveBeenCalledWith(['(min-width: 960px)']);
   });
 
   it('docks the filter menu at every width for a breakpoint starting at zero', async () => {
-    const { fixture, observer } = await setup({ config: { filtersDockBreakpoint: 'x-small' } }, false);
+    const { fixture, observer } = await setup(
+      { config: { filterOptions: { filtersDockBreakpoint: 'x-small' } } },
+      false,
+    );
 
     expect(fixture.componentInstance.filtersOpen()).toBe(true);
     expect(observer.observe).not.toHaveBeenCalledWith([expect.stringContaining('min-width')]);

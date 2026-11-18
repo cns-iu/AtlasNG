@@ -8,6 +8,39 @@ import type { VersionControlFileFormat } from '@atlasng/design-system/version-co
 import type { KgExplorerDownloadFormats } from '../download-cell/download-cell';
 import type { KgExplorerViewOption, KgExplorerViewSetting } from '../models';
 
+/** Content, labels, and docking of the filter drawer of the knowledge graph explorer table view. */
+export interface TableFiltersConfig {
+  /**
+   * Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`,
+   * from which the filter menu is docked beside the table instead of opening as
+   * a drawer. Defaults to `'large'` (1280px).
+   */
+  filtersDockBreakpoint?: BreakpointExpression;
+  /** Breadcrumb trail shown at the top of the filter drawer. Hidden when empty. */
+  breadcrumbs?: BreadcrumbItem[];
+  /** Heading shown at the top of the filter drawer, below the breadcrumbs. */
+  filtersHeading?: string;
+  /** Supporting text shown below the filter drawer heading. */
+  filtersDescription?: string;
+  /**
+   * Options of the view button toggle in the "Customize view" section of the filter drawer. The section is shown
+   * only when this or {@link viewSettings} has entries.
+   */
+  viewOptions?: KgExplorerViewOption[];
+  /** Selects shown in the "Customize view" section, such as "View as", "Sort by" or "Group by". */
+  viewSettings?: KgExplorerViewSetting[];
+  /** Heading of the filters section of the filter drawer. Defaults to "Filters". */
+  filtersLabel?: string;
+  /** Label of the button that clears every filter selection. Defaults to "Clear filters". */
+  clearFiltersLabel?: string;
+  /** Heading of the view customization section of the filter drawer. Defaults to "Customize view". */
+  customizeViewLabel?: string;
+  /** Label of the button that resets the view customizations. Defaults to "Reset". */
+  resetViewLabel?: string;
+  /** Accessible name of the view options button toggle group. Defaults to "View". */
+  viewOptionsLabel?: string;
+}
+
 /**
  * Setup of the knowledge graph explorer table view. Every option is optional;
  * omitted options fall back to {@link KG_EXPLORER_TABLE_VIEW_CONFIG} and then
@@ -49,35 +82,8 @@ export interface KgExplorerTableViewConfig<
    * for <name>", or "No downloads available for <name>". Defaults to the row's `title`.
    */
   downloadLabel?: (keyof TRow & string) | ((row: TRow) => string);
-  /**
-   * Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`,
-   * from which the filter menu is docked beside the table instead of opening as
-   * a drawer. Defaults to `'large'` (1280px).
-   */
-  filtersDockBreakpoint?: BreakpointExpression;
-  /** Breadcrumb trail shown at the top of the filter drawer. Hidden when empty. */
-  breadcrumbs?: BreadcrumbItem[];
-  /** Heading shown at the top of the filter drawer, below the breadcrumbs. */
-  filtersHeading?: string;
-  /** Supporting text shown below the filter drawer heading. */
-  filtersDescription?: string;
-  /**
-   * Options of the view button toggle in the "Customize view" section of the filter drawer. The section is shown
-   * only when this or {@link viewSettings} has entries.
-   */
-  viewOptions?: KgExplorerViewOption[];
-  /** Selects shown in the "Customize view" section, such as "View as", "Sort by" or "Group by". */
-  viewSettings?: KgExplorerViewSetting[];
-  /** Heading of the filters section of the filter drawer. Defaults to "Filters". */
-  filtersLabel?: string;
-  /** Label of the button that clears every filter selection. Defaults to "Clear filters". */
-  clearFiltersLabel?: string;
-  /** Heading of the view customization section of the filter drawer. Defaults to "Customize view". */
-  customizeViewLabel?: string;
-  /** Label of the button that resets the view customizations. Defaults to "Reset". */
-  resetViewLabel?: string;
-  /** Accessible name of the view options button toggle group. Defaults to "View". */
-  viewOptionsLabel?: string;
+  /** Content, labels, and docking of the filter drawer. Merged over the provided `filterOptions`. */
+  filterOptions?: TableFiltersConfig;
 }
 
 /** Suggests the `title` of each row when it is a string. */
@@ -105,12 +111,14 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
     disableResultsCounter: false,
     resultsCounterPrefix: 'Viewing',
     disableEndOfResults: false,
-    filtersDockBreakpoint: 'large',
-    filtersLabel: 'Filters',
-    clearFiltersLabel: 'Clear filters',
-    customizeViewLabel: 'Customize view',
-    resetViewLabel: 'Reset',
-    viewOptionsLabel: 'View',
+    filterOptions: {
+      filtersDockBreakpoint: 'large',
+      filtersLabel: 'Filters',
+      clearFiltersLabel: 'Clear filters',
+      customizeViewLabel: 'Customize view',
+      resetViewLabel: 'Reset',
+      viewOptionsLabel: 'View',
+    },
     downloadColumnLabel: 'Download',
     downloadLabel: 'title',
   }),

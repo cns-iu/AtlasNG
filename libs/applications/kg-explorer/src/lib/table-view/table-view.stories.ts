@@ -120,40 +120,42 @@ function sampleFormatsFor(item: SampleItem): readonly VersionControlFileFormat[]
 /** Full filter drawer configuration shared by every story: breadcrumbs, heading, view options, and view settings. */
 const SAMPLE_CONFIG: KgExplorerTableViewConfig<SampleItem> = {
   downloadFormats: sampleFormatsFor,
-  breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Page', command: '/page' }, { name: 'App' }],
-  filtersHeading: 'Product Label',
-  filtersDescription: 'Supporting text here, if needed, but make it short and straightforward',
-  viewOptions: [
-    { value: 'table', label: 'Table' },
-    { value: 'cards', label: 'Cards' },
-    { value: 'graph', label: 'Graph' },
-  ],
-  viewSettings: [
-    {
-      id: 'view',
-      label: 'View as',
-      options: [
-        { value: 'table', label: 'Table' },
-        { value: 'cards', label: 'Cards' },
-      ],
-    },
-    {
-      id: 'sort',
-      label: 'Sort by',
-      options: [
-        { value: 'title', label: 'Title' },
-        { value: 'lastModified', label: 'Last modified' },
-      ],
-    },
-    {
-      id: 'group',
-      label: 'Group by',
-      options: [
-        { value: 'type', label: 'Type' },
-        { value: 'organ', label: 'Organ' },
-      ],
-    },
-  ],
+  filterOptions: {
+    breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Page', command: '/page' }, { name: 'App' }],
+    filtersHeading: 'Product Label',
+    filtersDescription: 'Supporting text here, if needed, but make it short and straightforward',
+    viewOptions: [
+      { value: 'table', label: 'Table' },
+      { value: 'cards', label: 'Cards' },
+      { value: 'graph', label: 'Graph' },
+    ],
+    viewSettings: [
+      {
+        id: 'view',
+        label: 'View as',
+        options: [
+          { value: 'table', label: 'Table' },
+          { value: 'cards', label: 'Cards' },
+        ],
+      },
+      {
+        id: 'sort',
+        label: 'Sort by',
+        options: [
+          { value: 'title', label: 'Title' },
+          { value: 'lastModified', label: 'Last modified' },
+        ],
+      },
+      {
+        id: 'group',
+        label: 'Group by',
+        options: [
+          { value: 'type', label: 'Type' },
+          { value: 'organ', label: 'Organ' },
+        ],
+      },
+    ],
+  },
 };
 
 /** Primary navigation of the sample application header. */
@@ -294,7 +296,10 @@ export const Dark: Story = {
 
 export const ExtraLargeFilterBreakpoint: Story = {
   args: {
-    config: { ...SAMPLE_CONFIG, filtersDockBreakpoint: 'x-large' },
+    config: {
+      ...SAMPLE_CONFIG,
+      filterOptions: { ...SAMPLE_CONFIG.filterOptions, filtersDockBreakpoint: 'x-large' },
+    },
   },
 };
 
