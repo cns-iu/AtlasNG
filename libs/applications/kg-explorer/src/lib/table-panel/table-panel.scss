@@ -1,12 +1,21 @@
 @use 'internal/token-utils';
 @use 'tokens/table' as table;
 
-@mixin table-padding() {
-  padding: 0 1.25rem;
+/// Sets a property to the panel's side spacing, which grows on wide screens.
+/// @param {String} $property - CSS property to set.
+/// @param {Number} $factor - Multiplier for the spacing, such as -1 for negative margins.
+@mixin side-space($property, $factor: 1) {
+  #{$property}: 1.25rem * $factor;
 
   @media (min-width: 960px) {
-    padding: 0 2rem;
+    #{$property}: 2rem * $factor;
   }
+}
+
+/// Pads content by the panel's side spacing.
+@mixin table-padding() {
+  padding-block: 0;
+  @include side-space(padding-inline);
 }
 
 /// Vertical padding of text cells, between the row's spacing and the text.
@@ -52,9 +61,21 @@ $text-cell-padding: 0.5rem;
     }
   }
 
+  // The datatable sizes its columns from its host's width, so the host keeps
+  // the side spacing as margins. Its horizontal scroller, `.datatable-grid`,
+  // extends back to the panel's edges and holds the spacing as padding, so
+  // columns scroll to the screen edge instead of being cut off at the spacing.
   .ang-kg-explorer-table-panel--table {
-    @include table-padding;
-    padding-top: 0;
+    .ngx-datatable {
+      @include side-space(margin-inline);
+      overflow: visible;
+    }
+
+    .datatable-grid {
+      @include side-space(margin-inline, -1);
+      @include side-space(padding-inline);
+      max-inline-size: none;
+    }
 
     @include table.overrides(
       (
@@ -121,8 +142,6 @@ $text-cell-padding: 0.5rem;
 
   .ang-kg-explorer-table-panel--end {
     @include table-padding;
-
-    padding-top: 0;
 
     .mat-divider {
       display: none;
