@@ -119,16 +119,16 @@ The filter drawer has no built-in trigger. Add a button that toggles `[(filtersO
 
 ### Inputs and outputs
 
-| Name                                | Description                                                                          |
-| ----------------------------------- | ------------------------------------------------------------------------------------ |
-| `items`, `columns`                  | Rows to display and the columns that show them.                                      |
-| `filters`, `[(filterSelections)]`   | Filter definitions and the selected options of each filter.                          |
-| `config`                            | Search, download, filter drawer, and visibility options (see below).                 |
-| `[(search)]`, `[(sorts)]`           | Current search term and column sorts.                                                |
-| `[(filtersOpen)]`                   | Whether the filter drawer is open below the dock breakpoint.                         |
-| `[(view)]`, `[(viewSettingValues)]` | Picked view option, and the picked value of each view setting keyed by setting `id`. |
-| `(download)`                        | Emits `{ item, format }` when a user downloads a row.                                |
-| `(resetView)`                       | Emits when a user clicks "Reset" in the "Customize view" section.                    |
+| Name                                | Description                                                                                                                        |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `items`, `columns`                  | Rows to display and the columns that show them.                                                                                    |
+| `filters`, `[(filterSelections)]`   | Filter definitions and the selected options of each filter.                                                                        |
+| `config`                            | Search, download, filter drawer, and visibility options (see below).                                                               |
+| `[(search)]`, `[(sorts)]`           | Current search term and column sorts.                                                                                              |
+| `[(filtersOpen)]`                   | Whether the filter drawer is open below the dock breakpoint.                                                                       |
+| `[(view)]`, `[(viewSettingValues)]` | Picked view option, and the picked value of each view setting keyed by setting `id`.                                               |
+| `(download)`                        | Emits `{ item, format }` when a user downloads a row.                                                                              |
+| `(resetView)`                       | Emits when a user clicks "Reset" in the "Customize view" section, which is shown once the user changes the view or a view setting. |
 
 Content projected into the table view, such as a footer, renders after the table and the end-of-results indicator, and scrolls with them:
 
@@ -142,20 +142,20 @@ Content projected into the table view, such as a footer, renders after the table
 
 `config` takes a `KgExplorerTableViewConfig`. Every option is optional.
 
-| Option                     | Default     | Description                                                                                                        |
-| -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `searchFields`             | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them.                |
-| `searchSuggestionField`    | row `title` | Field whose values are suggested below the search field.                                                           |
-| `disableSearchSuggestions` | `false`     | Turns the suggestions off.                                                                                         |
-| `disableSearch`            | `false`     | Hides the search field.                                                                                            |
-| `disableResultsCounter`    | `false`     | Hides the "Viewing X of Y" counter.                                                                                |
-| `resultsCounterPrefix`     | `Viewing`   | Text before the numbers of the results counter.                                                                    |
-| `disableEndOfResults`      | `false`     | Hides the end-of-results indicator.                                                                                |
-| `downloadFormats`          | none        | File formats of the download column. The column is only shown when this is set.                                    |
-| `downloadColumnLabel`      | `Download`  | Accessible name of the download column's header, which is visually empty.                                          |
-| `downloadLabel`            | row `title` | Row key or `(row) => string` that names the row of each download button (see below).                               |
-| `filtersDockBreakpoint`    | `'large'`   | Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`, from which the filter menu is docked. |
-| `filterOptions`            | see below   | Content and labels of the filter drawer, as a `TableFiltersConfig` (see [Filter drawer](#filter-drawer)).          |
+| Option                     | Default     | Description                                                                                                         |
+| -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| `searchFields`             | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them.                 |
+| `searchSuggestionField`    | row `title` | Field whose values are suggested below the search field.                                                            |
+| `disableSearchSuggestions` | `false`     | Turns the suggestions off.                                                                                          |
+| `disableSearch`            | `false`     | Hides the search field.                                                                                             |
+| `disableResultsCounter`    | `false`     | Hides the "Viewing X of Y" counter.                                                                                 |
+| `resultsCounterPrefix`     | `Viewing`   | Text before the numbers of the results counter.                                                                     |
+| `disableEndOfResults`      | `false`     | Hides the end-of-results indicator.                                                                                 |
+| `downloadFormats`          | none        | File formats of the download column. The column is only shown when this is set.                                     |
+| `downloadColumnLabel`      | `Download`  | Accessible name of the download column's header, which is visually empty.                                           |
+| `downloadLabel`            | row `title` | Row key or `(row) => string` that names the row of each download button (see below).                                |
+| `filtersDockBreakpoint`    | `'large'`   | Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`, from which the filter menu is docked.  |
+| `filterOptions`            | see below   | Content and labels of the filter drawer, as a `KgExplorerFilterDrawerConfig` (see [Filter drawer](#filter-drawer)). |
 
 Set defaults for every table view below an injector with `provideKgExplorerTableView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
 
@@ -165,7 +165,7 @@ providers: [provideKgExplorerTableView({ disableEndOfResults: true })];
 
 #### Filter drawer
 
-`filterOptions` takes a `TableFiltersConfig`. The `config` input's `filterOptions` is merged option by option over the provided ones, so setting one label keeps the others. A nested `provideKgExplorerTableView` replaces the parent's `filterOptions` as a whole.
+`filterOptions` takes a `KgExplorerFilterDrawerConfig`. The `config` input's `filterOptions` is merged option by option over the provided ones, so setting one label keeps the others. A nested `provideKgExplorerTableView` replaces the parent's `filterOptions` as a whole.
 
 | Option               | Default          | Description                                                        |
 | -------------------- | ---------------- | ------------------------------------------------------------------ |

@@ -20,20 +20,22 @@
     <section class="ang-kg-explorer-filter-drawer--section">
       <div class="ang-kg-explorer-filter-drawer--section-header">
         <h3 class="ang-kg-explorer-filter-drawer--section-title">
-          {{ labels.customizeViewLabel ?? 'Customize view' }}
+          {{ labels.customizeViewLabel }}
         </h3>
-        <button type="button" class="ang-kg-explorer-filter-drawer--action" matButton (click)="resetClick.emit()">
-          {{ labels.resetViewLabel ?? 'Reset' }}
-        </button>
+        @if (viewChanged()) {
+          <button type="button" class="ang-kg-explorer-filter-drawer--action" matButton (click)="resetView()">
+            {{ labels.resetViewLabel ?? 'Reset' }}
+          </button>
+        }
       </div>
 
       <div class="ang-kg-explorer-filter-drawer--view-options">
         @if (viewOptions().length > 0) {
           <mat-button-toggle-group
             class="ang-kg-explorer-filter-drawer--view-toggle"
-            [attr.aria-label]="labels.viewOptionsLabel ?? 'View'"
+            [attr.aria-label]="labels.viewOptionsLabel"
             [value]="view()"
-            (valueChange)="view.set($event)"
+            (change)="setView($event.value)"
           >
             @for (option of viewOptions(); track option.value) {
               <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
@@ -45,7 +47,10 @@
           <mat-form-field class="ang-kg-explorer-filter-drawer--view-setting" subscriptSizing="dynamic">
             <mat-icon matIconPrefix fontIcon="search" />
             <mat-label>{{ setting.label }}</mat-label>
-            <mat-select [value]="viewSettingValues()[setting.id]" (valueChange)="setViewSetting(setting, $event)">
+            <mat-select
+              [value]="viewSettingValues()[setting.id]"
+              (selectionChange)="setViewSetting(setting, $event.value)"
+            >
               @for (option of setting.options; track option.value) {
                 <mat-option [value]="option.value">{{ option.label }}</mat-option>
               }
@@ -59,10 +64,10 @@
   @if (filters().length > 0) {
     <section class="ang-kg-explorer-filter-drawer--section">
       <div class="ang-kg-explorer-filter-drawer--section-header">
-        <h3 class="ang-kg-explorer-filter-drawer--section-title">{{ labels.filtersLabel ?? 'Filters' }}</h3>
+        <h3 class="ang-kg-explorer-filter-drawer--section-title">{{ labels.filtersLabel }}</h3>
         @if (hasSelection()) {
           <button type="button" class="ang-kg-explorer-filter-drawer--action" matButton (click)="clearClick.emit()">
-            {{ labels.clearFiltersLabel ?? 'Clear filters' }}
+            {{ labels.clearFiltersLabel }}
           </button>
         }
       </div>

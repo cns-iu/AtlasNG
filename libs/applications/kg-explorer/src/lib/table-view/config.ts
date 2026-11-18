@@ -9,7 +9,7 @@ import type { KgExplorerDownloadFormats } from '../download-cell/download-cell';
 import type { KgExplorerViewOption, KgExplorerViewSetting } from '../models';
 
 /** Content and labels of the filter drawer of the knowledge graph explorer table view. */
-export interface TableFiltersConfig {
+export interface KgExplorerFilterDrawerConfig {
   /** Breadcrumb trail shown at the top of the filter drawer. Hidden when empty. */
   breadcrumbs?: BreadcrumbItem[];
   /** Heading shown at the top of the filter drawer, below the breadcrumbs. */
@@ -83,7 +83,7 @@ export interface KgExplorerTableViewConfig<
    */
   filtersDockBreakpoint?: BreakpointExpression;
   /** Content and labels of the filter drawer. Merged over the provided `filterOptions`. */
-  filterOptions?: TableFiltersConfig;
+  filterOptions?: KgExplorerFilterDrawerConfig;
 }
 
 /** Suggests the `title` of each row when it is a string. */

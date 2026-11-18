@@ -19,10 +19,10 @@
   }
 
   .ang-kg-explorer-table-view--sidenav {
-    width: 20rem;
+    min-width: 20rem;
     max-width: 100%;
     border-radius: 0;
-    border-right: 1px solid token-utils.sys-slot(outline-variant);
+    border-right: 1px solid token-utils.sys-slot(outline);
     background-color: token-utils.sys-slot(surface-container-low);
   }
 

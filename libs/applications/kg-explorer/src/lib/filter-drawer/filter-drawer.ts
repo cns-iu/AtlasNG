@@ -1,4 +1,4 @@
-import { Component, computed, input, model, output } from '@angular/core';
+import { Component, computed, input, model, output, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatFormField, MatLabel, MatPrefix } from '@angular/material/form-field';
@@ -15,7 +15,7 @@ import type {
   KgExplorerViewSetting,
   KgExplorerViewSettingValues,
 } from '../models';
-import type { TableFiltersConfig } from '../table-view/config';
+import type { KgExplorerFilterDrawerConfig } from '../table-view/config';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
@@ -88,7 +88,7 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
   readonly filterSelections = input<KgExplorerFilterSelections>({});
 
   /** Resolved filter drawer options, used for the drawer's labels. */
-  readonly config = input<TableFiltersConfig>({});
+  readonly config = input<KgExplorerFilterDrawerConfig>({});
 
   /** Emits when the user changes the selected options of a filter. */
   readonly selectionChange = output<KgExplorerFilterSelectionChange<TRow>>();
@@ -96,13 +96,19 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
   /** Emits when the user clicks the clear filters button. */
   readonly clearClick = output<void>();
 
-  /** Emits when the user clicks the reset button of the view customizations. */
+  /** Emits when the user clicks the reset button of the view customizations, shown after the user changes them. */
   readonly resetClick = output<void>();
 
   /** Whether the "Customize view" section is shown. */
   protected readonly hasCustomizations = computed(
     () => this.viewOptions().length > 0 || this.viewSettings().length > 0,
   );
+
+  /**
+   * Whether the user changed the view option or a view setting since the drawer was created or last reset; the
+   * reset button is only shown then.
+   */
+  protected readonly viewChanged = signal(false);
 
   /** Whether any filter has a selected option; the clear filters button is only shown then. */
   protected readonly hasSelection = computed(() =>
@@ -127,5 +133,22 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
    */
   protected setViewSetting(setting: KgExplorerViewSetting, value: string | undefined): void {
     this.viewSettingValues.update((values) => ({ ...values, [setting.id]: value }));
+    this.viewChanged.set(true);
+  }
+
+  /**
+   * Stores the picked view option.
+   *
+   * @param value Value of the picked view option.
+   */
+  protected setView(value: string | undefined): void {
+    this.view.set(value);
+    this.viewChanged.set(true);
+  }
+
+  /** Hides the reset button and asks the consumer to reset the view customizations. */
+  protected resetView(): void {
+    this.viewChanged.set(false);
+    this.resetClick.emit();
   }
 }

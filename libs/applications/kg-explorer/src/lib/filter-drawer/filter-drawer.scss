@@ -17,6 +17,7 @@
     margin: 0;
     color: token-utils.slot(heading-color, $config);
     font: token-utils.sys-slot(title-medium);
+    //TODO: https://github.com/cns-iu/AtlasNG/issues/450
     font-weight: 700;
     letter-spacing: token-utils.sys-slot(title-medium-tracking);
     text-wrap: balance;
@@ -60,7 +61,6 @@
 
   .ang-kg-explorer-filter-drawer--action {
     flex-shrink: 0;
-    color: token-utils.slot(action-color, $config);
   }
 
   .ang-kg-explorer-filter-drawer--view-options {

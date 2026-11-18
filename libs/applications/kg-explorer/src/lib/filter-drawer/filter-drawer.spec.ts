@@ -69,7 +69,7 @@ describe('KgExplorerFilterDrawer', () => {
   });
 
   it('uses the labels of the config', async () => {
-    await setup({
+    const { user } = await setup({
       viewOptions: VIEW_OPTIONS,
       filterSelections: { type: [FILTERS[0].options[0]] },
       config: {
@@ -80,6 +80,8 @@ describe('KgExplorerFilterDrawer', () => {
         viewOptionsLabel: 'Layouts',
       },
     });
+
+    await user.click(screen.getByRole('radio', { name: 'Grid' }));
 
     expect(screen.getByRole('heading', { name: 'Facets' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Clear all' })).toBeInTheDocument();
@@ -106,12 +108,24 @@ describe('KgExplorerFilterDrawer', () => {
     expect(fixture.componentInstance.viewSettingValues()).toEqual({ group: 'type', sort: 'date' });
   });
 
-  it('emits when the view is reset', async () => {
+  it('shows the reset button only after the view is changed', async () => {
+    const { user } = await setup({ viewOptions: VIEW_OPTIONS, viewSettings: VIEW_SETTINGS, view: 'table' });
+
+    expect(screen.queryByRole('button', { name: 'Reset' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('radio', { name: 'Grid' }));
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument();
+  });
+
+  it('emits when the view is reset and hides the reset button', async () => {
     const { user, resetClick } = await setup({ viewSettings: VIEW_SETTINGS });
 
+    await user.click(screen.getByRole('combobox', { name: 'Sort by' }));
+    await user.click(await screen.findByRole('option', { name: 'Date' }));
     await user.click(screen.getByRole('button', { name: 'Reset' }));
 
     expect(resetClick).toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Reset' })).not.toBeInTheDocument();
   });
 
   it('shows the clear filters button only when a filter has a selection', async () => {

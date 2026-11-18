@@ -16,7 +16,11 @@ import type {
 import { KgExplorerTablePanel } from '../table-panel/table-panel';
 import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
 import { pickDefined } from '../utils/pick-defined';
-import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig, type TableFiltersConfig } from './config';
+import {
+  KG_EXPLORER_TABLE_VIEW_CONFIG,
+  type KgExplorerTableViewConfig,
+  type KgExplorerFilterDrawerConfig,
+} from './config';
 import { KgExplorerFilterDrawer } from '../filter-drawer/filter-drawer';
 
 /**
@@ -116,7 +120,9 @@ export class KgExplorerTableView<
   });
 
   /** Filter drawer options of the {@link resolvedConfig}. */
-  protected readonly filterOptions = computed((): TableFiltersConfig => this.resolvedConfig().filterOptions ?? {});
+  protected readonly filterOptions = computed(
+    (): KgExplorerFilterDrawerConfig => this.resolvedConfig().filterOptions ?? {},
+  );
 
   /** Filters with the options of their search lists, derived from the items where a filter has none. */
   protected readonly resolvedFilters = computed((): KgExplorerResolvedFilter<TRow>[] => {

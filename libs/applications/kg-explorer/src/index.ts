@@ -29,7 +29,7 @@ export {
   KG_EXPLORER_TABLE_VIEW_CONFIG,
   provideKgExplorerTableView,
   type KgExplorerTableViewConfig,
-  type TableFiltersConfig,
+  type KgExplorerFilterDrawerConfig,
 } from './lib/table-view/config';
 export { KgExplorerTableView } from './lib/table-view/table-view';
 export {
