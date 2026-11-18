@@ -32,7 +32,7 @@ import { KgExplorerFilterDrawer } from '../filter-drawer/filter-drawer';
  * Filters with a `field` or `matches` narrow the rows after they are searched,
  * without rebuilding the search index; for other filters, read
  * {@link filterSelections} and pass the matching {@link items}. The menu is
- * docked from the `filterOptions.filtersDockBreakpoint` of {@link config} up (the large
+ * docked from the `filtersDockBreakpoint` of {@link config} up (the large
  * breakpoint by default) and becomes a drawer controlled by {@link filtersOpen}
  * on smaller screens; `ang-kg-explorer-filter-toggle` opens and closes it.
  * Projected content, such as a footer, is rendered at the end of the table and
@@ -157,7 +157,7 @@ export class KgExplorerTableView<
   private readonly downloadLabel = computed(() => this.resolvedConfig().downloadLabel);
 
   /** Whether the filter menu is docked beside the table. */
-  protected readonly docked = watchBreakpoint(() => this.filterOptions().filtersDockBreakpoint ?? 'large');
+  protected readonly docked = watchBreakpoint(() => this.resolvedConfig().filtersDockBreakpoint ?? 'large');
 
   /** Opens the filter menu when it is or becomes docked, and closes the drawer when it undocks. */
   constructor() {

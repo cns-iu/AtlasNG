@@ -8,14 +8,8 @@ import type { VersionControlFileFormat } from '@atlasng/design-system/version-co
 import type { KgExplorerDownloadFormats } from '../download-cell/download-cell';
 import type { KgExplorerViewOption, KgExplorerViewSetting } from '../models';
 
-/** Content, labels, and docking of the filter drawer of the knowledge graph explorer table view. */
+/** Content and labels of the filter drawer of the knowledge graph explorer table view. */
 export interface TableFiltersConfig {
-  /**
-   * Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`,
-   * from which the filter menu is docked beside the table instead of opening as
-   * a drawer. Defaults to `'large'` (1280px).
-   */
-  filtersDockBreakpoint?: BreakpointExpression;
   /** Breadcrumb trail shown at the top of the filter drawer. Hidden when empty. */
   breadcrumbs?: BreadcrumbItem[];
   /** Heading shown at the top of the filter drawer, below the breadcrumbs. */
@@ -82,7 +76,13 @@ export interface KgExplorerTableViewConfig<
    * for <name>", or "No downloads available for <name>". Defaults to the row's `title`.
    */
   downloadLabel?: (keyof TRow & string) | ((row: TRow) => string);
-  /** Content, labels, and docking of the filter drawer. Merged over the provided `filterOptions`. */
+  /**
+   * Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`,
+   * from which the filter menu is docked beside the table instead of opening as
+   * a drawer. Defaults to `'large'` (1280px).
+   */
+  filtersDockBreakpoint?: BreakpointExpression;
+  /** Content and labels of the filter drawer. Merged over the provided `filterOptions`. */
   filterOptions?: TableFiltersConfig;
 }
 
@@ -111,8 +111,8 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
     disableResultsCounter: false,
     resultsCounterPrefix: 'Viewing',
     disableEndOfResults: false,
+    filtersDockBreakpoint: 'large',
     filterOptions: {
-      filtersDockBreakpoint: 'large',
       filtersLabel: 'Filters',
       clearFiltersLabel: 'Clear filters',
       customizeViewLabel: 'Customize view',

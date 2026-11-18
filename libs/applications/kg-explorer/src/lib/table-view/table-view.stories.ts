@@ -298,7 +298,7 @@ export const ExtraLargeFilterBreakpoint: Story = {
   args: {
     config: {
       ...SAMPLE_CONFIG,
-      filterOptions: { ...SAMPLE_CONFIG.filterOptions, filtersDockBreakpoint: 'x-large' },
+      filtersDockBreakpoint: 'x-large',
     },
   },
 };
