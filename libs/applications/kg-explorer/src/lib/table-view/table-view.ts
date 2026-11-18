@@ -5,13 +5,13 @@ import { MultiSelectFilter } from '@atlasng/design-system/multi-select-filter';
 import type { SearchListOption } from '@atlasng/design-system/search-list';
 import type { Row, SortPropDir, TableColumn } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
-import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 import { KgExplorerDownloadCellDefinition, type KgExplorerDownloadCellConfig } from '../download-cell/download-cell';
 import { KgExplorerDownloadHeaderCellDefinition } from '../download-cell/download-header-cell';
-import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
-import { pickDefined } from '../utils/pick-defined';
 import type { KgExplorerDownloadRequest, KgExplorerFilter, KgExplorerFilterSelections } from '../models';
 import { KgExplorerTablePanel } from '../table-panel/table-panel';
+import { createRowFilter, deriveFilterOptions } from '../utils/filtering';
+import { pickDefined } from '../utils/pick-defined';
+import { KG_EXPLORER_TABLE_VIEW_CONFIG, type KgExplorerTableViewConfig } from './config';
 
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
@@ -27,8 +27,9 @@ type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: Sear
  * Filters with a `field` or `matches` narrow the rows after they are searched,
  * without rebuilding the search index; for other filters, read
  * {@link filterSelections} and pass the matching {@link items}. The menu is
- * docked from the Angular Material large breakpoint up and becomes a drawer
- * controlled by {@link filtersOpen} on smaller screens.
+ * docked from the `filtersDockBreakpoint` of {@link config} up (the large
+ * breakpoint by default) and becomes a drawer controlled by {@link filtersOpen}
+ * on smaller screens; `ang-kg-explorer-filter-toggle` opens and closes it.
  * Projected content, such as a footer, is rendered at the end of the table and
  * scrolls with it.
  *
@@ -132,9 +133,9 @@ export class KgExplorerTableView<
   private readonly downloadLabel = computed(() => this.resolvedConfig().downloadLabel);
 
   /** Whether the filter menu is docked beside the table. */
-  protected readonly docked = watchBreakpoint('large');
+  protected readonly docked = watchBreakpoint(() => this.resolvedConfig().filtersDockBreakpoint ?? 'large');
 
-  /** Opens the filter menu when it is or becomes docked and closes the drawer when it undocks. */
+  /** Opens the filter menu when it is or becomes docked, and closes the drawer when it undocks. */
   constructor() {
     let previous: boolean | undefined;
     effect(() => {

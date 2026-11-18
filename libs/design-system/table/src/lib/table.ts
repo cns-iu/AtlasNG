@@ -1,5 +1,4 @@
 import {
-  afterRenderEffect,
   booleanAttribute,
   Component,
   computed,
@@ -10,8 +9,10 @@ import {
   input,
   model,
   numberAttribute,
+  Renderer2,
   TemplateRef,
   Type,
+  viewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {
@@ -209,27 +210,32 @@ export class Table<TRow extends Row = Row> {
   /** Reusable summary-cell definition instances keyed by column identity. */
   readonly #summaryTemplateCache = new TemplateDefinitionCache<CellContext, unknown>();
 
-  /** Host element, searched for the `role="table"` element rendered by ngx-datatable. */
-  readonly #elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  /** Host element of the wrapped ngx-datatable, searched for its `role="table"` element. */
+  private readonly datatable = viewChild(DatatableComponent, { read: ElementRef<HTMLElement> });
+
+  /** Renderer used to write attributes, so they are also applied during server rendering. */
+  readonly #renderer = inject(Renderer2);
 
   /**
    * Initializes automatic cache sweeping after each column-resolution cycle, and forwards
    * the ARIA inputs to the `role="table"` element, which ngx-datatable offers no inputs for.
+   * The forwarding uses an effect rather than a render hook so it also runs on the server.
    */
   constructor() {
-    afterRenderEffect({
-      write: () => {
-        const values = [this.ariaLabel(), this.ariaLabelledby(), this.ariaDescribedby()];
-        const table = this.#elementRef.nativeElement.querySelector('[role="table"]');
-        FORWARDED_ARIA_ATTRIBUTES.forEach((name, index) => {
-          const value = values[index];
-          if (value) {
-            table?.setAttribute(name, value);
-          } else {
-            table?.removeAttribute(name);
-          }
-        });
-      },
+    effect(() => {
+      const values = [this.ariaLabel(), this.ariaLabelledby(), this.ariaDescribedby()];
+      const table = this.datatable()?.nativeElement.querySelector('[role="table"]');
+      if (!table) {
+        return;
+      }
+      FORWARDED_ARIA_ATTRIBUTES.forEach((name, index) => {
+        const value = values[index];
+        if (value) {
+          this.#renderer.setAttribute(table, name, value);
+        } else {
+          this.#renderer.removeAttribute(table, name);
+        }
+      });
     });
 
     effect(() => {
