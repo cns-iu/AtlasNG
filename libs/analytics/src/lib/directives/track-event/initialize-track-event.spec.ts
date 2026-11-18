@@ -1,7 +1,7 @@
-import { Component, EventEmitter, inject, Injector, signal } from '@angular/core';
+import { Component, Directive, EventEmitter, inject, Injector, signal } from '@angular/core';
 import { AnalyticsEvent, CoreEvents } from '@atlasng/analytics/events';
 import { fireEvent, render } from '@testing-library/angular';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Analytics } from '../../analytics';
 import { EVENT_SCOPE } from '../../scope';
 import type { AnalyticsEventTrackingDef } from '../track-event';
@@ -168,6 +168,119 @@ describe('initializeTrackEvent', () => {
       ],
       [CoreEvents.Change, { order: 3, trigger: 'selectionChange', path: 'root.scope' }, undefined],
     ]);
+  });
+
+  it('should keep pending debounced multi-event calls when only payloads change', async () => {
+    vi.useFakeTimers();
+    const events = signal<AnalyticsEventTrackingDef<AnalyticsEvent>[]>([
+      { event: CoreEvents.Input, payload: { value: 'a' }, options: undefined, trigger: 'input' },
+    ]);
+    const { host, trackEvent, fixture } = await setup(() => ({ events, debounce: () => 300 }));
+
+    fireEvent.input(host);
+    events.set([{ event: CoreEvents.Input, payload: { value: 'ab' }, options: undefined, trigger: 'input' }]);
+    fixture.detectChanges();
+    vi.advanceTimersByTime(300);
+
+    expect(trackEvent).toHaveBeenCalledOnce();
+    expect(trackEvent).toHaveBeenCalledWith(CoreEvents.Input, expect.objectContaining({ value: 'ab' }), undefined);
+  });
+
+  it('should subscribe once to a source shared by multi-event definitions', async () => {
+    const subscribe = vi.fn(() => ({ unsubscribe: vi.fn() }));
+    const source = { subscribe };
+    const { trackEvent } = await setup(() => ({
+      events: () => [
+        { event: CoreEvents.Click, payload: {}, options: undefined, trigger: 'opened', source },
+        { event: CoreEvents.Focus, payload: {}, options: undefined, trigger: 'opened', source },
+      ],
+    }));
+
+    expect(subscribe).toHaveBeenCalledOnce();
+    (subscribe.mock.calls[0] as unknown as [() => void])[0]();
+    expect(trackEvent).toHaveBeenCalledTimes(2);
+  });
+
+  it('should warn once in dev mode when DOM triggers are registered on a non-element host', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const on = signal<Record<string, true>>({ click: true });
+
+    @Directive({ selector: '[angContainerTracker]' })
+    class ContainerTracker {
+      constructor() {
+        initializeTrackEvent({ event: CoreEvents.Click, on });
+      }
+    }
+
+    @Component({ imports: [ContainerTracker], template: '<ng-container angContainerTracker />' })
+    class Wrapper {}
+
+    const { fixture } = await render(Wrapper, {
+      providers: [
+        { provide: Analytics, useValue: { trackEvent: vi.fn() } },
+        { provide: EVENT_SCOPE, useValue: { name: () => 'scope', path: () => 'root.scope', parentScope: null } },
+      ],
+    });
+    on.set({ focus: true });
+    fixture.detectChanges();
+
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain("'click'");
+    warn.mockRestore();
+  });
+
+  it('should ignore values that sources emit synchronously on subscribe', async () => {
+    const subject = new BehaviorSubject(0);
+    const { trackEvent } = await setup(() => ({ event: CoreEvents.Change, on: () => ({ valueChange: subject }) }));
+
+    expect(trackEvent).not.toHaveBeenCalled();
+
+    subject.next(1);
+    expect(trackEvent).toHaveBeenCalledOnce();
+  });
+
+  it('should flush pending debounced calls on destroy', async () => {
+    vi.useFakeTimers();
+    const output = new EventEmitter<void>();
+    const { host, trackEvent, fixture } = await setup(() => ({
+      event: CoreEvents.Input,
+      payload: () => ({ label: 'search' }),
+      on: () => ({ input: true, valueChange: output }),
+      debounce: () => 300,
+    }));
+
+    fireEvent.input(host);
+    output.emit();
+    fixture.destroy();
+    vi.advanceTimersByTime(0);
+
+    expect(trackEvent.mock.calls.map(([, payload]) => payload)).toEqual([
+      { label: 'search', trigger: 'input', triggerData: expect.any(Event), path: 'root.scope' },
+      { label: 'search', trigger: 'valueChange', path: 'root.scope' },
+    ]);
+  });
+
+  it('should flush pending debounced calls when triggers change and drop them when disabled', async () => {
+    vi.useFakeTimers();
+    const on = signal<Record<string, true>>({ input: true });
+    const disabled = signal(false);
+    const { host, trackEvent, fixture } = await setup(() => ({
+      event: CoreEvents.Input,
+      on,
+      disabled,
+      debounce: () => 300,
+    }));
+
+    fireEvent.input(host);
+    on.set({ input: true, change: true });
+    fixture.detectChanges();
+    expect(trackEvent).toHaveBeenCalledOnce();
+
+    fireEvent.input(host);
+    disabled.set(true);
+    fixture.detectChanges();
+    vi.runAllTimers();
+    expect(trackEvent).toHaveBeenCalledOnce();
   });
 
   it('should run outside an injection context when given an injector', async () => {

@@ -15,7 +15,6 @@ export {
   TrackSubmit,
 } from './lib/directives/core-track-events';
 export { MultiTrackEvent, TrackEvent, type AnalyticsEventTrackingDef } from './lib/directives/track-event';
-export { debounceAttribute, payloadAttribute, triggersAttribute } from './lib/directives/track-event-transforms';
 export {
   initializeTrackEvent,
   type MultiTrackEventConfig,
@@ -24,6 +23,12 @@ export {
   type TrackEventTriggers,
   type TrackEventTriggersInput,
 } from './lib/directives/track-event/initialize-track-event';
+export {
+  debounceAttribute,
+  payloadAttribute,
+  triggersAttribute,
+} from './lib/directives/track-event/track-event-transforms';
+export { injectTrackEvent, type TrackEventFn } from './lib/inject-track-event';
 export {
   AnalyticsFeatureKind,
   provideAnalytics,
@@ -35,5 +40,4 @@ export {
   withPermissionsConfig,
   type AnalyticsFeature,
 } from './lib/provider';
-export { injectTrackEvent, type TrackEventFn } from './lib/inject-track-event';
 export { EVENT_SCOPE, EventScope, provideEventScope, type IEventScope } from './lib/scope';

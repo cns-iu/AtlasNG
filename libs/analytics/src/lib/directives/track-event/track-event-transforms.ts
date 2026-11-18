@@ -1,6 +1,6 @@
 import { numberAttribute } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor } from '@atlasng/analytics/events';
-import type { TrackEventTriggers, TrackEventTriggersInput } from './track-event/initialize-track-event';
+import type { TrackEventTriggers, TrackEventTriggersInput } from './initialize-track-event';
 
 /**
  * Normalizes the payload input on specialized tracking directives.
