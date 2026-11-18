@@ -44,29 +44,25 @@ Skip the sub-scope when the event type or trigger already tells the controls apa
 | Native `<input>` / `matInput`                                | `angTrackChange` (fires on commit; avoid `angTrackInput`, which fires on every keystroke) |
 | `mat-checkbox`                                               | `angTrackChange` (the inner native input's `change` bubbles)                              |
 | `mat-slide-toggle`                                           | `angTrackChange angTrackChangeOn="click"` (keyboard activation of the switch also clicks) |
-| `mat-select`, `mat-selection-list`, `mat-autocomplete`, tabs | `injectTrackEvent()` in the output handler (see below)                                    |
-| Host listeners in directives (`host: { '(click)': ... }`)    | `injectTrackEvent()` in the handler                                                       |
+| `mat-select`, `mat-selection-list`, `mat-autocomplete`, tabs | `angTrackChange` with the output in a `…On` record (see below)                            |
+| Host listeners in directives (`host: { '(click)': ... }`)    | `injectTrackEvent()` in the handler (last resort)                                         |
 
-The directives listen for DOM events on their host element. Angular Material outputs such as `selectionChange`, `optionSelected`, and `selectedTabChange` are not DOM events, so track them from code:
+The directives listen for DOM events by default. Angular Material outputs such as `selectionChange`, `optionSelected`, and `selectedTabChange` are not DOM events, so pass them as sources in a `…On` record with a template reference:
 
-```ts
-/** Tracks version selections that Angular Material reports through outputs rather than DOM events. */
-readonly #track = injectTrackEvent();
-
-protected selectVersion(version: VersionControlItem<T>): void {
-  this.#track(CoreEvents.Change, { trigger: 'selectionChange' });
-  this.selectedVersion.set(version);
-}
+```html
+<mat-select #select angTrackChange [angTrackChangeOn]="{ selectionChange: select.selectionChange }">
+  <input angTrackChange [angTrackChangeOn]="{ change: true, optionSelected: autocomplete.optionSelected }"
+/></mat-select>
 ```
 
-- Import `CoreEvents` from `@atlasng/analytics/events`.
-- Pass only plain, serializable data. Never pass Material event objects or component references as `triggerData`; DOM `Event`s are fine.
-- Do not send user-entered values (search terms, selected labels) in payloads.
-- Declare `#track` after the inputs, outputs, and models, next to the other private members.
+- A record replaces the default trigger. Add `change: true` (or another DOM event name) to keep it.
+- Source emissions are not sent, so Material event objects never reach the backend.
+- Use `angTrack<X>Debounce` (ms) for noisy triggers such as `input`.
+- Only fall back to `injectTrackEvent()` when the trigger is not on the element, such as `HeaderSortTrigger` listening on an ancestor header. Pass plain, serializable data, never user-entered values, and declare `#track` after the inputs, outputs, and models.
 
 ## 4. Verify
 
-- Every interactive element in the template has a tracking directive or a `#track` call, and the component has a scope.
+- Every interactive element in the template has a tracking directive (or, rarely, a `#track` call), and the component has a scope.
 - Add the analytics directives to the component's `imports`; lint flags an imported `EventScope` that the template does not use.
 - Run `npx nx format:write`, then `npx nx lint <project>` and `npx nx test <project>`.
 - Tests that assert tracking can provide `{ provide: Analytics, useValue: { trackEvent } }` and check `payload.path` and `payload.trigger` (see `header-sort-trigger.spec.ts`).
