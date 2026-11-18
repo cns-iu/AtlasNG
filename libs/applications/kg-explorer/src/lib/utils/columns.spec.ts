@@ -29,7 +29,7 @@ describe('kgExplorer column builders', () => {
     const byFn = kgExplorerLinkColumn<TestRow>('Name', 'url', { labelFn: (row) => row.name.toUpperCase() });
     const byLabel = kgExplorerLinkColumn<TestRow>('Name', 'url', { label: 'Open' }, { flexGrow: 2 });
 
-    expect(byProp).toMatchObject({ name: 'Name', prop: 'url', minWidth: 140, flexGrow: 1 });
+    expect(byProp).toMatchObject({ name: 'Name', prop: 'url', minWidth: 200, maxWidth: 640, flexGrow: 1 });
     expect(byProp.cellTemplate).toBe(LinkCellDefinition);
     expect(byProp.comparator?.(undefined, undefined, ADA, GRACE)).toBeLessThan(0);
     expect(byFn.comparator?.(undefined, undefined, GRACE, ADA)).toBeGreaterThan(0);
@@ -37,40 +37,45 @@ describe('kgExplorer column builders', () => {
     expect(byLabel.flexGrow).toBe(2);
   });
 
-  it('builds fixed-width text, number, and date columns', () => {
+  it('builds content-sized text columns and growing number and date columns with Figma width limits', () => {
     expect(kgExplorerTextColumn<TestRow>('Name', 'name')).toMatchObject({
       cellTemplate: TextCellDefinition,
-      width: 140,
-      minWidth: 140,
-      flexGrow: 0,
+      maxWidth: 240,
+      fitContent: true,
     });
     expect(kgExplorerNumberColumn<TestRow>('Count', 'count')).toMatchObject({
       cellTemplate: NumberCellDefinition,
       headerConfig: { align: 'end' },
-      width: 96,
-      minWidth: 96,
-      flexGrow: 0,
+      minWidth: 98,
+      maxWidth: 132,
+      flexGrow: 1,
     });
     expect(kgExplorerDateColumn<TestRow>('Date', 'date')).toMatchObject({
       cellConfig: { align: 'end' },
-      width: 136,
-      minWidth: 136,
-      flexGrow: 0,
+      minWidth: 112,
+      maxWidth: 132,
+      flexGrow: 1,
     });
   });
 
   it('lets overrides replace the default sizing', () => {
-    expect(kgExplorerNumberColumn<TestRow>('Count', 'count', { width: 120, flexGrow: 1 })).toMatchObject({
-      width: 120,
-      minWidth: 96,
-      flexGrow: 1,
+    expect(kgExplorerNumberColumn<TestRow>('Count', 'count', { maxWidth: 164, flexGrow: 2 })).toMatchObject({
+      minWidth: 98,
+      maxWidth: 164,
+      flexGrow: 2,
     });
   });
 
   it('builds unsortable chip columns', () => {
     const column = kgExplorerChipColumn<TestRow>('Tags', 'tags');
 
-    expect(column).toMatchObject({ sortable: false, flexGrow: 1, cellTemplate: ChipCellDefinition });
+    expect(column).toMatchObject({
+      sortable: false,
+      minWidth: 144,
+      maxWidth: 212,
+      flexGrow: 1,
+      cellTemplate: ChipCellDefinition,
+    });
     expect(column.pipe).toBeUndefined();
   });
 });

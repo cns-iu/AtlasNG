@@ -50,7 +50,7 @@ $text-cell-padding: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    max-width: 96rem;
+    max-width: 100rem;
     margin: 0 auto;
   }
 
@@ -135,10 +135,6 @@ $text-cell-padding: 0.5rem;
 
     .datatable-row-wrapper:first-child .datatable-body-row {
       @include row-space-above(0.25rem);
-    }
-
-    &.no-results {
-      --ngx-datatable-grid-template-columns: 2.5rem 1fr 1fr 1fr 1fr 1fr 1fr;
     }
   }
 
