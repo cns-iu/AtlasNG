@@ -96,6 +96,20 @@ describe('VersionControl', () => {
     expect(screen.queryByRole('group', { name: 'Download options' })).not.toBeInTheDocument();
   });
 
+  it('disables version selection and shows a hint when only one version is supplied', async () => {
+    await setup([versions[0]]);
+
+    expect(screen.getByRole('combobox', { name: 'Version' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Only one version available')).toBeVisible();
+  });
+
+  it('enables version selection without a hint when multiple versions are supplied', async () => {
+    await setup();
+
+    expect(screen.getByRole('combobox', { name: 'Version' })).toHaveAttribute('aria-disabled', 'false');
+    expect(screen.queryByText('Only one version available')).not.toBeInTheDocument();
+  });
+
   it('labels the version selector group with the tagline', async () => {
     await setup();
 

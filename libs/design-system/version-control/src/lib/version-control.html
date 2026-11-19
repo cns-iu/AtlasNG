@@ -8,7 +8,7 @@
     <mat-select
       angTrackChange
       [angTrackChangeOn]="{ selectionChange: select.selectionChange }"
-      [disabled]="versions().length === 0"
+      [disabled]="versions().length < 2"
       [value]="version"
       (selectionChange)="selectedVersion.set($event.value)"
       #select
@@ -17,6 +17,9 @@
         <mat-option [value]="item">{{ item.label }}</mat-option>
       }
     </mat-select>
+    @if (versions().length === 1) {
+      <mat-hint>Only one version available</mat-hint>
+    }
   </mat-form-field>
 </div>
 
