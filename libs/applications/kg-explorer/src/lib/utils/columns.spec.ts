@@ -29,7 +29,7 @@ describe('kgExplorer column builders', () => {
     const byFn = kgExplorerLinkColumn<TestRow>('Name', 'url', { labelFn: (row) => row.name.toUpperCase() });
     const byLabel = kgExplorerLinkColumn<TestRow>('Name', 'url', { label: 'Open' }, { flexGrow: 2 });
 
-    expect(byProp).toMatchObject({ name: 'Name', prop: 'url', minWidth: 140, flexGrow: 1 });
+    expect(byProp).toMatchObject({ name: 'Name', prop: 'url', minWidth: 200, maxWidth: 640, flexGrow: 1 });
     expect(byProp.cellTemplate).toBe(LinkCellDefinition);
     expect(byProp.comparator?.(undefined, undefined, ADA, GRACE)).toBeLessThan(0);
     expect(byFn.comparator?.(undefined, undefined, GRACE, ADA)).toBeGreaterThan(0);
@@ -37,23 +37,38 @@ describe('kgExplorer column builders', () => {
     expect(byLabel.flexGrow).toBe(2);
   });
 
-  it('builds text, number, and date columns', () => {
+  it('builds content-sized text, number, and date columns', () => {
     expect(kgExplorerTextColumn<TestRow>('Name', 'name')).toMatchObject({
       cellTemplate: TextCellDefinition,
+      fitContent: true,
     });
     expect(kgExplorerNumberColumn<TestRow>('Count', 'count')).toMatchObject({
       cellTemplate: NumberCellDefinition,
       headerConfig: { align: 'end' },
+      fitContent: true,
     });
     expect(kgExplorerDateColumn<TestRow>('Date', 'date')).toMatchObject({
       cellConfig: { align: 'end' },
+      fitContent: true,
     });
+  });
+
+  it('lets overrides replace the default sizing', () => {
+    expect(
+      kgExplorerNumberColumn<TestRow>('Count', 'count', { fitContent: false, minWidth: 98, maxWidth: 164 }),
+    ).toMatchObject({ fitContent: false, minWidth: 98, maxWidth: 164 });
   });
 
   it('builds unsortable chip columns', () => {
     const column = kgExplorerChipColumn<TestRow>('Tags', 'tags');
 
-    expect(column).toMatchObject({ sortable: false, flexGrow: 1, cellTemplate: ChipCellDefinition });
+    expect(column).toMatchObject({
+      sortable: false,
+      minWidth: 144,
+      maxWidth: 212,
+      flexGrow: 1,
+      cellTemplate: ChipCellDefinition,
+    });
     expect(column.pipe).toBeUndefined();
   });
 });
