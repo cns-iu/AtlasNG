@@ -110,6 +110,28 @@ describe('MultiSelectFilter', () => {
     expect(screen.getByRole('listbox', { name: 'Organ' })).toBeInTheDocument();
   });
 
+  it('sorts the search list options by label by default', async () => {
+    const user = userEvent.setup();
+    await setup();
+
+    await user.click(screen.getByRole('button', { name: 'Organ' }));
+
+    const labels = screen.getAllByRole('option').map((option) => option.textContent);
+    expect(labels[0]).toContain('Kidney');
+    expect(labels[1]).toContain('Liver');
+  });
+
+  it('passes the sort order to the search list', async () => {
+    const user = userEvent.setup();
+    await setup({ sort: 'none' });
+
+    await user.click(screen.getByRole('button', { name: 'Organ' }));
+
+    const labels = screen.getAllByRole('option').map((option) => option.textContent);
+    expect(labels[0]).toContain('Liver');
+    expect(labels[1]).toContain('Kidney');
+  });
+
   it('hides the search field when disableSearch is set', async () => {
     const user = userEvent.setup();
     await setup({ disableSearch: true });
