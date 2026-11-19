@@ -154,11 +154,6 @@
   // Leaves room below the chips for the scrollbar.
   .ang-multi-select-filter--dialog-chips {
     padding-bottom: 0.75rem;
-
-    // Keeps a chip scrolled into view clear of the edge fades.
-    .mat-mdc-chip {
-      scroll-margin-inline: scroll-area.slot(fade-size);
-    }
   }
 }
 

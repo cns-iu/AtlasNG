@@ -1,14 +1,5 @@
-import {
-  afterRenderEffect,
-  booleanAttribute,
-  Component,
-  ElementRef,
-  input,
-  output,
-  ViewEncapsulation,
-  viewChildren,
-} from '@angular/core';
-import { MatChip, MatChipsModule } from '@angular/material/chips';
+import { booleanAttribute, Component, input, output, ViewEncapsulation } from '@angular/core';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { EventScope, TrackClick } from '@atlasng/analytics';
 import { SearchListOption } from '@atlasng/design-system/search-list';
@@ -18,8 +9,7 @@ import { SearchListOption } from '@atlasng/design-system/search-list';
  * unless the user prefers reduced motion.
  *
  * By default, the chips wrap onto as many rows as they need. In a single row, they don't wrap, so
- * the list can sit in a horizontal scroll area, and selecting an option scrolls its new chip
- * into view.
+ * the list can sit in a horizontal scroll area.
  */
 @Component({
   selector: 'ang-multi-select-filter-chip-list',
@@ -33,7 +23,7 @@ import { SearchListOption } from '@atlasng/design-system/search-list';
   },
 })
 export class MultiSelectFilterChipList<T extends SearchListOption> {
-  /** Selected options, shown as chips in order. New selections are expected at the end. */
+  /** Selected options, shown as chips in the given order. */
   readonly options = input.required<T[]>();
 
   /** Accessible label of the list. */
@@ -47,20 +37,4 @@ export class MultiSelectFilterChipList<T extends SearchListOption> {
 
   /** Emits the option whose chip was removed. */
   readonly removed = output<T>();
-
-  /** Rendered chips, used to scroll the newest one into view. */
-  private readonly chips = viewChildren<MatChip, ElementRef<HTMLElement>>(MatChip, { read: ElementRef });
-
-  /** Scrolls the newest chip into view whenever a chip is added to a single row. */
-  constructor() {
-    let previousCount: number | undefined;
-    afterRenderEffect(() => {
-      const chips = this.chips();
-      const added = previousCount !== undefined && chips.length > previousCount;
-      previousCount = chips.length;
-      if (added && this.singleRow()) {
-        chips.at(-1)?.nativeElement.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
-      }
-    });
-  }
 }

@@ -7,17 +7,6 @@ describe('MultiSelectFilterChipList', () => {
   const liver: SearchListOption = { label: 'Liver', count: 10 };
   const kidney: SearchListOption = { label: 'Kidney', count: 5 };
 
-  let scrollIntoView: ReturnType<typeof vi.fn<Element['scrollIntoView']>>;
-
-  beforeEach(() => {
-    scrollIntoView = vi.fn<Element['scrollIntoView']>();
-    Element.prototype.scrollIntoView = scrollIntoView;
-  });
-
-  afterEach(() => {
-    Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
-  });
-
   async function setup(inputs: Record<string, unknown> = {}) {
     const removed = vi.fn();
     const result = await render(MultiSelectFilterChipList, {
@@ -42,31 +31,5 @@ describe('MultiSelectFilterChipList', () => {
     await user.click(screen.getByRole('button', { name: 'Remove Kidney' }));
 
     expect(removed).toHaveBeenCalledWith(kidney);
-  });
-
-  it('scrolls a chip added to a single row into view', async () => {
-    const { fixture, rerender } = await setup({ singleRow: true });
-    expect(scrollIntoView).not.toHaveBeenCalled();
-
-    await rerender({ inputs: { options: [liver, kidney] }, partialUpdate: true });
-    await fixture.whenStable();
-
-    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({ block: 'nearest', inline: 'nearest' });
-    expect(scrollIntoView.mock.contexts[0]).toHaveTextContent('Kidney');
-
-    scrollIntoView.mockClear();
-    await rerender({ inputs: { options: [liver] }, partialUpdate: true });
-    await fixture.whenStable();
-
-    expect(scrollIntoView).not.toHaveBeenCalled();
-  });
-
-  it('does not scroll chips that wrap', async () => {
-    const { fixture, rerender } = await setup();
-
-    await rerender({ inputs: { options: [liver, kidney] }, partialUpdate: true });
-    await fixture.whenStable();
-
-    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 });

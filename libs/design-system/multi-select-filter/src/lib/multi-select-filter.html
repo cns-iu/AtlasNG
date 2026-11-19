@@ -85,7 +85,7 @@
           <ang-multi-select-filter-chip-list
             class="ang-multi-select-filter--dialog-chips"
             singleRow
-            [options]="selected()"
+            [options]="selectedNewestFirst()"
             [label]="selectedFiltersLabel()"
             [removeLabel]="removeFilterLabel()"
             (removed)="removeFilter($event)"

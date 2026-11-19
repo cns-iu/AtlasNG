@@ -254,23 +254,17 @@ describe('MultiSelectFilter', () => {
       expect(within(dialog).queryByRole('list', { name: 'Active filters' })).not.toBeInTheDocument();
     });
 
-    it('scrolls the newest chip into view when an option is selected in the dialog', async () => {
+    it('shows the newest chip first in the dialog', async () => {
       const user = userEvent.setup();
-      const scrollIntoView = vi.fn();
-      Element.prototype.scrollIntoView = scrollIntoView;
       await setup({ selected: [kidney] }, false);
 
       await user.click(screen.getByRole('button', { name: 'Organ' }));
       const dialog = await screen.findByRole('dialog', { name: 'Organ filters' });
       await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
 
-      await waitFor(() => expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' }));
-      expect(scrollIntoView.mock.contexts.at(-1)).toHaveTextContent('Liver');
-
-      scrollIntoView.mockClear();
-      await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
-      expect(scrollIntoView).not.toHaveBeenCalled();
-      Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
+      const chips = within(within(dialog).getByRole('list', { name: 'Active filters' })).getAllByRole('listitem');
+      expect(chips[0]).toHaveTextContent('Liver');
+      expect(chips[1]).toHaveTextContent('Kidney');
     });
 
     it('closes the dialog with the Done button and returns focus to the label button', async () => {

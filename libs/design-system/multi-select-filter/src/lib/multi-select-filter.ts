@@ -40,8 +40,8 @@ const SEARCH_FIELD_INSET = 16;
  * panel is as tall as its options and only scrolls when they don't fit in the viewport. In short
  * viewports, it stops shrinking at 15rem.
  * On smaller screens, it opens in a full-screen dialog with a title, such as `Organ filters`, the
- * search field, the options, a tray with the selected options as a single row of removable chips
- * that scrolls sideways, and a Done button. Chips and the tray animate in and out unless the user
+ * search field, the options, a tray with the selected options as a single row of removable chips,
+ * newest first, that scrolls sideways, and a Done button. Chips and the tray animate in and out unless the user
  * prefers reduced motion.
  *
  * Takes the same options as the search list. Selections are matched by option object identity,
@@ -175,6 +175,12 @@ export class MultiSelectFilter<T extends SearchListOption> {
 
   /** Accessible label of the info button. */
   protected readonly resolvedInfoButtonLabel = computed(() => this.infoButtonLabel() ?? `${this.label()} info`);
+
+  /**
+   * Selected options with the newest first, for the dialog's single row of chips. The chip just
+   * selected shows at the start of the row without scrolling it into view.
+   */
+  protected readonly selectedNewestFirst = computed(() => [...this.selected()].reverse());
 
   /** Title of the full-screen dialog. */
   protected readonly resolvedDialogTitle = computed(() => this.dialogTitle() ?? `${this.label()} filters`);
