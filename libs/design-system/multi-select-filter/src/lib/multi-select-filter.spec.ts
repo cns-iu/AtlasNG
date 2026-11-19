@@ -132,6 +132,15 @@ describe('MultiSelectFilter', () => {
     expect(labels[1]).toContain('Kidney');
   });
 
+  it('passes the search field label to the search list', async () => {
+    const user = userEvent.setup();
+    await setup({ searchLabel: 'Search organs' });
+
+    await user.click(screen.getByRole('button', { name: 'Organ' }));
+
+    expect(screen.getByRole('textbox', { name: 'Search organs' })).toBeInTheDocument();
+  });
+
   it('hides the search field when disableSearch is set', async () => {
     const user = userEvent.setup();
     await setup({ disableSearch: true });

@@ -12,6 +12,7 @@
           [options]="filter.options"
           [count]="filter.count"
           [disableSearch]="filter.disableSearch ?? false"
+          [searchLabel]="filter.searchLabel ?? 'Search'"
           [selected]="selectionFor(filter)"
           (selectedChange)="select(filter, $event)"
         />

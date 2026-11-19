@@ -28,6 +28,7 @@ const meta: Meta<MultiSelectFilter<SearchListOption>> = {
     options: ORGANS,
     selected: [ORGANS[0], ORGANS[2]],
     disableSearch: false,
+    searchLabel: 'Search',
     sort: 'asc',
   },
   argTypes: {
