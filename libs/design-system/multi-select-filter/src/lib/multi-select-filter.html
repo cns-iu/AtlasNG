@@ -48,6 +48,7 @@
 <ng-template
   cdkConnectedOverlay
   cdkConnectedOverlayPanelClass="ang-multi-select-filter--panel-pane"
+  cdkConnectedOverlayTransformOriginOn=".ang-multi-select-filter--panel"
   [cdkConnectedOverlayOrigin]="wide() ? panelOrigin : fullScreenOrigin"
   [cdkConnectedOverlayOpen]="expanded()"
   [cdkConnectedOverlayPositions]="panelPositions()"
@@ -63,6 +64,7 @@
   <div
     class="ang-multi-select-filter--panel"
     role="dialog"
+    animate.leave="ang-multi-select-filter--panel-leave"
     cdkTrapFocus
     cdkTrapFocusAutoCapture
     [class.ang-multi-select-filter--full-screen]="!wide()"

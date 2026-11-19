@@ -134,12 +134,45 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  // Plays when the search list opens and when it switches layouts. The panel matches Material's menu
+  // and select panels, and the overlay sets its transform origin to the corner next to the filter.
+  .ang-multi-select-filter--panel {
+    animation: ang-multi-select-filter--panel-in 120ms cubic-bezier(0, 0, 0.2, 1);
+
+    &.ang-multi-select-filter--full-screen {
+      animation: ang-multi-select-filter--full-screen-in 200ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    &.ang-multi-select-filter--panel-leave {
+      animation: ang-multi-select-filter--panel-out 100ms linear forwards;
+    }
+  }
+
   .ang-multi-select-filter--chip-tray-enter {
     animation: ang-multi-select-filter--chip-tray-in 250ms cubic-bezier(0.05, 0.7, 0.1, 1);
   }
 
   .ang-multi-select-filter--chip-tray-leave {
     animation: ang-multi-select-filter--chip-tray-in 200ms cubic-bezier(0.3, 0, 0.8, 0.15) reverse;
+  }
+}
+
+@keyframes ang-multi-select-filter--panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes ang-multi-select-filter--panel-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ang-multi-select-filter--full-screen-in {
+  from {
+    opacity: 0;
   }
 }
 
