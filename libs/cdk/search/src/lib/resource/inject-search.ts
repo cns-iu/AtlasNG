@@ -1,20 +1,9 @@
-import { assertInInjectionContext, inject, Injector, Signal } from '@angular/core';
+import { assertInInjectionContext, inject, Injector } from '@angular/core';
+import { MaybeSignalLike, SignalLike } from '@atlasng/core';
 import { SearchEngine } from '../engine/search-engine';
 import { SearchFieldSpec, SearchFilter, SearchOrder } from '../engine/types';
 import { SEARCH_CONFIG } from '../providers';
 import { SearchResourceImpl, SearchResourceRef } from './search-resource';
-
-/**
- * A value, or a signal or other function that returns it. Functions are read in a reactive context, so signals they
- * read are tracked.
- */
-export type MaybeSignalLike<T> = T | (() => T);
-
-/**
- * A signal or zero-argument function that returns a value. Unlike {@link MaybeSignalLike}, the value cannot be passed
- * directly, which keeps values that are functions themselves apart from the functions that return them.
- */
-export type SignalLike<T> = Signal<T> | (() => T);
 
 /**
  * Options for {@link injectSearch}. Every option accepts a signal or function and is read reactively, so options can come from
