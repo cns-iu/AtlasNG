@@ -115,7 +115,7 @@ describe('KgExplorerTableView', () => {
     expect(
       await screen.findByRole('button', { name: `Choose download format for ${ITEMS[0].title}` }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: `No downloads available for ${ITEMS[2].title}` })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: new RegExp(ITEMS[2].title) })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: `Download ${CSV_FILE_FORMAT.label} for ${ITEMS[1].title}` }));
 
     expect(download).toHaveBeenCalledWith({ item: ITEMS[1], format: CSV_FILE_FORMAT });

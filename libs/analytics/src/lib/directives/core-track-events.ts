@@ -1,7 +1,7 @@
 import { booleanAttribute, Directive, input } from '@angular/core';
 import { AnalyticsEventPayloadFor, CoreEvents } from '@atlasng/analytics/events';
-import { payloadAttribute, triggersAttribute } from './track-event-transforms';
 import { initializeTrackEvent } from './track-event/initialize-track-event';
+import { debounceAttribute, payloadAttribute, triggersAttribute } from './track-event/track-event-transforms';
 
 /** Specialized directive for tracking a blur event. */
 @Directive({
@@ -13,14 +13,17 @@ export class TrackBlur {
   readonly payload = input({}, { alias: `angTrackBlur`, transform: payloadAttribute<CoreEvents.Blur> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackBlurOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['blur'], { alias: `angTrackBlurOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ blur: true }, { alias: `angTrackBlurOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackBlurDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Blur;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Blur, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -34,14 +37,19 @@ export class TrackChange {
   readonly payload = input({}, { alias: `angTrackChange`, transform: payloadAttribute<CoreEvents.Change> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackChangeOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['change'], { alias: `angTrackChangeOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ change: true }, { alias: `angTrackChangeOn`, transform: triggersAttribute });
+  /** Delay in milliseconds that each trigger waits for a pause before tracking. */
+  readonly debounce = input(undefined, { alias: `angTrackChangeDebounce`, transform: debounceAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackChangeDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Change;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Change, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -55,14 +63,17 @@ export class TrackClick {
   readonly payload = input({}, { alias: `angTrackClick`, transform: payloadAttribute<CoreEvents.Click> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackClickOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['click'], { alias: `angTrackClickOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ click: true }, { alias: `angTrackClickOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackClickDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Click;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Click, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -76,14 +87,17 @@ export class TrackDoubleClick {
   readonly payload = input({}, { alias: `angTrackDoubleClick`, transform: payloadAttribute<CoreEvents.DoubleClick> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackDoubleClickOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['dblclick'], { alias: `angTrackDoubleClickOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ dblclick: true }, { alias: `angTrackDoubleClickOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackDoubleClickDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.DoubleClick;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.DoubleClick, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -97,14 +111,17 @@ export class TrackError {
   readonly payload = input.required<AnalyticsEventPayloadFor<CoreEvents.Error>>({ alias: `angTrackError` });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackErrorOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['error'], { alias: `angTrackErrorOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ error: true }, { alias: `angTrackErrorOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackErrorDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Error;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Error, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -118,14 +135,17 @@ export class TrackFocus {
   readonly payload = input({}, { alias: `angTrackFocus`, transform: payloadAttribute<CoreEvents.Focus> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackFocusOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['focus'], { alias: `angTrackFocusOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ focus: true }, { alias: `angTrackFocusOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackFocusDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Focus;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Focus, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -139,14 +159,17 @@ export class TrackHover {
   readonly payload = input({}, { alias: `angTrackHover`, transform: payloadAttribute<CoreEvents.Hover> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackHoverOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['mouseenter'], { alias: `angTrackHoverOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ mouseenter: true }, { alias: `angTrackHoverOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackHoverDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Hover;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Hover, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -160,14 +183,19 @@ export class TrackInput {
   readonly payload = input({}, { alias: `angTrackInput`, transform: payloadAttribute<CoreEvents.Input> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackInputOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['input'], { alias: `angTrackInputOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ input: true }, { alias: `angTrackInputOn`, transform: triggersAttribute });
+  /** Delay in milliseconds that each trigger waits for a pause before tracking. */
+  readonly debounce = input(undefined, { alias: `angTrackInputDebounce`, transform: debounceAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackInputDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Input;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Input, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -181,14 +209,17 @@ export class TrackKeyboard {
   readonly payload = input({}, { alias: `angTrackKeyboard`, transform: payloadAttribute<CoreEvents.Keyboard> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackKeyboardOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['keydown'], { alias: `angTrackKeyboardOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ keydown: true }, { alias: `angTrackKeyboardOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackKeyboardDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Keyboard;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Keyboard, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -202,14 +233,17 @@ export class TrackReset {
   readonly payload = input({}, { alias: `angTrackReset`, transform: payloadAttribute<CoreEvents.Reset> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackResetOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['reset'], { alias: `angTrackResetOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ reset: true }, { alias: `angTrackResetOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackResetDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Reset;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Reset, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }
 
@@ -223,13 +257,16 @@ export class TrackSubmit {
   readonly payload = input({}, { alias: `angTrackSubmit`, transform: payloadAttribute<CoreEvents.Submit> });
   /** Additional options to pass to the analytics backend. */
   readonly options = input<Record<string, unknown>>(undefined, { alias: `angTrackSubmitOptions` });
-  /** The DOM events that should trigger the analytics event to be logged. */
-  readonly on = input(['submit'], { alias: `angTrackSubmitOn`, transform: triggersAttribute });
+  /** The DOM events or sources that should trigger the analytics event to be logged. */
+  readonly on = input({ submit: true }, { alias: `angTrackSubmitOn`, transform: triggersAttribute });
   /** A flag indicating whether the directive is disabled. */
   readonly disabled = input(false, { alias: `angTrackSubmitDisabled`, transform: booleanAttribute });
 
+  /** The analytics event to track. */
+  readonly event = CoreEvents.Submit;
+
   /** Initializes event tracking for the directive inputs. */
   constructor() {
-    initializeTrackEvent(CoreEvents.Submit, this.payload, this.options, this.on, this.disabled);
+    initializeTrackEvent(this);
   }
 }

@@ -17,6 +17,8 @@
   <mat-slide-toggle
     class="ang-cookie-permission-item--state"
     angEventScope="state-toggle"
+    angTrackChange
+    angTrackChangeOn="click"
     [aria-label]="stateLabel()"
     [checked]="enabled()"
     [disabled]="info().required ?? false"

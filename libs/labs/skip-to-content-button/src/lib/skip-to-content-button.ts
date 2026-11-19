@@ -1,6 +1,7 @@
 import { Component, computed, DOCUMENT, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { provideEventScope, TrackClick } from '@atlasng/analytics';
 
 /**
  * Button that allows users to skip directly to the main content of the page,
@@ -11,9 +12,10 @@ import { MatIconModule } from '@angular/material/icon';
  */
 @Component({
   selector: 'ang-skip-to-content-button',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule, TrackClick],
   templateUrl: './skip-to-content-button.html',
   styleUrl: './skip-to-content-button.scss',
+  providers: [provideEventScope('skip-to-content-button')],
 })
 export class SkipToContentButton {
   /** The ID of the anchor element to skip to. */

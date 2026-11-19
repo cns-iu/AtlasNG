@@ -5,6 +5,7 @@
       type="button"
       class="ang-multi-select-filter--info"
       matIconButton
+      angEventScope="info"
       angTrackClick
       [attr.aria-label]="resolvedInfoButtonLabel()"
       [matTooltip]="infoTooltip()"
@@ -20,6 +21,7 @@
     type="button"
     class="ang-multi-select-filter--label"
     matButton
+    angEventScope="toggle"
     angTrackClick
     cdkOverlayOrigin
     aria-haspopup="dialog"
@@ -41,7 +43,13 @@
     @for (option of selected(); track option) {
       <mat-chip role="listitem" disableRipple (removed)="removeFilter(option)">
         {{ option.label }}
-        <button type="button" matChipRemove [attr.aria-label]="`${removeFilterLabel()} ${option.label}`">
+        <button
+          type="button"
+          matChipRemove
+          angEventScope="remove-filter"
+          angTrackClick
+          [attr.aria-label]="`${removeFilterLabel()} ${option.label}`"
+        >
           <mat-icon fontIcon="cancel" />
         </button>
       </mat-chip>

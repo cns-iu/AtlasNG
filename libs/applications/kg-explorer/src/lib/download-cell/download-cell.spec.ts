@@ -86,14 +86,12 @@ describe('KgExplorerDownloadCellDefinition', () => {
     expect(download).toHaveBeenCalledWith(ROW, CSV_FILE_FORMAT);
   });
 
-  it('disables the button of a row without formats', async () => {
-    const { download, user } = await setup(() => []);
+  it('renders no button for a row without formats', async () => {
+    const formats = vi.fn(() => []);
+    await setup(formats);
 
-    const button = await screen.findByRole('button', { name: 'No downloads available for Heart atlas' });
-    await user.click(button);
-
-    expect(button).toHaveAttribute('aria-disabled', 'true');
-    expect(download).not.toHaveBeenCalled();
+    await vi.waitFor(() => expect(formats).toHaveBeenCalledWith(ROW));
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('names the buttons with the label function', async () => {

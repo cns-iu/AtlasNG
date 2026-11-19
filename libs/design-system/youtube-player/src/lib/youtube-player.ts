@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 import { YouTubePlayer as NgYouTubePlayer, YOUTUBE_PLAYER_CONFIG, YouTubePlayerConfig } from '@angular/youtube-player';
+import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnalyticsEventCategory } from '@atlasng/analytics/events';
 import { AnalyticsPermissionsManager } from '@atlasng/analytics/permissions';
 import { RESIZE_OBSERVER } from '@atlasng/core';
@@ -81,9 +82,10 @@ export class YouTubePlayerEnableRequest {}
  */
 @Component({
   selector: 'ang-youtube-player',
-  imports: [NgYouTubePlayer, YouTubePlayerPlaceholder],
+  imports: [NgYouTubePlayer, YouTubePlayerPlaceholder, EventScope, TrackClick],
   templateUrl: './youtube-player.html',
   styleUrl: './youtube-player.scss',
+  providers: [provideEventScope('youtube-player')],
   host: { class: 'ang-youtube-player' },
 })
 export class YouTubePlayer {

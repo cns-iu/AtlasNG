@@ -65,15 +65,17 @@ export interface KgExplorerTableViewConfig<
   /**
    * File formats each row can be downloaded in: the same formats for every
    * row, or a function returning the formats of a row. The download column is
-   * only shown when this is set.
+   * only shown when this is set. The design shows a download button in every
+   * row or in none, so set this only when every row has at least one format;
+   * a row without formats gets an empty cell.
    */
   downloadFormats?: KgExplorerDownloadFormats<TRow, TFormat>;
   /** Accessible name of the download column's header, which is visually empty. Defaults to `Download`. */
   downloadColumnLabel?: string;
   /**
    * Names the row of each download button: a row key or a function returning
-   * the name, announced as "Download CSV for <name>", "Choose download format
-   * for <name>", or "No downloads available for <name>". Defaults to the row's `title`.
+   * the name, announced as "Download CSV for <name>" or "Choose download format
+   * for <name>". Defaults to the row's `title`.
    */
   downloadLabel?: (keyof TRow & string) | ((row: TRow) => string);
   /**

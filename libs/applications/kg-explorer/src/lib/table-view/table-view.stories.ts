@@ -75,8 +75,8 @@ const SAMPLE_TYPES = ['Dataset', 'Reference organ', 'Collection', 'Illustration'
 /** Tag sets cycled through the sample rows. */
 const SAMPLE_TAGS = [['Kidney', 'Heart', 'Lung'], ['Skin'], ['Liver', 'Spleen'], ['Brain', 'Eye', 'Lung', 'Pancreas']];
 
-/** Download format sets cycled through the sample rows: several formats, one format, and none. */
-const SAMPLE_FORMATS = [[CSV_FILE_FORMAT, JSON_FILE_FORMAT, JSON_LD_FILE_FORMAT], [CSV_FILE_FORMAT], []];
+/** Download format sets cycled through the sample rows: several formats and one format. */
+const SAMPLE_FORMATS = [[CSV_FILE_FORMAT, JSON_FILE_FORMAT, JSON_LD_FILE_FORMAT], [CSV_FILE_FORMAT]];
 
 /** White-label sample rows that mirror the Figma content of the table view. */
 const SAMPLE_ITEMS: SampleItem[] = SAMPLE_TITLES.map((title, index) => ({
@@ -91,15 +91,50 @@ const SAMPLE_ITEMS: SampleItem[] = SAMPLE_TITLES.map((title, index) => ({
   formats: SAMPLE_FORMATS[index % SAMPLE_FORMATS.length],
 }));
 
-/** Columns for {@link SAMPLE_ITEMS} that mirror the Figma table view. */
-const SAMPLE_COLUMNS: TableColumn<SampleItem>[] = [
-  kgExplorerLinkColumn('Title', 'url', { labelProp: 'title' }),
-  kgExplorerTextColumn('Type', 'type'),
-  kgExplorerChipColumn('Organs', 'tags'),
-  kgExplorerNumberColumn('#Cell types', 'cellTypeCount'),
-  kgExplorerNumberColumn('#Biomarkers', 'biomarkerCount'),
-  kgExplorerDateColumn('Last modified', 'lastModified'),
-];
+/** Sample columns that mirror the Figma table view, keyed by the prefix of their width controls. */
+const SAMPLE_COLUMNS_BY_KEY = {
+  title: kgExplorerLinkColumn<SampleItem>('Title', 'url', { labelProp: 'title' }),
+  type: kgExplorerTextColumn<SampleItem>('Type', 'type'),
+  organs: kgExplorerChipColumn<SampleItem>('Organs', 'tags'),
+  cellTypes: kgExplorerNumberColumn<SampleItem>('#Cell types', 'cellTypeCount'),
+  biomarkers: kgExplorerNumberColumn<SampleItem>('#Biomarkers', 'biomarkerCount'),
+  lastModified: kgExplorerDateColumn<SampleItem>('Last modified', 'lastModified'),
+};
+
+/** Sample columns with the prefixes of their width controls. */
+const SAMPLE_COLUMN_ENTRIES = Object.entries(SAMPLE_COLUMNS_BY_KEY) as [
+  keyof typeof SAMPLE_COLUMNS_BY_KEY,
+  TableColumn<SampleItem>,
+][];
+
+/** Story-only args setting each sample column's minimum and maximum width, such as `titleMinWidth`. */
+type ColumnWidthArgs = Partial<Record<`${keyof typeof SAMPLE_COLUMNS_BY_KEY}${'Min' | 'Max'}Width`, number>>;
+
+/** Column width args with the sample columns' widths; columns that fit their content have none. */
+const COLUMN_WIDTH_DEFAULTS: ColumnWidthArgs = Object.fromEntries(
+  SAMPLE_COLUMN_ENTRIES.filter(([, column]) => !column.fitContent).flatMap(([key, column]) => [
+    [`${key}MinWidth`, column.minWidth],
+    [`${key}MaxWidth`, column.maxWidth],
+  ]),
+);
+
+/** Names of the column width args, kept out of the table view's inputs. */
+const COLUMN_WIDTH_ARGS = Object.keys(COLUMN_WIDTH_DEFAULTS);
+
+/**
+ * Applies the story's width controls to the sample columns. A cleared control
+ * removes that limit.
+ *
+ * @param args Story args holding the column width controls.
+ * @returns Sample columns with the controlled minimum and maximum widths.
+ */
+function sampleColumnsFor(args: ColumnWidthArgs): TableColumn<SampleItem>[] {
+  return SAMPLE_COLUMN_ENTRIES.map(([key, column]) => ({
+    ...column,
+    minWidth: args[`${key}MinWidth`],
+    maxWidth: args[`${key}MaxWidth`],
+  }));
+}
 
 /** Type and Organ filters for the sample rows, with options derived from the rows. */
 const SAMPLE_FILTERS: KgExplorerFilter<SampleItem>[] = [
@@ -197,7 +232,7 @@ function explorerTemplate(args: Args, content = ''): string {
 
     <ang-navigation-container [navigationItems]="navigationItems" #navigation>
       <main id="main-content" class="explorer-main">
-        <ang-kg-explorer-table-view ${argsToTemplate(args)} #explorer>
+        <ang-kg-explorer-table-view ${argsToTemplate(args, { exclude: COLUMN_WIDTH_ARGS })} #explorer>
           ${content}
         </ang-kg-explorer-table-view>
       </main>
@@ -213,7 +248,25 @@ const EXPLORER_STYLES = [
   `.ang-footer {z-index: 3;}`,
 ];
 
-const meta: Meta<KgExplorerTableView<SampleItem>> = {
+/** Story args: the table view's inputs plus the column width controls. */
+type StoryArgs = KgExplorerTableView<SampleItem> & ColumnWidthArgs;
+
+/**
+ * Renders the table view with the sample columns sized by the width controls.
+ *
+ * @param args Story args.
+ * @param content Content projected into the table view.
+ * @returns Story props, template, and styles.
+ */
+function renderExplorer(args: Args, content = '') {
+  return {
+    props: { ...args, columns: sampleColumnsFor(args), navigationItems: NAVIGATION_ITEMS },
+    template: explorerTemplate(args, content),
+    styles: EXPLORER_STYLES,
+  };
+}
+
+const meta: Meta<StoryArgs> = {
   component: KgExplorerTableView as Type<KgExplorerTableView<SampleItem>>,
   title: 'Applications/KG Explorer/Table View',
   decorators: [
@@ -240,26 +293,30 @@ const meta: Meta<KgExplorerTableView<SampleItem>> = {
   },
   args: {
     items: SAMPLE_ITEMS,
-    columns: SAMPLE_COLUMNS,
+    columns: Object.values(SAMPLE_COLUMNS_BY_KEY),
     filters: SAMPLE_FILTERS,
     filtersOpen: false,
-    config: SAMPLE_CONFIG,
+    config: { ...SAMPLE_CONFIG, downloadFormats: sampleFormatsFor },
     viewSettingValues: { view: 'table' },
+    ...COLUMN_WIDTH_DEFAULTS,
   },
   argTypes: {
     download: { action: 'download' },
     resetView: { action: 'resetView' },
+    columns: { control: false },
+    ...Object.fromEntries(
+      COLUMN_WIDTH_ARGS.map((name) => [
+        name,
+        { control: { type: 'number', min: 0, step: 4 }, table: { category: 'Column widths' } },
+      ]),
+    ),
   },
-  render: (args) => ({
-    props: { ...args, navigationItems: NAVIGATION_ITEMS },
-    template: explorerTemplate(args),
-    styles: EXPLORER_STYLES,
-  }),
+  render: (args) => renderExplorer(args),
 };
 
 export default meta;
 
-type Story = StoryObj<KgExplorerTableView<SampleItem>>;
+type Story = StoryObj<StoryArgs>;
 
 export const Default: Story = {};
 
@@ -324,9 +381,8 @@ export const WithFooter: Story = {
   args: {
     items: SAMPLE_ITEMS,
   },
-  render: (args) => ({
-    props: { ...args, navigationItems: NAVIGATION_ITEMS },
-    template: explorerTemplate(
+  render: (args) =>
+    renderExplorer(
       args,
       `
         <ang-footer logoSrc="" organization="Organization">
@@ -336,8 +392,6 @@ export const WithFooter: Story = {
         </ang-footer>
       `,
     ),
-    styles: EXPLORER_STYLES,
-  }),
   play: async ({ canvas }) => {
     const footer = canvas.getByRole('contentinfo');
     // Scroll through the table to the footer after the last row.
