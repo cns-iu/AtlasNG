@@ -27,8 +27,14 @@ import { MultiSelectFilterChipList } from './multi-select-filter-chip-list/multi
 const SEARCH_FIELD_INSET = 16;
 
 /**
- * Position of the full-screen search list. The overlay is as large as the viewport, so it never
- * fits next to the filter and is pushed into the top start corner.
+ * Origin of the full-screen search list: the top left corner of the viewport. Switching the
+ * overlay's origin when the layout changes makes it reposition right away.
+ */
+const FULL_SCREEN_ORIGIN = { x: 0, y: 0 };
+
+/**
+ * Position of the full-screen search list at its origin. In right-to-left layouts, the overlay
+ * would extend past the left edge, so it is pushed back into the viewport.
  */
 const FULL_SCREEN_POSITIONS: ConnectedPosition[] = [
   { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'top' },
@@ -130,6 +136,9 @@ export class MultiSelectFilter<T extends SearchListOption> {
    * Increase it to open the panel past the edge of a container with padding, such as a drawer.
    */
   readonly panelOffsetX = input(8, { transform: numberAttribute });
+
+  /** Origin of the full-screen search list. */
+  protected readonly fullScreenOrigin = FULL_SCREEN_ORIGIN;
 
   /** Unique id of the search list panel, referenced by the label button's `aria-controls`. */
   protected readonly panelId = inject(IdGenerator).getId('ang-multi-select-filter--panel');

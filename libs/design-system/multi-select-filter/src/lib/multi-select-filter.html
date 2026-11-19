@@ -48,7 +48,7 @@
 <ng-template
   cdkConnectedOverlay
   cdkConnectedOverlayPanelClass="ang-multi-select-filter--panel-pane"
-  [cdkConnectedOverlayOrigin]="panelOrigin"
+  [cdkConnectedOverlayOrigin]="wide() ? panelOrigin : fullScreenOrigin"
   [cdkConnectedOverlayOpen]="expanded()"
   [cdkConnectedOverlayPositions]="panelPositions()"
   [cdkConnectedOverlayFlexibleDimensions]="wide()"
