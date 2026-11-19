@@ -1,5 +1,6 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component } from '@angular/core';
 import { HeaderCellDefinition, HeaderCellTemplateContext } from '@atlasng/design-system/table';
+import { VisuallyHidden } from '@atlasng/cdk/a11y';
 
 /**
  * Reusable header cell for a download column. The column `name` is the
@@ -7,9 +8,7 @@ import { HeaderCellDefinition, HeaderCellTemplateContext } from '@atlasng/design
  */
 @Component({
   selector: 'ang-kg-explorer-download-header-cell-definition',
-  imports: [HeaderCellTemplateContext],
+  imports: [HeaderCellTemplateContext, VisuallyHidden],
   templateUrl: './download-header-cell.html',
-  styleUrl: './download-header-cell.scss',
-  encapsulation: ViewEncapsulation.None,
 })
 export class KgExplorerDownloadHeaderCellDefinition extends HeaderCellDefinition {}

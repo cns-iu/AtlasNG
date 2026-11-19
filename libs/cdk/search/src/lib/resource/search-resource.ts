@@ -1,6 +1,5 @@
 import {
   computed,
-  isSignal,
   Injector,
   Resource,
   resourceFromSnapshots,
@@ -10,13 +9,13 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { ConfigurationOf } from '@atlasng/core';
+import { asSignal, asSignalWithDefault, ConfigurationOf } from '@atlasng/core';
 import { SearchEngine } from '../engine/search-engine';
 import { SearchFieldDefinition, SearchFieldSpec, SearchFilter, SearchResult, SearchSuggestion } from '../engine/types';
 import { DEFAULT_SEARCH_VALUE_FIELD, isSearchPrimitive } from '../engine/values';
 import { SEARCH_CONFIG } from '../providers';
 import { debounceTerm } from './debounce-term';
-import type { InjectSearchOptions, MaybeSignalLike } from './inject-search';
+import type { InjectSearchOptions } from './inject-search';
 import { ContextualResponse, ResolvedResponse, resolveResponse } from './resolve-response';
 
 /**
@@ -93,18 +92,18 @@ export class SearchResourceImpl<T> implements SearchResourceRef<T> {
    * @param config Search defaults.
    */
   constructor(options: InjectSearchOptions<T>, injector: Injector, config: ConfigurationOf<typeof SEARCH_CONFIG>) {
-    const items = toSignal(options.items);
-    const fields = toSignal(options.fields);
-    const filter = toSignal<SearchFilter<T> | undefined>(options.filter);
-    const limit = toSignal(options.limit);
-    const order = toSignal(options.order);
-    const suggestionField = toSignal(options.suggestionField);
-    const engineOption = toSignal(options.engine);
+    const items = asSignal(options.items);
+    const fields = asSignal(options.fields);
+    const filter = asSignal<SearchFilter<T> | undefined>(options.filter);
+    const limit = asSignal(options.limit);
+    const order = asSignal(options.order);
+    const suggestionField = asSignal(options.suggestionField);
+    const engineOption = asSignal(options.engine);
     const engine = computed(() => engineOption() ?? injector.get(SearchEngine));
-    const minLength = withDefault(options.minLength, config.minLength);
-    const suggestionLimit = withDefault(options.suggestionLimit, config.suggestionLimit);
-    const debounce = withDefault(options.debounce, config.debounce);
-    const { term, effectRef } = debounceTerm(toSignal(options.term), debounce, minLength, injector);
+    const minLength = asSignalWithDefault(options.minLength, config.minLength);
+    const suggestionLimit = asSignalWithDefault(options.suggestionLimit, config.suggestionLimit);
+    const debounce = asSignalWithDefault(options.debounce, config.debounce);
+    const { term, effectRef } = debounceTerm(asSignal(options.term), debounce, minLength, injector);
     const active = computed(() => {
       const length = term().trim().length;
       return length > 0 && length >= minLength();
@@ -232,29 +231,4 @@ export class SearchResourceImpl<T> implements SearchResourceRef<T> {
  */
 function defaultSuggestionField<T>(items: readonly T[]): SearchFieldSpec<T> | undefined {
   return items.some(isSearchPrimitive) ? (PRIMITIVE_SUGGESTION_FIELD as SearchFieldDefinition<T>) : undefined;
-}
-
-/**
- * Wraps an optional value or signal in a signal that falls back to a default when the value is `undefined`.
- *
- * @param value An optional value, signal, or function.
- * @param fallback Value used while `value` is `undefined`.
- * @returns A signal of the value or the fallback.
- */
-function withDefault<T>(value: MaybeSignalLike<T | undefined>, fallback: T): Signal<T> {
-  const source = toSignal(value);
-  return computed(() => source() ?? fallback);
-}
-
-/**
- * Wraps a value in a signal. Signals are returned as they are and other functions are wrapped in a computed signal.
- *
- * @param value A value, signal, or function.
- * @returns A signal of the value.
- */
-function toSignal<T>(value: MaybeSignalLike<T>): Signal<T> {
-  if (isSignal(value)) {
-    return value as Signal<T>;
-  }
-  return typeof value === 'function' ? computed(value as () => T) : signal(value).asReadonly();
 }

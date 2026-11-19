@@ -57,6 +57,39 @@ export class PreferencesStore {
 }
 ```
 
+### Signal helpers
+
+`MaybeSignalLike<T>` types an option that accepts a value, a signal, or a function, and `SignalLike<T>` one that accepts only a signal or function. `asSignal` turns either into a signal; functions are wrapped in a `computed`, so the signals they read are tracked. Library helpers such as `injectSearch` and `injectSorted` from `@atlasng/cdk` use them so their options can come from component inputs.
+
+```ts
+import { computed } from '@angular/core';
+import { asSignal, MaybeSignalLike } from '@atlasng/core';
+
+export function injectLabel(options: { text: MaybeSignalLike<string> }) {
+  const text = asSignal(options.text);
+  return computed(() => text().toUpperCase());
+}
+```
+
+`asSignalWithDefault(value, fallback)` does the same but returns `fallback` while the value is `undefined`.
+
+### Injector options
+
+`injectX` style functions must run in an injection context unless the caller passes an injector. Accept `InjectorOptions` and call `resolveInjector`, which returns the given injector or asserts the injection context and injects the current one.
+
+```ts
+import { InjectorOptions, resolveInjector } from '@atlasng/core';
+
+export function injectThing(options?: InjectorOptions): Thing {
+  const injector = resolveInjector(injectThing, options);
+  return injector.get(Thing);
+}
+```
+
+### Features
+
+`Feature<K>` types the features that `withX` functions return to a `provideX(...features)` function: a `kind` and the `providers` it contributes. `assertSingleFeature` throws an `AngError` when more than one feature has one of the given kinds, such as two engines. Guard it with `typeof ngDevMode === 'undefined' || ngDevMode` so production builds drop the check.
+
 ### Configuration tokens
 
 `createConfigurationToken` creates an injection token together with typed `inject` and `provide` helpers. Values supplied by the caller are merged over the defaults; `undefined` values are ignored. Properties that have defaults are typed as required in the injected result.
