@@ -76,7 +76,7 @@
     }
 
     &[color='tertiary'] {
-      background-color: token-utils.sys-slot(tertiary);
+      background-color: token-utils.slot(icon-tertiary-background-color, $config);
       color: token-utils.sys-slot(on-tertiary);
     }
   }

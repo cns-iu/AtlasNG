@@ -58,3 +58,7 @@ body,
   color: var(--mat-sys-on-surface-variant);
   font: var(--mat-sys-body-medium);
 }
+
+.wpp-light-theme {
+  --ang-kg-explorer-metadata-view-icon-tertiary-background-color: #{map.get(wpp-theme.$tertiary-palette, 60)};
+}
