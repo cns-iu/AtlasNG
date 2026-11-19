@@ -47,7 +47,7 @@ export type KgExplorerDownloadCellConfig<
 /**
  * Reusable body cell with a download icon button. A row with several formats
  * opens a menu of them, a row with one format downloads it directly, and a
- * row without formats shows a disabled button.
+ * row without formats renders nothing.
  */
 @Component({
   selector: 'ang-kg-explorer-download-cell-definition',

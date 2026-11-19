@@ -74,8 +74,8 @@ const SAMPLE_TYPES = ['Dataset', 'Reference organ', 'Collection', 'Illustration'
 /** Tag sets cycled through the sample rows. */
 const SAMPLE_TAGS = [['Kidney', 'Heart', 'Lung'], ['Skin'], ['Liver', 'Spleen'], ['Brain', 'Eye', 'Lung', 'Pancreas']];
 
-/** Download format sets cycled through the sample rows: several formats, one format, and none. */
-const SAMPLE_FORMATS = [[CSV_FILE_FORMAT, JSON_FILE_FORMAT, JSON_LD_FILE_FORMAT], [CSV_FILE_FORMAT], []];
+/** Download format sets cycled through the sample rows: several formats and one format. */
+const SAMPLE_FORMATS = [[CSV_FILE_FORMAT, JSON_FILE_FORMAT, JSON_LD_FILE_FORMAT], [CSV_FILE_FORMAT]];
 
 /** White-label sample rows that mirror the Figma content of the table view. */
 const SAMPLE_ITEMS: SampleItem[] = SAMPLE_TITLES.map((title, index) => ({
