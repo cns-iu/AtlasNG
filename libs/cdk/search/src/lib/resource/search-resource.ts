@@ -9,8 +9,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { asSignal, MaybeSignalLike } from '@atlasng/cdk';
-import { ConfigurationOf } from '@atlasng/core';
+import { asSignal, ConfigurationOf, MaybeSignalLike } from '@atlasng/core';
 import { SearchEngine } from '../engine/search-engine';
 import { SearchFieldDefinition, SearchFieldSpec, SearchFilter, SearchResult, SearchSuggestion } from '../engine/types';
 import { DEFAULT_SEARCH_VALUE_FIELD, isSearchPrimitive } from '../engine/values';

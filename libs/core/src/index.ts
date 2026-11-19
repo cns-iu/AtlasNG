@@ -18,5 +18,6 @@ export {
   type ConfigurationOf,
   type ConfigurationWithDefaults,
 } from './lib/configuration-token';
+export { asSignal, type MaybeSignalLike, type SignalLike } from './lib/utils/signals';
 export { SafeStorage } from './lib/utils/storage';
 export { AngError, formatAngErrorCode } from './lib/errors';

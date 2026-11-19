@@ -57,6 +57,20 @@ export class PreferencesStore {
 }
 ```
 
+### Signal helpers
+
+`MaybeSignalLike<T>` types an option that accepts a value, a signal, or a function, and `SignalLike<T>` one that accepts only a signal or function. `asSignal` turns either into a signal; functions are wrapped in a `computed`, so the signals they read are tracked. Library helpers such as `injectSearch` and `injectSorted` from `@atlasng/cdk` use them so their options can come from component inputs.
+
+```ts
+import { computed } from '@angular/core';
+import { asSignal, MaybeSignalLike } from '@atlasng/core';
+
+export function injectLabel(options: { text: MaybeSignalLike<string> }) {
+  const text = asSignal(options.text);
+  return computed(() => text().toUpperCase());
+}
+```
+
 ### Configuration tokens
 
 `createConfigurationToken` creates an injection token together with typed `inject` and `provide` helpers. Values supplied by the caller are merged over the defaults; `undefined` values are ignored. Properties that have defaults are typed as required in the injected result.

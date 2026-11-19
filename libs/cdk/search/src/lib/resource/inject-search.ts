@@ -1,5 +1,5 @@
 import { assertInInjectionContext, inject, Injector } from '@angular/core';
-import { MaybeSignalLike, SignalLike } from '@atlasng/cdk';
+import { MaybeSignalLike, SignalLike } from '@atlasng/core';
 import { SearchEngine } from '../engine/search-engine';
 import { SearchFieldSpec, SearchFilter, SearchOrder } from '../engine/types';
 import { SEARCH_CONFIG } from '../providers';

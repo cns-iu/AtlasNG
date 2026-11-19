@@ -9,7 +9,7 @@ import {
   Signal,
 } from '@angular/core';
 import type { RequireExactlyOne } from 'type-fest';
-import { asSignal, MaybeSignalLike } from './signals';
+import { asSignal, MaybeSignalLike } from '@atlasng/core';
 
 /** Sort direction: ascending (`'asc'`) or descending (`'desc'`). */
 export type SortDirection = 'asc' | 'desc';
