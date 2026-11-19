@@ -86,6 +86,14 @@ Keys are compared with `injectCollator()`, an `Intl.Collator` for `LOCALE_ID` th
 
 The delay defaults to 1000 ms. `politeness` and `duration` fall back to the `LiveAnnouncer` defaults. Change them per element with the `angAnnounceDelay`, `angAnnouncePoliteness`, and `angAnnounceDuration` inputs, or below an injector with `provideAnnounceConfig({ delay: 500, politeness: 'assertive' })`.
 
+### Visually hidden content
+
+`@atlasng/cdk/a11y` provides the `angVisuallyHidden` directive, which hides an element visually while keeping it available to screen readers. It adds the Angular CDK `cdk-visually-hidden` class and loads its styles once through `StyleLoader`, so components don't need to include the `cdk.a11y-visually-hidden` Sass mixin.
+
+```html
+<span angVisuallyHidden>Opens in a new tab</span>
+```
+
 ### Search
 
 `@atlasng/cdk/search` is a headless search layer. `injectSearch` searches a list with the injected `SearchEngine` and returns a read-only Angular `Resource` of the results (`value`, `status`, `error`, `isLoading`, `hasValue()`), plus an `items` signal, a `suggestions` resource, and `reload()` and `destroy()`. The default engine ignores case and accents, requires every word of the term to match, and ranks exact matches, then prefixes, then word prefixes, then other matches. Each result carries match ranges that the `angSearchHighlight` directive renders with `<mark>`.

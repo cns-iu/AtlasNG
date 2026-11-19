@@ -2,6 +2,7 @@ import { Component, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand, IdGenerator } from '@atlasng/common';
+import { VisuallyHidden } from '@atlasng/cdk/a11y';
 
 /**
  * Text button used in site navigation that links to another page in a new tab.
@@ -10,7 +11,7 @@ import { AnyLink, AnyLinkCommand, IdGenerator } from '@atlasng/common';
  */
 @Component({
   selector: 'ang-navigation-button',
-  imports: [MatButtonModule, AnyLink, TrackClick],
+  imports: [MatButtonModule, AnyLink, TrackClick, VisuallyHidden],
   templateUrl: './navigation-button.html',
   styleUrl: './navigation-button.scss',
   providers: [provideEventScope('navigation-button')],
