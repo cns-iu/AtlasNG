@@ -43,6 +43,17 @@ describe('Announce', () => {
     vi.useRealTimers();
   });
 
+  it('loads the styles that hide the live announcer element', async () => {
+    await setup();
+    const element = document.createElement('div');
+    element.classList.add('cdk-visually-hidden');
+    document.body.append(element);
+
+    expect(element).toHaveStyle({ position: 'absolute', width: '1px', height: '1px' });
+
+    element.remove();
+  });
+
   it('does not announce the initial text', async () => {
     const { announce } = await setup();
 

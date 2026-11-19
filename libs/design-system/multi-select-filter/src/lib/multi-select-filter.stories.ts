@@ -64,9 +64,11 @@ const meta: Meta<MultiSelectFilter<SearchListOption>> = {
     options: ORGANS,
     selected: [ORGANS[0], ORGANS[2]],
     disableSearch: false,
+    sort: 'asc',
   },
   argTypes: {
     infoPanel: { table: { disable: true } },
+    sort: { control: 'inline-radio', options: ['asc', 'desc', 'none'] },
     count: { control: 'number' },
   },
   decorators: [

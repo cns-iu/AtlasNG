@@ -20,7 +20,7 @@ import { watchBreakpoint } from '@atlasng/cdk';
 import { IdGenerator } from '@atlasng/common';
 import { RichTooltip, RichTooltipTrigger } from '@atlasng/design-system/rich-tooltip';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
-import { SearchList, SearchListOption } from '@atlasng/design-system/search-list';
+import { SearchList, SearchListOption, SearchListSort } from '@atlasng/design-system/search-list';
 import { MultiSelectFilterChipList } from './multi-select-filter-chip-list/multi-select-filter-chip-list';
 
 /** Space above the search field inside the search list, in pixels. Matches the search list's top padding. */
@@ -94,6 +94,9 @@ export class MultiSelectFilter<T extends SearchListOption> {
 
   /** Whether the search field of the search list is hidden, e.g. for categories with few options. */
   readonly disableSearch = input(false, { transform: booleanAttribute });
+
+  /** Order of the search list options: by label (`'asc'` or `'desc'`), or `'none'` to keep the given order. */
+  readonly sort = input<SearchListSort>('asc');
 
   /** Whether the search list panel is open. */
   readonly expanded = model(false);

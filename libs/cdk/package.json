@@ -14,6 +14,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "type-fest": "^5.9.0"
+  },
   "peerDependencies": {
     "@angular/cdk": "^22.1.5",
     "@angular/common": "^22.1.5",

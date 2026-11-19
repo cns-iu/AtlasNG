@@ -1,6 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { IdGenerator } from '@atlasng/common';
 import { MatIconModule } from '@angular/material/icon';
+import { VisuallyHidden } from '@atlasng/cdk/a11y';
 
 /** Visual and semantic tone of a notice. */
 export type NoticeVariant = 'info' | 'success' | 'warning' | 'critical' | 'unavailable';
@@ -34,7 +35,7 @@ const VARIANT_CONFIGS: Record<NoticeVariant, NoticeVariantConfig> = {
  */
 @Component({
   selector: 'ang-notice',
-  imports: [MatIconModule],
+  imports: [MatIconModule, VisuallyHidden],
   templateUrl: './notice.html',
   styleUrl: './notice.scss',
   host: {
