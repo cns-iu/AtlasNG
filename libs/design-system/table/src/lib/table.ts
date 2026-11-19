@@ -35,6 +35,7 @@ import {
   TableTemplateDefinition,
 } from './definitions/template-definition';
 import { TemplateDefinitionCache } from './definitions/template-definition-cache';
+import { columnTracks } from './layout/column-tracks';
 
 /** Visual treatments supported by the AtlasNG table. */
 export type TableAppearance = 'striped' | 'grid' | 'vertical-rules' | 'none';
@@ -71,6 +72,13 @@ export type TableColumn<TRow extends Row = Row> = Simplify<
      * Replace the column object to apply a different configuration.
      */
     summaryConfig?: unknown;
+    /**
+     * Sizes the column to its widest header or body cell instead of sharing
+     * the table's width; `width`, `minWidth`, `maxWidth`, and `flexGrow` don't
+     * apply. With a fixed `rowHeight`, only the rendered rows count, so the
+     * column can widen as rows scroll into view.
+     */
+    fitContent?: boolean;
   }
 >;
 
@@ -148,7 +156,17 @@ export class Table<TRow extends Row = Row> {
   /** Rows displayed by the table. */
   readonly rows = input.required<TRow[] | null | undefined>();
 
-  /** Column definitions displayed by the table. */
+  /**
+   * Column definitions displayed by the table.
+   *
+   * Columns with a positive `flexGrow`, 1 by default, start at their
+   * `minWidth` and share the remaining width equally up to their `maxWidth`;
+   * without a `maxWidth`, they share what the other columns leave in
+   * proportion to their `flexGrow`. Columns with `fitContent` hug their
+   * widest cell, and columns with `flexGrow: 0` keep their `width`. When the
+   * minimum widths don't fit, the table scrolls sideways; when every column
+   * is at its maximum, the remaining width goes between the columns.
+   */
   readonly columns = input.required<TableColumn<TRow>[]>();
 
   /** Visual treatment applied to rows and internal rules. */
@@ -201,6 +219,9 @@ export class Table<TRow extends Row = Row> {
 
   /** Columns converted to the native ngx-datatable representation. */
   protected readonly resolvedColumns = computed(() => this.columns().map((column) => this.#resolveColumn(column)));
+
+  /** Grid tracks for the resolved columns, which the table's styles apply in place of ngx-datatable's. */
+  protected readonly columnTracks = computed(() => columnTracks(this.resolvedColumns()));
 
   /** Reusable body-cell definition instances keyed by column identity. */
   readonly #cellTemplateCache = new TemplateDefinitionCache<CellContext<TRow>, unknown>();
