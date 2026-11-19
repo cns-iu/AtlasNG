@@ -2,7 +2,16 @@ import { LOCATION } from '@atlasng/core';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import type { KgExplorerResolvedFilter, KgExplorerViewSetting } from '../models';
+import type { KgExplorerFilterDrawerConfig } from '../table-view/config';
 import { KgExplorerFilterDrawer } from './filter-drawer';
+
+const CONFIG: KgExplorerFilterDrawerConfig = {
+  filtersLabel: 'Filters',
+  clearFiltersLabel: 'Clear filters',
+  customizeViewLabel: 'Customize view',
+  resetViewLabel: 'Reset',
+  viewOptionsLabel: 'View',
+};
 
 const FILTERS: KgExplorerResolvedFilter[] = [
   { id: 'type', label: 'Type', options: [{ label: 'Dataset' }, { label: 'Collection' }], disableSearch: true },
@@ -32,7 +41,7 @@ describe('KgExplorerFilterDrawer', () => {
     const clearClick = vi.fn();
     const resetClick = vi.fn();
     const result = await render(KgExplorerFilterDrawer, {
-      inputs: { filters: FILTERS, ...inputs },
+      inputs: { filters: FILTERS, config: CONFIG, ...inputs },
       on: { selectionChange, clearClick, resetClick },
       providers: [{ provide: LOCATION, useValue: { href: '/' } }],
     });
