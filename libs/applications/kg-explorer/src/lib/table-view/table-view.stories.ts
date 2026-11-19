@@ -96,8 +96,7 @@ const SAMPLE_COLUMNS_BY_KEY = {
   type: kgExplorerTextColumn<SampleItem>('Type', 'type'),
   organs: kgExplorerChipColumn<SampleItem>('Organs', 'tags'),
   cellTypes: kgExplorerNumberColumn<SampleItem>('#Cell types', 'cellTypeCount'),
-  // Keeps the one-word label and its sort arrow on one line, even on phones.
-  biomarkers: kgExplorerNumberColumn<SampleItem>('#Biomarkers', 'biomarkerCount', { minWidth: 148 }),
+  biomarkers: kgExplorerNumberColumn<SampleItem>('#Biomarkers', 'biomarkerCount'),
   lastModified: kgExplorerDateColumn<SampleItem>('Last modified', 'lastModified'),
 };
 
@@ -110,9 +109,9 @@ const SAMPLE_COLUMN_ENTRIES = Object.entries(SAMPLE_COLUMNS_BY_KEY) as [
 /** Story-only args setting each sample column's minimum and maximum width, such as `titleMinWidth`. */
 type ColumnWidthArgs = Partial<Record<`${keyof typeof SAMPLE_COLUMNS_BY_KEY}${'Min' | 'Max'}Width`, number>>;
 
-/** Column width args with the sample columns' widths. */
+/** Column width args with the sample columns' widths; columns that fit their content have none. */
 const COLUMN_WIDTH_DEFAULTS: ColumnWidthArgs = Object.fromEntries(
-  SAMPLE_COLUMN_ENTRIES.flatMap(([key, column]) => [
+  SAMPLE_COLUMN_ENTRIES.filter(([, column]) => !column.fitContent).flatMap(([key, column]) => [
     [`${key}MinWidth`, column.minWidth],
     [`${key}MaxWidth`, column.maxWidth],
   ]),

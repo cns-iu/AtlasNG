@@ -35,7 +35,7 @@ import {
   TableTemplateDefinition,
 } from './definitions/template-definition';
 import { TemplateDefinitionCache } from './definitions/template-definition-cache';
-import { TableColumnLayout } from './layout/column-layout';
+import { columnTracks } from './layout/column-tracks';
 
 /** Visual treatments supported by the AtlasNG table. */
 export type TableAppearance = 'striped' | 'grid' | 'vertical-rules' | 'none';
@@ -73,11 +73,10 @@ export type TableColumn<TRow extends Row = Row> = Simplify<
      */
     summaryConfig?: unknown;
     /**
-     * Sizes the column to its widest header or body cell, within `minWidth`
-     * and `maxWidth`, instead of sharing the table's width; `flexGrow` and
-     * `width` don't apply. The width is measured from the rendered rows when
-     * the rows, columns, or table width change, so with a fixed `rowHeight`
-     * rows scrolled into view later don't widen the column.
+     * Sizes the column to its widest header or body cell instead of sharing
+     * the table's width; `width`, `minWidth`, `maxWidth`, and `flexGrow` don't
+     * apply. With a fixed `rowHeight`, only the rendered rows count, so the
+     * column can widen as rows scroll into view.
      */
     fitContent?: boolean;
   }
@@ -137,7 +136,7 @@ function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TR
  */
 @Component({
   selector: 'ang-table',
-  imports: [DatatableComponent, TableColumnLayout],
+  imports: [DatatableComponent],
   templateUrl: './table.html',
   styleUrl: './table.scss',
   providers: [{ provide: TABLE, useExisting: forwardRef(() => Table) }, provideEventScope('table')],
@@ -160,12 +159,13 @@ export class Table<TRow extends Row = Row> {
   /**
    * Column definitions displayed by the table.
    *
-   * Columns with a positive `flexGrow`, 1 by default, share the table's width
-   * in proportion to it, like flexbox items with a zero basis, and stay
-   * between their `minWidth` and `maxWidth`. Columns with `fitContent` hug
-   * their widest cell, and columns with `flexGrow: 0` keep their `width`.
-   * When the minimum widths don't fit, the table scrolls sideways; when every
-   * column is at its maximum, the remaining width goes between the columns.
+   * Columns with a positive `flexGrow`, 1 by default, start at their
+   * `minWidth` and share the remaining width equally up to their `maxWidth`;
+   * without a `maxWidth`, they share what the other columns leave in
+   * proportion to their `flexGrow`. Columns with `fitContent` hug their
+   * widest cell, and columns with `flexGrow: 0` keep their `width`. When the
+   * minimum widths don't fit, the table scrolls sideways; when every column
+   * is at its maximum, the remaining width goes between the columns.
    */
   readonly columns = input.required<TableColumn<TRow>[]>();
 
@@ -219,6 +219,9 @@ export class Table<TRow extends Row = Row> {
 
   /** Columns converted to the native ngx-datatable representation. */
   protected readonly resolvedColumns = computed(() => this.columns().map((column) => this.#resolveColumn(column)));
+
+  /** Grid tracks for the resolved columns, which the table's styles apply in place of ngx-datatable's. */
+  protected readonly columnTracks = computed(() => columnTracks(this.resolvedColumns()));
 
   /** Reusable body-cell definition instances keyed by column identity. */
   readonly #cellTemplateCache = new TemplateDefinitionCache<CellContext<TRow>, unknown>();

@@ -55,8 +55,8 @@ export function kgExplorerLinkColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates a start-aligned text column that hugs its widest value, up to the
- * Figma string column's 240px.
+ * Creates a start-aligned text column that hugs its widest value, for short
+ * values such as types.
  *
  * @param name Header label.
  * @param prop Row property displayed in the cells.
@@ -71,7 +71,6 @@ export function kgExplorerTextColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    maxWidth: 240,
     fitContent: true,
     cellTemplate: TextCellDefinition,
     ...START_HEADER,
@@ -108,8 +107,8 @@ export function kgExplorerChipColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates an end-aligned, localized number column, 98px to 148px wide, so a
- * label like "#Biomarkers" and its sort arrow fit on one line.
+ * Creates an end-aligned, localized number column that hugs its header and
+ * widest value.
  *
  * @param name Header label.
  * @param prop Row property holding the number.
@@ -124,9 +123,7 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 98,
-    maxWidth: 148,
-    flexGrow: 1,
+    fitContent: true,
     cellTemplate: NumberCellDefinition,
     ...END_HEADER,
     ...overrides,
@@ -134,8 +131,8 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates an end-aligned date column for preformatted values, 120px to 152px
- * wide, so a label like "Last modified" and its sort arrow fit on one line.
+ * Creates an end-aligned date column for preformatted values that hugs its
+ * header and widest value.
  *
  * @param name Header label.
  * @param prop Row property holding the formatted date.
@@ -150,9 +147,7 @@ export function kgExplorerDateColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 120,
-    maxWidth: 152,
-    flexGrow: 1,
+    fitContent: true,
     cellTemplate: TextCellDefinition,
     cellConfig: { align: 'end' },
     ...END_HEADER,

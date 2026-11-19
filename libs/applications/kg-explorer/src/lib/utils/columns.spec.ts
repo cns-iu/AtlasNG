@@ -37,33 +37,26 @@ describe('kgExplorer column builders', () => {
     expect(byLabel.flexGrow).toBe(2);
   });
 
-  it('builds content-sized text columns and growing number and date columns', () => {
+  it('builds content-sized text, number, and date columns', () => {
     expect(kgExplorerTextColumn<TestRow>('Name', 'name')).toMatchObject({
       cellTemplate: TextCellDefinition,
-      maxWidth: 240,
       fitContent: true,
     });
     expect(kgExplorerNumberColumn<TestRow>('Count', 'count')).toMatchObject({
       cellTemplate: NumberCellDefinition,
       headerConfig: { align: 'end' },
-      minWidth: 98,
-      maxWidth: 148,
-      flexGrow: 1,
+      fitContent: true,
     });
     expect(kgExplorerDateColumn<TestRow>('Date', 'date')).toMatchObject({
       cellConfig: { align: 'end' },
-      minWidth: 120,
-      maxWidth: 152,
-      flexGrow: 1,
+      fitContent: true,
     });
   });
 
   it('lets overrides replace the default sizing', () => {
-    expect(kgExplorerNumberColumn<TestRow>('Count', 'count', { maxWidth: 164, flexGrow: 2 })).toMatchObject({
-      minWidth: 98,
-      maxWidth: 164,
-      flexGrow: 2,
-    });
+    expect(
+      kgExplorerNumberColumn<TestRow>('Count', 'count', { fitContent: false, minWidth: 98, maxWidth: 164 }),
+    ).toMatchObject({ fitContent: false, minWidth: 98, maxWidth: 164 });
   });
 
   it('builds unsortable chip columns', () => {
