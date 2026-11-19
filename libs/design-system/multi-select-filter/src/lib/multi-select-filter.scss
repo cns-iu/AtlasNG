@@ -116,11 +116,6 @@
       background: token-utils.slot(dialog-header-container-color, $config);
     }
 
-    // Divides the list from the header bar, which ends at the title when the search field is hidden.
-    .ang-search-list--scroll-area {
-      border-top: 1px solid token-utils.slot(dialog-divider-color, $config);
-    }
-
     // Runs the options' state layers to the edges of the dialog.
     .ang-search-list--list {
       padding-inline: 0;
@@ -131,7 +126,6 @@
   .ang-multi-select-filter--dialog-footer {
     flex: none;
     padding-block: 0.75rem;
-    border-top: 1px solid token-utils.slot(dialog-divider-color, $config);
     background: token-utils.slot(dialog-footer-container-color, $config);
   }
 
