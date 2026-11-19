@@ -71,6 +71,7 @@ Text links, such as the cells of `kgExplorerLinkColumn` columns, use the theme's
 
 - `items` takes any row type, and `columns` (required) sets which properties the table shows. There are no built-in default columns.
 - Build columns with the generic helpers, which apply the Figma column widths and cell types: `kgExplorerLinkColumn(name, prop, { labelProp | labelFn | label })`, `kgExplorerTextColumn`, `kgExplorerChipColumn` (one chip per array value, unsortable), `kgExplorerNumberColumn`, and `kgExplorerDateColumn`. Each takes optional `TableColumn` overrides as its last argument, and you can mix in plain `TableColumn` objects. Create the array once and reuse it, because the table caches cell templates by column identity.
+- Column sizing: link and chip columns grow, close to the Figma table. Growing columns start at their minimum width and share the remaining width equally, each stopping at its maximum: link 200–640px and chip 144–212px. Text, number, and date columns hug their header and widest value (`fitContent`), so use text columns for short values such as types. When the minimum widths don't fit, the table scrolls sideways. Change a column with `minWidth` or `maxWidth` in its overrides, for example `kgExplorerLinkColumn('Title', 'url', { labelProp: 'title' }, { minWidth: 140, maxWidth: 336 })`. `flexGrow: 0` keeps a column at its `width`.
 - `filters` takes `KgExplorerFilter` definitions, and `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections and the search term.
 
 ### Filters
@@ -166,19 +167,20 @@ Rows are searched with `@atlasng/cdk/search`, and matching rows keep the order o
 
 #### Downloads
 
+The design shows a download button in every row or in none. Set `downloadFormats` only when every row has at least one format; leave it out to hide the download column. A row without formats gets an empty cell, which covers missing data but isn't a design state.
+
 `downloadFormats` is either one list of formats for every row or a function that returns the formats of a row:
 
 ```ts
 config = { downloadFormats: (dataset: Dataset) => dataset.formats };
 ```
 
-| Formats of a row | Download button                                |
-| ---------------- | ---------------------------------------------- |
-| Several          | Opens a menu of the formats.                   |
-| One              | Downloads that format directly.                |
-| None             | Disabled, with a "No downloads available" tip. |
+| Formats of a row | Download button                 |
+| ---------------- | ------------------------------- |
+| Several          | Opens a menu of the formats.    |
+| One              | Downloads that format directly. |
 
-Each button names its row for screen readers, for example "Download CSV for Heart atlas", "Choose download format for Heart atlas", or "No downloads available for Heart atlas", while its tooltip leaves out the row. `downloadLabel` sets the row name, from a row key or a function.
+Each button names its row for screen readers, for example "Download CSV for Heart atlas" or "Choose download format for Heart atlas", while its tooltip leaves out the row. `downloadLabel` sets the row name, from a row key or a function.
 
 Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables, which requires a `labelFn` or `labelProp` in place of `downloadLabel`. Pair it with `KgExplorerDownloadHeaderCellDefinition`, which keeps the header visually empty but gives it the column `name`.
 

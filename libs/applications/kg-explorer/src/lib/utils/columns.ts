@@ -19,8 +19,8 @@ const END_HEADER = { headerTemplate: TextHeaderCellDefinition, headerConfig: { a
 
 /**
  * Creates a column whose cells link to the row property's value, sized like the
- * Figma title column. Rows sort by the displayed label when it comes from a
- * row property or function.
+ * Figma title column: 200px to 640px wide. Rows sort by the displayed label
+ * when it comes from a row property or function.
  *
  * Build columns once and reuse the array; the table caches cell templates by
  * column identity.
@@ -43,7 +43,8 @@ export function kgExplorerLinkColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 140,
+    minWidth: 200,
+    maxWidth: 640,
     flexGrow: 1,
     comparator: (_a: unknown, _b: unknown, rowA: TRow, rowB: TRow) => labelFor(rowA).localeCompare(labelFor(rowB)),
     cellTemplate: LinkCellDefinition,
@@ -54,7 +55,8 @@ export function kgExplorerLinkColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates a start-aligned text column, sized like the Figma string column.
+ * Creates a start-aligned text column that hugs its widest value, for short
+ * values such as types.
  *
  * @param name Header label.
  * @param prop Row property displayed in the cells.
@@ -69,7 +71,7 @@ export function kgExplorerTextColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 140,
+    fitContent: true,
     cellTemplate: TextCellDefinition,
     ...START_HEADER,
     ...overrides,
@@ -78,8 +80,8 @@ export function kgExplorerTextColumn<TRow extends Row = Row>(
 
 /**
  * Creates an unsortable column that renders each array value as a stateless
- * chip, like the Figma Organs column. A scalar value renders a single chip and
- * empty values render nothing.
+ * chip, sized like the Figma tag column: 144px to 212px wide. A scalar value
+ * renders a single chip and empty values render nothing.
  *
  * @param name Header label.
  * @param prop Row property holding the chip values.
@@ -94,8 +96,9 @@ export function kgExplorerChipColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
+    minWidth: 144,
+    maxWidth: 212,
     flexGrow: 1,
-    minWidth: 248,
     sortable: false,
     cellTemplate: ChipCellDefinition,
     ...START_HEADER,
@@ -104,7 +107,8 @@ export function kgExplorerChipColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates an end-aligned, localized number column, sized like the Figma number columns.
+ * Creates an end-aligned, localized number column that hugs its header and
+ * widest value.
  *
  * @param name Header label.
  * @param prop Row property holding the number.
@@ -119,7 +123,7 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 96,
+    fitContent: true,
     cellTemplate: NumberCellDefinition,
     ...END_HEADER,
     ...overrides,
@@ -127,8 +131,8 @@ export function kgExplorerNumberColumn<TRow extends Row = Row>(
 }
 
 /**
- * Creates an end-aligned date column for preformatted values, sized like the
- * Figma date column.
+ * Creates an end-aligned date column for preformatted values that hugs its
+ * header and widest value.
  *
  * @param name Header label.
  * @param prop Row property holding the formatted date.
@@ -143,7 +147,7 @@ export function kgExplorerDateColumn<TRow extends Row = Row>(
   return {
     name,
     prop,
-    minWidth: 136,
+    fitContent: true,
     cellTemplate: TextCellDefinition,
     cellConfig: { align: 'end' },
     ...END_HEADER,
