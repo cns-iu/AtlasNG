@@ -1,6 +1,27 @@
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/content-header' as *;
+@use 'breakpoints';
+
+// Applies the typography, icon offset, and underline offset tokens for a heading level.
+@mixin heading-level($level) {
+  $line-height: token-utils.slot(level-#{$level}-line-height, $config);
+
+  font-family: token-utils.slot(level-#{$level}-font, $config);
+  font-size: token-utils.slot(level-#{$level}-size, $config);
+  font-weight: token-utils.slot(level-#{$level}-weight, $config);
+  line-height: $line-height;
+  letter-spacing: token-utils.slot(level-#{$level}-tracking, $config);
+
+  .ang-content-header--link .ang-content-header--icon {
+    margin-left: token-utils.slot(level-#{$level}-icon-offset, $config);
+    transform: translateY(calc(($line-height - 24px) / 2));
+  }
+
+  & + .ang-content-header--underline {
+    margin-top: token-utils.slot(level-#{$level}-underline-offset, $config);
+  }
+}
 
 :host {
   display: block;
@@ -12,27 +33,10 @@
 
     @for $level from 1 through 6 {
       &.ang-content-header--heading-level-#{$level} {
-        $font: token-utils.slot(level-#{$level}-font, $config);
-        $size: token-utils.slot(level-#{$level}-size, $config);
-        $weight: token-utils.slot(level-#{$level}-weight, $config);
-        $line-height: token-utils.slot(level-#{$level}-line-height, $config);
-        $tracking: token-utils.slot(level-#{$level}-tracking, $config);
-        $icon-offset: token-utils.slot(level-#{$level}-icon-offset, $config);
-        $underline-offset: token-utils.slot(level-#{$level}-underline-offset, $config);
+        @include heading-level($level);
 
-        font-family: $font;
-        font-size: $size;
-        font-weight: $weight;
-        line-height: $line-height;
-        letter-spacing: $tracking;
-
-        .ang-content-header--link .ang-content-header--icon {
-          margin-left: $icon-offset;
-          transform: translateY(calc(($line-height - 24px) / 2));
-        }
-
-        & + .ang-content-header--underline {
-          margin-top: $underline-offset;
+        @include breakpoints.breakpoint(x-small only) {
+          @include heading-level($level + 1);
         }
       }
     }
