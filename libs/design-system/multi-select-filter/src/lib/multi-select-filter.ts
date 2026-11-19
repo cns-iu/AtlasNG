@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { IdGenerator } from '@atlasng/common';
 import { RichTooltip, RichTooltipTrigger } from '@atlasng/design-system/rich-tooltip';
-import { SearchList, SearchListOption } from '@atlasng/design-system/search-list';
+import { SearchList, SearchListOption, SearchListSort } from '@atlasng/design-system/search-list';
 
 /** Space above the search field inside the search list, in pixels. Matches the search list's top padding. */
 const SEARCH_FIELD_INSET = 16;
@@ -68,6 +68,9 @@ export class MultiSelectFilter<T extends SearchListOption> {
 
   /** Whether the search field of the search list is hidden, e.g. for categories with few options. */
   readonly disableSearch = input(false, { transform: booleanAttribute });
+
+  /** Order of the search list options: by label (`'asc'` or `'desc'`), or `'none'` to keep the given order. */
+  readonly sort = input<SearchListSort>('asc');
 
   /** Whether the search list panel is open. */
   readonly expanded = model(false);

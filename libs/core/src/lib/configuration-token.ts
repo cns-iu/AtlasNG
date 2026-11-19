@@ -1,5 +1,6 @@
-import { assertInInjectionContext, inject, InjectionToken, Injector, Provider } from '@angular/core';
+import { inject, InjectionToken, Provider } from '@angular/core';
 import { Simplify } from 'type-fest';
+import { InjectorOptions, resolveInjector } from './utils/injector';
 
 /**
  * Resolves a configuration type by requiring the properties supplied by its defaults.
@@ -32,7 +33,7 @@ export interface ConfigurationToken<TConfig extends object, TDefaults extends Pa
   /** Underlying Angular injection token. */
   token: InjectionToken<TConfig>;
   /** Injects the configuration with defaults applied, from the given injector or the current injection context. */
-  inject: (options?: { injector?: Injector }) => ConfigurationWithDefaults<TConfig, TDefaults>;
+  inject: (options?: InjectorOptions) => ConfigurationWithDefaults<TConfig, TDefaults>;
   /**
    * Creates a provider for configuration overrides. Accepts the configuration or a factory that runs in an injection
    * context, so it can `inject()` other services such as a translation service.
@@ -79,12 +80,8 @@ export function createConfigurationToken<TConfig extends object, const TDefaults
    * @param injectOptions Injector to read the configuration from. Required outside an injection context.
    * @returns The configuration with defaults applied.
    */
-  function injectConfiguration(injectOptions?: { injector?: Injector }): ConfigurationWithDefaults<TConfig, TDefaults> {
-    if (!injectOptions?.injector) {
-      assertInInjectionContext(injectConfiguration);
-    }
-
-    const injector = injectOptions?.injector ?? inject(Injector);
+  function injectConfiguration(injectOptions?: InjectorOptions): ConfigurationWithDefaults<TConfig, TDefaults> {
+    const injector = resolveInjector(injectConfiguration, injectOptions);
     const config = injector.get(token, null);
     const result = mergeDefined<Partial<TConfig>>(options.defaults(), config);
 

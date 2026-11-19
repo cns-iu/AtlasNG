@@ -1,19 +1,13 @@
-import { EnvironmentProviders, makeEnvironmentProviders, Provider } from '@angular/core';
+import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
 import { CommonErrorCode } from '@atlasng/common/errors';
-import { AngError } from '@atlasng/core';
+import { assertSingleFeature, Feature } from '@atlasng/core';
 import { LinkHandler } from './handler';
 import { RouterLinkHandler } from './router-handler';
 
 /**
  * Provider bundle returned by link-handler feature helpers.
  */
-export interface LinkHandlerFeature {
-  /** Feature discriminator. */
-  kind: LinkHandlerFeatureKind;
-
-  /** Providers contributed by the feature. */
-  providers: (Provider | EnvironmentProviders)[];
-}
+export type LinkHandlerFeature = Feature<LinkHandlerFeatureKind>;
 
 /**
  * Link handler feature variants supported by {@link provideLinkHandler}.
@@ -101,10 +95,10 @@ function checkHandlerConfiguration(features: LinkHandlerFeature[]): void {
     return;
   }
 
-  const kinds = [LinkHandlerFeatureKind.Custom, LinkHandlerFeatureKind.Router, LinkHandlerFeatureKind.Routerless];
-  const handlerFeatures = features.filter((feature) => kinds.includes(feature.kind));
-
-  if (handlerFeatures.length > 1) {
-    throw new AngError(CommonErrorCode.MultipleLinkHandlers, 'Only one link handler can be provided.');
-  }
+  assertSingleFeature(
+    features,
+    [LinkHandlerFeatureKind.Custom, LinkHandlerFeatureKind.Router, LinkHandlerFeatureKind.Routerless],
+    CommonErrorCode.MultipleLinkHandlers,
+    'Only one link handler can be provided.',
+  );
 }

@@ -1,3 +1,4 @@
+import { coerceArray } from '@angular/cdk/coercion';
 import { Component, ViewEncapsulation } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-system/table';
@@ -11,8 +12,9 @@ import { CellDefinition, CellTemplateContext, type Row } from '@atlasng/design-s
  * @returns Chip labels in display order.
  */
 export function toChipLabels(value: unknown): string[] {
-  const items: unknown[] = Array.isArray(value) ? value : [value];
-  return items.filter((item) => item !== null && item !== undefined && item !== '').map(String);
+  return coerceArray(value)
+    .filter((item) => item !== null && item !== undefined && item !== '')
+    .map(String);
 }
 
 /**

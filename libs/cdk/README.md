@@ -57,6 +57,25 @@ export class Gallery {
 
 The defaults match the design-system `$breakpoints` map. If an application reconfigures that map, provide the same values with `provideBreakpoints({ ... })`. Use `breakpointQuery` to get the media condition for an expression directly.
 
+### Sorting
+
+`injectSorted` returns a signal of items sorted by a string `key`, compared with the application locale, or by a custom `compare` function. Pass exactly one of the two. `direction` (`'asc'` by default or `'desc'`) and `disabled` accept values or signals, and items that compare equal keep their input order. Like the breakpoint watchers, it must be called in an injection context or given an `injector` option.
+
+```ts
+import { Component, input } from '@angular/core';
+import { injectSorted, SortDirection } from '@atlasng/cdk';
+
+@Component({/* ... */})
+export class OptionList {
+  readonly options = input.required<{ label: string; count: number }[]>();
+  readonly direction = input<SortDirection>('asc');
+  readonly byLabel = injectSorted({ items: this.options, key: (option) => option.label, direction: this.direction });
+  readonly byCount = injectSorted({ items: this.options, compare: (a, b) => b.count - a.count });
+}
+```
+
+Keys are compared with `injectCollator()`, an `Intl.Collator` for `LOCALE_ID` that orders numbers numerically (`Item 2` before `Item 10`) and ignores case and accents. Use it directly when you need a comparator, and change its options with `provideCollatorOptions({ ... })`.
+
 ### Announcements
 
 `@atlasng/cdk/a11y` provides the `angAnnounce` directive, which reads changes to a text to screen readers with the Angular CDK `LiveAnnouncer` once the text stops changing. Typing in a search field then queues one announcement instead of one per keystroke. The initial text and empty texts are not announced.
@@ -66,6 +85,14 @@ The defaults match the design-system `$breakpoints` map. If an application recon
 ```
 
 The delay defaults to 1000 ms. `politeness` and `duration` fall back to the `LiveAnnouncer` defaults. Change them per element with the `angAnnounceDelay`, `angAnnouncePoliteness`, and `angAnnounceDuration` inputs, or below an injector with `provideAnnounceConfig({ delay: 500, politeness: 'assertive' })`.
+
+### Visually hidden content
+
+`@atlasng/cdk/a11y` provides the `angVisuallyHidden` directive, which hides an element visually while keeping it available to screen readers. It adds the Angular CDK `cdk-visually-hidden` class and loads its styles once through `StyleLoader`, so components don't need to include the `cdk.a11y-visually-hidden` Sass mixin.
+
+```html
+<span angVisuallyHidden>Opens in a new tab</span>
+```
 
 ### Search
 

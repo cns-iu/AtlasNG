@@ -72,15 +72,43 @@ describe('SearchList', () => {
     expect(screen.queryByRole('option', { name: /^Alpha/ })).not.toBeInTheDocument();
   });
 
-  it('keeps matching options in their original order', async () => {
+  function optionLabels(): (string | undefined)[] {
+    return screen.getAllByRole('option').map((option) => option.textContent?.trim());
+  }
+
+  it('sorts options by label in ascending order by default', async () => {
+    await render(SearchList<SearchListOption>, {
+      inputs: { options: [{ label: 'gamma' }, { label: 'Item 10' }, { label: 'Beta' }, { label: 'Item 2' }] },
+    });
+
+    expect(optionLabels()).toEqual(['Beta', 'gamma', 'Item 2', 'Item 10']);
+  });
+
+  it('sorts options by label in descending order', async () => {
+    await render(SearchList<SearchListOption>, {
+      inputs: { options: [{ label: 'Beta' }, { label: 'Gamma' }, { label: 'Alpha' }], sort: 'desc' },
+    });
+
+    expect(optionLabels()).toEqual(['Gamma', 'Beta', 'Alpha']);
+  });
+
+  it('keeps the given order when sort is none', async () => {
+    await render(SearchList<SearchListOption>, {
+      inputs: { options: [{ label: 'Gamma' }, { label: 'Alpha' }], sort: 'none' },
+    });
+
+    expect(optionLabels()).toEqual(['Gamma', 'Alpha']);
+  });
+
+  it('keeps matching options in sorted order', async () => {
     const user = userEvent.setup();
     await render(SearchList<SearchListOption>, {
-      inputs: { options: [{ label: 'Alphabet' }, { label: 'Gamma' }, { label: 'Bet' }] },
+      inputs: { options: [{ label: 'Gamma' }, { label: 'Bet' }, { label: 'Alphabet' }] },
     });
 
     await user.type(screen.getByRole('textbox', { name: 'Search' }), 'bet');
 
-    expect(screen.getAllByRole('option').map((option) => option.textContent?.trim())).toEqual(['Alphabet', 'Bet']);
+    expect(optionLabels()).toEqual(['Alphabet', 'Bet']);
   });
 
   it('highlights matched text in labels and descriptions', async () => {
