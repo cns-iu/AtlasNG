@@ -49,8 +49,8 @@ const FULL_SCREEN_POSITIONS: ConnectedPosition[] = [
  * viewports, it stops shrinking at 15rem.
  * On smaller screens, the same overlay fills the screen with a title, such as `Organ filters`, the
  * search field, the options, a tray with the selected options as a single row of removable chips,
- * newest first, that scrolls sideways, and a Done button. Chips and the tray animate in and out
- * unless the user prefers reduced motion. An open search list switches layouts when the viewport
+ * newest first, that scrolls sideways, and a Done button. The tray animates in and out unless
+ * the user prefers reduced motion. An open search list switches layouts when the viewport
  * crosses the breakpoint.
  *
  * Takes the same options as the search list. Selections are matched by option object identity,

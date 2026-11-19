@@ -114,11 +114,9 @@
     grid-template-rows: 1fr;
   }
 
-  // Starts the first chip level with the option checkboxes: Material's 0.5rem checkbox margin and
-  // the 11px between the checkbox's state layer and its box.
   .ang-multi-select-filter--chip-row {
     min-height: 0;
-    margin-inline: calc(0.5rem + 11px) 1rem;
+    margin-inline: 1rem;
 
     @include scroll-area.overrides(
       (

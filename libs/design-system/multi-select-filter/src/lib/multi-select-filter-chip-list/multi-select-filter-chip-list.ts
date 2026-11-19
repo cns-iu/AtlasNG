@@ -5,8 +5,7 @@ import { EventScope, TrackClick } from '@atlasng/analytics';
 import { SearchListOption } from '@atlasng/design-system/search-list';
 
 /**
- * Removable chips for the options selected in a multi-select filter. Chips animate in and out
- * unless the user prefers reduced motion.
+ * Removable chips for the options selected in a multi-select filter.
  *
  * By default, the chips wrap onto as many rows as they need. In a single row, they don't wrap, so
  * the list can sit in a horizontal scroll area.
