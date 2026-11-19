@@ -130,6 +130,16 @@ describe('Table', () => {
     expect(fixture.nativeElement.querySelector('ang-table')).toHaveClass('ang-table--appearance-striped');
   });
 
+  it('sizes the grid columns from the column settings', async () => {
+    const { fixture } = await setup([
+      { name: 'Name', prop: 'name', minWidth: 100, maxWidth: 200 },
+      { name: 'Code', prop: 'code', fitContent: true },
+    ]);
+    const datatable = fixture.nativeElement.querySelector('ngx-datatable') as HTMLElement;
+
+    expect(datatable.style.getPropertyValue('--ang-table-column-tracks')).toBe('minmax(100px, 200px) max-content');
+  });
+
   it('switches appearance classes', async () => {
     const appearance = signal<TableAppearance>('striped');
     const { fixture } = await setup([{ name: 'Name', prop: 'name' }], { appearance });

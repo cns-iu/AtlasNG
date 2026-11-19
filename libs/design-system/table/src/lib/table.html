@@ -15,6 +15,7 @@
     scrollbarVDynamic="true"
     virtualization="true"
     [scrollbarV]="rowHeight() !== 'auto'"
+    [style.--ang-table-column-tracks]="columnTracks()"
     [columns]="resolvedColumns()"
     [rows]="rows()"
     [rowHeight]="rowHeight()"

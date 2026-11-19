@@ -78,9 +78,21 @@ $fade-size: scroll-area.slot(fade-size);
 
     > .ng-scroll-content {
       display: grid;
-      grid-template-columns: var(--ngx-datatable-grid-template-columns, auto);
+      grid-template-columns: var(--ang-table-column-tracks, var(--ngx-datatable-grid-template-columns, auto));
       grid-template-rows: auto 1fr;
+      // When every column is at its maximum width, the remaining width goes between the columns.
+      justify-content: space-between;
       z-index: auto;
+    }
+  }
+
+  .ang-table--datatable {
+    // ngx-datatable hides the cells' horizontal overflow, which makes every
+    // cell a vertical scroll container. Clipping keeps cells from scrolling.
+    // TODO: Remove once https://github.com/swimlane/ngx-datatable/issues/2298 is fixed.
+    .datatable-header-cell,
+    .datatable-body-cell {
+      overflow: clip;
     }
   }
 
@@ -106,7 +118,7 @@ $fade-size: scroll-area.slot(fade-size);
     .datatable-header-cell {
       box-sizing: border-box;
       height: 100%;
-      padding: 0 16px;
+      padding: 0 token-utils.slot('cell-horizontal-padding', $config);
 
       &.sortable {
         padding-right: 0;
@@ -153,7 +165,7 @@ $fade-size: scroll-area.slot(fade-size);
       display: flex;
       align-items: center;
       height: 100%;
-      padding: 0 16px;
+      padding: 0 token-utils.slot('cell-horizontal-padding', $config);
 
       .datatable-body-cell-label {
         flex-grow: 1;

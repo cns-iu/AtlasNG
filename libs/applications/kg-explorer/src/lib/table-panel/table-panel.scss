@@ -1,3 +1,4 @@
+@use 'breakpoints';
 @use 'internal/token-utils';
 @use 'tokens/table' as table;
 
@@ -7,7 +8,7 @@
 @mixin side-space($property, $factor: 1) {
   #{$property}: 1.25rem * $factor;
 
-  @media (min-width: 960px) {
+  @include breakpoints.breakpoint(medium) {
     #{$property}: 2rem * $factor;
   }
 }
@@ -48,7 +49,7 @@ $text-cell-padding: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    max-width: 96rem;
+    max-width: 100rem;
     margin: 0 auto;
   }
 
@@ -56,7 +57,7 @@ $text-cell-padding: 0.5rem;
     @include table-padding;
     margin-top: 1.25rem;
 
-    @media (min-width: 960px) {
+    @include breakpoints.breakpoint(medium) {
       margin-top: 2rem;
     }
   }
@@ -137,10 +138,6 @@ $text-cell-padding: 0.5rem;
         padding-bottom: 0;
       }
     }
-
-    &.no-results {
-      --ngx-datatable-grid-template-columns: 2.5rem 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
   }
 
   .ang-kg-explorer-table-panel--end {
@@ -157,7 +154,7 @@ $text-cell-padding: 0.5rem;
       margin-top: 0rem !important;
       margin-bottom: 1.25rem;
 
-      @media (min-width: 960px) {
+      @include breakpoints.breakpoint(medium) {
         margin-bottom: 2rem;
       }
     }
