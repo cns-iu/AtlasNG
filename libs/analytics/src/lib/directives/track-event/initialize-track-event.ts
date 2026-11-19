@@ -11,7 +11,7 @@ import {
   untracked,
 } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor } from '@atlasng/analytics/events';
-import { MaybeSignalLike } from '@atlasng/core';
+import { MaybeSignalLike, SignalLike } from '@atlasng/core';
 import { injectTrackEvent, TrackEventFn } from '../../inject-track-event';
 import type { AnalyticsEventTrackingDef } from '../track-event';
 
@@ -38,9 +38,9 @@ export type TrackEventTriggersInput = string | string[] | TrackEventTriggers;
 /** Settings shared by the single-event and multi-event configurations. */
 interface BaseTrackEventConfig {
   /** Delay in milliseconds that each trigger waits for a pause before tracking. Tracks immediately when unset. */
-  debounce?: () => number | undefined;
+  debounce?: SignalLike<number | undefined>;
   /** Whether tracking is disabled. */
-  disabled?: () => boolean;
+  disabled?: SignalLike<boolean>;
 }
 
 /** Configuration for tracking a single analytics event. */
@@ -48,17 +48,17 @@ export interface TrackEventConfig<E extends AnalyticsEvent> extends BaseTrackEve
   /** The analytics event, or a function returning it. */
   event: MaybeSignalLike<E>;
   /** The event payload. */
-  payload?: () => AnalyticsEventPayloadFor<E>;
+  payload?: SignalLike<AnalyticsEventPayloadFor<E>>;
   /** Additional options to pass to the analytics backend. */
-  options?: () => Record<string, unknown> | undefined;
+  options?: SignalLike<Record<string, unknown> | undefined>;
   /** The triggers that log the event. */
-  on: () => TrackEventTriggers;
+  on: SignalLike<TrackEventTriggers>;
 }
 
 /** Configuration for tracking several analytics events on one element. */
 export interface MultiTrackEventConfig<E extends AnalyticsEvent> extends BaseTrackEventConfig {
   /** The event definitions. */
-  events: () => AnalyticsEventTrackingDef<E>[];
+  events: SignalLike<AnalyticsEventTrackingDef<E>[]>;
 }
 
 /** What a registration listens to: a trigger name and its source. */
