@@ -15,3 +15,13 @@ export {
   type WatchBreakpointOptions,
 } from './lib/breakpoints';
 export { StyleLoader } from './lib/style-loader';
+export { asSignal, type MaybeSignalLike, type SignalLike } from './lib/signals';
+export {
+  COLLATOR_OPTIONS,
+  injectCollator,
+  injectSorted,
+  provideCollatorOptions,
+  type InjectCollatorOptions,
+  type InjectSortedOptions,
+  type SortDirection,
+} from './lib/sorting';

@@ -7,12 +7,8 @@ export {
   SearchHighlight,
   type HighlightSegment,
 } from './lib/highlight/highlight';
-export {
-  injectSearch,
-  type InjectSearchOptions,
-  type MaybeSignalLike,
-  type SignalLike,
-} from './lib/resource/inject-search';
+export { type MaybeSignalLike, type SignalLike } from '@atlasng/cdk';
+export { injectSearch, type InjectSearchOptions } from './lib/resource/inject-search';
 export type { SearchResourceRef } from './lib/resource/search-resource';
 export { SearchEngine } from './lib/engine/search-engine';
 export { DEFAULT_SEARCH_VALUE_FIELD } from './lib/engine/values';
