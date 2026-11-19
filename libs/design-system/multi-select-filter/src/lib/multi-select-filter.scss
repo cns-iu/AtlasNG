@@ -85,8 +85,7 @@
       (
         background: token-utils.slot(dialog-container-color, $config),
         radius: 0,
-        elevation: transparent,
-        option-shape: token-utils.slot(dialog-option-shape, $config),
+        container-elevation: none,
       )
     );
 
@@ -94,11 +93,6 @@
     .ang-search-list--search {
       padding: 0 1rem 1rem;
       background: token-utils.slot(dialog-header-container-color, $config);
-    }
-
-    // Runs the options' state layers to the edges of the screen.
-    .ang-search-list--list {
-      padding-inline: 0;
     }
   }
 
