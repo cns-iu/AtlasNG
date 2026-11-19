@@ -10,6 +10,7 @@ import { AnalyticsPermissions } from '@atlasng/analytics/permissions';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
 import { CookiePermissions } from './cookie-permissions/cookie-permissions';
 import { CookiePermissionProvidersByCategory } from './provider-list/provider-list';
+import { VisuallyHidden } from '@atlasng/cdk/a11y';
 
 /**
  * Input data required to initialize the cookie modal dialog.
@@ -67,6 +68,7 @@ export type CookieModalResult = AnalyticsPermissions | undefined;
 @Component({
   selector: 'ang-cookie-modal',
   imports: [
+    VisuallyHidden,
     MatButtonModule,
     MatDialogModule,
     MatDivider,

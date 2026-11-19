@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, IdGenerator } from '@atlasng/common';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
+import { VisuallyHidden } from '@atlasng/cdk/a11y';
 
 /** Regular expression to match URL prefixes. */
 const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
@@ -16,7 +17,7 @@ const URL_PREFIX_REGEX = /^(https?:\/\/)?(www\.)?/i;
  */
 @Component({
   selector: 'ang-link-snippet',
-  imports: [AnyLink, MatIconModule, MatButtonModule, ScrollArea, EventScope, TrackClick],
+  imports: [AnyLink, VisuallyHidden, MatIconModule, MatButtonModule, ScrollArea, EventScope, TrackClick],
   templateUrl: './link-snippet.html',
   styleUrl: './link-snippet.scss',
   providers: [provideEventScope('link-snippet')],
