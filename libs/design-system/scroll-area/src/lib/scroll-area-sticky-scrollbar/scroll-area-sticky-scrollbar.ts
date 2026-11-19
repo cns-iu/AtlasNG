@@ -20,7 +20,8 @@ const VIEWPORT_CLASS = 'ang-scroll-area-sticky-scrollbar--viewport';
  *
  * Its content is as much wider than the scrollbar as the viewport's content is wider than the
  * viewport, so both scroll the same distance, and each follows the other's scroll position.
- * It is hidden from assistive technology, which scrolls the viewport itself.
+ * The content's width follows the scrollbar's own width in CSS, so it keeps up while the window
+ * resizes. It is hidden from assistive technology, which scrolls the viewport itself.
  */
 @Component({
   selector: 'ang-scroll-area-sticky-scrollbar',
@@ -31,6 +32,7 @@ const VIEWPORT_CLASS = 'ang-scroll-area-sticky-scrollbar--viewport';
   host: {
     class: 'ang-scroll-area-sticky-scrollbar',
     'aria-hidden': 'true',
+    '[style.--ang-scroll-area-sticky-scrollbar--overflow.px]': 'overflow()',
   },
 })
 export class ScrollAreaStickyScrollbar {
@@ -40,13 +42,12 @@ export class ScrollAreaStickyScrollbar {
   /** Adapter of this scrollbar's own viewport. */
   private readonly adapter = viewChild.required(ViewportAdapter);
 
-  /** Width of this scrollbar's content, so that it scrolls exactly as far sideways as the viewport. */
-  protected readonly contentWidth = computed(() => {
+  /** Distance the viewport's content overflows it sideways, added to the width of this scrollbar's content. */
+  protected readonly overflow = computed(() => {
     const viewport = this.viewport();
     const contentWidth = viewport.contentDimension().width ?? 0;
     const viewportWidth = viewport.viewportDimension().width ?? 0;
-    const width = this.adapter().viewportDimension().width ?? 0;
-    return contentWidth - viewportWidth + width;
+    return Math.max(contentWidth - viewportWidth, 0);
   });
 
   /** Keeps the horizontal scroll positions of the viewport and this scrollbar in step. */

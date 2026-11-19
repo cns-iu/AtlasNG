@@ -42,14 +42,23 @@ describe('ScrollAreaStickyScrollbar', () => {
   });
 
   it('scrolls exactly as far sideways as the viewport', async () => {
-    const { fixture, host, viewport, scrollbar } = await setup();
+    const { fixture, host, viewport } = await setup();
 
     viewport.contentDimension.set({ width: 900, height: 100 });
     viewport.viewportDimension.set({ width: 400, height: 100 });
-    scrollbar.viewportDimension.set({ width: 380, height: 16 });
     fixture.detectChanges();
 
-    expect(host.querySelector('.ang-scroll-area-sticky-scrollbar--content')).toHaveStyle({ width: '880px' });
+    expect(host).toHaveStyle({ '--ang-scroll-area-sticky-scrollbar--overflow': '500px' });
+  });
+
+  it('adds no width when the viewport cannot scroll sideways', async () => {
+    const { fixture, host, viewport } = await setup();
+
+    viewport.contentDimension.set({ width: 400, height: 100 });
+    viewport.viewportDimension.set({ width: 400, height: 100 });
+    fixture.detectChanges();
+
+    expect(host).toHaveStyle({ '--ang-scroll-area-sticky-scrollbar--overflow': '0px' });
   });
 
   it('keeps the horizontal scroll positions of the viewport and the scrollbar in step', async () => {

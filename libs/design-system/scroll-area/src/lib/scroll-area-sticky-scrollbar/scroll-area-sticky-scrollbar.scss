@@ -19,6 +19,12 @@
     height: 100%;
     pointer-events: none;
   }
+
+  // A width relative to the scrollbar follows it in the same layout as a window resize. A width
+  // in pixels would lag a frame behind while the window narrows and show the scrollbar meanwhile.
+  .ng-scroll-content {
+    width: calc(100% + var(--ang-scroll-area-sticky-scrollbar--overflow, 0px));
+  }
 }
 
 .ang-scroll-area-sticky-scrollbar--viewport > .ng-scroll-content > scrollbars > scrollbar-x {
