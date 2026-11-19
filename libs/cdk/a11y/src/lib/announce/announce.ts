@@ -1,10 +1,15 @@
 import { type AriaLivePoliteness, LiveAnnouncer } from '@angular/cdk/a11y';
 import { booleanAttribute, Directive, effect, inject, input } from '@angular/core';
+import { StyleLoader } from '@atlasng/cdk';
+import { VisuallyHiddenStyles } from '../visually-hidden/visually-hidden';
 import { ANNOUNCE_CONFIG } from './config';
 
 /**
  * Announces changes to a text with the CDK `LiveAnnouncer` once the text stops changing, so typing in a search field
  * queues one announcement instead of one per keystroke.
+ *
+ * Also loads the `cdk-visually-hidden` styles, which the `LiveAnnouncer` uses to hide its message element but does not
+ * load itself.
  *
  * The initial text and empty texts are not announced. Defaults for the delay, politeness, and duration come from
  * `provideAnnounceConfig`.
@@ -42,8 +47,13 @@ export class Announce {
   /** Last text announced or skipped, or `undefined` before the initial text is read. */
   #announced: string | undefined;
 
-  /** Schedules the announcement of each new text, restarting the delay whenever the text changes again. */
+  /**
+   * Loads the visually hidden styles and schedules the announcement of each new text, restarting the delay whenever
+   * the text changes again.
+   */
   constructor() {
+    inject(StyleLoader).load(VisuallyHiddenStyles);
+
     effect((onCleanup) => {
       const text = this.text();
       if (this.#announced === undefined || this.disabled() || !text) {
