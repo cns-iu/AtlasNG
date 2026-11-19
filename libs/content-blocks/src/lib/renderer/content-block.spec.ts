@@ -1,8 +1,19 @@
-import { Component, ErrorHandler, input, OnDestroy } from '@angular/core';
+import {
+  ApplicationRef,
+  Component,
+  Directive,
+  ElementRef,
+  ErrorHandler,
+  inject,
+  input,
+  OnDestroy,
+  PLATFORM_ID,
+} from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ContentDefinition, ContentDocument, ContentBlockNode, DEFAULT_CONTENT } from '@atlasng/content-blocks/types';
 import { ContentValidationError, passthroughSchema } from '@atlasng/content-blocks/utils';
 import { StandardSchemaV1 } from '@standard-schema/spec';
-import { render, screen, waitFor } from '@testing-library/angular';
+import { render, screen, waitFor, within } from '@testing-library/angular';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { JsonValue } from 'type-fest';
 import { ContentBlocksConfig } from '../config';
@@ -444,5 +455,158 @@ describe('ContentBlock', () => {
     fixture.destroy();
 
     expect(Heading.destroyed).toBe(destroyed + 1);
+  });
+
+  describe('server-side rendering and hydration', () => {
+    @Directive({ selector: '[angTestServerContent]' })
+    class ServerContent {
+      constructor() {
+        const host: Element = inject(ElementRef).nativeElement;
+        const heading = document.createElement('h2');
+        heading.textContent = 'Server';
+        host.append(document.createComment('ang-content-block'), heading, 'Server text');
+      }
+    }
+
+    @Component({
+      imports: [ContentBlock, ServerContent],
+      template: `
+        <div angContentBlock angTestServerContent [document]="document()" (rendered)="rendered()"></div>
+        <div angContentBlock [document]="document()"><p>Static</p></div>
+      `,
+    })
+    class HydrationHost {
+      readonly document = input.required<ContentDocument>();
+      readonly rendered = vi.fn();
+    }
+
+    @Component({
+      imports: [ContentBlock],
+      template: `
+        <ang-content-block [document]="document()" (rendered)="rendered()" />
+        <div angContentBlock [document]="document()"><p>Static</p></div>
+      `,
+    })
+    class ServerHost {
+      readonly document = input.required<ContentDocument>();
+      readonly rendered = vi.fn();
+    }
+
+    let rows: Subject<unknown[]>;
+    const streamLoader = withDataLoaders({ stream: () => ({ load: () => rows }) });
+    const nestedDoc = doc([
+      { component: 'heading', config: { title: 'Now' } },
+      { component: 'list', data: { rows: { type: 'stream' } } },
+    ]);
+
+    function trackStable(): () => boolean {
+      let stable = false;
+      void TestBed.inject(ApplicationRef)
+        .whenStable()
+        .then(() => (stable = true));
+      return () => stable;
+    }
+
+    beforeEach(() => {
+      rows = new Subject();
+    });
+
+    it('keeps the application unstable until the content is shown', async () => {
+      await setup(doc({ component: 'eager-list', data: { rows: { type: 'stream' } } }), {}, streamLoader);
+      const stable = trackStable();
+      await waitFor(() => expect(rows.observed).toBe(true));
+      expect(stable()).toBe(false);
+
+      rows.next(['a']);
+
+      await waitFor(() => expect(stable()).toBe(true));
+      expect(screen.getByRole('listitem')).toHaveTextContent('a');
+    });
+
+    it('keeps the application unstable until the content fails', async () => {
+      const { host } = await setup(
+        doc({ component: 'eager-list', data: { rows: { type: 'stream' } } }),
+        {},
+        streamLoader,
+      );
+      const stable = trackStable();
+      await waitFor(() => expect(rows.observed).toBe(true));
+      expect(stable()).toBe(false);
+
+      rows.error(new Error('Stream failed.'));
+
+      await waitFor(() => expect(stable()).toBe(true));
+      expect(host.failed).toHaveBeenCalledTimes(1);
+    });
+
+    it('releases the application when the content block is destroyed', async () => {
+      const { fixture } = await setup(
+        doc({ component: 'eager-list', data: { rows: { type: 'stream' } } }),
+        {},
+        streamLoader,
+      );
+      const stable = trackStable();
+      await waitFor(() => expect(rows.observed).toBe(true));
+      expect(stable()).toBe(false);
+
+      fixture.destroy();
+
+      await waitFor(() => expect(stable()).toBe(true));
+    });
+
+    it('waits for nested boundaries on the server and marks the content', async () => {
+      const errorHandler = { handleError: vi.fn() };
+      const { container, fixture } = await render(ServerHost, {
+        inputs: { document: nestedDoc },
+        providers: [
+          { provide: PLATFORM_ID, useValue: 'server' },
+          { provide: ErrorHandler, useValue: errorHandler },
+          provideContentBlocks({}, withDefinitions(definitions), streamLoader),
+        ],
+      });
+      const stable = trackStable();
+      await waitFor(() => expect(rows.observed).toBe(true));
+      const [elementHost, staticHost] = Array.from(container.querySelectorAll('.ang-content-block'));
+      expect(elementHost?.childNodes).toHaveLength(1);
+
+      expect(screen.queryByRole('heading', { name: 'Now' })).not.toBeInTheDocument();
+      expect(screen.queryByText('Loading list')).not.toBeInTheDocument();
+      expect(stable()).toBe(false);
+
+      rows.next(['a']);
+
+      await waitFor(() => expect(stable()).toBe(true));
+      expect(fixture.componentInstance.rendered).toHaveBeenCalledTimes(1);
+      expect(screen.getAllByRole('heading', { name: 'Now' })).toHaveLength(2);
+      expect(screen.getAllByRole('listitem')).toHaveLength(2);
+      expect(elementHost?.childNodes[0]).toEqual(expect.objectContaining({ data: 'ang-content-block' }));
+      expect(staticHost?.childNodes[0]).toHaveTextContent('Static');
+      expect(staticHost?.childNodes[1]).toEqual(expect.objectContaining({ data: 'ang-content-block' }));
+      expect(errorHandler.handleError).not.toHaveBeenCalled();
+    });
+
+    it('replaces server-rendered content once the whole document rendered on the client', async () => {
+      const { container, fixture } = await render(HydrationHost, {
+        inputs: { document: nestedDoc },
+        providers: [provideContentBlocks({}, withDefinitions(definitions), streamLoader)],
+      });
+      const [serverHost, staticHost] = Array.from(container.querySelectorAll('.ang-content-block'));
+      await waitFor(() => expect(rows.observed).toBe(true));
+
+      expect(screen.getByRole('heading', { name: 'Server' })).toBeInTheDocument();
+      expect(serverHost).toHaveAttribute('aria-busy', 'true');
+      expect(within(serverHost as HTMLElement).queryByText('Loading list')).not.toBeInTheDocument();
+      expect(within(staticHost as HTMLElement).getByText('Loading list')).toBeInTheDocument();
+      expect(fixture.componentInstance.rendered).not.toHaveBeenCalled();
+
+      rows.next(['a']);
+
+      await waitFor(() => expect(fixture.componentInstance.rendered).toHaveBeenCalledTimes(1));
+      expect(screen.queryByRole('heading', { name: 'Server' })).not.toBeInTheDocument();
+      expect(serverHost).not.toHaveTextContent('Server text');
+      expect(within(serverHost as HTMLElement).getAllByRole('heading', { name: 'Now' })).toHaveLength(1);
+      expect(serverHost?.firstChild).toHaveTextContent('Now');
+      expect(within(staticHost as HTMLElement).getByText('Static')).toBeInTheDocument();
+    });
   });
 });
