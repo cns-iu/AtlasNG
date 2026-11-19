@@ -59,11 +59,11 @@ Give the table view a height (for example, fill the page below your header) and 
 
 ### Layout
 
-| Area          | Behavior                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Filter menu   | Shows, each only when set, the breadcrumbs, heading, and description of `filterOptions`, a "Customize view" section built from its `viewOptions` and `viewSettings`, and an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from `filtersDockBreakpoint` (the large breakpoint, 1280px, by default) up; below that it is a drawer opened and closed through `[(filtersOpen)]` and the [filter toggle](#filter-toggle). |
-| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows.                                                                                                                                                                                                            |
-| Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                                                                                                                                                                                                                                   |
+| Area          | Behavior                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Filter menu   | Shows, each only when set, the breadcrumbs, heading, and description of `filterOptions`, a "Customize view" section built from its `viewToggleOptions` and `viewSettings`, and an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from `filtersDockBreakpoint` (the large breakpoint, 1280px, by default) up; below that it is a drawer opened and closed through `[(filtersOpen)]` and the [filter toggle](#filter-toggle). |
+| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows.                                                                                                                                                                                                                  |
+| Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                                                                                                                                                                                                                                         |
 
 Text links, such as the cells of `kgExplorerLinkColumn` columns, use the theme's `primary` color. Set `--ang-kg-explorer-table-view-link-color` to change it.
 
@@ -119,16 +119,16 @@ The filter drawer has no built-in trigger. Add a button that toggles `[(filtersO
 
 ### Inputs and outputs
 
-| Name                                | Description                                                                                                                        |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `items`, `columns`                  | Rows to display and the columns that show them.                                                                                    |
-| `filters`, `[(filterSelections)]`   | Filter definitions and the selected options of each filter.                                                                        |
-| `config`                            | Search, download, filter drawer, and visibility options (see below).                                                               |
-| `[(search)]`, `[(sorts)]`           | Current search term and column sorts.                                                                                              |
-| `[(filtersOpen)]`                   | Whether the filter drawer is open below the dock breakpoint.                                                                       |
-| `[(view)]`, `[(viewSettingValues)]` | Picked view option, and the picked value of each view setting keyed by setting `id`.                                               |
-| `(download)`                        | Emits `{ item, format }` when a user downloads a row.                                                                              |
-| `(resetView)`                       | Emits when a user clicks "Reset" in the "Customize view" section, which is shown once the user changes the view or a view setting. |
+| Name                                        | Description                                                                                                                                                                                                                                                                               |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`, `columns`                          | Rows to display and the columns that show them.                                                                                                                                                                                                                                           |
+| `filters`, `[(filterSelections)]`           | Filter definitions and the selected options of each filter.                                                                                                                                                                                                                               |
+| `config`                                    | Search, download, filter drawer, and visibility options (see below).                                                                                                                                                                                                                      |
+| `[(search)]`, `[(sorts)]`                   | Current search term and column sorts.                                                                                                                                                                                                                                                     |
+| `[(filtersOpen)]`                           | Whether the filter drawer is open below the dock breakpoint.                                                                                                                                                                                                                              |
+| `[(activeToggle)]`, `[(viewSettingValues)]` | Picked view toggle option, and the picked value of each view setting keyed by setting `id`.                                                                                                                                                                                               |
+| `(download)`                                | Emits `{ item, format }` when a user downloads a row.                                                                                                                                                                                                                                     |
+| `(resetView)`                               | Emits when a user clicks "Reset" in the "Customize view" section, after the view toggle is set back to its first option and the view settings are cleared. The button is shown once the user changes the view toggle or a view setting, and hidden again while they match those defaults. |
 
 Content projected into the table view, such as a footer, renders after the table and the end-of-results indicator, and scrolls with them:
 
@@ -167,24 +167,24 @@ providers: [provideKgExplorerTableView({ disableEndOfResults: true })];
 
 `filterOptions` takes a `KgExplorerFilterDrawerConfig`. The `config` input's `filterOptions` is merged option by option over the provided ones, so setting one label keeps the others. A nested `provideKgExplorerTableView` replaces the parent's `filterOptions` as a whole.
 
-| Option               | Default          | Description                                                        |
-| -------------------- | ---------------- | ------------------------------------------------------------------ |
-| `breadcrumbs`        | none             | Breadcrumb trail at the top of the drawer.                         |
-| `filtersHeading`     | none             | Heading below the breadcrumbs.                                     |
-| `filtersDescription` | none             | Supporting text below the heading.                                 |
-| `viewOptions`        | none             | Options of the view button toggle in the "Customize view" section. |
-| `viewSettings`       | none             | Selects in the "Customize view" section, such as "Sort by".        |
-| `filtersLabel`       | `Filters`        | Heading of the filters section.                                    |
-| `clearFiltersLabel`  | `Clear filters`  | Label of the button that clears every filter selection.            |
-| `customizeViewLabel` | `Customize view` | Heading of the view customization section.                         |
-| `resetViewLabel`     | `Reset`          | Label of the button that resets the view customizations.           |
-| `viewOptionsLabel`   | `View`           | Accessible name of the view options button toggle group.           |
+| Option               | Default          | Description                                                                                               |
+| -------------------- | ---------------- | --------------------------------------------------------------------------------------------------------- |
+| `breadcrumbs`        | none             | Breadcrumb trail at the top of the drawer.                                                                |
+| `filtersHeading`     | none             | Heading below the breadcrumbs.                                                                            |
+| `filtersDescription` | none             | Supporting text below the heading.                                                                        |
+| `viewToggleOptions`  | none             | Options of the view button toggle in the "Customize view" section. The first option is picked by default. |
+| `viewSettings`       | none             | Selects in the "Customize view" section, such as "Sort by".                                               |
+| `filtersLabel`       | `Filters`        | Heading of the filters section.                                                                           |
+| `clearFiltersLabel`  | `Clear filters`  | Label of the button that clears every filter selection.                                                   |
+| `customizeViewLabel` | `Customize view` | Heading of the view customization section.                                                                |
+| `resetViewLabel`     | `Reset`          | Label of the button that resets the view customizations.                                                  |
+| `viewOptionsLabel`   | `View`           | Accessible name of the view options button toggle group.                                                  |
 
 ```ts
 config: KgExplorerTableViewConfig<Dataset> = {
   filterOptions: {
     filtersHeading: 'Datasets',
-    viewOptions: [
+    viewToggleOptions: [
       { value: 'table', label: 'Table' },
       { value: 'cards', label: 'Cards' },
     ],
@@ -193,7 +193,7 @@ config: KgExplorerTableViewConfig<Dataset> = {
 };
 ```
 
-The table view only reports view customizations through `[(view)]`, `[(viewSettingValues)]`, and `(resetView)`; apply them, for example by sorting `items`, yourself.
+The table view only reports view customizations through `[(activeToggle)]`, `[(viewSettingValues)]`, and `(resetView)`; apply them, for example by sorting `items`, yourself. `activeToggle` is set to the first of `viewToggleOptions` whenever the config changes, so a removed option is never left picked.
 
 #### Search
 
