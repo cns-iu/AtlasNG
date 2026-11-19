@@ -33,7 +33,7 @@ export interface KgExplorerFilterSelectionChange<TRow extends Row = Row> {
  *
  * Shows, from top to bottom and each only when it has content: breadcrumbs, a
  * heading with supporting text, a "Customize view" section with a button
- * toggle of {@link viewOptions} and a select for each of {@link viewSettings},
+ * toggle of {@link viewToggleOptions} and a select for each of {@link viewSettings},
  * and a "Filters" section with a multi-select filter for each of
  * {@link filters}. The view customizations are only reported through the
  * models and outputs; the consumer applies them.
@@ -70,10 +70,10 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
   readonly description = input<string>();
 
   /** Options of the view button toggle. Hidden when empty. */
-  readonly viewOptions = input<KgExplorerViewOption[]>([]);
+  readonly viewToggleOptions = input<KgExplorerViewOption[]>([]);
 
-  /** Value of the picked view option. */
-  readonly view = model<string>();
+  /** Value of the picked toggle option. */
+  readonly activeToggle = model<string>();
 
   /** Selects shown below the view button toggle, such as "View as", "Sort by" or "Group by". */
   readonly viewSettings = input<KgExplorerViewSetting[]>([]);
@@ -101,7 +101,7 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
 
   /** Whether the "Customize view" section is shown. */
   protected readonly hasCustomizations = computed(
-    () => this.viewOptions().length > 0 || this.viewSettings().length > 0,
+    () => this.viewToggleOptions().length > 0 || this.viewSettings().length > 0,
   );
 
   /**
@@ -109,6 +109,16 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
    * reset button is only shown then.
    */
   protected readonly viewChanged = signal(false);
+
+  /** Whether the view toggle and view settings match what the reset button restores. */
+  protected readonly matchesDefaults = computed(() => {
+    const toggle = this.activeToggle();
+    const toggleIsDefault = !toggle || toggle === this.viewToggleOptions()[0]?.value;
+    return toggleIsDefault && Object.values(this.viewSettingValues()).every((value) => value === undefined);
+  });
+
+  /** Whether the reset button is shown: after a user change, and only while the view differs from the defaults. */
+  protected readonly showReset = computed(() => this.viewChanged() && !this.matchesDefaults());
 
   /** Whether any filter has a selected option; the clear filters button is only shown then. */
   protected readonly hasSelection = computed(() =>
@@ -137,17 +147,19 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
   }
 
   /**
-   * Stores the picked view option.
+   * Stores the picked option for the view toggle.
    *
    * @param value Value of the picked view option.
    */
-  protected setView(value: string | undefined): void {
-    this.view.set(value);
+  protected setViewToggle(value: string | undefined): void {
+    this.activeToggle.set(value);
     this.viewChanged.set(true);
   }
 
   /** Hides the reset button and asks the consumer to reset the view customizations. */
   protected resetView(): void {
+    this.activeToggle.set(this.viewToggleOptions()[0]?.value ?? '');
+    this.viewSettingValues.set({});
     this.viewChanged.set(false);
     this.resetClick.emit();
   }

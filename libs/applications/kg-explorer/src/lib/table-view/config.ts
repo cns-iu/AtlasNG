@@ -20,7 +20,7 @@ export interface KgExplorerFilterDrawerConfig {
    * Options of the view button toggle in the "Customize view" section of the filter drawer. The section is shown
    * only when this or {@link viewSettings} has entries.
    */
-  viewOptions?: KgExplorerViewOption[];
+  viewToggleOptions?: KgExplorerViewOption[];
   /** Selects shown in the "Customize view" section, such as "View as", "Sort by" or "Group by". */
   viewSettings?: KgExplorerViewSetting[];
   /** Heading of the filters section of the filter drawer. Defaults to "Filters". */

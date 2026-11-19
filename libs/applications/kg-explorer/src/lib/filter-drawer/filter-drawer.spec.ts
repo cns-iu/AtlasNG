@@ -70,7 +70,8 @@ describe('KgExplorerFilterDrawer', () => {
 
   it('uses the labels of the config', async () => {
     const { user } = await setup({
-      viewOptions: VIEW_OPTIONS,
+      viewToggleOptions: VIEW_OPTIONS,
+      viewSettings: VIEW_SETTINGS,
       filterSelections: { type: [FILTERS[0].options[0]] },
       config: {
         filtersLabel: 'Facets',
@@ -81,7 +82,8 @@ describe('KgExplorerFilterDrawer', () => {
       },
     });
 
-    await user.click(screen.getByRole('radio', { name: 'Grid' }));
+    await user.click(screen.getByRole('combobox', { name: 'Sort by' }));
+    await user.click(await screen.findByRole('option', { name: 'Date' }));
 
     expect(screen.getByRole('heading', { name: 'Facets' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Clear all' })).toBeInTheDocument();
@@ -90,13 +92,13 @@ describe('KgExplorerFilterDrawer', () => {
     expect(screen.getByRole('radiogroup', { name: 'Layouts' })).toBeInTheDocument();
   });
 
-  it('updates the view when a view option is picked', async () => {
-    const { user, fixture } = await setup({ viewOptions: VIEW_OPTIONS, view: 'table' });
+  it('updates the active toggle when a view option is picked', async () => {
+    const { user, fixture } = await setup({ viewToggleOptions: VIEW_OPTIONS, activeToggle: 'table' });
 
     expect(screen.getByRole('radio', { name: 'Table' })).toBeChecked();
     await user.click(screen.getByRole('radio', { name: 'Grid' }));
 
-    expect(fixture.componentInstance.view()).toBe('grid');
+    expect(fixture.componentInstance.activeToggle()).toBe('grid');
   });
 
   it('updates the view setting values when an option is selected', async () => {
@@ -109,12 +111,27 @@ describe('KgExplorerFilterDrawer', () => {
   });
 
   it('shows the reset button only after the view is changed', async () => {
-    const { user } = await setup({ viewOptions: VIEW_OPTIONS, viewSettings: VIEW_SETTINGS, view: 'table' });
+    const { user } = await setup({
+      viewToggleOptions: VIEW_OPTIONS,
+      viewSettings: VIEW_SETTINGS,
+      activeToggle: 'table',
+    });
 
     expect(screen.queryByRole('button', { name: 'Reset' })).not.toBeInTheDocument();
 
+    await user.click(screen.getByRole('combobox', { name: 'Sort by' }));
+    await user.click(await screen.findByRole('option', { name: 'Date' }));
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument();
+  });
+
+  it('hides the reset button when the view is changed back to the defaults', async () => {
+    const { user } = await setup({ viewToggleOptions: VIEW_OPTIONS });
+
     await user.click(screen.getByRole('radio', { name: 'Grid' }));
     expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('radio', { name: 'Table' }));
+    expect(screen.queryByRole('button', { name: 'Reset' })).not.toBeInTheDocument();
   });
 
   it('emits when the view is reset and hides the reset button', async () => {

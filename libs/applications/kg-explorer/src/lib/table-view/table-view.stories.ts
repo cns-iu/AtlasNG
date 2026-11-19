@@ -124,10 +124,10 @@ const SAMPLE_CONFIG: KgExplorerTableViewConfig<SampleItem> = {
     breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Page', command: '/page' }, { name: 'App' }],
     filtersHeading: 'Product Label',
     filtersDescription: 'Supporting text here, if needed, but make it short and straightforward',
-    viewOptions: [
-      { value: 'table', label: 'Table' },
-      { value: 'cards', label: 'Cards' },
-      { value: 'graph', label: 'Graph' },
+    viewToggleOptions: [
+      { value: 'default', label: 'Default' },
+      { value: 'comfortable', label: 'Comfortable' },
+      { value: 'compact', label: 'Compact' },
     ],
     viewSettings: [
       {
@@ -244,7 +244,6 @@ const meta: Meta<KgExplorerTableView<SampleItem>> = {
     filters: SAMPLE_FILTERS,
     filtersOpen: false,
     config: SAMPLE_CONFIG,
-    view: 'table',
     viewSettingValues: { view: 'table' },
   },
   argTypes: {

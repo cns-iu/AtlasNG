@@ -22,7 +22,7 @@
         <h3 class="ang-kg-explorer-filter-drawer--section-title">
           {{ labels.customizeViewLabel }}
         </h3>
-        @if (viewChanged()) {
+        @if (showReset()) {
           <button type="button" class="ang-kg-explorer-filter-drawer--action" matButton (click)="resetView()">
             {{ labels.resetViewLabel ?? 'Reset' }}
           </button>
@@ -30,14 +30,14 @@
       </div>
 
       <div class="ang-kg-explorer-filter-drawer--view-options">
-        @if (viewOptions().length > 0) {
+        @if (viewToggleOptions().length > 0) {
           <mat-button-toggle-group
             class="ang-kg-explorer-filter-drawer--view-toggle"
             [attr.aria-label]="labels.viewOptionsLabel"
-            [value]="view()"
-            (change)="setView($event.value)"
+            [value]="activeToggle()"
+            (change)="setViewToggle($event.value)"
           >
-            @for (option of viewOptions(); track option.value) {
+            @for (option of viewToggleOptions(); track option.value) {
               <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
             }
           </mat-button-toggle-group>

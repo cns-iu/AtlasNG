@@ -85,8 +85,8 @@ export class KgExplorerTableView<
    */
   readonly filtersOpen = model(false);
 
-  /** Value of the picked view option. */
-  readonly view = model<string>();
+  /** Value of the picked toggle option. */
+  readonly activeToggle = model<string>();
 
   /** Picked value of each view setting, keyed by setting id. */
   readonly viewSettingValues = model<KgExplorerViewSettingValues>({});
@@ -176,6 +176,11 @@ export class KgExplorerTableView<
         untracked(() => this.filtersOpen.set(docked));
       }
       previous = docked;
+    });
+
+    effect(() => {
+      // Reset the active toggle to the first option when the config changes, so that a removed option is not selected.
+      this.activeToggle.set(this.resolvedConfig().filterOptions?.viewToggleOptions?.[0]?.value ?? '');
     });
   }
 

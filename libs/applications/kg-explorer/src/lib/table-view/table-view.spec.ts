@@ -239,19 +239,25 @@ describe('KgExplorerTableView', () => {
       config: {
         filterOptions: {
           filtersHeading: 'Explorer',
-          viewOptions: [
-            { value: 'table', label: 'Table' },
-            { value: 'grid', label: 'Grid' },
+          viewSettings: [
+            {
+              id: 'sort',
+              label: 'Sort by',
+              options: [
+                { value: 'title', label: 'Title' },
+                { value: 'date', label: 'Date' },
+              ],
+            },
           ],
         },
       },
-      view: 'table',
     });
     fixture.componentInstance.resetView.subscribe(resetView);
 
     expect(await screen.findByRole('heading', { name: 'Explorer' })).toBeInTheDocument();
-    await user.click(screen.getByRole('radio', { name: 'Grid' }));
-    expect(fixture.componentInstance.view()).toBe('grid');
+    await user.click(screen.getByRole('combobox', { name: 'Sort by' }));
+    await user.click(await screen.findByRole('option', { name: 'Date' }));
+    expect(fixture.componentInstance.viewSettingValues()).toEqual({ sort: 'date' });
 
     await user.click(screen.getByRole('button', { name: 'Reset' }));
     expect(resetView).toHaveBeenCalled();
