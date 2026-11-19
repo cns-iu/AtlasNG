@@ -1,19 +1,7 @@
 <ng-template let-row="row" [angCellTemplateContext]="rowType">
   @let formats = getFormats(row);
 
-  @if (formats.length === 0) {
-    <button
-      matIconButton
-      type="button"
-      class="ang-kg-explorer-download-cell--button"
-      matTooltip="No downloads available"
-      disabled
-      disabledInteractive
-      [attr.aria-label]="`No downloads available for ${getName(row)}`"
-    >
-      <mat-icon fontIcon="download" />
-    </button>
-  } @else if (formats.length === 1) {
+  @if (formats.length === 1) {
     @let format = formats[0];
     <button
       matIconButton
@@ -25,7 +13,7 @@
     >
       <mat-icon fontIcon="download" />
     </button>
-  } @else {
+  } @else if (formats.length > 1) {
     <button
       matIconButton
       type="button"
