@@ -57,6 +57,7 @@
 
 - Prefer `find`/`grep`/`sed` for shell-based searches by default; `rg` is often unavailable in this workspace.
 - When generating new code, use nearby existing code as the primary guide for naming, structure, patterns, and APIs.
+- Do not use direct DOM manipulation to match a design: no `querySelector` into child or third-party DOM, no `ResizeObserver`, no measuring with `getBoundingClientRect` or `getComputedStyle`, no style writes through `Renderer2`, and no manual scroll syncing. It works around Angular's rendering and complicates server-side rendering. Get as close as templates, bindings, and CSS allow, accept the gap, and propose an issue for the rest.
 - After generating code, run `npx nx format:write` to ensure the generated files follow workspace formatting conventions.
 - `npx nx show project <name>` may open an interactive project graph UI; use `--json` for non-interactive terminal output.
 - Do not edit generated coverage artifacts under `coverage/` unless explicitly requested.
