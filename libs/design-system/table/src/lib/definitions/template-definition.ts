@@ -1,4 +1,5 @@
 import { computed, Directive, inject, InjectionToken, TemplateRef, viewChild, type Provider } from '@angular/core';
+import type { SignalLike } from '@atlasng/core';
 import type { CellContext, HeaderCellContext, Row } from '@swimlane/ngx-datatable';
 import type { Table } from '../table';
 import { CellTemplateContext, HeaderCellTemplateContext, SummaryCellTemplateContext } from './template-context';
@@ -40,7 +41,7 @@ export abstract class TableTemplateDefinition<TContext, TConfig = void> {
   readonly config = inject<TConfig>(TABLE_TEMPLATE_DEFINITION_CONFIG);
 
   /** Template rendered by ngx-datatable. */
-  abstract readonly template: () => TemplateRef<TContext>;
+  abstract readonly template: SignalLike<TemplateRef<TContext>>;
 }
 
 /**

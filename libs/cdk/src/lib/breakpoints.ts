@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { CdkErrorCode } from '@atlasng/cdk/errors';
-import { AngError } from '@atlasng/core';
+import { AngError, MaybeSignalLike } from '@atlasng/core';
 import { distinctUntilChanged, map, Observable, of, startWith, switchMap } from 'rxjs';
 
 /** Direction modifiers supported in a breakpoint expression. */
@@ -192,10 +192,7 @@ export function breakpointQuery(
  * readonly isDocked = watchBreakpoint(() => this.dockBreakpoint() ?? 'large');
  */
 export function watchBreakpoint(
-  expressions:
-    | BreakpointExpression
-    | readonly BreakpointExpression[]
-    | (() => BreakpointExpression | readonly BreakpointExpression[]),
+  expressions: MaybeSignalLike<BreakpointExpression | readonly BreakpointExpression[]>,
   options: WatchBreakpointOptions = {},
 ): Signal<boolean> {
   const injector = resolveInjector(watchBreakpoint, options);
