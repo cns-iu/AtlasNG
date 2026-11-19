@@ -1,12 +1,7 @@
-@use '@angular/cdk' as cdk;
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/search-list' as *;
 @use 'tokens/scroll-area' as scroll;
-
-// The CDK live announcer adds its message element to the body but doesn't load the styles that
-// hide it, so the no results announcement would also show on the page.
-@include cdk.a11y-visually-hidden;
 
 $label-line-height: token-utils.slot(label-line-height, $config);
 $description-line-height: token-utils.slot(description-line-height, $config);
