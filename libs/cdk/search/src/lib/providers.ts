@@ -1,6 +1,6 @@
 import { Provider } from '@angular/core';
 import { CdkErrorCode } from '@atlasng/cdk/errors';
-import { AngError, createConfigurationToken, type } from '@atlasng/core';
+import { assertSingleFeature, createConfigurationToken, Feature, type } from '@atlasng/core';
 import { DefaultSearchEngine } from './default-engine/default-engine';
 import { SearchEngine } from './engine/search-engine';
 
@@ -29,12 +29,7 @@ export const SEARCH_CONFIG = createConfigurationToken({
 });
 
 /** A feature passed to {@link provideSearch}. */
-export interface SearchFeature {
-  /** The kind of the feature. */
-  kind: SearchFeatureKind;
-  /** The providers of the feature. */
-  providers: Provider[];
-}
+export type SearchFeature = Feature<SearchFeatureKind, Provider>;
 
 /** The kinds of features accepted by {@link provideSearch}. */
 export enum SearchFeatureKind {
@@ -98,13 +93,10 @@ function checkEngineConfiguration(features: SearchFeature[]): void {
     return;
   }
 
-  const kinds = [SearchFeatureKind.CustomEngine, SearchFeatureKind.DefaultEngine];
-  const engines = features.filter((feature) => kinds.includes(feature.kind));
-
-  if (engines.length > 1) {
-    throw new AngError(
-      CdkErrorCode.MultipleSearchEngines,
-      'Multiple search engines were provided. Please provide only one engine.',
-    );
-  }
+  assertSingleFeature(
+    features,
+    [SearchFeatureKind.CustomEngine, SearchFeatureKind.DefaultEngine],
+    CdkErrorCode.MultipleSearchEngines,
+    'Multiple search engines were provided. Please provide only one engine.',
+  );
 }

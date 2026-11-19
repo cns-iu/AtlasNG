@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 import { provideEventScope, TrackChange, TrackClick } from '@atlasng/analytics';
+import { injectSorted, SortDirection } from '@atlasng/cdk';
 import { Announce } from '@atlasng/cdk/a11y';
 import { injectSearch, SearchHighlight, SearchRange, SearchResult } from '@atlasng/cdk/search';
 import { ScrollArea } from '@atlasng/design-system/scroll-area';
@@ -20,13 +21,18 @@ export interface SearchListOption {
   count?: number;
 }
 
+/** Order of search list options: by label (`'asc'` or `'desc'`), or `'none'` to keep the given order */
+export type SearchListSort = SortDirection | 'none';
+
 /**
  * Searchable multi-select list of options, each showing a label, an optional
  * result count and optional description lines.
  *
- * Options are filtered with the injected `SearchEngine` and `SEARCH_CONFIG`,
- * so consumers can swap the engine with `provideSearch`. Matching options keep
- * their original order and matched text is highlighted.
+ * Options are sorted by label in ascending order with the application locale,
+ * unless `sort` sets a descending order or `'none'` to keep the given order.
+ * They are filtered with the injected `SearchEngine` and `SEARCH_CONFIG`, so
+ * consumers can swap the engine with `provideSearch`. Matching options keep the
+ * sorted order and matched text is highlighted.
  *
  * When the search term matches no options, a message naming the term takes
  * their place, with a Clear search button that empties the field. Screen
@@ -76,6 +82,9 @@ export class SearchList<T extends SearchListOption> {
   /** Whether to hide the search field */
   readonly disableSearch = input(false, { transform: booleanAttribute });
 
+  /** Order of the options: by label (`'asc'` or `'desc'`), or `'none'` to keep the given order */
+  readonly sort = input<SearchListSort>('asc');
+
   /** Label of the search field */
   readonly searchLabel = input('Search');
 
@@ -91,9 +100,17 @@ export class SearchList<T extends SearchListOption> {
   /** Space-separated ids of elements labelling the option list. Takes precedence over `aria-label`. */
   readonly ariaLabelledby = input<string | null>(null, { alias: 'aria-labelledby' });
 
-  /** Search over the options, in their original order */
-  readonly #search = injectSearch({
+  /** Options in display order */
+  readonly #sorted = injectSorted({
     items: this.options,
+    key: (option) => option.label,
+    direction: () => (this.sort() === 'desc' ? 'desc' : 'asc'),
+    disabled: () => this.sort() === 'none',
+  });
+
+  /** Search over the options, keeping their display order */
+  readonly #search = injectSearch({
+    items: this.#sorted,
     term: this.search,
     fields: ['label', 'description'],
     order: 'source',

@@ -103,10 +103,15 @@ const meta: Meta<SearchList<SearchListOption>> = {
   },
   args: {
     disableSearch: false,
+    sort: 'asc',
   },
   argTypes: {
     disableSearch: {
       control: 'boolean',
+    },
+    sort: {
+      control: 'inline-radio',
+      options: ['asc', 'desc', 'none'],
     },
   },
 };

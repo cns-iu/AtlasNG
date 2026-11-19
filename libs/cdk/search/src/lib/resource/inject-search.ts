@@ -1,26 +1,14 @@
-import { assertInInjectionContext, inject, Injector, Signal } from '@angular/core';
+import { InjectorOptions, MaybeSignalLike, resolveInjector, SignalLike } from '@atlasng/core';
 import { SearchEngine } from '../engine/search-engine';
 import { SearchFieldSpec, SearchFilter, SearchOrder } from '../engine/types';
 import { SEARCH_CONFIG } from '../providers';
 import { SearchResourceImpl, SearchResourceRef } from './search-resource';
 
 /**
- * A value, or a signal or other function that returns it. Functions are read in a reactive context, so signals they
- * read are tracked.
- */
-export type MaybeSignalLike<T> = T | (() => T);
-
-/**
- * A signal or zero-argument function that returns a value. Unlike {@link MaybeSignalLike}, the value cannot be passed
- * directly, which keeps values that are functions themselves apart from the functions that return them.
- */
-export type SignalLike<T> = Signal<T> | (() => T);
-
-/**
  * Options for {@link injectSearch}. Every option accepts a signal or function and is read reactively, so options can come from
  * component inputs even though `injectSearch` runs in a field initializer, before the inputs are set.
  */
-export interface InjectSearchOptions<T> {
+export interface InjectSearchOptions<T> extends InjectorOptions {
   /** Items to search. The index is rebuilt when the items change. */
   items: MaybeSignalLike<readonly T[]>;
   /** Search term. */
@@ -53,8 +41,6 @@ export interface InjectSearchOptions<T> {
   suggestionLimit?: MaybeSignalLike<number | undefined>;
   /** Engine to use instead of the injected {@link SearchEngine}. */
   engine?: MaybeSignalLike<SearchEngine | undefined>;
-  /** Injector used outside an injection context. */
-  injector?: Injector;
 }
 
 /**
@@ -72,10 +58,7 @@ export interface InjectSearchOptions<T> {
  * readonly search = injectSearch({ items: this.options, term: this.term, fields: ['label', 'description'] });
  */
 export function injectSearch<T>(options: InjectSearchOptions<T>): SearchResourceRef<T> {
-  if (!options.injector) {
-    assertInInjectionContext(injectSearch);
-  }
-  const injector = options.injector ?? inject(Injector);
+  const injector = resolveInjector(injectSearch, options);
   const config = SEARCH_CONFIG.inject({ injector });
 
   return new SearchResourceImpl(options, injector, config);
