@@ -1,6 +1,7 @@
 import type { Type } from '@angular/core';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 import { Footer, FooterAction, FooterLogo } from '@atlasng/design-system/footer';
 import type { Row, TableColumn } from '@atlasng/design-system/table';
 import {
@@ -168,18 +169,19 @@ const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
 function explorerTemplate(args: Args, content = ''): string {
   return `
     <ang-header-shell
-      logoUrl="assets/illustration-placeholder.svg"
-      hasLocalNavigation="true"
+      logoSrc="assets/illustration-placeholder.svg"
+      localNavigation="true"
       [navigationItems]="navigationItems"
       [localNavigationExpanded]="navigation.leftMenuOpen()"
-      (localNavigationToggle)="navigation.localNavigationToggle()"
-      (appsMenuToggle)="navigation.appsMenuToggle()"
+      (localNavigationClick)="navigation.toggleLocalNavigation()"
+      (appsMenuClick)="navigation.toggleAppsMenu()"
     >
       <button
         matIconButton
         angHeaderShellAction
         type="button"
         class="ang-kg-explorer-filter-toggle--button"
+        matTooltip="Filters"
         [attr.aria-label]="'Filters'"
         [attr.aria-expanded]="explorer.filtersOpen()"
         (click)="explorer.filtersOpen.update((open) => !open)"
@@ -239,6 +241,7 @@ const meta: Meta<StoryArgs> = {
         NavigationContainer,
         MatIconModule,
         MatButtonModule,
+        MatTooltip,
       ],
     }),
   ],
