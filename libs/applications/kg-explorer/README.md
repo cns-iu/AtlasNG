@@ -169,19 +169,20 @@ Rows are searched with `@atlasng/cdk/search`, and matching rows keep the order o
 
 #### Downloads
 
+The design shows a download button in every row or in none. Set `downloadFormats` only when every row has at least one format; leave it out to hide the download column. A row without formats gets an empty cell, which covers missing data but isn't a design state.
+
 `downloadFormats` is either one list of formats for every row or a function that returns the formats of a row:
 
 ```ts
 config = { downloadFormats: (dataset: Dataset) => dataset.formats };
 ```
 
-| Formats of a row | Download button                                |
-| ---------------- | ---------------------------------------------- |
-| Several          | Opens a menu of the formats.                   |
-| One              | Downloads that format directly.                |
-| None             | Disabled, with a "No downloads available" tip. |
+| Formats of a row | Download button                 |
+| ---------------- | ------------------------------- |
+| Several          | Opens a menu of the formats.    |
+| One              | Downloads that format directly. |
 
-Each button names its row for screen readers, for example "Download CSV for Heart atlas", "Choose download format for Heart atlas", or "No downloads available for Heart atlas", while its tooltip leaves out the row. `downloadLabel` sets the row name, from a row key or a function.
+Each button names its row for screen readers, for example "Download CSV for Heart atlas" or "Choose download format for Heart atlas", while its tooltip leaves out the row. `downloadLabel` sets the row name, from a row key or a function.
 
 Formats can be any type that extends `VersionControlFileFormat`, for example with a `url`; `(download)` emits the picked format object unchanged. `KgExplorerDownloadCellDefinition` is the same download button as an `ang-table` cell definition for use in your own tables, which requires a `labelFn` or `labelProp` in place of `downloadLabel`. Pair it with `KgExplorerDownloadHeaderCellDefinition`, which keeps the header visually empty but gives it the column `name`.
 
