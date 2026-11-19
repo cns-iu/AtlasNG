@@ -30,6 +30,9 @@ type ResolvedFilter<TRow extends Row> = KgExplorerFilter<TRow> & { options: Sear
  * docked from the `filtersDockBreakpoint` of {@link config} up (the large
  * breakpoint by default) and becomes a drawer controlled by {@link filtersOpen}
  * on smaller screens; `ang-kg-explorer-filter-toggle` opens and closes it.
+ * While the menu is docked, the table scrolls sideways whenever its columns'
+ * minimum widths don't fit beside it, as with the default columns from 1280px
+ * to about 1350px wide.
  * Projected content, such as a footer, is rendered after the table, spans the
  * width beside the filter menu, and scrolls with it.
  *
