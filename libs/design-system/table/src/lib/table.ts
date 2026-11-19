@@ -28,7 +28,6 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { Simplify } from 'type-fest';
-import { StickyHeader } from './behaviors/sticky-header';
 import {
   CellDefinition,
   HeaderCellDefinition,
@@ -129,13 +128,12 @@ function rowHeightAttribute<TRow extends Row>(value: unknown): TableRowHeight<TR
  * templates, and virtualization behavior.
  *
  * Columns wider than the table scroll sideways in a scroll area. In a page that scrolls the
- * table, the header sticks below the `header-offset` token (`--ang-table-header-offset`), such as
- * the height of a sticky page header, and the horizontal scrollbar sticks to the bottom of the
- * window. Ancestors up to the scrolling one must clip rather than hide their overflow.
+ * table, the horizontal scrollbar sticks to the bottom of the window. Ancestors up to the
+ * scrolling one must clip rather than hide their overflow.
  */
 @Component({
   selector: 'ang-table',
-  imports: [DatatableComponent, ScrollArea, StickyHeader],
+  imports: [DatatableComponent, ScrollArea],
   templateUrl: './table.html',
   styleUrl: './table.scss',
   providers: [{ provide: TABLE, useExisting: forwardRef(() => Table) }, provideEventScope('table')],

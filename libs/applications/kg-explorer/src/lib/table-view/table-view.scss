@@ -1,5 +1,4 @@
 @use 'internal/token-utils';
-@use 'tokens/table' as table;
 @use 'tokens/text-link' as text-link;
 @use './../../sass/tokens/table-view' as *;
 
@@ -7,13 +6,6 @@
   @include text-link.overrides(
     (
       color: token-utils.slot(link-color, $config),
-    )
-  );
-
-  // The table's column headers stick below the same page header as the filters.
-  @include table.overrides(
-    (
-      header-offset: token-utils.slot(filters-offset, $config),
     )
   );
 

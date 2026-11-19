@@ -26,7 +26,7 @@ $fade-size: scroll-area.slot(fade-size);
   display: block;
   isolation: isolate;
   // Clipping rather than hiding overflow, here and on the scroll area and datatable, keeps them
-  // from becoming scroll containers, so the header and horizontal scrollbar can stick to the page.
+  // from becoming scroll containers, so the horizontal scrollbar can stick to the page.
   overflow: clip;
 
   // The scroll area's viewport is ngx-datatable's own scroller, `.datatable-grid`,
@@ -42,7 +42,7 @@ $fade-size: scroll-area.slot(fade-size);
       max-height: inherit;
     }
 
-    // The header carries the top fade instead, so that it moves with the header.
+    // The header carries the top fade instead, so that the fade starts below the sticky header.
     > .ang-scroll-area--fade-top-overlay {
       display: none;
     }
@@ -73,18 +73,8 @@ $fade-size: scroll-area.slot(fade-size);
   // so the wrapper takes over ngx-datatable's grid to keep them laid out as grid items.
   // The extra parent selector outranks ngx-datatable's own grid styles, which load later.
   .datatable-wrapper > .datatable-grid {
-    // How far the sticky header can move down, which ends a fade's height before the end of the
-    // table so that the fade below the header never makes the grid scroll.
-    --_ang-table-header-travel: max(
-      0px,
-      calc(var(--_ang-table-grid-height, 0px) - var(--_ang-table-header-height, 0px) - #{$fade-size})
-    );
-
     display: block;
     flex-basis: auto !important;
-    // Tracks the grid in its scrolling ancestor from when its top passes the header offset.
-    view-timeline: --ang-table-grid block;
-    view-timeline-inset: token-utils.slot('header-offset', $config) auto;
 
     > .ng-scroll-content {
       display: grid;
@@ -123,24 +113,7 @@ $fade-size: scroll-area.slot(fade-size);
       }
     }
 
-    // ngx-datatable's header only sticks within `.datatable-grid`, which also scrolls sideways.
-    // While a scrolling ancestor, such as the page, scrolls the top of the table past the header
-    // offset, a scroll-driven animation moves the header down in step with the scrolling.
-    @supports (animation-timeline: view()) {
-      animation: ang-table-sticky-header linear both;
-      animation-timeline: --ang-table-grid;
-      animation-range: exit-crossing 0% exit-crossing var(--_ang-table-header-travel);
-
-      &::after {
-        animation: ang-table-header-fade linear both;
-        animation-timeline: --ang-table-grid;
-        animation-range: exit-crossing 0% exit-crossing $fade-size;
-        animation-composition: add;
-      }
-    }
-
-    // Fades the rows scrolled up beneath the header from its bottom edge, whether the page or
-    // the grid scrolls them.
+    // Fades the rows the grid scrolls up beneath the header from its bottom edge.
     &::after {
       content: '';
       position: absolute;
@@ -231,21 +204,5 @@ $fade-size: scroll-area.slot(fade-size);
     .datatable-row-wrapper:nth-child(even) .datatable-body-row {
       background-color: token-utils.slot('striped-row-background-color', $config);
     }
-  }
-}
-
-@keyframes ang-table-sticky-header {
-  to {
-    transform: translateY(var(--_ang-table-header-travel));
-  }
-}
-
-@keyframes ang-table-header-fade {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
   }
 }
