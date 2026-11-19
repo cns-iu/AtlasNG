@@ -18,6 +18,8 @@ export {
   type ConfigurationOf,
   type ConfigurationWithDefaults,
 } from './lib/configuration-token';
-export { asSignal, type MaybeSignalLike, type SignalLike } from './lib/utils/signals';
+export { assertSingleFeature, type Feature } from './lib/features';
+export { resolveInjector, type InjectorOptions } from './lib/utils/injector';
+export { asSignal, asSignalWithDefault, type MaybeSignalLike, type SignalLike } from './lib/utils/signals';
 export { SafeStorage } from './lib/utils/storage';
 export { AngError, formatAngErrorCode } from './lib/errors';

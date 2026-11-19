@@ -1,17 +1,6 @@
-import {
-  assertInInjectionContext,
-  computed,
-  DestroyRef,
-  effect,
-  ElementRef,
-  inject,
-  Injector,
-  Renderer2,
-  Signal,
-  untracked,
-} from '@angular/core';
+import { computed, DestroyRef, effect, ElementRef, Renderer2, Signal, untracked } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor } from '@atlasng/analytics/events';
-import { MaybeSignalLike, SignalLike } from '@atlasng/core';
+import { InjectorOptions, MaybeSignalLike, resolveInjector, SignalLike } from '@atlasng/core';
 import { injectTrackEvent, TrackEventFn } from '../../inject-track-event';
 import type { AnalyticsEventTrackingDef } from '../track-event';
 
@@ -94,13 +83,9 @@ interface TriggerBinding extends TriggerKey {
  */
 export function initializeTrackEvent<E extends AnalyticsEvent>(
   config: TrackEventConfig<E> | MultiTrackEventConfig<E>,
-  options?: { injector?: Injector },
+  options?: InjectorOptions,
 ): void {
-  if (!options?.injector) {
-    assertInInjectionContext(initializeTrackEvent);
-  }
-
-  const injector = options?.injector ?? inject(Injector);
+  const injector = resolveInjector(initializeTrackEvent, options);
   const element = injector.get(ElementRef).nativeElement as Node;
   const renderer = injector.get(Renderer2);
   const track = injectTrackEvent({ injector });

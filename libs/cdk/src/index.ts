@@ -20,7 +20,6 @@ export {
   injectCollator,
   injectSorted,
   provideCollatorOptions,
-  type InjectCollatorOptions,
   type InjectSortedOptions,
   type SortDirection,
 } from './lib/sorting';
