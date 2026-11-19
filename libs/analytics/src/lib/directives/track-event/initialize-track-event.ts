@@ -11,6 +11,7 @@ import {
   untracked,
 } from '@angular/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor } from '@atlasng/analytics/events';
+import { MaybeSignalLike } from '@atlasng/core';
 import { injectTrackEvent, TrackEventFn } from '../../inject-track-event';
 import type { AnalyticsEventTrackingDef } from '../track-event';
 
@@ -45,7 +46,7 @@ interface BaseTrackEventConfig {
 /** Configuration for tracking a single analytics event. */
 export interface TrackEventConfig<E extends AnalyticsEvent> extends BaseTrackEventConfig {
   /** The analytics event, or a function returning it. */
-  event: E | (() => E);
+  event: MaybeSignalLike<E>;
   /** The event payload. */
   payload?: () => AnalyticsEventPayloadFor<E>;
   /** Additional options to pass to the analytics backend. */
