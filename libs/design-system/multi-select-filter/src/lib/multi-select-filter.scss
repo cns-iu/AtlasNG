@@ -68,7 +68,6 @@
   .ang-multi-select-filter--dialog-title {
     margin: 0;
     padding: 1rem;
-    background: token-utils.slot(dialog-header-container-color, $config);
     color: token-utils.slot(dialog-title-text-color, $config);
     font-family: token-utils.slot(dialog-title-text-font, $config);
     font-size: token-utils.slot(dialog-title-text-size, $config);
@@ -89,10 +88,9 @@
       )
     );
 
-    // Continues the title's header bar behind the search field.
+    // The title's padding already spaces the search field from it.
     .ang-search-list--search {
       padding: 0 1rem 1rem;
-      background: token-utils.slot(dialog-header-container-color, $config);
     }
   }
 
@@ -100,7 +98,6 @@
   .ang-multi-select-filter--dialog-footer {
     flex: none;
     padding-block: 0.75rem;
-    background: token-utils.slot(dialog-footer-container-color, $config);
   }
 
   .ang-multi-select-filter--dialog-actions {
@@ -120,7 +117,7 @@
 
     @include scroll-area.overrides(
       (
-        container-color: token-utils.slot(dialog-footer-container-color, $config),
+        container-color: token-utils.slot(dialog-container-color, $config),
       )
     );
   }
