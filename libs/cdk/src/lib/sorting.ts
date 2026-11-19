@@ -1,15 +1,6 @@
-import {
-  assertInInjectionContext,
-  computed,
-  inject,
-  InjectionToken,
-  Injector,
-  LOCALE_ID,
-  Provider,
-  Signal,
-} from '@angular/core';
+import { computed, InjectionToken, LOCALE_ID, Provider, Signal } from '@angular/core';
 import type { RequireExactlyOne } from 'type-fest';
-import { asSignal, MaybeSignalLike } from '@atlasng/core';
+import { asSignal, InjectorOptions, MaybeSignalLike, resolveInjector } from '@atlasng/core';
 
 /** Sort direction: ascending (`'asc'`) or descending (`'desc'`). */
 export type SortDirection = 'asc' | 'desc';
@@ -30,12 +21,6 @@ export function provideCollatorOptions(options: Intl.CollatorOptions): Provider 
   return { provide: COLLATOR_OPTIONS, useValue: options };
 }
 
-/** Options for {@link injectCollator}. */
-export interface InjectCollatorOptions {
-  /** Injector used outside an injection context. */
-  injector?: Injector;
-}
-
 /**
  * Creates a collator for the application locale (`LOCALE_ID`) and the injected {@link COLLATOR_OPTIONS}. Must be
  * called in an injection context unless an injector is provided.
@@ -46,16 +31,13 @@ export interface InjectCollatorOptions {
  * readonly #collator = injectCollator();
  * readonly sorted = computed(() => this.names().toSorted(this.#collator.compare));
  */
-export function injectCollator(options: InjectCollatorOptions = {}): Intl.Collator {
-  if (!options.injector) {
-    assertInInjectionContext(injectCollator);
-  }
-  const injector = options.injector ?? inject(Injector);
+export function injectCollator(options?: InjectorOptions): Intl.Collator {
+  const injector = resolveInjector(injectCollator, options);
   return new Intl.Collator(injector.get(LOCALE_ID), injector.get(COLLATOR_OPTIONS));
 }
 
 /** Options shared by every {@link injectSorted} call, before `key` and `compare` are made mutually exclusive. */
-interface InjectSortedBaseOptions<T> {
+interface InjectSortedBaseOptions<T> extends InjectorOptions {
   /** Items to sort. The input array is never changed. */
   items: MaybeSignalLike<readonly T[]>;
   /** String to sort each item by, compared with {@link injectCollator}. Exclusive with `compare`. */
@@ -66,8 +48,6 @@ interface InjectSortedBaseOptions<T> {
   direction?: MaybeSignalLike<SortDirection | undefined>;
   /** Whether to return the items in their input order instead of sorting them. Defaults to `false`. */
   disabled?: MaybeSignalLike<boolean | undefined>;
-  /** Injector used outside an injection context. */
-  injector?: Injector;
 }
 
 /**
@@ -87,10 +67,7 @@ export type InjectSortedOptions<T> = RequireExactlyOne<InjectSortedBaseOptions<T
  * readonly sorted = injectSorted({ items: this.options, key: (option) => option.label });
  */
 export function injectSorted<T>(options: InjectSortedOptions<T>): Signal<readonly T[]> {
-  if (!options.injector) {
-    assertInInjectionContext(injectSorted);
-  }
-  const injector = options.injector ?? inject(Injector);
+  const injector = resolveInjector(injectSorted, options);
   const compare = options.compare ?? keyComparator(options.key, injectCollator({ injector }));
 
   const items = asSignal(options.items);

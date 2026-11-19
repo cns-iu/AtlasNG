@@ -1,5 +1,5 @@
 import { isSignal, signal } from '@angular/core';
-import { asSignal } from './signals';
+import { asSignal, asSignalWithDefault } from './signals';
 
 describe('asSignal', () => {
   it('returns signals as they are', () => {
@@ -23,5 +23,22 @@ describe('asSignal', () => {
 
     count.set(2);
     expect(doubled()).toBe(4);
+  });
+});
+
+describe('asSignalWithDefault', () => {
+  it('falls back while the value is undefined', () => {
+    const value = signal<number | undefined>(undefined);
+    const withDefault = asSignalWithDefault(value, 5);
+
+    expect(withDefault()).toBe(5);
+
+    value.set(0);
+    expect(withDefault()).toBe(0);
+  });
+
+  it('accepts plain values', () => {
+    expect(asSignalWithDefault(undefined, 'fallback')()).toBe('fallback');
+    expect(asSignalWithDefault('value', 'fallback')()).toBe('value');
   });
 });

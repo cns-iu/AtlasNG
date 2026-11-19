@@ -1,19 +1,9 @@
 import { coerceArray } from '@angular/cdk/coercion';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import {
-  assertInInjectionContext,
-  computed,
-  inject,
-  InjectionToken,
-  Injector,
-  Provider,
-  Signal,
-  signal,
-  untracked,
-} from '@angular/core';
+import { computed, InjectionToken, Injector, Provider, Signal, signal, untracked } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { CdkErrorCode } from '@atlasng/cdk/errors';
-import { AngError, MaybeSignalLike } from '@atlasng/core';
+import { AngError, InjectorOptions, MaybeSignalLike, resolveInjector } from '@atlasng/core';
 import { distinctUntilChanged, map, Observable, of, startWith, switchMap } from 'rxjs';
 
 /** Direction modifiers supported in a breakpoint expression. */
@@ -43,10 +33,7 @@ export type BreakpointExpression =
   DefaultBreakpointName | `${DefaultBreakpointName} ${BreakpointDirection}` | (string & {}) | number;
 
 /** Options for the breakpoint watcher functions. */
-export interface WatchBreakpointOptions {
-  /** Injector used outside an injection context. */
-  injector?: Injector;
-}
+export type WatchBreakpointOptions = InjectorOptions;
 
 /** Default breakpoints. Kept in sync with `$breakpoints` in the design-system Sass. */
 export const DEFAULT_BREAKPOINTS = {
@@ -305,22 +292,6 @@ function watchQueries(
  */
 function queriesEqual(a: readonly string[], b: readonly string[]): boolean {
   return a.length === b.length && a.every((query, index) => query === b[index]);
-}
-
-/**
- * Resolves the injector for a watcher function.
- *
- * @param fn Watcher function, used in the injection context assertion message.
- * @param options Watcher options.
- * @returns The provided injector or the current context's injector.
- */
-function resolveInjector(fn: (...args: never[]) => unknown, options: WatchBreakpointOptions): Injector {
-  if (options.injector) {
-    return options.injector;
-  }
-
-  assertInInjectionContext(fn);
-  return inject(Injector);
 }
 
 /**

@@ -3,16 +3,12 @@ import { provideDefinitions } from '@atlasng/content-blocks/definitions';
 import { DataLoader, provideDataLoaders } from '@atlasng/content-blocks/loaders';
 import { DataParser, provideDataParsers } from '@atlasng/content-blocks/parsers';
 import { ContentDefinition } from '@atlasng/content-blocks/types';
+import { Feature } from '@atlasng/core';
 import { Promisable } from 'type-fest';
 import { CONTENT_BLOCKS_CONFIG, ContentBlocksConfig } from './config';
 
 /** Provider bundle returned by content-blocks feature helpers. */
-export interface ContentBlocksFeature {
-  /** Feature discriminator. */
-  kind: ContentBlocksFeatureKind;
-  /** Providers contributed by the feature. */
-  providers: Provider[];
-}
+export type ContentBlocksFeature = Feature<ContentBlocksFeatureKind, Provider>;
 
 /** Content-blocks feature variants supported by {@link provideContentBlocks}. */
 export enum ContentBlocksFeatureKind {
