@@ -40,4 +40,15 @@
       </mat-list-option>
     }
   </mat-selection-list>
+
+  @if (noResults()) {
+    <div class="ang-search-list--no-results">
+      <p class="ang-search-list--no-results-message">{{ noResultsMessage() }}</p>
+      <button type="button" matButton angTrackClick (click)="clearSearch()">
+        {{ clearSearchLabel() }}
+      </button>
+    </div>
+  }
 </ang-scroll-area>
+
+<ng-container [angAnnounce]="announcement()" />

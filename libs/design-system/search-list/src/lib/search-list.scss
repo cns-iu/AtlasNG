@@ -1,7 +1,12 @@
+@use '@angular/cdk' as cdk;
 @use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/search-list' as *;
 @use 'tokens/scroll-area' as scroll;
+
+// The CDK live announcer adds its message element to the body but doesn't load the styles that
+// hide it, so the no results announcement would also show on the page.
+@include cdk.a11y-visually-hidden;
 
 $label-line-height: token-utils.slot(label-line-height, $config);
 $description-line-height: token-utils.slot(description-line-height, $config);
@@ -32,6 +37,30 @@ $two-line-height: var(--mat-list-list-item-two-line-container-height, 4rem);
         container-color: token-utils.slot(background, $config),
       )
     );
+  }
+
+  .ang-search-list--no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem 0.5rem;
+    text-align: center;
+  }
+
+  .ang-search-list--no-results-message {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    margin: 0 0 0.25rem;
+    overflow-wrap: anywhere;
+    color: token-utils.slot(no-results-color, $config);
+    font-family: token-utils.slot(no-results-font, $config);
+    font-size: token-utils.slot(no-results-size, $config);
+    line-height: token-utils.slot(no-results-line-height, $config);
+    font-weight: token-utils.slot(no-results-weight, $config);
+    letter-spacing: token-utils.slot(no-results-tracking, $config);
   }
 
   .ang-search-list--list {

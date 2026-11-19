@@ -27,6 +27,12 @@ $config: (
     highlight-background: token-utils.sys-token(primary-container),
     highlight-color: token-utils.sys-token(on-primary-container),
     highlight-radius: token-utils.sys-token(corner-extra-small),
+    no-results-font: token-utils.sys-token(body-medium-font),
+    no-results-size: token-utils.sys-token(body-medium-size),
+    no-results-line-height: token-utils.sys-token(body-medium-line-height),
+    no-results-weight: token-utils.sys-token(body-medium-weight),
+    no-results-tracking: token-utils.sys-token(body-medium-tracking),
+    no-results-color: token-utils.sys-token(on-surface-variant),
   ),
 );
 
