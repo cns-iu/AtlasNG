@@ -42,9 +42,13 @@ $two-line-height: var(--mat-list-list-item-two-line-container-height, 4rem);
   .ang-search-list--no-results {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     padding: 0 1rem 0.5rem;
-    text-align: center;
+  }
+
+  // Lines the button label up with the message.
+  .ang-search-list--clear-search {
+    margin-inline-start: calc(-1 * var(--mat-button-text-horizontal-padding, 0.75rem));
   }
 
   .ang-search-list--no-results-message {
