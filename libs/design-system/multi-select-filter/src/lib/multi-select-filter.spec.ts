@@ -2,7 +2,7 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { BreakpointObserver, type BreakpointState } from '@angular/cdk/layout';
 import { RichTooltip } from '@atlasng/design-system/rich-tooltip';
 import { SearchListOption } from '@atlasng/design-system/search-list';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { BehaviorSubject } from 'rxjs';
 import { MultiSelectFilter } from './multi-select-filter';
@@ -222,28 +222,29 @@ describe('MultiSelectFilter', () => {
   });
 
   describe('below the medium breakpoint', () => {
-    it('opens the search list in a full-screen dialog and moves focus into it', async () => {
+    it('opens the search list full screen with a title and the selected options', async () => {
       const user = userEvent.setup();
       const { expandedChange } = await setup({ selected: [kidney] }, false);
 
-      await user.click(screen.getByRole('button', { name: 'Organ' }));
+      const labelButton = screen.getByRole('button', { name: 'Organ' });
+      await user.click(labelButton);
 
-      const dialog = await screen.findByRole('dialog', { name: 'Organ filters' });
+      const dialog = screen.getByRole('dialog', { name: 'Organ filters' });
+      expect(dialog).toHaveAttribute('aria-modal', 'true');
+      expect(labelButton).toHaveAttribute('aria-controls', dialog.id);
       expect(within(dialog).getByRole('heading', { name: 'Organ filters' })).toBeInTheDocument();
       expect(within(dialog).getByRole('list', { name: 'Active filters' })).toBeInTheDocument();
       expect(within(dialog).getByRole('option', { name: /Liver/ })).toBeInTheDocument();
       expect(within(dialog).getByRole('textbox', { name: 'Search' })).toBeInTheDocument();
-      // jsdom reports no element as visible, so the dialog focuses its container instead of the search field.
-      await waitFor(() => expect(dialog).toContainElement(document.activeElement as HTMLElement));
       expect(expandedChange).toHaveBeenLastCalledWith(true);
     });
 
-    it('adds and removes chips in the dialog', async () => {
+    it('adds and removes chips in the full-screen search list', async () => {
       const user = userEvent.setup();
       const { selectedChange } = await setup({}, false);
 
       await user.click(screen.getByRole('button', { name: 'Organ' }));
-      const dialog = await screen.findByRole('dialog', { name: 'Organ filters' });
+      const dialog = screen.getByRole('dialog', { name: 'Organ filters' });
       await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
 
       expect(selectedChange).toHaveBeenLastCalledWith([liver]);
@@ -254,12 +255,12 @@ describe('MultiSelectFilter', () => {
       expect(within(dialog).queryByRole('list', { name: 'Active filters' })).not.toBeInTheDocument();
     });
 
-    it('shows the newest chip first in the dialog', async () => {
+    it('shows the newest chip first in the full-screen search list', async () => {
       const user = userEvent.setup();
       await setup({ selected: [kidney] }, false);
 
       await user.click(screen.getByRole('button', { name: 'Organ' }));
-      const dialog = await screen.findByRole('dialog', { name: 'Organ filters' });
+      const dialog = screen.getByRole('dialog', { name: 'Organ filters' });
       await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
 
       const chips = within(within(dialog).getByRole('list', { name: 'Active filters' })).getAllByRole('listitem');
@@ -267,62 +268,48 @@ describe('MultiSelectFilter', () => {
       expect(chips[1]).toHaveTextContent('Kidney');
     });
 
-    it('closes the dialog with the Done button and returns focus to the label button', async () => {
+    it('closes with the Done button and returns focus to the label button', async () => {
       const user = userEvent.setup();
       const { expandedChange } = await setup({ doneLabel: 'Apply' }, false);
 
       const labelButton = screen.getByRole('button', { name: 'Organ' });
       await user.click(labelButton);
-      const dialog = await screen.findByRole('dialog', { name: 'Organ filters' });
-      await user.click(within(dialog).getByRole('button', { name: 'Apply' }));
+      await user.click(
+        within(screen.getByRole('dialog', { name: 'Organ filters' })).getByRole('button', { name: 'Apply' }),
+      );
 
       expect(expandedChange).toHaveBeenLastCalledWith(false);
-      await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Organ filters' })).not.toBeInTheDocument());
+      expect(screen.queryByRole('dialog', { name: 'Organ filters' })).not.toBeInTheDocument();
       expect(labelButton).toHaveAttribute('aria-expanded', 'false');
       expect(labelButton).toHaveFocus();
     });
 
-    it('closes the dialog with Escape', async () => {
+    it('closes with Escape', async () => {
       const user = userEvent.setup();
       const { expandedChange } = await setup({}, false);
 
       await user.click(screen.getByRole('button', { name: 'Organ' }));
-      const dialog = await screen.findByRole('dialog', { name: 'Organ filters' });
-      // The dialog checks the key code, which user-event doesn't set.
-      fireEvent.keyDown(dialog, { key: 'Escape', keyCode: 27 });
+      await user.keyboard('{Escape}');
 
       expect(expandedChange).toHaveBeenLastCalledWith(false);
-      await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Organ filters' })).not.toBeInTheDocument());
+      expect(screen.queryByRole('dialog', { name: 'Organ filters' })).not.toBeInTheDocument();
     });
 
-    it('closes the dialog when the viewport grows past the breakpoint', async () => {
-      const user = userEvent.setup();
-      const { breakpoint, fixture, expandedChange } = await setup({}, false);
-
-      await user.click(screen.getByRole('button', { name: 'Organ' }));
-      await screen.findByRole('dialog', { name: 'Organ filters' });
-      breakpoint.next({ matches: true, breakpoints: {} });
-      fixture.detectChanges();
-
-      expect(expandedChange).toHaveBeenLastCalledWith(false);
-      await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Organ filters' })).not.toBeInTheDocument());
-    });
-
-    it('opens the dialog when the filter starts expanded', async () => {
+    it('opens full screen when the filter starts expanded', async () => {
       await setup({ expanded: true }, false);
 
-      expect(await screen.findByRole('dialog', { name: 'Organ filters' })).toBeInTheDocument();
+      expect(screen.getByRole('dialog', { name: 'Organ filters' })).toBeInTheDocument();
     });
 
-    it('titles the dialog with the dialog title input', async () => {
+    it('titles the full-screen search list with the dialog title input', async () => {
       await setup({ expanded: true, dialogTitle: 'Filter by organ' }, false);
 
-      const dialog = await screen.findByRole('dialog', { name: 'Filter by organ' });
+      const dialog = screen.getByRole('dialog', { name: 'Filter by organ' });
       expect(within(dialog).getByRole('heading', { name: 'Filter by organ' })).toBeInTheDocument();
     });
   });
 
-  it('closes the search list panel when the viewport shrinks past the medium breakpoint', async () => {
+  it('switches an open search list between the panel and full screen when the viewport crosses the breakpoint', async () => {
     const user = userEvent.setup();
     const { breakpoint, fixture, expandedChange } = await setup();
 
@@ -330,7 +317,14 @@ describe('MultiSelectFilter', () => {
     breakpoint.next({ matches: false, breakpoints: {} });
     fixture.detectChanges();
 
-    expect(expandedChange).toHaveBeenLastCalledWith(false);
-    expect(screen.queryByRole('dialog', { name: 'Organ' })).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Organ filters' })).toBeInTheDocument();
+
+    breakpoint.next({ matches: true, breakpoints: {} });
+    fixture.detectChanges();
+
+    const panel = screen.getByRole('dialog', { name: 'Organ' });
+    expect(panel).not.toHaveAttribute('aria-modal');
+    expect(within(panel).queryByRole('heading')).not.toBeInTheDocument();
+    expect(expandedChange).toHaveBeenLastCalledWith(true);
   });
 });

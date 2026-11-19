@@ -25,7 +25,7 @@
     angTrackClick
     aria-haspopup="dialog"
     [attr.aria-expanded]="expanded()"
-    [attr.aria-controls]="expanded() && wide() ? panelId : null"
+    [attr.aria-controls]="expanded() ? panelId : null"
     (click)="toggle()"
   >
     {{ label() }}
@@ -49,10 +49,13 @@
   cdkConnectedOverlay
   cdkConnectedOverlayPanelClass="ang-multi-select-filter--panel-pane"
   [cdkConnectedOverlayOrigin]="panelOrigin"
-  [cdkConnectedOverlayOpen]="expanded() && wide()"
+  [cdkConnectedOverlayOpen]="expanded()"
   [cdkConnectedOverlayPositions]="panelPositions()"
-  [cdkConnectedOverlayFlexibleDimensions]="true"
-  [cdkConnectedOverlayViewportMargin]="16"
+  [cdkConnectedOverlayFlexibleDimensions]="wide()"
+  [cdkConnectedOverlayPush]="!wide()"
+  [cdkConnectedOverlayViewportMargin]="wide() ? 16 : 0"
+  [cdkConnectedOverlayWidth]="wide() ? '' : '100%'"
+  [cdkConnectedOverlayHeight]="wide() ? '' : '100%'"
   (overlayOutsideClick)="close()"
   (overlayKeydown)="handlePanelKeydown($event)"
   (detach)="close()"
@@ -62,51 +65,49 @@
     role="dialog"
     cdkTrapFocus
     cdkTrapFocusAutoCapture
+    [class.ang-multi-select-filter--full-screen]="!wide()"
     [id]="panelId"
-    [attr.aria-label]="label()"
+    [attr.aria-label]="wide() ? label() : resolvedDialogTitle()"
+    [attr.aria-modal]="!wide() || null"
   >
-    <ng-container [ngTemplateOutlet]="searchList" />
-  </div>
-</ng-template>
+    @if (!wide()) {
+      <h2 class="ang-multi-select-filter--dialog-title">{{ resolvedDialogTitle() }}</h2>
+    }
 
-<ng-template #dialog>
-  <h2 class="ang-multi-select-filter--dialog-title" mat-dialog-title>{{ resolvedDialogTitle() }}</h2>
-  <mat-dialog-content class="ang-multi-select-filter--dialog-content">
-    <ng-container [ngTemplateOutlet]="searchList" />
-  </mat-dialog-content>
-  <div class="ang-multi-select-filter--dialog-footer">
-    @if (selected().length > 0) {
-      <div
-        class="ang-multi-select-filter--chip-tray"
-        animate.enter="ang-multi-select-filter--chip-tray-enter"
-        animate.leave="ang-multi-select-filter--chip-tray-leave"
-      >
-        <ang-scroll-area class="ang-multi-select-filter--chip-row" orientation="horizontal">
-          <ang-multi-select-filter-chip-list
-            class="ang-multi-select-filter--dialog-chips"
-            singleRow
-            [options]="selectedNewestFirst()"
-            [label]="selectedFiltersLabel()"
-            [removeLabel]="removeFilterLabel()"
-            (removed)="removeFilter($event)"
-          />
-        </ang-scroll-area>
+    <ang-search-list
+      class="ang-multi-select-filter--search-list"
+      [options]="options()"
+      [disableSearch]="disableSearch()"
+      [aria-label]="label()"
+      [selected]="selected()"
+      [(search)]="search"
+      (selectedChange)="updateSelected($event)"
+    />
+
+    @if (!wide()) {
+      <div class="ang-multi-select-filter--dialog-footer">
+        @if (selected().length > 0) {
+          <div
+            class="ang-multi-select-filter--chip-tray"
+            animate.enter="ang-multi-select-filter--chip-tray-enter"
+            animate.leave="ang-multi-select-filter--chip-tray-leave"
+          >
+            <ang-scroll-area class="ang-multi-select-filter--chip-row" orientation="horizontal">
+              <ang-multi-select-filter-chip-list
+                class="ang-multi-select-filter--dialog-chips"
+                singleRow
+                [options]="selectedNewestFirst()"
+                [label]="selectedFiltersLabel()"
+                [removeLabel]="removeFilterLabel()"
+                (removed)="removeFilter($event)"
+              />
+            </ang-scroll-area>
+          </div>
+        }
+        <div class="ang-multi-select-filter--dialog-actions">
+          <button type="button" matButton="filled" angTrackClick (click)="close()">{{ doneLabel() }}</button>
+        </div>
       </div>
     }
-    <mat-dialog-actions class="ang-multi-select-filter--dialog-actions" align="end">
-      <button type="button" matButton="filled" mat-dialog-close angTrackClick>{{ doneLabel() }}</button>
-    </mat-dialog-actions>
   </div>
-</ng-template>
-
-<ng-template #searchList>
-  <ang-search-list
-    class="ang-multi-select-filter--search-list"
-    [options]="options()"
-    [disableSearch]="disableSearch()"
-    [aria-label]="label()"
-    [selected]="selected()"
-    [(search)]="search"
-    (selectedChange)="updateSelected($event)"
-  />
 </ng-template>
