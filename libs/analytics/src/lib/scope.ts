@@ -1,4 +1,5 @@
 import { computed, Directive, forwardRef, inject, InjectionToken, input, Provider } from '@angular/core';
+import { SignalLike } from '@atlasng/core';
 import { ANALYTICS_CONFIG } from './analytics';
 
 /**
@@ -10,9 +11,9 @@ import { ANALYTICS_CONFIG } from './analytics';
  */
 export interface IEventScope {
   /** Scope name */
-  readonly name: () => string;
+  readonly name: SignalLike<string>;
   /** Fully qualified dot-separated scope path */
-  readonly path: () => string;
+  readonly path: SignalLike<string>;
   /** Parent scope in the hierarchy, or `null` for the root scope */
   readonly parentScope: IEventScope | null;
 }
@@ -40,7 +41,7 @@ const EVENT_SCOPE_ENTRIES = new InjectionToken<(string | IEventScope)[]>('EVENT_
  * @param name Returns the current scope name
  * @returns The dot-separated scope path
  */
-function buildPath(parent: IEventScope | null, name: () => string): string {
+function buildPath(parent: IEventScope | null, name: SignalLike<string>): string {
   const parentPath = parent?.path();
   return parentPath ? `${parentPath}.${name()}` : name();
 }
@@ -120,7 +121,7 @@ export class EventScope implements IEventScope {
  */
 class StaticEventScope implements IEventScope {
   /** Scope name */
-  readonly name: () => string;
+  readonly name: SignalLike<string>;
   /** Parent scope */
   readonly parentScope: IEventScope | null;
   /** Fully qualified scope path */

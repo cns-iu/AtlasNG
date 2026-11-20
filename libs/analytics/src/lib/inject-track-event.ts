@@ -1,4 +1,4 @@
-import { assertInInjectionContext, inject, Injector } from '@angular/core';
+import { InjectorOptions, resolveInjector } from '@atlasng/core';
 import { AnalyticsEvent, AnalyticsEventPayloadFor } from '@atlasng/analytics/events';
 import { Analytics } from './analytics';
 import { EVENT_SCOPE } from './scope';
@@ -25,12 +25,8 @@ export type TrackEventFn = <E extends AnalyticsEvent>(
  *
  * @returns A function that tracks events with the current scope path
  */
-export function injectTrackEvent(options?: { injector?: Injector }): TrackEventFn {
-  if (!options?.injector) {
-    assertInInjectionContext(injectTrackEvent);
-  }
-
-  const injector = options?.injector ?? inject(Injector);
+export function injectTrackEvent(options?: InjectorOptions): TrackEventFn {
+  const injector = resolveInjector(injectTrackEvent, options);
   const analytics = injector.get(Analytics);
   const scope = injector.get(EVENT_SCOPE);
 
