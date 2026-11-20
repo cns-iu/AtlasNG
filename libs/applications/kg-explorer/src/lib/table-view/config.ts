@@ -2,9 +2,38 @@ import type { Provider } from '@angular/core';
 import type { BreakpointExpression } from '@atlasng/cdk';
 import type { SearchFieldDefinition, SearchFieldSpec } from '@atlasng/cdk/search';
 import { createConfigurationToken, type } from '@atlasng/core';
+import type { BreadcrumbItem } from '@atlasng/design-system/buttons/breadcrumbs';
 import type { Row } from '@atlasng/design-system/table';
 import type { VersionControlFileFormat } from '@atlasng/design-system/version-control';
 import type { KgExplorerDownloadFormats } from '../download-cell/download-cell';
+import type { KgExplorerViewOption, KgExplorerViewSetting } from '../models';
+
+/** Content and labels of the filter drawer of the knowledge graph explorer table view. */
+export interface KgExplorerFilterDrawerConfig {
+  /** Breadcrumb trail shown at the top of the filter drawer. Hidden when empty. */
+  breadcrumbs?: BreadcrumbItem[];
+  /** Heading shown at the top of the filter drawer, below the breadcrumbs. */
+  filtersHeading?: string;
+  /** Supporting text shown below the filter drawer heading. */
+  filtersDescription?: string;
+  /**
+   * Options of the view button toggle in the "Customize view" section of the filter drawer. The section is shown
+   * only when this or {@link viewSettings} has entries.
+   */
+  viewToggleOptions?: KgExplorerViewOption[];
+  /** Selects shown in the "Customize view" section, such as "View as", "Sort by" or "Group by". */
+  viewSettings?: KgExplorerViewSetting[];
+  /** Heading of the filters section of the filter drawer. Defaults to "Filters". */
+  filtersLabel?: string;
+  /** Label of the button that clears every filter selection. Defaults to "Clear filters". */
+  clearFiltersLabel?: string;
+  /** Heading of the view customization section of the filter drawer. Defaults to "Customize view". */
+  customizeViewLabel?: string;
+  /** Label of the button that resets the view customizations. Defaults to "Reset". */
+  resetViewLabel?: string;
+  /** Accessible name of the view options button toggle group. Defaults to "View". */
+  viewOptionsLabel?: string;
+}
 
 /**
  * Setup of the knowledge graph explorer table view. Every option is optional;
@@ -55,6 +84,8 @@ export interface KgExplorerTableViewConfig<
    * a drawer. Defaults to `'large'` (1280px).
    */
   filtersDockBreakpoint?: BreakpointExpression;
+  /** Content and labels of the filter drawer. Merged over the provided `filterOptions`. */
+  filterOptions?: KgExplorerFilterDrawerConfig;
 }
 
 /** Suggests the `title` of each row when it is a string. */
@@ -82,9 +113,16 @@ export const KG_EXPLORER_TABLE_VIEW_CONFIG = createConfigurationToken({
     disableResultsCounter: false,
     resultsCounterPrefix: 'Viewing',
     disableEndOfResults: false,
+    filtersDockBreakpoint: 'large',
+    filterOptions: {
+      filtersLabel: 'Filters',
+      clearFiltersLabel: 'Clear filters',
+      customizeViewLabel: 'Customize view',
+      resetViewLabel: 'Reset',
+      viewOptionsLabel: 'View',
+    },
     downloadColumnLabel: 'Download',
     downloadLabel: 'title',
-    filtersDockBreakpoint: 'large',
   }),
   inherit: true,
 });

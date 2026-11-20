@@ -1,0 +1,97 @@
+@use 'internal/token-utils';
+@use './../../sass/tokens/filter-drawer' as *;
+@use '@angular/material' as mat;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 1.25rem;
+  max-width: min-content;
+
+  .ang-kg-explorer-filter-drawer--intro {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .ang-kg-explorer-filter-drawer--heading {
+    margin: 0;
+    color: token-utils.slot(heading-color, $config);
+    font: token-utils.sys-slot(title-medium);
+    //TODO: https://github.com/cns-iu/AtlasNG/issues/450
+    font-weight: 700;
+    letter-spacing: token-utils.sys-slot(title-medium-tracking);
+    text-wrap: balance;
+  }
+
+  .ang-kg-explorer-filter-drawer--description {
+    margin: 0;
+    color: token-utils.slot(description-color, $config);
+    font: token-utils.sys-slot(body-medium);
+    letter-spacing: token-utils.sys-slot(body-medium-tracking);
+  }
+
+  .ang-kg-explorer-filter-drawer--sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .ang-kg-explorer-filter-drawer--section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ang-kg-explorer-filter-drawer--section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.5rem; // Keeps the height of the action button when it is hidden.
+    padding-bottom: 0.5rem;
+  }
+
+  .ang-kg-explorer-filter-drawer--section-title {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    color: token-utils.slot(heading-color, $config);
+    font: token-utils.sys-slot(title-medium);
+    letter-spacing: token-utils.sys-slot(title-medium-tracking);
+    text-wrap: balance;
+  }
+
+  .ang-kg-explorer-filter-drawer--action {
+    flex-shrink: 0;
+  }
+
+  .ang-kg-explorer-filter-drawer--view-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .ang-kg-explorer-filter-drawer--view-toggle {
+    @include mat.button-toggle-overrides(
+      (
+        background-color: token-utils.sys-slot(background),
+      )
+    );
+  }
+
+  .ang-kg-explorer-filter-drawer--view-setting {
+    width: 100%;
+  }
+
+  .ang-kg-explorer-filter-drawer--filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .ang-kg-explorer-filter-drawer--filter:not(:last-child) {
+    padding-bottom: 0.375rem;
+    border-bottom: 1px solid token-utils.sys-slot(outline-variant);
+  }
+}
