@@ -1,5 +1,6 @@
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { MatMenuModule } from '@angular/material/menu';
+import { SkipLinkTarget } from '@atlasng/design-system/links/skip-link';
 import { render, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { BehaviorSubject } from 'rxjs';
@@ -215,5 +216,19 @@ describe('HeaderShell', () => {
     expect(screen.getByRole('button', { name: 'Filters' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Apps' })).toBeInTheDocument();
     expect(screen.getByRole('navigation', { hidden: true })).toHaveAttribute('aria-label', 'Main');
+  });
+
+  it('starts with a skip link to the skip link target', async () => {
+    await render('<ang-header-shell /><main angSkipLinkTarget id="page-main">Main content</main>', {
+      imports: [HeaderShell, SkipLinkTarget],
+    });
+
+    expect(screen.getByRole('link', { name: 'Skip to main content' })).toHaveAttribute('href', '#page-main');
+  });
+
+  it('links the skip link to the skip link anchor id', async () => {
+    await render(HeaderShell, { inputs: { skipLinkAnchorId: 'page-main' } });
+
+    expect(screen.getByRole('link', { name: 'Skip to main content' })).toHaveAttribute('href', '#page-main');
   });
 });

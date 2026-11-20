@@ -2,6 +2,7 @@ import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angul
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { SkipLinkTarget } from '@atlasng/design-system/links/skip-link';
 import { HeaderShell, HeaderShellAction, HeaderShellNavigationItem } from './header-shell';
 import { NavigationContainer } from './navigation-container/navigation-container';
 
@@ -69,9 +70,9 @@ function renderHeaderShell(actions = ''): Meta<HeaderShell & WithMenuItems>['ren
         [socials]="socials"
         #navigation
       >
-        <div class="content">
+        <main angSkipLinkTarget class="content">
           Test
-        </div>
+        </main>
       </ang-navigation-container>
     `,
     styles: [`.content { padding: 1rem; }`],
@@ -90,7 +91,14 @@ const meta: Meta<HeaderShell & WithMenuItems> = {
   },
   decorators: [
     moduleMetadata({
-      imports: [NavigationContainer, HeaderShellAction, MatButtonModule, MatIconModule, MatTooltipModule],
+      imports: [
+        NavigationContainer,
+        HeaderShellAction,
+        MatButtonModule,
+        MatIconModule,
+        MatTooltipModule,
+        SkipLinkTarget,
+      ],
     }),
   ],
   args: {

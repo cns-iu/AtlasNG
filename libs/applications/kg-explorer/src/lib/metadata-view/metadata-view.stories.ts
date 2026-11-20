@@ -11,6 +11,7 @@ import {
   VersionControlItem,
 } from '@atlasng/design-system/version-control';
 import { provideAngIcons } from '@atlasng/design-system/icons';
+import { SkipLinkTarget } from '@atlasng/design-system/links/skip-link';
 import { HeaderShell, HeaderShellNavigationItem, NavigationContainer } from '@atlasng/labs/header-shell';
 import { applicationConfig, argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { expect } from 'storybook/test';
@@ -175,7 +176,7 @@ const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
 
 /** Metadata page displayed below the application header. */
 export const WithHeader: Story = {
-  decorators: [moduleMetadata({ imports: [HeaderShell, NavigationContainer] })],
+  decorators: [moduleMetadata({ imports: [HeaderShell, NavigationContainer, SkipLinkTarget] })],
   render: (args) => ({
     props: { ...args, navigationItems: NAVIGATION_ITEMS },
     template: `
@@ -196,7 +197,7 @@ export const WithHeader: Story = {
         [socials]="socials"
         #navigation
       >
-        <main id="main-content">
+        <main angSkipLinkTarget>
           <ang-kg-explorer-metadata-view ${argsToTemplate(args, { exclude: ['download'] })} />
         </main>
       </ang-navigation-container>

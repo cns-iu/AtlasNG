@@ -1,0 +1,11 @@
+<a
+  matButton
+  angTrackClick
+  class="ang-skip-link--link"
+  [attr.href]="href()"
+  [disabled]="disabled()"
+  (click)="skip($event)"
+>
+  {{ label() }}
+  <mat-icon fontIcon="arrow_right_alt" class="ang-skip-link--icon" iconPositionEnd />
+</a>

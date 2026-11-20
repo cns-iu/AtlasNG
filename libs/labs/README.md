@@ -14,11 +14,10 @@ Labs builds on `@atlasng/design-system`, so follow its [setup steps](../design-s
 
 ## Components
 
-| Entry point                            | Exports                                                                                  |
-| -------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `@atlasng/labs/cookie-modal`           | `CookieModal`, its data and provider types, and `provideCookieModalPermissionsRequest()` |
-| `@atlasng/labs/grid-container`         | `GridContainer`                                                                          |
-| `@atlasng/labs/header-shell`           | `HeaderShell`, `HeaderShellAction`, `NavigationMenu`, `NavigationContainer`              |
-| `@atlasng/labs/skip-to-content-button` | `SkipToContentButton`                                                                    |
+| Entry point                    | Exports                                                                                  |
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
+| `@atlasng/labs/cookie-modal`   | `CookieModal`, its data and provider types, and `provideCookieModalPermissionsRequest()` |
+| `@atlasng/labs/grid-container` | `GridContainer`                                                                          |
+| `@atlasng/labs/header-shell`   | `HeaderShell`, `HeaderShellAction`, `NavigationMenu`, `NavigationContainer`              |
 
-Token override mixins (`cookie-modal-overrides`, `header-shell-overrides`, and `skip-to-content-button-overrides`) are available through `@use '@atlasng/labs' as labs;`.
+Token override mixins (`cookie-modal-overrides` and `header-shell-overrides`) are available through `@use '@atlasng/labs' as labs;`.

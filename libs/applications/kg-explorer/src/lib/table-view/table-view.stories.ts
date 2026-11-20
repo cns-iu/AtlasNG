@@ -3,6 +3,7 @@ import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Footer, FooterAction, FooterLogo } from '@atlasng/design-system/footer';
+import { SkipLinkTarget } from '@atlasng/design-system/links/skip-link';
 import type { Row, TableColumn } from '@atlasng/design-system/table';
 import {
   CSV_FILE_FORMAT,
@@ -191,7 +192,7 @@ function explorerTemplate(args: Args, content = ''): string {
     </ang-header-shell>
 
     <ang-navigation-container [navigationItems]="navigationItems" #navigation>
-      <main id="main-content" class="explorer-main">
+      <main angSkipLinkTarget class="explorer-main">
         <ang-kg-explorer-table-view ${argsToTemplate(args, { exclude: COLUMN_WIDTH_ARGS })} #explorer>
           ${content}
         </ang-kg-explorer-table-view>
@@ -242,6 +243,7 @@ const meta: Meta<StoryArgs> = {
         MatIconModule,
         MatButtonModule,
         MatTooltip,
+        SkipLinkTarget,
       ],
     }),
   ],
