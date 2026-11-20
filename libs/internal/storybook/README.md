@@ -35,5 +35,3 @@ npx nx run internal-storybook:generate-palettes-scss:<theme>
 npx nx run internal-storybook:generate-shape-scss:<theme>
 npx nx run internal-storybook:generate-typography-scss:<theme>
 ```
-
-`_ext-colors.scss` is written by hand. It sets the `product` and `organ` roles from Figma's `schemes/ext` variables for each color mode, which `all-themes.scss` emits as `--ang-ext-*` CSS variables.

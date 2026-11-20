@@ -211,13 +211,4 @@ Palettes need tones `10`, `20`, `30`, `40`, `80`, `90`, and `100`. The variant r
 
 You don't have to define every level. A component that uses a level you haven't emitted falls back to a related Material role. For example, the `critical` notice uses `var(--ang-ext-critical, var(--mat-sys-error))`, so it follows the theme's error colors unless you emit a `critical` level.
 
-Product and organ icons use `--ang-ext-product`, `--ang-ext-on-product`, `--ang-ext-organ`, and `--ang-ext-on-organ`. Designers pick these colors for each brand and color mode instead of reading them from a palette at fixed tones, so set them directly next to `mat.theme`:
-
-```scss
-.light-theme {
-  #{ds.ext-token(product)}: #314578;
-  #{ds.ext-token(on-product)}: #ffffff;
-  #{ds.ext-token(organ)}: #4290a1;
-  #{ds.ext-token(on-organ)}: #ffffff;
-}
-```
+Product and organ icons use the `product` and `organ` levels (`--ang-ext-product`, `--ang-ext-on-product`, `--ang-ext-organ`, and `--ang-ext-on-organ`). Emit them like any other level. Their palettes hold the colors designers pick for each brand and color mode at the tones those roles read (`40` and `100` in light mode, `80` and `20` in dark mode). Set the tones they don't use to black or white.

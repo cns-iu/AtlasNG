@@ -18,13 +18,6 @@ $themes: (cns, hra, mhu, wpp);
   }
 }
 
-// Emits the extended color roles from the theme's optional `$ext-colors` map.
-@mixin ext-colors($variables, $theme-type) {
-  @each $role, $color in map.get($variables, 'ext-colors', $theme-type) or () {
-    #{ds.ext-token($role)}: #{$color};
-  }
-}
-
 @each $name in $themes {
   $variables: meta.module-variables('#{$name}-theme');
   $theme: (
@@ -46,13 +39,11 @@ $themes: (cns, hra, mhu, wpp);
   .#{$name}-light-theme {
     @include mat.theme(map.set($theme, color, theme-type, light), $overrides);
     @include level-colors($variables, light);
-    @include ext-colors($variables, light);
   }
 
   .#{$name}-dark-theme {
     @include mat.theme(map.set($theme, color, theme-type, dark), $overrides);
     @include level-colors($variables, dark);
-    @include ext-colors($variables, dark);
   }
 }
 
