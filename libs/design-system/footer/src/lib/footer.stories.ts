@@ -37,6 +37,12 @@ const meta: Meta = {
     logoSrc: 'assets/logo-placeholder.svg',
     organization: 'Cyberinfrastructure for Network Science Center',
   },
+  argTypes: {
+    logoSrc: {
+      control: 'select',
+      options: ['assets/wpp.svg', 'assets/logo-placeholder.svg'],
+    },
+  },
 };
 
 export default meta;
