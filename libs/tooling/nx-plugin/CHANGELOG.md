@@ -1,3 +1,13 @@
+## 0.0.5 (2026-11-20)
+
+### 🚀 Features
+
+- **nx-plugin:** add changelog renderer that resolves authors through .mailmap ([#500](https://github.com/cns-iu/AtlasNG/pull/500))
+
+### ❤️ Thank You
+
+- Daniel Bolin @axdanbol
+
 ## 0.0.4 (2026-11-13)
 
 ### 🚀 Features
