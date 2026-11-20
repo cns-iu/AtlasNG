@@ -39,6 +39,12 @@
     line-height: token-utils.slot(counter-text-line-height, $config);
     letter-spacing: token-utils.slot(counter-text-tracking, $config);
     color: token-utils.slot(counter-text-color, $config);
+    border-radius: token-utils.slot(counter-shape, $config);
+
+    &:focus-visible {
+      outline: solid 0.1875rem token-utils.slot(counter-focus-outline-color, $config);
+      outline-offset: 0.125rem;
+    }
   }
 
   // Replaces the default chip margins with the uniform gap from the design.
@@ -57,9 +63,12 @@
 // The panel is rendered in an overlay outside of the host element.
 .ang-multi-select-filter--panel {
   display: flex;
+  width: 22.5rem;
+  max-width: 100vw;
   max-height: 24rem;
 
   .ang-multi-select-filter--search-list {
+    flex: 1 1 auto;
     min-height: 0;
 
     .ang-search-list--list {

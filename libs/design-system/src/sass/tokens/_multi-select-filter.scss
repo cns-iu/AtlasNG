@@ -10,6 +10,8 @@ $config: (
     counter-text-weight: token-utils.sys-token(body-small-weight),
     counter-text-line-height: token-utils.sys-token(body-small-line-height),
     counter-text-tracking: token-utils.sys-token(body-small-tracking),
+    counter-shape: token-utils.sys-token(corner-full),
+    counter-focus-outline-color: token-utils.sys-token(secondary),
   ),
 );
 

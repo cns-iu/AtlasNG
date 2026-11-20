@@ -1,4 +1,4 @@
-<div class="ang-multi-select-filter--header">
+<div class="ang-multi-select-filter--header" cdkOverlayOrigin #panelOrigin="cdkOverlayOrigin">
   @let tooltip = infoPanel();
   @if (tooltip) {
     <button
@@ -23,17 +23,15 @@
     matButton
     angEventScope="toggle"
     angTrackClick
-    cdkOverlayOrigin
     aria-haspopup="dialog"
     [attr.aria-expanded]="expanded()"
     [attr.aria-controls]="expanded() ? panelId : null"
     (click)="toggle()"
-    #panelOrigin="cdkOverlayOrigin"
   >
     {{ label() }}
   </button>
 
-  <span class="ang-multi-select-filter--counter" tabindex="0" [matTooltip]="countTooltip()">
+  <span class="ang-multi-select-filter--counter" tabindex="0" matTooltipPosition="after" [matTooltip]="countTooltip()">
     {{ displayedCount() | number }}
   </span>
 </div>
@@ -61,7 +59,7 @@
   cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="panelOrigin"
   [cdkConnectedOverlayOpen]="expanded()"
-  [cdkConnectedOverlayPositions]="panelPositions"
+  [cdkConnectedOverlayPositions]="panelPositions()"
   (overlayOutsideClick)="close()"
   (overlayKeydown)="handlePanelKeydown($event)"
   (detach)="close()"
@@ -80,8 +78,9 @@
       [disableSearch]="disableSearch()"
       [sort]="sort()"
       [aria-label]="label()"
-      [(selected)]="selected"
+      [selected]="selected()"
       [(search)]="search"
+      (selectedChange)="updateSelected($event)"
     />
   </div>
 </ng-template>
