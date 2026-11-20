@@ -102,11 +102,12 @@ filters: KgExplorerFilter<Dataset>[] = [
 The filter drawer has no built-in trigger. Add a button that toggles `[(filtersOpen)]`, for example in the action slot of `ang-header-shell` from `@atlasng/labs/header-shell`:
 
 ```html
-<ang-header-shell logoUrl="assets/logo.svg">
+<ang-header-shell logoSrc="assets/logo.svg">
   <button
     matIconButton
     angHeaderShellAction
     type="button"
+    matTooltip="Filters"
     aria-label="Filters"
     [attr.aria-expanded]="explorer.filtersOpen()"
     (click)="explorer.filtersOpen.update((open) => !open)"

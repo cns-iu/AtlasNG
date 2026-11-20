@@ -55,5 +55,6 @@ body {
 
 body,
 .docs-story {
-  color: var(--mat-sys-on-surface);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
 }
