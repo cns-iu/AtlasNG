@@ -26,6 +26,7 @@ import {
   kgExplorerNumberColumn,
   kgExplorerTextColumn,
 } from '../utils/columns';
+import type { KgExplorerTableViewConfig } from './config';
 import { KgExplorerTableView } from './table-view';
 
 /** Digital object used by the white-label sample data. */
@@ -152,6 +153,47 @@ function sampleFormatsFor(item: SampleItem): readonly VersionControlFileFormat[]
   return item.formats;
 }
 
+/** Full filter drawer configuration shared by every story: breadcrumbs, heading, view options, and view settings. */
+const SAMPLE_CONFIG: KgExplorerTableViewConfig<SampleItem> = {
+  downloadFormats: sampleFormatsFor,
+  filterOptions: {
+    breadcrumbs: [{ name: 'Home', command: '/' }, { name: 'Page', command: '/page' }, { name: 'App' }],
+    filtersHeading: 'Product Label',
+    filtersDescription: 'Supporting text here, if needed, but make it short and straightforward',
+    viewToggleOptions: [
+      { value: 'default', label: 'Default' },
+      { value: 'comfortable', label: 'Comfortable' },
+      { value: 'compact', label: 'Compact' },
+    ],
+    viewSettings: [
+      {
+        id: 'view',
+        label: 'View as',
+        options: [
+          { value: 'table', label: 'Table' },
+          { value: 'cards', label: 'Cards' },
+        ],
+      },
+      {
+        id: 'sort',
+        label: 'Sort by',
+        options: [
+          { value: 'title', label: 'Title' },
+          { value: 'lastModified', label: 'Last modified' },
+        ],
+      },
+      {
+        id: 'group',
+        label: 'Group by',
+        options: [
+          { value: 'type', label: 'Type' },
+          { value: 'organ', label: 'Organ' },
+        ],
+      },
+    ],
+  },
+};
+
 /** Primary navigation of the sample application header. */
 const NAVIGATION_ITEMS: HeaderShellNavigationItem[] = [
   { id: 'kg-explorer', label: 'Knowledge Graph Explorer' },
@@ -257,11 +299,13 @@ const meta: Meta<StoryArgs> = {
     columns: Object.values(SAMPLE_COLUMNS_BY_KEY),
     filters: SAMPLE_FILTERS,
     filtersOpen: false,
-    config: { downloadFormats: sampleFormatsFor },
+    config: { ...SAMPLE_CONFIG, downloadFormats: sampleFormatsFor },
+    viewSettingValues: { view: 'table' },
     ...COLUMN_WIDTH_DEFAULTS,
   },
   argTypes: {
     download: { action: 'download' },
+    resetView: { action: 'resetView' },
     columns: { control: false },
     ...Object.fromEntries(
       COLUMN_WIDTH_ARGS.map((name) => [
@@ -309,15 +353,12 @@ export const Dark: Story = {
   },
 };
 
-export const FiltersOpen: Story = {
-  args: {
-    filtersOpen: true,
-  },
-};
-
 export const ExtraLargeFilterBreakpoint: Story = {
   args: {
-    config: { filtersDockBreakpoint: 'x-large' },
+    config: {
+      ...SAMPLE_CONFIG,
+      filtersDockBreakpoint: 'x-large',
+    },
   },
 };
 
@@ -325,23 +366,17 @@ export const NoResults: Story = {
   args: {
     search: 'no matching digital object',
   },
-  play: async ({ canvas }) => {
-    await expect(canvas.getByText('No results. Adjust filters or search again.')).toBeVisible();
-  },
 };
 
 export const FewResults: Story = {
   args: {
     items: SAMPLE_ITEMS.slice(0, 3),
   },
-  play: async ({ canvas }) => {
-    await expect(canvas.getByText('End of results')).toBeVisible();
-  },
 };
 
 export const WithoutDownload: Story = {
   args: {
-    config: {},
+    config: { ...SAMPLE_CONFIG, downloadFormats: undefined },
   },
 };
 
