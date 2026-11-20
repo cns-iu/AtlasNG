@@ -1,3 +1,25 @@
+## 0.0.14 (2026-11-20)
+
+### 🚀 Features
+
+- **cdk:** add angVisuallyHidden directive that loads its styles ([#476](https://github.com/cns-iu/AtlasNG/pull/476))
+- ⚠️  **analytics:** accept outputs and observables in track event triggers ([#447](https://github.com/cns-iu/AtlasNG/pull/447))
+- track interactions and add event scopes across design-system and labs ([#442](https://github.com/cns-iu/AtlasNG/pull/442))
+
+### 🩹 Fixes
+
+- **labs:** keep the header shell within 320px screens ([#488](https://github.com/cns-iu/AtlasNG/pull/488))
+
+### ⚠️  Breaking Changes
+
+- **analytics:** accept outputs and observables in track event triggers  ([#447](https://github.com/cns-iu/AtlasNG/pull/447))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- LibbyUX @LibbyUX
+
 ## 0.0.13 (2026-11-18)
 
 ### 🚀 Features

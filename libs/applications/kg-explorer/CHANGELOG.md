@@ -1,3 +1,28 @@
+## 0.0.4 (2026-11-20)
+
+### 🚀 Features
+
+- add search field labels to multi-select and KG Explorer filters ([#485](https://github.com/cns-iu/AtlasNG/pull/485))
+- **design-system:** open filter search list in a dialog below 960px ([#408](https://github.com/cns-iu/AtlasNG/pull/408))
+- **kg-explorer:** add filter drawer to table view ([#434](https://github.com/cns-iu/AtlasNG/pull/434))
+- **cdk:** add angVisuallyHidden directive that loads its styles ([#476](https://github.com/cns-iu/AtlasNG/pull/476))
+- size table columns like the Figma design ([#377](https://github.com/cns-iu/AtlasNG/pull/377))
+
+### 🩹 Fixes
+
+- **design-system:** open the filter search list to the right of the row ([#395](https://github.com/cns-iu/AtlasNG/pull/395))
+- **design-system:** use the table line-height tokens in cells ([#491](https://github.com/cns-iu/AtlasNG/pull/491))
+- **kg-explorer:** fix table view story header and add filters tooltip ([#465](https://github.com/cns-iu/AtlasNG/pull/465))
+- **kg-explorer:** hide the download button for rows without formats ([#466](https://github.com/cns-iu/AtlasNG/pull/466))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- Edward Lu @edlu77
+- Elizabeth Maier
+- LibbyUX @LibbyUX
+
 ## 0.0.3 (2026-11-18)
 
 ### 🚀 Features

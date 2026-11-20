@@ -1,3 +1,18 @@
+## 0.0.14 (2026-11-20)
+
+### 🚀 Features
+
+- ⚠️  **cdk:** add collator and sorting utilities ([#473](https://github.com/cns-iu/AtlasNG/pull/473))
+
+### ⚠️  Breaking Changes
+
+- **cdk:** add collator and sorting utilities  ([#473](https://github.com/cns-iu/AtlasNG/pull/473))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
 ## 0.0.13 (2026-11-18)
 
 ### 🚀 Features

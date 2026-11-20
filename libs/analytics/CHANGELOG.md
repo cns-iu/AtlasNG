@@ -1,3 +1,19 @@
+## 0.0.14 (2026-11-20)
+
+### 🚀 Features
+
+- ⚠️  **analytics:** accept outputs and observables in track event triggers ([#447](https://github.com/cns-iu/AtlasNG/pull/447))
+- track interactions and add event scopes across design-system and labs ([#442](https://github.com/cns-iu/AtlasNG/pull/442))
+
+### ⚠️  Breaking Changes
+
+- **analytics:** accept outputs and observables in track event triggers  ([#447](https://github.com/cns-iu/AtlasNG/pull/447))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+
 ## 0.0.13 (2026-11-18)
 
 This was a version bump only for analytics to align it with other projects, there were no code changes.

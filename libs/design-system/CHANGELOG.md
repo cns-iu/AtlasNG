@@ -1,3 +1,34 @@
+## 0.0.14 (2026-11-20)
+
+### 🚀 Features
+
+- add search field labels to multi-select and KG Explorer filters ([#485](https://github.com/cns-iu/AtlasNG/pull/485))
+- **design-system:** add a no results state to the search list ([#482](https://github.com/cns-iu/AtlasNG/pull/482))
+- **design-system:** open filter search list in a dialog below 960px ([#408](https://github.com/cns-iu/AtlasNG/pull/408))
+- **cdk:** add angVisuallyHidden directive that loads its styles ([#476](https://github.com/cns-iu/AtlasNG/pull/476))
+- **design-system:** sort search list options alphabetically by default ([#474](https://github.com/cns-iu/AtlasNG/pull/474))
+- size table columns like the Figma design ([#377](https://github.com/cns-iu/AtlasNG/pull/377))
+- **design-system:** add overline component ([#376](https://github.com/cns-iu/AtlasNG/pull/376))
+- ⚠️  **analytics:** accept outputs and observables in track event triggers ([#447](https://github.com/cns-iu/AtlasNG/pull/447))
+- track interactions and add event scopes across design-system and labs ([#442](https://github.com/cns-iu/AtlasNG/pull/442))
+
+### 🩹 Fixes
+
+- **design-system:** open the filter search list to the right of the row ([#395](https://github.com/cns-iu/AtlasNG/pull/395))
+- **design-system:** use the table line-height tokens in cells ([#491](https://github.com/cns-iu/AtlasNG/pull/491))
+
+### ⚠️  Breaking Changes
+
+- **analytics:** accept outputs and observables in track event triggers  ([#447](https://github.com/cns-iu/AtlasNG/pull/447))
+
+### ❤️ Thank You
+
+- Claude Opus 5.5
+- Daniel Bolin
+- Edward Lu @edlu77
+- Elizabeth Maier
+- LibbyUX @LibbyUX
+
 ## 0.0.13 (2026-11-18)
 
 ### 🚀 Features
