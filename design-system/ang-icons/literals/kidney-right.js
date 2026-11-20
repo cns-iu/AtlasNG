@@ -1,0 +1,2 @@
+/** SVG markup of the "kidney-right" icon (organs). */
+export const angIconKidneyRight = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M13.156 10.32a3.8 3.8 0 0 0 .4-1.68s1.256.297 2.072-1.287c.968-1.88.208-3.8-1.832-4.848-3.6-1.848-6.728 2.4-7.664 4.208s-2.208 7 1.016 8.664c1.872.96 3.816 1 4.8-.96a2.464 2.464 0 0 0-.328-2.992 2.6 2.6 0 0 0 1.536-1.104"/><path fill="currentColor" d="M14.02 9.793q-.06.392-.223.752a2.22 2.22 0 0 1 .936 1.768v9.92h.8v-9.92a2.94 2.94 0 0 0-1.512-2.52"/></svg>';

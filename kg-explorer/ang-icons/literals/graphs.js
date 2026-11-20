@@ -1,0 +1,2 @@
+/** SVG markup of the "graphs" icon (products). */
+export const angIconGraphs = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M16.533 12.004a2.392 2.392 0 1 0 0-4.785 2.392 2.392 0 0 0 0 4.785m-4.869 3.958a1.78 1.78 0 1 0 0-3.562 1.78 1.78 0 0 0 0 3.562m-1.468-5.536a1.47 1.47 0 1 0 0-2.94 1.47 1.47 0 0 0 0 2.94"/><path fill="currentColor" d="M20.47 18.73H5.805A.81.81 0 0 1 5 17.925V4.805A.81.81 0 0 1 5.805 4a.81.81 0 0 1 .804.805V17.12H20.47a.81.81 0 0 1 .805.804.81.81 0 0 1-.805.805"/></svg>';

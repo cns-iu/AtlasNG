@@ -1,0 +1,2 @@
+/** SVG markup of the "vocabulary" icon (products). */
+export const angIconVocabulary = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M13.953 11.624c0-.605.495-1.09 1.1-1.09h4.412V7.113A2.113 2.113 0 0 0 17.353 5H5.613A2.113 2.113 0 0 0 3.5 7.113V13.9c0 1.167.946 2.113 2.113 2.113h8.296l.044-4.38z"/><path fill="currentColor" d="M16.039 11.867h4.764c.33 0 .605.263.605.605l.088 7.427c0 .22-.253.34-.418.209l-2.619-2.036-2.684 1.882c-.176.12-.418 0-.408-.22l.067-7.273a.61.61 0 0 1 .605-.606z"/></svg>';
