@@ -358,7 +358,7 @@ describe('KgExplorerTableView', () => {
     const { fixture, observer } = await setup({ config: { filtersDockBreakpoint: 'x-small' } }, false);
 
     expect(fixture.componentInstance.filtersOpen()).toBe(true);
-    expect(observer.observe).not.toHaveBeenCalledWith([expect.stringContaining('min-width')]);
+    expect(observer.observe).not.toHaveBeenCalledWith(['(min-width: 1280px)']);
   });
 
   it('clears the search from the no results indicator', async () => {

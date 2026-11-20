@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { booleanAttribute, Component, computed, input, model } from '@angular/core';
+import { booleanAttribute, Component, computed, input, model, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -53,6 +53,7 @@ export type SearchListSort = SortDirection | 'none';
   templateUrl: './search-list.html',
   styleUrl: './search-list.scss',
   providers: [provideEventScope('search-list')],
+  encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ang-search-list',
     '[attr.aria-label]': 'null',

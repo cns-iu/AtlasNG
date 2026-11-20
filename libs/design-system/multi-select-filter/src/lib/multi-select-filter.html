@@ -37,29 +37,26 @@
 </div>
 
 @if (selected().length > 0) {
-  <mat-chip-set class="ang-multi-select-filter--chips" role="list" [attr.aria-label]="selectedFiltersLabel()">
-    @for (option of selected(); track option) {
-      <mat-chip role="listitem" disableRipple (removed)="removeFilter(option)">
-        {{ option.label }}
-        <button
-          type="button"
-          matChipRemove
-          angEventScope="remove-filter"
-          angTrackClick
-          [attr.aria-label]="`${removeFilterLabel()} ${option.label}`"
-        >
-          <mat-icon fontIcon="cancel" />
-        </button>
-      </mat-chip>
-    }
-  </mat-chip-set>
+  <ang-multi-select-filter-chip-list
+    [options]="selected()"
+    [label]="selectedFiltersLabel()"
+    [removeLabel]="removeFilterLabel()"
+    (removed)="removeFilter($event)"
+  />
 }
 
 <ng-template
   cdkConnectedOverlay
-  [cdkConnectedOverlayOrigin]="panelOrigin"
+  cdkConnectedOverlayPanelClass="ang-multi-select-filter--panel-pane"
+  cdkConnectedOverlayTransformOriginOn=".ang-multi-select-filter--panel"
+  [cdkConnectedOverlayOrigin]="wide() ? panelOrigin : fullScreenOrigin"
   [cdkConnectedOverlayOpen]="expanded()"
   [cdkConnectedOverlayPositions]="panelPositions()"
+  [cdkConnectedOverlayFlexibleDimensions]="wide()"
+  [cdkConnectedOverlayPush]="!wide()"
+  [cdkConnectedOverlayViewportMargin]="wide() ? 16 : 0"
+  [cdkConnectedOverlayWidth]="wide() ? '' : '100%'"
+  [cdkConnectedOverlayHeight]="wide() ? '' : '100%'"
   (overlayOutsideClick)="close()"
   (overlayKeydown)="handlePanelKeydown($event)"
   (detach)="close()"
@@ -67,11 +64,18 @@
   <div
     class="ang-multi-select-filter--panel"
     role="dialog"
+    animate.leave="ang-multi-select-filter--panel-leave"
     cdkTrapFocus
     cdkTrapFocusAutoCapture
+    [class.ang-multi-select-filter--full-screen]="!wide()"
     [id]="panelId"
-    [attr.aria-label]="label()"
+    [attr.aria-label]="wide() ? label() : resolvedDialogTitle()"
+    [attr.aria-modal]="!wide() || null"
   >
+    @if (!wide()) {
+      <h2 class="ang-multi-select-filter--dialog-title">{{ resolvedDialogTitle() }}</h2>
+    }
+
     <ang-search-list
       class="ang-multi-select-filter--search-list"
       [options]="options()"
@@ -82,5 +86,31 @@
       [(search)]="search"
       (selectedChange)="updateSelected($event)"
     />
+
+    @if (!wide()) {
+      <div class="ang-multi-select-filter--dialog-footer">
+        @if (selected().length > 0) {
+          <div
+            class="ang-multi-select-filter--chip-tray"
+            animate.enter="ang-multi-select-filter--chip-tray-enter"
+            animate.leave="ang-multi-select-filter--chip-tray-leave"
+          >
+            <ang-scroll-area class="ang-multi-select-filter--chip-row" orientation="horizontal">
+              <ang-multi-select-filter-chip-list
+                class="ang-multi-select-filter--dialog-chips"
+                singleRow
+                [options]="selectedNewestFirst()"
+                [label]="selectedFiltersLabel()"
+                [removeLabel]="removeFilterLabel()"
+                (removed)="removeFilter($event)"
+              />
+            </ang-scroll-area>
+          </div>
+        }
+        <div class="ang-multi-select-filter--dialog-actions">
+          <button type="button" matButton="filled" angTrackClick (click)="close()">{{ doneLabel() }}</button>
+        </div>
+      </div>
+    }
   </div>
 </ng-template>
