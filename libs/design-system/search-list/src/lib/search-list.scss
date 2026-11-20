@@ -34,6 +34,34 @@ $two-line-height: var(--mat-list-list-item-two-line-container-height, 4rem);
     );
   }
 
+  .ang-search-list--no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 1rem 0.5rem;
+  }
+
+  // Lines the button label up with the message.
+  .ang-search-list--clear-search {
+    margin-inline-start: calc(-1 * var(--mat-button-text-horizontal-padding, 0.75rem));
+  }
+
+  .ang-search-list--no-results-message {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    margin: 0 0 0.25rem;
+    overflow-wrap: anywhere;
+    color: token-utils.slot(no-results-color, $config);
+    font-family: token-utils.slot(no-results-font, $config);
+    font-size: token-utils.slot(no-results-size, $config);
+    line-height: token-utils.slot(no-results-line-height, $config);
+    font-weight: token-utils.slot(no-results-weight, $config);
+    letter-spacing: token-utils.slot(no-results-tracking, $config);
+  }
+
   .ang-search-list--list {
     .ang-search-list--label-count {
       width: 100%;
