@@ -38,7 +38,9 @@
             (change)="setViewToggle($event.value)"
           >
             @for (option of viewToggleOptions(); track option.value) {
-              <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
+              <mat-button-toggle class="ang-kg-explorer-filter-drawer--view-toggle-option" [value]="option.value">
+                {{ option.label }}
+              </mat-button-toggle>
             }
           </mat-button-toggle-group>
         }
