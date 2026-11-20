@@ -90,6 +90,7 @@ filters: KgExplorerFilter<Dataset>[] = [
 | `matches`       | `(row, selected) => boolean`, used instead of the `field` comparison.                                             |
 | `options`       | Options of the filter. When omitted, the distinct `field` values of `items` are listed with their row counts.     |
 | `disableSearch` | Hides the search field of the filter's list.                                                                      |
+| `searchLabel`   | Label of the search field of the filter's list, such as "Search organs". Defaults to "Search".                    |
 | `count`         | Number shown by the filter's counter. Defaults to the number of options.                                          |
 
 - A row is shown when it matches every filter that has a selection; within one filter, any selected option is enough.

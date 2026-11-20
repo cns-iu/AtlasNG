@@ -112,7 +112,8 @@ jobs:
 
           const client = new ReleaseClient({ version: { updateDependents: 'never' } });
           const results = await client.releasePublish(args);
-          process.exitCode = Object.values(results).every(({ code }) => code === 0) ? 0 : 1;
+          // Exit explicitly like the Nx CLI does; open Nx handles otherwise keep Node running.
+          process.exit(Object.values(results).every(({ code }) => code === 0) ? 0 : 1);
           EOF
           node "$script"
         env:
