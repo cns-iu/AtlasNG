@@ -128,20 +128,24 @@ export class ScrollArea {
 
   /** Recomputes which edges have hidden content in both directions. Called on scroll and whenever the viewport or content resizes. */
   protected updateFades(): void {
-    const viewport = this.scrollbar().adapter.viewportElement;
+    const { adapter } = this.scrollbar();
+    const viewport = adapter.viewportElement;
     if (!viewport) {
       return;
     }
 
+    // Measures the content wrapper rather than the viewport's scroll size. When the content
+    // shrinks, the resize callback runs before ngx-scrollbar shrinks its scrollbar track, which
+    // still overflows the viewport, so the scroll size would keep a stale fade.
     const threshold = this.fadeEdgeThreshold();
-    const { scrollTop, scrollHeight, clientHeight, scrollLeft, scrollWidth, clientWidth } = viewport;
+    const { scrollTop, scrollLeft } = viewport;
     this.canScrollUp.set(scrollTop > threshold);
-    this.canScrollDown.set(scrollTop + clientHeight < scrollHeight - threshold);
+    this.canScrollDown.set(scrollTop < adapter.scrollMaxY - threshold);
 
     // In right-to-left layouts scrollLeft runs from 0 at the start edge to negative values,
     // so its magnitude is the distance from the inline start in either direction.
     const scrollInline = Math.abs(scrollLeft);
     this.canScrollStart.set(scrollInline > threshold);
-    this.canScrollEnd.set(scrollInline + clientWidth < scrollWidth - threshold);
+    this.canScrollEnd.set(scrollInline < adapter.scrollMaxX - threshold);
   }
 }

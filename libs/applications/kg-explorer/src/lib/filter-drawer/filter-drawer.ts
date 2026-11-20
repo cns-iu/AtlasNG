@@ -20,6 +20,12 @@ import type { KgExplorerFilterDrawerConfig } from '../table-view/config';
 /** Selection of filters without an entry in the selections, shared so their chips are not re-rendered. */
 const NO_SELECTION: SearchListOption[] = [];
 
+/**
+ * Distance, in pixels, from the end of a filter row to its search list panel: the filter drawer's
+ * 20px end padding and the side navigation's 1px border, plus the 9px gap between the drawer and the panel in Figma.
+ */
+const FILTER_PANEL_OFFSET_X = 30;
+
 /** Change of the selected options of one filter. */
 export interface KgExplorerFilterSelectionChange<TRow extends Row = Row> {
   /** Filter whose selection changed. */
@@ -98,6 +104,9 @@ export class KgExplorerFilterDrawer<TRow extends Row = Row> {
 
   /** Emits when the user clicks the reset button of the view customizations, shown after the user changes them. */
   readonly resetClick = output<void>();
+
+  /** Distance from the end of a filter row to its search list panel, which opens past the drawer. */
+  protected readonly filterPanelOffsetX = FILTER_PANEL_OFFSET_X;
 
   /** Whether the "Customize view" section is shown. */
   protected readonly hasCustomizations = computed(

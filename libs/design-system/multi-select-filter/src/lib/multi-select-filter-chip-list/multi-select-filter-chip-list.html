@@ -1,0 +1,16 @@
+<mat-chip-set class="ang-multi-select-filter-chip-list--chips" role="list" [attr.aria-label]="label()">
+  @for (option of options(); track option) {
+    <mat-chip role="listitem" disableRipple (removed)="removed.emit(option)">
+      {{ option.label }}
+      <button
+        type="button"
+        matChipRemove
+        angEventScope="remove-filter"
+        angTrackClick
+        [attr.aria-label]="`${removeLabel()} ${option.label}`"
+      >
+        <mat-icon fontIcon="cancel" />
+      </button>
+    </mat-chip>
+  }
+</mat-chip-set>
