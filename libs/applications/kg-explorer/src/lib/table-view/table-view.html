@@ -5,19 +5,24 @@
     [opened]="filtersOpen()"
     (openedChange)="this.filtersOpen.set($event)"
   >
-    <div class="ang-kg-explorer-table-view--filters">
-      @for (filter of resolvedFilters(); track filter.id) {
-        <ang-multi-select-filter
-          [label]="filter.label"
-          [options]="filter.options"
-          [count]="filter.count"
-          [disableSearch]="filter.disableSearch ?? false"
-          [panelOffsetX]="filterPanelOffsetX"
-          [selected]="selectionFor(filter)"
-          (selectedChange)="select(filter, $event)"
-        />
-      }
-    </div>
+    <ang-scroll-area class="ang-kg-explorer-table-view--scroll-area">
+      @let options = filterOptions();
+      <ang-kg-explorer-filter-drawer
+        [breadcrumbs]="options.breadcrumbs ?? []"
+        [heading]="options.filtersHeading"
+        [description]="options.filtersDescription"
+        [viewToggleOptions]="options.viewToggleOptions ?? []"
+        [viewSettings]="options.viewSettings ?? []"
+        [filters]="resolvedFilters()"
+        [filterSelections]="resolvedSelections()"
+        [config]="options"
+        [(activeToggle)]="activeToggle"
+        [(viewSettingValues)]="viewSettingValues"
+        (selectionChange)="select($event.filter, $event.selected)"
+        (clearClick)="clearAllFilters()"
+        (resetClick)="resetView.emit()"
+      />
+    </ang-scroll-area>
   </mat-sidenav>
 
   <mat-sidenav-content class="ang-kg-explorer-table-view--content">
