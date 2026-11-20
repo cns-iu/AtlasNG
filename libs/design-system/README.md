@@ -210,3 +210,5 @@ Named breakpoints up to `$print-breakpoint` (default `large`) also apply to prin
 Palettes need tones `10`, `20`, `30`, `40`, `80`, `90`, and `100`. The variant role reads tones `30` and `80` from an optional nested `variant` sub-palette and otherwise from the palette itself. `$theme-type` accepts `light`, `dark`, or `color-scheme` (which emits `light-dark()` values).
 
 You don't have to define every level. A component that uses a level you haven't emitted falls back to a related Material role. For example, the `critical` notice uses `var(--ang-ext-critical, var(--mat-sys-error))`, so it follows the theme's error colors unless you emit a `critical` level.
+
+Product and organ icons use the `product` and `organ` levels (`--ang-ext-product`, `--ang-ext-on-product`, `--ang-ext-organ`, and `--ang-ext-on-organ`). Emit them like any other level. Their palettes hold the colors designers pick for each brand and color mode at the tones those roles read (`40` and `100` in light mode, `80` and `20` in dark mode). Set the tones they don't use to black or white.
