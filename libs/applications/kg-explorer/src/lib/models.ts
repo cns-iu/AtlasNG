@@ -61,3 +61,27 @@ export interface KgExplorerFilter<TRow extends Row = Row, T extends SearchListOp
 
 /** Selected options of each filter, keyed by {@link KgExplorerFilter.id}. Filters without a key have no selection. */
 export type KgExplorerFilterSelections<T extends SearchListOption = SearchListOption> = Record<string, T[]>;
+
+/** A filter with the options of its search list resolved. */
+export type KgExplorerResolvedFilter<TRow extends Row = Row> = KgExplorerFilter<TRow> & { options: SearchListOption[] };
+
+/** An option of a view customization control, such as a button toggle or a select. */
+export interface KgExplorerViewOption {
+  /** Value reported when the option is picked. */
+  value: string;
+  /** Text shown for the option. */
+  label: string;
+}
+
+/** A view customization select shown in the filter drawer, such as "Sort by" or "Group by". */
+export interface KgExplorerViewSetting {
+  /** Unique key of the setting, used for its entry in {@link KgExplorerViewSettingValues}. */
+  id: string;
+  /** Label of the select. */
+  label: string;
+  /** Options of the select. */
+  options: KgExplorerViewOption[];
+}
+
+/** Picked value of each view setting, keyed by {@link KgExplorerViewSetting.id}. */
+export type KgExplorerViewSettingValues = Record<string, string | undefined>;

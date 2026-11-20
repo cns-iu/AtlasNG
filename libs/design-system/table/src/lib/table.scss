@@ -47,6 +47,13 @@
     .datatable-body-cell {
       overflow: clip;
     }
+
+    // ngx-datatable sets its own line height on cells, which overrides the
+    // line height tokens the header and rows set.
+    .datatable-header-cell,
+    .datatable-body-cell {
+      line-height: inherit;
+    }
   }
 
   .datatable-header-cell.sortable {
