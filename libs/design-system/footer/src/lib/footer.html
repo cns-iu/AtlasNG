@@ -9,7 +9,7 @@
         [angAnyLink]="logoLink()"
         [attr.aria-label]="resolvedLogoLabel()"
       >
-        <img class="ang-footer--logo-image" fill alt="Logo" [ngSrc]="logoSrc()" />
+        <img class="ang-footer--logo-image" fill alt="Logo" loading="eager" [ngSrc]="logoSrc()" />
       </a>
     </ng-content>
   </div>
