@@ -1,5 +1,6 @@
 @use 'internal/token-utils';
 @use './../../sass/tokens/filter-drawer' as *;
+@use '@angular/material' as mat;
 
 :host {
   display: flex;
@@ -69,6 +70,14 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+
+  .ang-kg-explorer-filter-drawer--view-toggle {
+    @include mat.button-toggle-overrides(
+      (
+        background-color: token-utils.sys-slot(background),
+      )
+    );
   }
 
   .ang-kg-explorer-filter-drawer--view-setting {

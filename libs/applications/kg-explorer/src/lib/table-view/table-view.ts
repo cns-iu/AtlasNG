@@ -22,6 +22,7 @@ import {
   type KgExplorerFilterDrawerConfig,
 } from './config';
 import { KgExplorerFilterDrawer } from '../filter-drawer/filter-drawer';
+import { ScrollArea } from '@atlasng/design-system/scroll-area';
 
 /**
  * White-label knowledge graph explorer in table view with a filter drawer, a
@@ -48,7 +49,14 @@ import { KgExplorerFilterDrawer } from '../filter-drawer/filter-drawer';
  */
 @Component({
   selector: 'ang-kg-explorer-table-view',
-  imports: [KgExplorerFilterDrawer, KgExplorerTablePanel, MatSidenav, MatSidenavContainer, MatSidenavContent],
+  imports: [
+    KgExplorerFilterDrawer,
+    KgExplorerTablePanel,
+    MatSidenav,
+    MatSidenavContainer,
+    MatSidenavContent,
+    ScrollArea,
+  ],
   templateUrl: './table-view.html',
   styleUrl: './table-view.scss',
   host: {
