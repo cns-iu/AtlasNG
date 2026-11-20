@@ -9,6 +9,7 @@
 
   .ang-no-results-indicator--description {
     margin-bottom: 1.5rem;
+    text-align: center;
 
     color: token-utils.slot(text-color, $config);
     font-family: token-utils.slot(text-font, $config);

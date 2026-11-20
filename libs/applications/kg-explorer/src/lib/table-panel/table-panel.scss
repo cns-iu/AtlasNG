@@ -2,14 +2,20 @@
 @use 'internal/token-utils';
 @use 'tokens/table' as table;
 
+/// Side spacing of the panel on small screens.
+$side-space: 1.25rem;
+
+/// Side spacing of the panel from the medium breakpoint.
+$side-space-medium: 2rem;
+
 /// Sets a property to the panel's side spacing, which grows on wide screens.
 /// @param {String} $property - CSS property to set.
 /// @param {Number} $factor - Multiplier for the spacing, such as -1 for negative margins.
 @mixin side-space($property, $factor: 1) {
-  #{$property}: 1.25rem * $factor;
+  #{$property}: $side-space * $factor;
 
   @include breakpoints.breakpoint(medium) {
-    #{$property}: 2rem * $factor;
+    #{$property}: $side-space-medium * $factor;
   }
 }
 
@@ -69,6 +75,8 @@ $text-cell-padding: 0.5rem;
   // extends back to the panel's edges and holds the spacing as padding, so
   // columns scroll to the screen edge instead of being cut off at the spacing.
   .ang-kg-explorer-table-panel--table {
+    container-type: inline-size;
+
     .ngx-datatable {
       @include side-space(margin-inline);
       overflow: visible;
@@ -94,9 +102,18 @@ $text-cell-padding: 0.5rem;
       )
     );
 
+    // Spans every column, so it is held to the visible width and pinned while the columns scroll sideways.
     .ang-kg-explorer-table-panel--empty {
+      position: sticky;
       grid-column: 1 / -1;
+      justify-self: start;
+      inline-size: calc(100cqi - 2 * $side-space);
       padding-block: 2.5rem;
+      inset-inline-start: 0;
+
+      @include breakpoints.breakpoint(medium) {
+        inline-size: calc(100cqi - 2 * $side-space-medium);
+      }
     }
 
     .datatable-header {
