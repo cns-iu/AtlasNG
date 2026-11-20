@@ -269,7 +269,8 @@
           "pattern": "v{version}"
         },
         "changelog": {
-          "createRelease": false
+          "createRelease": false,
+          "renderer": "{workspaceRoot}/libs/tooling/nx-plugin/src/changelog-renderer/index.ts"
         }
       },
       "applications": {
@@ -310,7 +311,8 @@
     "changelog": {
       "automaticFromRef": true,
       "projectChangelogs": {
-        "createRelease": "github"
+        "createRelease": "github",
+        "renderer": "{workspaceRoot}/libs/tooling/nx-plugin/src/changelog-renderer/index.ts"
       }
     }
   },

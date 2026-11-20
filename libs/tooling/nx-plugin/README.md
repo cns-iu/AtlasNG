@@ -117,6 +117,35 @@ ng-packagr secondary entry points are skipped. The targets run `npx compodoc`, s
 }
 ```
 
+## Changelog renderer
+
+`@atlasng/nx-plugin/changelog-renderer` extends the default Nx changelog renderer to clean up the "Thank You" section:
+
+- Authors and `Co-authored-by` trailers are resolved through the repository's [`.mailmap`](https://git-scm.com/docs/gitmailmap), so a person who commits under several names or emails is thanked once.
+- AI coding assistants (Claude and GitHub Copilot) are left out. Nx already skips `[bot]` accounts.
+
+Nx only finds a GitHub `@username` for an email that is a GitHub noreply address or public on a GitHub profile. Map each identity to the person's noreply address to get the username reliably:
+
+```text
+Jane Doe <12345+janedoe@users.noreply.github.com> <jane@example.com>
+```
+
+Set the renderer for project and release group changelogs in `nx.json`:
+
+```json
+{
+  "release": {
+    "changelog": {
+      "projectChangelogs": {
+        "renderer": "@atlasng/nx-plugin/changelog-renderer"
+      }
+    }
+  }
+}
+```
+
+A release group's own `changelog` options replace `projectChangelogs`, so set the renderer there too.
+
 ## Executors
 
 ### `release-notes`
