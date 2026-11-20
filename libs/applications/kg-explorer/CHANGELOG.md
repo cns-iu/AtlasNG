@@ -1,3 +1,14 @@
+## 0.0.5 (2026-11-20)
+
+### 🩹 Fixes
+
+- **kg-explorer:** fit the filter drawer to narrow screens ([#501](https://github.com/cns-iu/AtlasNG/pull/501))
+- **kg-explorer:** keep the no results message in view on narrow screens ([#499](https://github.com/cns-iu/AtlasNG/pull/499))
+
+### ❤️ Thank You
+
+- Elizabeth Maier @LibbyUX
+
 ## 0.0.4 (2026-11-20)
 
 ### 🚀 Features

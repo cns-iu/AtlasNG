@@ -1,6 +1,6 @@
 {
   "name": "@atlasng/kg-explorer",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Knowledge graph explorer application library for AtlasNG",
   "license": "MIT",
   "repository": {
@@ -18,10 +18,10 @@
     "@angular/common": "^22.1.5",
     "@angular/core": "^22.1.5",
     "@angular/material": "^22.1.5",
-    "@atlasng/cdk": "^0.0.14",
-    "@atlasng/content-blocks": "^0.0.14",
-    "@atlasng/core": "^0.0.14",
-    "@atlasng/design-system": "^0.0.14"
+    "@atlasng/cdk": "^0.0.15",
+    "@atlasng/content-blocks": "^0.0.15",
+    "@atlasng/core": "^0.0.15",
+    "@atlasng/design-system": "^0.0.15"
   },
   "dependencies": {
     "type-fest": "^5.9.0"

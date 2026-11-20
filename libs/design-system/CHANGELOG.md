@@ -1,3 +1,17 @@
+## 0.0.15 (2026-11-20)
+
+### 🚀 Features
+
+- **internal-storybook:** add product and organ colors to brand themes ([#496](https://github.com/cns-iu/AtlasNG/pull/496))
+
+### 🩹 Fixes
+
+- **kg-explorer:** keep the no results message in view on narrow screens ([#499](https://github.com/cns-iu/AtlasNG/pull/499))
+
+### ❤️ Thank You
+
+- Elizabeth Maier @LibbyUX
+
 ## 0.0.14 (2026-11-20)
 
 ### 🚀 Features
