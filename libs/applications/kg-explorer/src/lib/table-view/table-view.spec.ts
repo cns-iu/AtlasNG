@@ -49,7 +49,7 @@ const COLUMNS: TableColumn<TestItem>[] = [
 
 const FILTERS: KgExplorerFilter<TestItem>[] = [
   { id: 'type', label: 'Type', field: 'type', disableSearch: true },
-  { id: 'organ', label: 'Organ', field: 'tags' },
+  { id: 'organ', label: 'Organ', field: 'tags', searchLabel: 'Search organs' },
 ];
 
 @Component({
@@ -292,6 +292,14 @@ describe('KgExplorerTableView', () => {
     await user.click(await screen.findByRole('button', { name: 'Type' }));
 
     expect(await screen.findByRole('option', { name: new RegExp(ITEMS[1].type) })).toBeVisible();
+  });
+
+  it('labels the search field of a filter', async () => {
+    const { user } = await setup();
+
+    await user.click(await screen.findByRole('button', { name: 'Organ' }));
+
+    expect(await screen.findByRole('textbox', { name: 'Search organs' })).toBeVisible();
   });
 
   it('leaves filters without a field to the consumer', async () => {

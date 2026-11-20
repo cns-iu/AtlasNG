@@ -95,6 +95,9 @@ export class MultiSelectFilter<T extends SearchListOption> {
   /** Whether the search field of the search list is hidden, e.g. for categories with few options. */
   readonly disableSearch = input(false, { transform: booleanAttribute });
 
+  /** Label of the search field of the search list, such as `Search organs`. */
+  readonly searchLabel = input('Search');
+
   /** Order of the search list options: by label (`'asc'` or `'desc'`), or `'none'` to keep the given order. */
   readonly sort = input<SearchListSort>('asc');
 

@@ -80,6 +80,7 @@
             [options]="filter.options"
             [count]="filter.count"
             [disableSearch]="filter.disableSearch ?? false"
+            [searchLabel]="filter.searchLabel ?? 'Search'"
             [panelOffsetX]="filterPanelOffsetX"
             [selected]="selectionFor(filter)"
             (selectedChange)="selectionChange.emit({ filter, selected: $event })"
