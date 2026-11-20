@@ -23,6 +23,10 @@
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
     },
+    "./changelog-renderer": {
+      "types": "./src/changelog-renderer/index.d.ts",
+      "default": "./src/changelog-renderer/index.js"
+    },
     "./package.json": "./package.json",
     "./generators.json": "./generators.json",
     "./executors.json": "./executors.json",

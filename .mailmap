@@ -1,0 +1,10 @@
+# Maps every commit identity to one name and GitHub noreply email so changelogs list each person
+# once with their GitHub username. See https://git-scm.com/docs/gitmailmap.
+Bruce W. Herr II <34098595+bherr2@users.noreply.github.com> <bherr@iu.edu>
+Daniel Bolin <26698475+axdanbol@users.noreply.github.com> <axbolin@iu.edu>
+Daniel Bolin <26698475+axdanbol@users.noreply.github.com> <axdanbol@users.noreply.github.com>
+Edward Lu <36934022+edlu77@users.noreply.github.com> <36934022+edlu77@users.noreply.github.com>
+Edward Lu <36934022+edlu77@users.noreply.github.com> <edlu77@users.noreply.github.com>
+Edward Lu <36934022+edlu77@users.noreply.github.com> <eddd.lu@gmail.com>
+Elizabeth Maier <97060856+LibbyUX@users.noreply.github.com> <97060856+LibbyUX@users.noreply.github.com>
+Elizabeth Maier <97060856+LibbyUX@users.noreply.github.com> <ecmaier@iu.edu>
