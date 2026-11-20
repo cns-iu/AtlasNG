@@ -49,6 +49,13 @@ $config: (
     level-6-weight: token-utils.sys-token(title-large-weight),
     level-6-icon-offset: 8px,
     level-6-underline-offset: 3px,
+    level-7-font: token-utils.sys-token(title-medium-font),
+    level-7-line-height: token-utils.sys-token(title-medium-line-height),
+    level-7-size: token-utils.sys-token(title-medium-size),
+    level-7-tracking: token-utils.sys-token(title-medium-tracking),
+    level-7-weight: token-utils.sys-token(title-medium-weight),
+    level-7-icon-offset: 8px,
+    level-7-underline-offset: 3px,
   ),
 );
 
