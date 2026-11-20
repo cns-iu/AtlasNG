@@ -1,0 +1,22 @@
+@use 'sass:map';
+@use './palettes';
+
+$_primary: palettes.$primary-palette;
+$_secondary: map.get(palettes.$primary-palette, secondary);
+$_brand: #8dc63f;
+
+// Product and organ icon colors, picked per color mode in Figma (`schemes/ext`).
+$ext-colors: (
+  light: (
+    product: map.get($_secondary, 40),
+    on-product: map.get($_secondary, 100),
+    organ: $_brand,
+    on-organ: map.get($_primary, 0),
+  ),
+  dark: (
+    product: map.get($_secondary, 80),
+    on-product: map.get($_secondary, 20),
+    organ: $_brand,
+    on-organ: map.get($_primary, 0),
+  ),
+);
