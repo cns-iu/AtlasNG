@@ -7,7 +7,9 @@ $config: (
     padding: 2.5rem,
     version-control-offset: 0rem,
     link-color: token-utils.sys-token(primary),
-    icon-tertiary-background-color: token-utils.sys-token(tertiary),
+    icon-product-background-color: token-utils.sys-token(secondary),
+    // Themes set this to tertiary tone 60 in light mode; the default suits dark mode.
+    icon-organ-background-color: token-utils.sys-token(tertiary),
   ),
 );
 

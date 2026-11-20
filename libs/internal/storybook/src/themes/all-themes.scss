@@ -39,6 +39,7 @@ $themes: (cns, hra, mhu, wpp);
   .#{$name}-light-theme {
     @include mat.theme(map.set($theme, color, theme-type, light), $overrides);
     @include level-colors($variables, light);
+    --ang-kg-explorer-metadata-view-icon-organ-background-color: #{map.get($variables, 'tertiary-palette', 60)};
   }
 
   .#{$name}-dark-theme {
@@ -57,8 +58,4 @@ body,
 .docs-story {
   color: var(--mat-sys-on-surface-variant);
   font: var(--mat-sys-body-medium);
-}
-
-.wpp-light-theme {
-  --ang-kg-explorer-metadata-view-icon-tertiary-background-color: #{map.get(wpp-theme.$tertiary-palette, 60)};
 }

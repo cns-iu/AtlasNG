@@ -214,13 +214,13 @@ The search bar, counter, and table share one scroll area, and the table grows to
 
 `KgExplorerMetadata` describes one entry:
 
-| Property   | Required | Description                                                                                                   |
-| ---------- | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `title`    | yes      | Page title, rendered as the `h1`.                                                                             |
-| `sections` | yes      | `KgExplorerMetadataSection[]` rendered in order below the title.                                              |
-| `url`      | no       | URL shown in a copyable link snippet.                                                                         |
-| `icons`    | no       | `KgExplorerMetadataIcon[]` (`{ name, label }`): `@atlasng/icons` names shown as 64px circles above the title. |
-| `versions` | no       | `VersionControlItem[]` from `@atlasng/design-system/version-control`.                                         |
+| Property   | Required | Description                                                                                                                                         |
+| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`    | yes      | Page title, rendered as the `h1`.                                                                                                                   |
+| `sections` | yes      | `KgExplorerMetadataSection[]` rendered in order below the title.                                                                                    |
+| `url`      | no       | URL shown in a copyable link snippet.                                                                                                               |
+| `icons`    | no       | `KgExplorerMetadataIcon[]` (`{ name, label, type }`): `@atlasng/icons` names shown as 64px circles above the title; `type` is `product` or `organ`. |
+| `versions` | no       | `VersionControlItem[]` from `@atlasng/design-system/version-control`.                                                                               |
 
 Breadcrumbs, icons, and the URL are hidden when they have no data; leave them out to hide them. The version control panel is always displayed; without versions its selector is disabled.
 
@@ -240,14 +240,14 @@ providers: [provideAngIcons()];
 const entry: KgExplorerMetadata = {
   title: 'Whole Person Physiome (WPP) table for cardiovascular system',
   icons: [
-    { name: 'kg-explorer', label: 'Knowledge graph' },
-    { name: 'heart', label: 'Heart' },
+    { name: 'kg-explorer', label: 'Knowledge graph', type: 'product' },
+    { name: 'heart', label: 'Heart', type: 'organ' },
   ],
   sections,
 };
 ```
 
-Use any icon name from the `@atlasng/icons` manifest. The glyphs take the icon color on a filled circle; change both with the CSS variables under [Responsive layout](#responsive-layout).
+Use any icon name from the `@atlasng/icons` manifest. `product` icons sit on a `secondary` circle and `organ` icons on a `tertiary` circle; change the circle colors with the CSS variables under [Responsive layout](#responsive-layout).
 
 ### Configuration
 
@@ -313,14 +313,14 @@ The page does not download files. Choosing a download option emits `download` wi
 
 Spacing, the link color, and the icon colors can be customized with these CSS variables:
 
-| Variable                                                 | Default      | Effect                                                                  |
-| -------------------------------------------------------- | ------------ | ----------------------------------------------------------------------- |
-| `--ang-kg-explorer-metadata-view-section-gap`            | `2.5rem`     | Space between sections                                                  |
-| `--ang-kg-explorer-metadata-view-padding`                | `2.5rem`     | Page padding from `medium` up                                           |
-| `--ang-kg-explorer-metadata-view-version-control-offset` | `0rem`       | Extra space kept clear above the sticky panel, e.g. for a sticky header |
-| `--ang-kg-explorer-metadata-view-link-color`             | `primary`    | Color of the text links, including the breadcrumbs                      |
-| `--ang-kg-explorer-metadata-view-icon-background-color`  | `primary`    | Background of the icon circles                                          |
-| `--ang-kg-explorer-metadata-view-icon-color`             | `on-primary` | Color of the icon glyphs                                                |
+| Variable                                                        | Default     | Effect                                                                                                                      |
+| --------------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `--ang-kg-explorer-metadata-view-section-gap`                   | `2.5rem`    | Space between sections                                                                                                      |
+| `--ang-kg-explorer-metadata-view-padding`                       | `2.5rem`    | Page padding from `medium` up                                                                                               |
+| `--ang-kg-explorer-metadata-view-version-control-offset`        | `0rem`      | Extra space kept clear above the sticky panel, e.g. for a sticky header                                                     |
+| `--ang-kg-explorer-metadata-view-link-color`                    | `primary`   | Color of the text links, including the breadcrumbs                                                                          |
+| `--ang-kg-explorer-metadata-view-icon-product-background-color` | `secondary` | Background of `product` icon circles                                                                                        |
+| `--ang-kg-explorer-metadata-view-icon-organ-background-color`   | `tertiary`  | Background of `organ` icon circles; the Storybook light themes use tertiary tone 60, so set it in your light theme to match |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 

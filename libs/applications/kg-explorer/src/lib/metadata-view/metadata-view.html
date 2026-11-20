@@ -9,7 +9,7 @@
     @if (entry.icons?.length) {
       <div class="ang-kg-explorer-metadata-view--icons">
         @for (icon of entry.icons; track $index) {
-          <div class="ang-kg-explorer-metadata-view--icon-wrapper" [attr.color]="icon.color">
+          <div class="ang-kg-explorer-metadata-view--icon-wrapper" [attr.type]="icon.type">
             <mat-icon
               class="ang-kg-explorer-metadata-view--icon"
               fontSet="ang-icons"

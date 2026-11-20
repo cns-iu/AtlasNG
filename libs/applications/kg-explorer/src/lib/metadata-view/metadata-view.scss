@@ -65,18 +65,13 @@
     height: 4rem;
     border-radius: 50%;
 
-    &[color='primary'] {
-      background-color: token-utils.sys-slot(primary);
-      color: token-utils.sys-slot(on-primary);
-    }
-
-    &[color='secondary'] {
-      background-color: token-utils.sys-slot(secondary);
+    &[type='product'] {
+      background-color: token-utils.slot(icon-product-background-color, $config);
       color: token-utils.sys-slot(on-secondary);
     }
 
-    &[color='tertiary'] {
-      background-color: token-utils.slot(icon-tertiary-background-color, $config);
+    &[type='organ'] {
+      background-color: token-utils.slot(icon-organ-background-color, $config);
       color: token-utils.sys-slot(on-tertiary);
     }
   }

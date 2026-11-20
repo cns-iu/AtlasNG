@@ -51,8 +51,8 @@ export interface KgExplorerMetadataIcon {
   name: string;
   /** Accessible label describing the icon. */
   label: string;
-  /** Color of the icon wrapper, which is a circle behind the icon. */
-  color: 'primary' | 'secondary' | 'tertiary';
+  /** Type of icon, which is a circle behind the icon. */
+  type: 'product' | 'organ';
 }
 
 /** The data entry displayed by the metadata view, such as a knowledge graph digital object. */
