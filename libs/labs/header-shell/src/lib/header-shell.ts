@@ -12,7 +12,7 @@ import { EventScope, provideEventScope, TrackClick } from '@atlasng/analytics';
 import { AnyLink, AnyLinkCommand } from '@atlasng/common';
 import { HelpButton } from '@atlasng/design-system/buttons/help-button';
 import { NavigationButton } from '@atlasng/design-system/buttons/navigation-button';
-import { SkipToContentButton } from '@atlasng/labs/skip-to-content-button';
+import { SkipLink } from '@atlasng/design-system/links/skip-link';
 
 /** Navigation item rendered in the shell navigation rail. */
 export interface HeaderShellNavigationItem {
@@ -51,6 +51,8 @@ export class HeaderShellAction {}
  * The local navigation and apps buttons expose their open state as `aria-expanded`. Set
  * `localNavigationControls` and `appsMenuControls` to the ids of the panels they open,
  * for example the `leftMenuId` and `rightMenuId` of an `ang-navigation-container`.
+ *
+ * The shell starts with a skip link to the element marked with `angSkipLinkTarget`, usually the page's `<main>`.
  */
 @Component({
   selector: 'ang-header-shell',
@@ -67,7 +69,7 @@ export class HeaderShellAction {}
     MatSidenavModule,
     MatFormFieldModule,
     MatDividerModule,
-    SkipToContentButton,
+    SkipLink,
   ],
   templateUrl: './header-shell.html',
   styleUrl: './header-shell.scss',
@@ -115,6 +117,12 @@ export class HeaderShell {
 
   /** Accessible name of the apps button. */
   readonly appsMenuLabel = input('App switcher');
+
+  /**
+   * Id of the element the skip link goes to. Prefer marking the page's main content with
+   * `angSkipLinkTarget` from `@atlasng/design-system/links/skip-link`; this id takes precedence over it.
+   */
+  readonly skipLinkAnchorId = input<string>();
 
   /** Accessible name of the primary navigation landmark. */
   readonly navigationLabel = input('Primary navigation');

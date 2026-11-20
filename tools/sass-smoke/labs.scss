@@ -2,9 +2,9 @@
 @use 'labs/sass' as labs;
 
 .smoke {
-  @include labs.skip-to-content-button-overrides(
+  @include labs.header-shell-overrides(
     (
-      color: red,
+      icon-color: red,
     )
   );
 }

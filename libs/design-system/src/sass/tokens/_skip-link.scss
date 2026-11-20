@@ -1,0 +1,26 @@
+@use '../internal/token-utils';
+
+$config: (
+  namespace: 'skip-link',
+  tokens: (
+    container-color: token-utils.sys-token(surface-bright),
+    container-elevation: token-utils.sys-token(level5),
+    outline-color: token-utils.sys-token(on-surface),
+    label-color: token-utils.sys-token(on-surface),
+    label-font: token-utils.sys-token(title-small-font),
+    label-size: token-utils.sys-token(title-small-size),
+    label-tracking: token-utils.sys-token(title-small-tracking),
+    label-weight: token-utils.sys-token(title-small-weight),
+    icon-color: token-utils.sys-token(on-surface-variant),
+  ),
+);
+
+@mixin overrides($overrides) {
+  @include token-utils.apply-overrides($overrides, $config);
+}
+
+// Returns a CSS variable for one of this component's tokens that falls back to its default value,
+// e.g. slot(primary) => var(--ang-<component>-primary, var(--mat-sys-primary))
+@function slot($token, $fallback: null) {
+  @return token-utils.slot($token, $config, $fallback);
+}

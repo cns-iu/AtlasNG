@@ -42,6 +42,7 @@
 @forward './tokens/scroll-area' as scroll-area-* show scroll-area-overrides, scroll-area-slot;
 @forward './tokens/search-field' as search-field-* show search-field-overrides, search-field-slot;
 @forward './tokens/search-list' as search-list-* show search-list-overrides, search-list-slot;
+@forward './tokens/skip-link' as skip-link-* show skip-link-overrides, skip-link-slot;
 @forward './tokens/skeleton' as skeleton-* show skeleton-overrides, skeleton-slot;
 @forward './tokens/snackbar' as snackbar-* show snackbar-overrides, snackbar-slot;
 @forward './tokens/table' as table-* show table-overrides, table-slot;
