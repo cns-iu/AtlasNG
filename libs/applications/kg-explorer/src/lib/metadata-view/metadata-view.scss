@@ -65,12 +65,12 @@
     height: 4rem;
     border-radius: 50%;
 
-    &[type='product'] {
+    &.product {
       background-color: token-utils.slot(icon-product-background-color, $config);
       color: token-utils.sys-slot(on-secondary);
     }
 
-    &[type='organ'] {
+    &.organ {
       background-color: token-utils.slot(icon-organ-background-color, $config);
       color: token-utils.sys-slot(on-tertiary);
     }

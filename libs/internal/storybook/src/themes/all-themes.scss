@@ -39,7 +39,6 @@ $themes: (cns, hra, mhu, wpp);
   .#{$name}-light-theme {
     @include mat.theme(map.set($theme, color, theme-type, light), $overrides);
     @include level-colors($variables, light);
-    --ang-kg-explorer-metadata-view-icon-organ-background-color: #{map.get($variables, 'tertiary-palette', 60)};
   }
 
   .#{$name}-dark-theme {

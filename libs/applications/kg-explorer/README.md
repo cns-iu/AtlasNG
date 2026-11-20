@@ -349,14 +349,14 @@ The page does not download files. Choosing a download option emits `download` wi
 
 Spacing, the link color, and the icon colors can be customized with these CSS variables:
 
-| Variable                                                        | Default     | Effect                                                                                                                      |
-| --------------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `--ang-kg-explorer-metadata-view-section-gap`                   | `2.5rem`    | Space between sections                                                                                                      |
-| `--ang-kg-explorer-metadata-view-padding`                       | `2.5rem`    | Page padding from `medium` up                                                                                               |
-| `--ang-kg-explorer-metadata-view-version-control-offset`        | `0rem`      | Extra space kept clear above the sticky panel, e.g. for a sticky header                                                     |
-| `--ang-kg-explorer-metadata-view-link-color`                    | `primary`   | Color of the text links, including the breadcrumbs                                                                          |
-| `--ang-kg-explorer-metadata-view-icon-product-background-color` | `secondary` | Background of `product` icon circles                                                                                        |
-| `--ang-kg-explorer-metadata-view-icon-organ-background-color`   | `tertiary`  | Background of `organ` icon circles; the Storybook light themes use tertiary tone 60, so set it in your light theme to match |
+| Variable                                                        | Default                                          | Effect                                                                  |
+| --------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| `--ang-kg-explorer-metadata-view-section-gap`                   | `2.5rem`                                         | Space between sections                                                  |
+| `--ang-kg-explorer-metadata-view-padding`                       | `2.5rem`                                         | Page padding from `medium` up                                           |
+| `--ang-kg-explorer-metadata-view-version-control-offset`        | `0rem`                                           | Extra space kept clear above the sticky panel, e.g. for a sticky header |
+| `--ang-kg-explorer-metadata-view-link-color`                    | `primary`                                        | Color of the text links, including the breadcrumbs                      |
+| `--ang-kg-explorer-metadata-view-icon-product-background-color` | `--ang-ext-product`, falling back to `secondary` | Background of `product` icon circles                                    |
+| `--ang-kg-explorer-metadata-view-icon-organ-background-color`   | `--ang-ext-organ`, falling back to `tertiary`    | Background of `organ` icon circles                                      |
 
 Colors and typography come from the active Material theme, so the page follows the WPP light and dark themes.
 
