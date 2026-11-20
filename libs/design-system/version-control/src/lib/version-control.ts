@@ -1,6 +1,6 @@
 import { Component, inject, input, model, output } from '@angular/core';
 import { MatOption } from '@angular/material/core';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatActionList, MatListModule } from '@angular/material/list';
 import { MatSelect } from '@angular/material/select';
@@ -56,6 +56,7 @@ export interface VersionDownload<T extends VersionControlFileFormat> {
     ScrollArea,
     TrackChange,
     TrackClick,
+    MatHint,
   ],
   templateUrl: './version-control.html',
   styleUrl: './version-control.scss',

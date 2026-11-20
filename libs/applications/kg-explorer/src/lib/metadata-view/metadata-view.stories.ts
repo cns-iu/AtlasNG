@@ -131,8 +131,8 @@ const meta: Meta<KgExplorerMetadataView> = {
     metadata: {
       title: 'Whole Person Physiome (WPP) table for cardiovascular system',
       icons: [
-        { name: 'kg-explorer', label: 'Knowledge graph', color: 'secondary' },
-        { name: 'heart', label: 'Heart', color: 'tertiary' },
+        { name: 'kg-explorer', label: 'Knowledge graph', type: 'product' },
+        { name: 'heart', label: 'Heart', type: 'organ' },
       ],
       url: 'https://purl.wholepersonphysiome.org/wpp/cardiovascular-system',
       sections: SECTIONS,

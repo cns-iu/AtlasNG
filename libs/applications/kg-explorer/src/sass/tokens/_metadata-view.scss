@@ -7,6 +7,8 @@ $config: (
     padding: 2.5rem,
     version-control-offset: 0rem,
     link-color: token-utils.sys-token(primary),
+    icon-product-background-color: token-utils.ext-sys-slot(product, secondary),
+    icon-organ-background-color: token-utils.ext-sys-slot(organ, tertiary),
   ),
 );
 
