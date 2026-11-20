@@ -56,10 +56,11 @@ describe('ScrollArea', () => {
       const host = result.fixture.debugElement.query(By.directive(ScrollArea)).nativeElement as HTMLElement;
       const scrollbar = result.fixture.debugElement.query(By.directive(NgScrollbar)).componentInstance as NgScrollbar;
       const viewport = scrollbar.adapter.viewportElement;
-      Object.defineProperty(viewport, 'scrollHeight', { configurable: true, value: 1000 });
+      const content = scrollbar.adapter.contentWrapperElement;
       Object.defineProperty(viewport, 'clientHeight', { configurable: true, value: 300 });
-      Object.defineProperty(viewport, 'scrollWidth', { configurable: true, value: 800 });
       Object.defineProperty(viewport, 'clientWidth', { configurable: true, value: 400 });
+      Object.defineProperty(content, 'clientHeight', { configurable: true, value: 1000 });
+      Object.defineProperty(content, 'clientWidth', { configurable: true, value: 800 });
 
       const scrollTo = (top: number, left = 0) => {
         viewport.scrollTop = top;
@@ -68,8 +69,20 @@ describe('ScrollArea', () => {
         result.fixture.detectChanges();
       };
 
-      return { ...result, host, scrollTo };
+      return { ...result, host, viewport, content, scrollTo };
     }
+
+    it('removes the bottom fade once the content shrinks to fit, while the viewport still overflows', async () => {
+      const { host, viewport, content, scrollTo } = await setup();
+      scrollTo(0);
+      expect(host).toHaveClass('ang-scroll-area--fade-bottom');
+
+      Object.defineProperty(content, 'clientHeight', { configurable: true, value: 300 });
+      Object.defineProperty(viewport, 'scrollHeight', { configurable: true, value: 1000 });
+      scrollTo(0);
+
+      expect(host).not.toHaveClass('ang-scroll-area--fade-bottom');
+    });
 
     it('fades only the bottom edge at the top of the content', async () => {
       const { host, scrollTo } = await setup();

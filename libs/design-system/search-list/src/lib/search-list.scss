@@ -3,16 +3,24 @@
 @use 'tokens/search-list' as *;
 @use 'tokens/scroll-area' as scroll;
 
-:host {
+$label-line-height: token-utils.slot(label-line-height, $config);
+$description-line-height: token-utils.slot(description-line-height, $config);
+$two-line-height: var(--mat-list-list-item-two-line-container-height, 4rem);
+
+// The component turns off view encapsulation, so these styles can reach the parts of each option
+// that Material renders, such as the checkbox and the two-line text.
+.ang-search-list {
   display: flex;
   flex-direction: column;
   min-width: 19.5rem;
   border-radius: token-utils.slot(radius, $config);
   background: token-utils.slot(background, $config);
-  box-shadow: 0px 5px 4px 0px token-utils.slot(elevation, $config);
+  box-shadow: token-utils.slot(container-elevation, $config);
+  // Keeps the scroll area's square background inside the rounded corners.
+  overflow: clip;
 
   .ang-search-list--search {
-    padding: 1rem 1rem 0rem 1rem;
+    padding: 1rem 1rem 0;
   }
 
   .ang-search-list--scroll-area {
@@ -24,6 +32,34 @@
         container-color: token-utils.slot(background, $config),
       )
     );
+  }
+
+  .ang-search-list--no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 1rem 0.5rem;
+  }
+
+  // Lines the button label up with the message.
+  .ang-search-list--clear-search {
+    margin-inline-start: calc(-1 * var(--mat-button-text-horizontal-padding, 0.75rem));
+  }
+
+  .ang-search-list--no-results-message {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    margin: 0 0 0.25rem;
+    overflow-wrap: anywhere;
+    color: token-utils.slot(no-results-color, $config);
+    font-family: token-utils.slot(no-results-font, $config);
+    font-size: token-utils.slot(no-results-size, $config);
+    line-height: token-utils.slot(no-results-line-height, $config);
+    font-weight: token-utils.slot(no-results-weight, $config);
+    letter-spacing: token-utils.slot(no-results-tracking, $config);
   }
 
   .ang-search-list--list {
@@ -42,6 +78,44 @@
       border-radius: token-utils.slot(highlight-radius, $config);
       background: token-utils.slot(highlight-background, $config);
       color: token-utils.slot(highlight-color, $config);
+    }
+
+    // Replaces Material's 24px gap between the checkbox and the label.
+    .mdc-list-item--with-leading-checkbox .mdc-list-item__start {
+      margin-inline-end: 0.5rem;
+    }
+
+    // Material sets two-line text on fixed pixel baselines, which sit these type styles low in the
+    // option. Centers the lines instead and keeps the checkbox level with the label.
+    .mdc-list-item--with-two-lines {
+      .mdc-list-item__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .mdc-list-item__primary-text,
+      .mdc-list-item__secondary-text {
+        margin: 0;
+
+        &::before,
+        &::after {
+          display: none;
+        }
+      }
+
+      .mdc-list-item__primary-text {
+        line-height: $label-line-height;
+      }
+
+      .mdc-list-item__secondary-text {
+        line-height: $description-line-height;
+      }
+
+      // Centers the 2.5rem checkbox on the label's line.
+      .mdc-list-item__start {
+        margin-top: calc(($two-line-height - $description-line-height) / 2 - 1.25rem);
+      }
     }
 
     .ang-search-list--count {

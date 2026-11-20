@@ -59,11 +59,11 @@ Give the table view a height (for example, fill the page below your header) and 
 
 ### Layout
 
-| Area          | Behavior                                                                                                                                                                                                                                                                      |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Filter menu   | Shows an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from `filtersDockBreakpoint` (the large breakpoint, 1280px, by default) up; below that it is a drawer opened and closed through `[(filtersOpen)]` and the [filter toggle](#filter-toggle). |
-| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows.                                         |
-| Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                                                                |
+| Area          | Behavior                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Filter menu   | Shows, each only when set, the breadcrumbs, heading, and description of `filterOptions`, a "Customize view" section built from its `viewToggleOptions` and `viewSettings`, and an `ang-multi-select-filter` for each entry of `filters`. Docked on the left from `filtersDockBreakpoint` (the large breakpoint, 1280px, by default) up; below that it is a drawer opened and closed through `[(filtersOpen)]` and the [filter toggle](#filter-toggle). |
+| Results table | Search bar with autocomplete, "Viewing X of Y" counter, and sortable `ang-table`, all inside an `ang-scroll-area` together with the end-of-results indicator and any table end content. The no-results indicator replaces empty rows.                                                                                                                                                                                                                  |
+| Padding       | Around the search bar and the table: 20px below 960px, and 32px from there up.                                                                                                                                                                                                                                                                                                                                                                         |
 
 Text links, such as the cells of `kgExplorerLinkColumn` columns, use the theme's `primary` color. Set `--ang-kg-explorer-table-view-link-color` to change it.
 
@@ -72,7 +72,7 @@ Text links, such as the cells of `kgExplorerLinkColumn` columns, use the theme's
 - `items` takes any row type, and `columns` (required) sets which properties the table shows. There are no built-in default columns.
 - Build columns with the generic helpers, which apply the Figma column widths and cell types: `kgExplorerLinkColumn(name, prop, { labelProp | labelFn | label })`, `kgExplorerTextColumn`, `kgExplorerChipColumn` (one chip per array value, unsortable), `kgExplorerNumberColumn`, and `kgExplorerDateColumn`. Each takes optional `TableColumn` overrides as its last argument, and you can mix in plain `TableColumn` objects. Create the array once and reuse it, because the table caches cell templates by column identity.
 - Column sizing: link and chip columns grow, close to the Figma table. Growing columns start at their minimum width and share the remaining width equally, each stopping at its maximum: link 200–640px and chip 144–212px. Text, number, and date columns hug their header and widest value (`fitContent`), so use text columns for short values such as types. When the minimum widths don't fit, the table scrolls sideways. Change a column with `minWidth` or `maxWidth` in its overrides, for example `kgExplorerLinkColumn('Title', 'url', { labelProp: 'title' }, { minWidth: 140, maxWidth: 336 })`. `flexGrow: 0` keeps a column at its `width`.
-- `filters` takes `KgExplorerFilter` definitions, and `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. Clearing the results from the no-results indicator resets the selections and the search term.
+- `filters` takes `KgExplorerFilter` definitions, and `[(filterSelections)]` holds the selected options of each filter, keyed by filter `id`. The drawer's "Clear filters" button resets the selections, and clearing the results from the no-results indicator resets the selections and the search term.
 
 ### Filters
 
@@ -121,14 +121,16 @@ The filter drawer has no built-in trigger. Add a button that toggles `[(filtersO
 
 ### Inputs and outputs
 
-| Name                              | Description                                                  |
-| --------------------------------- | ------------------------------------------------------------ |
-| `items`, `columns`                | Rows to display and the columns that show them.              |
-| `filters`, `[(filterSelections)]` | Filter definitions and the selected options of each filter.  |
-| `config`                          | Search, download, and visibility options (see below).        |
-| `[(search)]`, `[(sorts)]`         | Current search term and column sorts.                        |
-| `[(filtersOpen)]`                 | Whether the filter drawer is open below the dock breakpoint. |
-| `(download)`                      | Emits `{ item, format }` when a user downloads a row.        |
+| Name                                        | Description                                                                                                                                                                                                                                                                               |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`, `columns`                          | Rows to display and the columns that show them.                                                                                                                                                                                                                                           |
+| `filters`, `[(filterSelections)]`           | Filter definitions and the selected options of each filter.                                                                                                                                                                                                                               |
+| `config`                                    | Search, download, filter drawer, and visibility options (see below).                                                                                                                                                                                                                      |
+| `[(search)]`, `[(sorts)]`                   | Current search term and column sorts.                                                                                                                                                                                                                                                     |
+| `[(filtersOpen)]`                           | Whether the filter drawer is open below the dock breakpoint.                                                                                                                                                                                                                              |
+| `[(activeToggle)]`, `[(viewSettingValues)]` | Picked view toggle option, and the picked value of each view setting keyed by setting `id`.                                                                                                                                                                                               |
+| `(download)`                                | Emits `{ item, format }` when a user downloads a row.                                                                                                                                                                                                                                     |
+| `(resetView)`                               | Emits when a user clicks "Reset" in the "Customize view" section, after the view toggle is set back to its first option and the view settings are cleared. The button is shown once the user changes the view toggle or a view setting, and hidden again while they match those defaults. |
 
 Content projected into the table view, such as a footer, renders after the table and the end-of-results indicator, and scrolls with them:
 
@@ -142,25 +144,58 @@ Content projected into the table view, such as a footer, renders after the table
 
 `config` takes a `KgExplorerTableViewConfig`. Every option is optional.
 
-| Option                     | Default     | Description                                                                                                        |
-| -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `searchFields`             | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them.                |
-| `searchSuggestionField`    | row `title` | Field whose values are suggested below the search field.                                                           |
-| `disableSearchSuggestions` | `false`     | Turns the suggestions off.                                                                                         |
-| `disableSearch`            | `false`     | Hides the search field.                                                                                            |
-| `disableResultsCounter`    | `false`     | Hides the "Viewing X of Y" counter.                                                                                |
-| `resultsCounterPrefix`     | `Viewing`   | Text before the numbers of the results counter.                                                                    |
-| `disableEndOfResults`      | `false`     | Hides the end-of-results indicator.                                                                                |
-| `downloadFormats`          | none        | File formats of the download column. The column is only shown when this is set.                                    |
-| `downloadColumnLabel`      | `Download`  | Accessible name of the download column's header, which is visually empty.                                          |
-| `downloadLabel`            | row `title` | Row key or `(row) => string` that names the row of each download button (see below).                               |
-| `filtersDockBreakpoint`    | `'large'`   | Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`, from which the filter menu is docked. |
+| Option                     | Default     | Description                                                                                                         |
+| -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| `searchFields`             | all values  | Fields to search: row keys or computed fields. Defaults to every string, number, and array of them.                 |
+| `searchSuggestionField`    | row `title` | Field whose values are suggested below the search field.                                                            |
+| `disableSearchSuggestions` | `false`     | Turns the suggestions off.                                                                                          |
+| `disableSearch`            | `false`     | Hides the search field.                                                                                             |
+| `disableResultsCounter`    | `false`     | Hides the "Viewing X of Y" counter.                                                                                 |
+| `resultsCounterPrefix`     | `Viewing`   | Text before the numbers of the results counter.                                                                     |
+| `disableEndOfResults`      | `false`     | Hides the end-of-results indicator.                                                                                 |
+| `downloadFormats`          | none        | File formats of the download column. The column is only shown when this is set.                                     |
+| `downloadColumnLabel`      | `Download`  | Accessible name of the download column's header, which is visually empty.                                           |
+| `downloadLabel`            | row `title` | Row key or `(row) => string` that names the row of each download button (see below).                                |
+| `filtersDockBreakpoint`    | `'large'`   | Breakpoint expression, as accepted by `watchBreakpoint` from `@atlasng/cdk`, from which the filter menu is docked.  |
+| `filterOptions`            | see below   | Content and labels of the filter drawer, as a `KgExplorerFilterDrawerConfig` (see [Filter drawer](#filter-drawer)). |
 
 Set defaults for every table view below an injector with `provideKgExplorerTableView`. The `config` input is merged over them, and options left out or set to `undefined` keep the provided value.
 
 ```ts
 providers: [provideKgExplorerTableView({ disableEndOfResults: true })];
 ```
+
+#### Filter drawer
+
+`filterOptions` takes a `KgExplorerFilterDrawerConfig`. The `config` input's `filterOptions` is merged option by option over the provided ones, so setting one label keeps the others. A nested `provideKgExplorerTableView` replaces the parent's `filterOptions` as a whole.
+
+| Option               | Default          | Description                                                                                               |
+| -------------------- | ---------------- | --------------------------------------------------------------------------------------------------------- |
+| `breadcrumbs`        | none             | Breadcrumb trail at the top of the drawer.                                                                |
+| `filtersHeading`     | none             | Heading below the breadcrumbs.                                                                            |
+| `filtersDescription` | none             | Supporting text below the heading.                                                                        |
+| `viewToggleOptions`  | none             | Options of the view button toggle in the "Customize view" section. The first option is picked by default. |
+| `viewSettings`       | none             | Selects in the "Customize view" section, such as "Sort by".                                               |
+| `filtersLabel`       | `Filters`        | Heading of the filters section.                                                                           |
+| `clearFiltersLabel`  | `Clear filters`  | Label of the button that clears every filter selection.                                                   |
+| `customizeViewLabel` | `Customize view` | Heading of the view customization section.                                                                |
+| `resetViewLabel`     | `Reset`          | Label of the button that resets the view customizations.                                                  |
+| `viewOptionsLabel`   | `View`           | Accessible name of the view options button toggle group.                                                  |
+
+```ts
+config: KgExplorerTableViewConfig<Dataset> = {
+  filterOptions: {
+    filtersHeading: 'Datasets',
+    viewToggleOptions: [
+      { value: 'table', label: 'Table' },
+      { value: 'cards', label: 'Cards' },
+    ],
+    viewSettings: [{ id: 'sort', label: 'Sort by', options: [{ value: 'name', label: 'Name' }] }],
+  },
+};
+```
+
+The table view only reports view customizations through `[(activeToggle)]`, `[(viewSettingValues)]`, and `(resetView)`; apply them, for example by sorting `items`, yourself. `activeToggle` is set to the first of `viewToggleOptions` whenever the config changes, so a removed option is never left picked.
 
 #### Search
 

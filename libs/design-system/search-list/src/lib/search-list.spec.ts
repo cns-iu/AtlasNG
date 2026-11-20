@@ -1,3 +1,5 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { TestBed } from '@angular/core/testing';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { provideSearch, SearchEngine, SearchResult, withCustomEngine } from '@atlasng/cdk/search';
@@ -248,5 +250,84 @@ describe('SearchList', () => {
     );
 
     expect(screen.getByRole('listbox', { name: 'Organs' })).toBeInTheDocument();
+  });
+
+  it('shows a message naming the search term when it matches no options', async () => {
+    const user = userEvent.setup();
+    await setup();
+
+    await user.type(screen.getByRole('textbox', { name: 'Search' }), ' zzz ');
+
+    expect(screen.queryByRole('option')).not.toBeInTheDocument();
+    expect(screen.getByText('No options match “zzz”')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Clear search' })).toBeVisible();
+  });
+
+  it('shows no message while options match or the search field is empty', async () => {
+    const user = userEvent.setup();
+    await setup();
+    const search = screen.getByRole('textbox', { name: 'Search' });
+
+    expect(screen.queryByRole('button', { name: 'Clear search' })).not.toBeInTheDocument();
+
+    await user.type(search, 'al');
+    expect(screen.queryByText(/No options match/)).not.toBeInTheDocument();
+
+    await user.clear(search);
+    await user.type(search, '   ');
+    expect(screen.queryByText(/No options match/)).not.toBeInTheDocument();
+  });
+
+  it('clears the search, brings back the options, and focuses the field', async () => {
+    const user = userEvent.setup();
+    const { fixture } = await setup({ search: 'zzz' });
+    const search = screen.getByRole('textbox', { name: 'Search' });
+
+    await user.click(screen.getByRole('button', { name: 'Clear search' }));
+
+    expect(search).toHaveValue('');
+    expect(search).toHaveFocus();
+    expect(fixture.componentInstance.search()).toBe('');
+    expect(screen.getAllByRole('option')).toHaveLength(OPTIONS.length);
+    expect(screen.queryByText(/No options match/)).not.toBeInTheDocument();
+  });
+
+  it('clears the search when the search field is hidden', async () => {
+    const user = userEvent.setup();
+    const { fixture } = await setup({ disableSearch: true, search: 'zzz' });
+
+    await user.click(screen.getByRole('button', { name: 'Clear search' }));
+
+    expect(fixture.componentInstance.search()).toBe('');
+    expect(screen.getAllByRole('option')).toHaveLength(OPTIONS.length);
+  });
+
+  it('uses the no results labels', async () => {
+    await render(
+      '<ang-search-list noResultsLabel="Nothing matches" clearSearchLabel="Reset" search="zzz" [options]="options" />',
+      { imports: [SearchList], componentProperties: { options: OPTIONS } },
+    );
+
+    expect(screen.getByText('Nothing matches “zzz”')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeVisible();
+  });
+
+  it('announces the message once the search term stops changing', async () => {
+    const { fixture } = await setup();
+    const announce = vi.spyOn(TestBed.inject(LiveAnnouncer), 'announce').mockResolvedValue();
+    vi.useFakeTimers();
+    try {
+      fixture.componentRef.setInput('search', 'zz');
+      fixture.detectChanges();
+      vi.advanceTimersByTime(500);
+      fixture.componentRef.setInput('search', 'zzz');
+      fixture.detectChanges();
+      vi.advanceTimersByTime(1000);
+
+      expect(announce).toHaveBeenCalledTimes(1);
+      expect(announce).toHaveBeenCalledWith('No options match “zzz”', undefined, undefined);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

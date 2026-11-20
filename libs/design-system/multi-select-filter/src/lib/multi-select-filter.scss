@@ -1,23 +1,16 @@
-@use '@angular/material' as mat;
 @use 'internal/token-utils';
 @use 'tokens/multi-select-filter' as *;
+@use 'tokens/scroll-area';
+@use 'tokens/search-list';
 
 .ang-multi-select-filter {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
 
   .ang-multi-select-filter--header {
     display: flex;
     align-items: center;
-  }
-
-  .ang-multi-select-filter--info {
-    @include mat.icon-button-overrides(
-      (
-        state-layer-size: 3rem,
-      )
-    );
   }
 
   .ang-multi-select-filter--label {
@@ -39,17 +32,11 @@
     line-height: token-utils.slot(counter-text-line-height, $config);
     letter-spacing: token-utils.slot(counter-text-tracking, $config);
     color: token-utils.slot(counter-text-color, $config);
-  }
+    border-radius: token-utils.slot(counter-shape, $config);
 
-  // Replaces the default chip margins with the uniform gap from the design.
-  .ang-multi-select-filter--chips {
-    .mdc-evolution-chip-set__chips {
-      gap: 0.375rem;
-      margin: 0;
-    }
-
-    .mdc-evolution-chip {
-      margin: 0;
+    &:focus-visible {
+      outline: solid 0.1875rem token-utils.slot(counter-focus-outline-color, $config);
+      outline-offset: 0.125rem;
     }
   }
 }
@@ -57,13 +44,135 @@
 // The panel is rendered in an overlay outside of the host element.
 .ang-multi-select-filter--panel {
   display: flex;
-  max-height: 24rem;
+  width: 22.5rem;
+  max-width: 100vw;
 
   .ang-multi-select-filter--search-list {
+    flex: 1 1 auto;
     min-height: 0;
+  }
+}
 
-    .ang-search-list--list {
-      min-height: 0;
+// The overlay limits the panel to the space left in the viewport. Stops it from shrinking past
+// 15rem in short viewports, where it runs past the bottom instead.
+.cdk-overlay-pane.ang-multi-select-filter--panel-pane {
+  max-height: max(100%, 15rem);
+}
+
+.ang-multi-select-filter--panel.ang-multi-select-filter--full-screen {
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: token-utils.slot(dialog-container-color, $config);
+
+  .ang-multi-select-filter--dialog-title {
+    margin: 0;
+    padding: 1rem;
+    color: token-utils.slot(dialog-title-text-color, $config);
+    font-family: token-utils.slot(dialog-title-text-font, $config);
+    font-size: token-utils.slot(dialog-title-text-size, $config);
+    font-weight: token-utils.slot(dialog-title-text-weight, $config);
+    line-height: token-utils.slot(dialog-title-text-line-height, $config);
+    letter-spacing: token-utils.slot(dialog-title-text-tracking, $config);
+  }
+
+  // The full-screen surface replaces the search list's own card.
+  .ang-multi-select-filter--search-list {
+    min-width: 0;
+
+    @include search-list.overrides(
+      (
+        background: token-utils.slot(dialog-container-color, $config),
+        radius: 0,
+        container-elevation: none,
+      )
+    );
+
+    // The title's padding already spaces the search field from it.
+    .ang-search-list--search {
+      padding: 0 1rem 1rem;
     }
+  }
+
+  // Sits below the list, so adding the first chip shortens the list instead of moving it down.
+  .ang-multi-select-filter--dialog-footer {
+    flex: none;
+    padding-block: 0.75rem;
+  }
+
+  .ang-multi-select-filter--dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-inline: 1rem;
+  }
+
+  .ang-multi-select-filter--chip-tray {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+
+  .ang-multi-select-filter--chip-row {
+    min-height: 0;
+    margin-inline: 1rem;
+
+    @include scroll-area.overrides(
+      (
+        container-color: token-utils.slot(dialog-container-color, $config),
+      )
+    );
+  }
+
+  // Leaves room below the chips for the scrollbar.
+  .ang-multi-select-filter--dialog-chips {
+    padding-bottom: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  // Plays when the search list opens and when it switches layouts. The panel matches Material's menu
+  // and select panels, and the overlay sets its transform origin to the corner next to the filter.
+  .ang-multi-select-filter--panel {
+    animation: ang-multi-select-filter--panel-in 120ms cubic-bezier(0, 0, 0.2, 1);
+
+    &.ang-multi-select-filter--full-screen {
+      animation: ang-multi-select-filter--full-screen-in 200ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    &.ang-multi-select-filter--panel-leave {
+      animation: ang-multi-select-filter--panel-out 100ms linear forwards;
+    }
+  }
+
+  .ang-multi-select-filter--chip-tray-enter {
+    animation: ang-multi-select-filter--chip-tray-in 250ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  }
+
+  .ang-multi-select-filter--chip-tray-leave {
+    animation: ang-multi-select-filter--chip-tray-in 200ms cubic-bezier(0.3, 0, 0.8, 0.15) reverse;
+  }
+}
+
+@keyframes ang-multi-select-filter--panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes ang-multi-select-filter--panel-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ang-multi-select-filter--full-screen-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ang-multi-select-filter--chip-tray-in {
+  from {
+    grid-template-rows: 0fr;
   }
 }
