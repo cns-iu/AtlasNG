@@ -1,7 +1,10 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { BreakpointObserver, type BreakpointState } from '@angular/cdk/layout';
 import { RichTooltip } from '@atlasng/design-system/rich-tooltip';
 import { SearchListOption } from '@atlasng/design-system/search-list';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { BehaviorSubject } from 'rxjs';
 import { MultiSelectFilter } from './multi-select-filter';
 
 describe('MultiSelectFilter', () => {
@@ -9,15 +12,22 @@ describe('MultiSelectFilter', () => {
   const kidney: SearchListOption = { label: 'Kidney', count: 5 };
   const options = [liver, kidney];
 
-  async function setup(inputs: Record<string, unknown> = {}) {
+  function provideBreakpoint(wide: boolean) {
+    const breakpoint = new BehaviorSubject<BreakpointState>({ matches: wide, breakpoints: {} });
+    return { breakpoint, providers: [{ provide: BreakpointObserver, useValue: { observe: () => breakpoint } }] };
+  }
+
+  async function setup(inputs: Record<string, unknown> = {}, wide = true) {
     const selectedChange = vi.fn();
     const expandedChange = vi.fn();
+    const { breakpoint, providers } = provideBreakpoint(wide);
     const result = await render(MultiSelectFilter, {
       inputs: { label: 'Organ', options, ...inputs },
+      providers,
     });
     result.fixture.componentInstance.selected.subscribe(selectedChange);
     result.fixture.componentInstance.expanded.subscribe(expandedChange);
-    return { ...result, selectedChange, expandedChange };
+    return { ...result, breakpoint, selectedChange, expandedChange };
   }
 
   async function setupWithInfo(attributes = '') {
@@ -26,7 +36,7 @@ describe('MultiSelectFilter', () => {
         <ang-multi-select-filter label="Organ" [options]="options" [infoPanel]="info" ${attributes} />
         <ang-rich-tooltip #info tagline="About organs" description="Filter by organ" />
       `,
-      { imports: [MultiSelectFilter, RichTooltip], componentProperties: { options } },
+      { imports: [MultiSelectFilter, RichTooltip], componentProperties: { options }, ...provideBreakpoint(true) },
     );
   }
 
@@ -197,9 +207,146 @@ describe('MultiSelectFilter', () => {
     expect(screen.getByRole('button', { name: 'Clear Kidney' })).toBeInTheDocument();
   });
 
+  it('announces the number of selected options when the selection changes in the search list', async () => {
+    const user = userEvent.setup();
+    const { fixture } = await setup({ selected: [kidney] });
+    const announce = vi.spyOn(fixture.debugElement.injector.get(LiveAnnouncer), 'announce');
+
+    await user.click(screen.getByRole('button', { name: 'Organ' }));
+    await user.click(screen.getByRole('option', { name: /Liver/ }));
+
+    expect(announce).toHaveBeenLastCalledWith('2 selected');
+  });
+
+  it('announces the number of selected options when a chip is removed', async () => {
+    const user = userEvent.setup();
+    const { fixture } = await setup({ selected: [liver, kidney], selectedCountText: 'organs selected' });
+    const announce = vi.spyOn(fixture.debugElement.injector.get(LiveAnnouncer), 'announce');
+
+    await user.click(screen.getByRole('button', { name: 'Remove Liver' }));
+
+    expect(announce).toHaveBeenLastCalledWith('1 organs selected');
+  });
+
+  it('does not announce selections set by the app', async () => {
+    const { fixture, rerender } = await setup();
+    const announce = vi.spyOn(fixture.debugElement.injector.get(LiveAnnouncer), 'announce');
+
+    await rerender({ inputs: { label: 'Organ', options, selected: [liver] } });
+
+    expect(announce).not.toHaveBeenCalled();
+  });
+
   it('does not render chips without a selection', async () => {
     await setup();
 
     expect(screen.queryByRole('list', { name: 'Active filters' })).not.toBeInTheDocument();
+  });
+
+  describe('below the medium breakpoint', () => {
+    it('opens the search list full screen with a title and the selected options', async () => {
+      const user = userEvent.setup();
+      const { expandedChange } = await setup({ selected: [kidney] }, false);
+
+      const labelButton = screen.getByRole('button', { name: 'Organ' });
+      await user.click(labelButton);
+
+      const dialog = screen.getByRole('dialog', { name: 'Organ filters' });
+      expect(dialog).toHaveAttribute('aria-modal', 'true');
+      expect(labelButton).toHaveAttribute('aria-controls', dialog.id);
+      expect(within(dialog).getByRole('heading', { name: 'Organ filters' })).toBeInTheDocument();
+      expect(within(dialog).getByRole('list', { name: 'Active filters' })).toBeInTheDocument();
+      expect(within(dialog).getByRole('option', { name: /Liver/ })).toBeInTheDocument();
+      expect(within(dialog).getByRole('textbox', { name: 'Search' })).toBeInTheDocument();
+      expect(expandedChange).toHaveBeenLastCalledWith(true);
+    });
+
+    it('adds and removes chips in the full-screen search list', async () => {
+      const user = userEvent.setup();
+      const { selectedChange } = await setup({}, false);
+
+      await user.click(screen.getByRole('button', { name: 'Organ' }));
+      const dialog = screen.getByRole('dialog', { name: 'Organ filters' });
+      await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
+
+      expect(selectedChange).toHaveBeenLastCalledWith([liver]);
+
+      await user.click(within(dialog).getByRole('button', { name: 'Remove Liver' }));
+
+      expect(selectedChange).toHaveBeenLastCalledWith([]);
+      expect(within(dialog).queryByRole('list', { name: 'Active filters' })).not.toBeInTheDocument();
+    });
+
+    it('shows the newest chip first in the full-screen search list', async () => {
+      const user = userEvent.setup();
+      await setup({ selected: [kidney] }, false);
+
+      await user.click(screen.getByRole('button', { name: 'Organ' }));
+      const dialog = screen.getByRole('dialog', { name: 'Organ filters' });
+      await user.click(within(dialog).getByRole('option', { name: /Liver/ }));
+
+      const chips = within(within(dialog).getByRole('list', { name: 'Active filters' })).getAllByRole('listitem');
+      expect(chips[0]).toHaveTextContent('Liver');
+      expect(chips[1]).toHaveTextContent('Kidney');
+    });
+
+    it('closes with the Done button and returns focus to the label button', async () => {
+      const user = userEvent.setup();
+      const { expandedChange } = await setup({ doneLabel: 'Apply' }, false);
+
+      const labelButton = screen.getByRole('button', { name: 'Organ' });
+      await user.click(labelButton);
+      await user.click(
+        within(screen.getByRole('dialog', { name: 'Organ filters' })).getByRole('button', { name: 'Apply' }),
+      );
+
+      expect(expandedChange).toHaveBeenLastCalledWith(false);
+      expect(screen.queryByRole('dialog', { name: 'Organ filters' })).not.toBeInTheDocument();
+      expect(labelButton).toHaveAttribute('aria-expanded', 'false');
+      expect(labelButton).toHaveFocus();
+    });
+
+    it('closes with Escape', async () => {
+      const user = userEvent.setup();
+      const { expandedChange } = await setup({}, false);
+
+      await user.click(screen.getByRole('button', { name: 'Organ' }));
+      await user.keyboard('{Escape}');
+
+      expect(expandedChange).toHaveBeenLastCalledWith(false);
+      expect(screen.queryByRole('dialog', { name: 'Organ filters' })).not.toBeInTheDocument();
+    });
+
+    it('opens full screen when the filter starts expanded', async () => {
+      await setup({ expanded: true }, false);
+
+      expect(screen.getByRole('dialog', { name: 'Organ filters' })).toBeInTheDocument();
+    });
+
+    it('titles the full-screen search list with the dialog title input', async () => {
+      await setup({ expanded: true, dialogTitle: 'Filter by organ' }, false);
+
+      const dialog = screen.getByRole('dialog', { name: 'Filter by organ' });
+      expect(within(dialog).getByRole('heading', { name: 'Filter by organ' })).toBeInTheDocument();
+    });
+  });
+
+  it('switches an open search list between the panel and full screen when the viewport crosses the breakpoint', async () => {
+    const user = userEvent.setup();
+    const { breakpoint, fixture, expandedChange } = await setup();
+
+    await user.click(screen.getByRole('button', { name: 'Organ' }));
+    breakpoint.next({ matches: false, breakpoints: {} });
+    fixture.detectChanges();
+
+    expect(screen.getByRole('dialog', { name: 'Organ filters' })).toBeInTheDocument();
+
+    breakpoint.next({ matches: true, breakpoints: {} });
+    fixture.detectChanges();
+
+    const panel = screen.getByRole('dialog', { name: 'Organ' });
+    expect(panel).not.toHaveAttribute('aria-modal');
+    expect(within(panel).queryByRole('heading')).not.toBeInTheDocument();
+    expect(expandedChange).toHaveBeenLastCalledWith(true);
   });
 });

@@ -21,11 +21,15 @@ export type {
   KgExplorerFilter,
   KgExplorerFilterField,
   KgExplorerFilterSelections,
+  KgExplorerViewOption,
+  KgExplorerViewSetting,
+  KgExplorerViewSettingValues,
 } from './lib/models';
 export {
   KG_EXPLORER_TABLE_VIEW_CONFIG,
   provideKgExplorerTableView,
   type KgExplorerTableViewConfig,
+  type KgExplorerFilterDrawerConfig,
 } from './lib/table-view/config';
 export { KgExplorerTableView } from './lib/table-view/table-view';
 export {

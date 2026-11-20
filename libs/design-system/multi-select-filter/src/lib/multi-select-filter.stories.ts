@@ -14,6 +14,42 @@ const ORGANS: SearchListOption[] = [
   { label: 'Thymus', count: 95 },
 ];
 
+/** Organs with their body system as supporting text, enough to scroll the list. */
+const ORGANS_WITH_SYSTEMS: SearchListOption[] = [
+  { label: 'Heart', description: 'Cardiovascular system', count: 1250 },
+  { label: 'Blood vasculature', description: 'Cardiovascular system', count: 1180 },
+  { label: 'Kidney', description: 'Urinary system', count: 980 },
+  { label: 'Liver', description: 'Digestive system', count: 870 },
+  { label: 'Lungs', description: 'Respiratory system', count: 640 },
+  { label: 'Brain', description: 'Nervous system', count: 610 },
+  { label: 'Skin', description: 'Integumentary system', count: 575 },
+  { label: 'Small intestine', description: 'Digestive system', count: 520 },
+  { label: 'Large intestine', description: 'Digestive system', count: 505 },
+  { label: 'Spleen', description: 'Lymphatic system', count: 310 },
+  { label: 'Lymph node', description: 'Lymphatic system', count: 290 },
+  { label: 'Pancreas', description: 'Digestive system', count: 220 },
+  { label: 'Prostate', description: 'Reproductive system', count: 198 },
+  { label: 'Bone marrow', description: 'Hematopoietic system', count: 184 },
+  { label: 'Eye', description: 'Sensory system', count: 172 },
+  { label: 'Ovary', description: 'Reproductive system', count: 160 },
+  { label: 'Uterus', description: 'Reproductive system', count: 151 },
+  { label: 'Placenta', description: 'Reproductive system', count: 143 },
+  { label: 'Thymus', description: 'Lymphatic system', count: 95 },
+  { label: 'Tonsil', description: 'Lymphatic system', count: 88 },
+  { label: 'Ureter', description: 'Urinary system', count: 76 },
+  { label: 'Urinary bladder', description: 'Urinary system', count: 71 },
+  { label: 'Esophagus', description: 'Digestive system', count: 64 },
+  { label: 'Stomach', description: 'Digestive system', count: 59 },
+  { label: 'Trachea', description: 'Respiratory system', count: 47 },
+  { label: 'Main bronchus', description: 'Respiratory system', count: 41 },
+  { label: 'Larynx', description: 'Respiratory system', count: 33 },
+  { label: 'Spinal cord', description: 'Nervous system', count: 29 },
+  { label: 'Thyroid gland', description: 'Endocrine system', count: 24 },
+  { label: 'Adrenal gland', description: 'Endocrine system', count: 18 },
+  { label: 'Fallopian tube', description: 'Reproductive system', count: 12 },
+  { label: 'Knee', description: 'Musculoskeletal system', count: 7 },
+];
+
 const meta: Meta<MultiSelectFilter<SearchListOption>> = {
   title: 'Design System/Multi Select Filter',
   component: MultiSelectFilter,
@@ -72,6 +108,26 @@ export const NoSelection: Story = {
 export const WithoutSearch: Story = {
   args: {
     disableSearch: true,
+  },
+};
+
+export const ManyOptions: Story = {
+  args: {
+    options: ORGANS_WITH_SYSTEMS,
+    selected: [ORGANS_WITH_SYSTEMS[0], ORGANS_WITH_SYSTEMS[3]],
+  },
+};
+
+export const SmallScreen: Story = {
+  args: {
+    options: ORGANS_WITH_SYSTEMS,
+    selected: ORGANS_WITH_SYSTEMS.slice(0, 5),
+  },
+  globals: {
+    viewport: { value: 'mobile1', isRotated: false },
+  },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Organ' }));
   },
 };
 
