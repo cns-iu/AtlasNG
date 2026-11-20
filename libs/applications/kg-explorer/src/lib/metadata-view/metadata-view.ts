@@ -6,8 +6,8 @@ import { provideDefinitions } from '@atlasng/content-blocks/definitions';
 import { provideDesignSystemDefinitions } from '@atlasng/content-blocks/definitions/design-system';
 import { CONTENT_DOCUMENT_VERSION, ContentDocument } from '@atlasng/content-blocks/types';
 import { BreadcrumbItem, Breadcrumbs } from '@atlasng/design-system/buttons/breadcrumbs';
+import { ContentHeader } from '@atlasng/design-system/content/content-header';
 import { ContentSection } from '@atlasng/design-system/content/content-section';
-import { Heading } from '@atlasng/design-system/content/heading';
 import { LinkSnippet } from '@atlasng/design-system/links/link-snippet';
 import {
   VersionControl,
@@ -88,7 +88,16 @@ const NO_VERSIONS: readonly never[] = [];
  */
 @Component({
   selector: 'ang-kg-explorer-metadata-view',
-  imports: [Breadcrumbs, ContentBlock, ContentSection, Heading, LinkSnippet, MatIcon, NgTemplateOutlet, VersionControl],
+  imports: [
+    Breadcrumbs,
+    ContentBlock,
+    ContentSection,
+    LinkSnippet,
+    MatIcon,
+    NgTemplateOutlet,
+    VersionControl,
+    ContentHeader,
+  ],
   templateUrl: './metadata-view.html',
   styleUrl: './metadata-view.scss',
   providers: [provideDesignSystemDefinitions(), provideDefinitions(KG_EXPLORER_METADATA_DEFINITIONS)],

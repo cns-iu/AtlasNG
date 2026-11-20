@@ -22,7 +22,7 @@
         }
       </div>
     }
-    <ang-heading class="ang-kg-explorer-metadata-view--title" level="1">{{ entry.title }}</ang-heading>
+    <ang-content-header class="ang-kg-explorer-metadata-view--title" level="1" [tagline]="entry.title" />
     @if (entry.url; as url) {
       <ang-link-snippet class="ang-kg-explorer-metadata-view--url" [url]="url" />
     }
