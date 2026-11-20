@@ -16,7 +16,8 @@ type ChangelogAuthor = NonNullable<ChangelogChange['authors']>[number];
  * Emails of AI coding assistants that appear as commit authors or `Co-authored-by` trailers.
  * Nx already skips GitHub App accounts whose names end in `[bot]`.
  */
-const AI_AUTHOR_EMAIL_PATTERN = /^(?:noreply@anthropic\.com|copilot@github\.com|(?:\d+\+)?copilot@users\.noreply\.github\.com)$/i;
+const AI_AUTHOR_EMAIL_PATTERN =
+  /^(?:noreply@anthropic\.com|copilot@github\.com|(?:\d+\+)?copilot@users\.noreply\.github\.com)$/i;
 
 /** Parses a `Name <email>` contact as printed by `git check-mailmap`. */
 const CONTACT_PATTERN = /^(?<name>.*?)\s*<(?<email>[^>]*)>$/;
@@ -86,9 +87,7 @@ export function createMailmapResolver(
   cwd = workspaceRoot,
 ): (author: ChangelogAuthor) => ChangelogAuthor {
   const contacts = [
-    ...new Set(
-      changes.flatMap((change) => (change.authors ?? []).filter((author) => author.email).map(formatContact)),
-    ),
+    ...new Set(changes.flatMap((change) => (change.authors ?? []).filter((author) => author.email).map(formatContact))),
   ];
   const canonical = new Map<string, ChangelogAuthor>();
   if (contacts.length > 0) {

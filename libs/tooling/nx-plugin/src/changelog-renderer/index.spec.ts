@@ -24,11 +24,9 @@ describe('changelog renderer', () => {
     execFileSync('git', ['init', '-q'], { cwd: root });
     writeFileSync(
       join(root, '.mailmap'),
-      [
-        `${LIBBY.name} <${LIBBY.email}> <${LIBBY.email}>`,
-        `${LIBBY.name} <${LIBBY.email}> <ecmaier@iu.edu>`,
-        '',
-      ].join('\n'),
+      [`${LIBBY.name} <${LIBBY.email}> <${LIBBY.email}>`, `${LIBBY.name} <${LIBBY.email}> <ecmaier@iu.edu>`, ''].join(
+        '\n',
+      ),
     );
   });
 
