@@ -6,7 +6,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  box-sizing: border-box;
   padding: 1.5rem 1.25rem;
+  min-width: 100%;
   max-width: min-content;
 
   .ang-kg-explorer-filter-drawer--intro {
@@ -78,6 +80,14 @@
         background-color: token-utils.sys-slot(background),
       )
     );
+
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  .ang-kg-explorer-filter-drawer--view-toggle-option {
+    min-width: 0;
+    white-space: normal;
   }
 
   .ang-kg-explorer-filter-drawer--view-setting {

@@ -5,7 +5,7 @@
     [opened]="filtersOpen()"
     (openedChange)="this.filtersOpen.set($event)"
   >
-    <ang-scroll-area class="ang-kg-explorer-table-view--scroll-area">
+    <ang-scroll-area class="ang-kg-explorer-table-view--scroll-area" orientation="vertical">
       @let options = filterOptions();
       <ang-kg-explorer-filter-drawer
         [breadcrumbs]="options.breadcrumbs ?? []"
