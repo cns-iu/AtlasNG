@@ -157,14 +157,14 @@ Functions ending in `-token` return a CSS variable name, which you use to declar
 
 Include `ds.defaults()` once at your app root to apply every AtlasNG default style. New defaults are added to it, so apps pick them up without changes. Pass `$include` or `$exclude` with feature names to pick which ones apply:
 
-| Feature            | Applies                                                                              |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| `mat-button`       | AtlasNG tokens for Angular Material buttons (`ds.mat-button-defaults()`)             |
-| `mat-form-field`   | AtlasNG tokens for Angular Material form fields (`ds.mat-form-field-defaults()`)     |
-| `mat-progress-bar` | AtlasNG tokens for Angular Material progress bars (`ds.mat-progress-bar-defaults()`) |
-| `mat-slider`       | AtlasNG tokens for Angular Material sliders (`ds.mat-slider-defaults()`)             |
-| `mat-tree`         | Transparent background for Angular Material trees (`ds.mat-tree-defaults()`)         |
-| `text-selection`   | Theme colors for selected text (`ds.text-selection-styles()`)                        |
+| Feature            | Applies                                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| `mat-button`       | AtlasNG tokens for Angular Material buttons, with one-line labels (`ds.mat-button-defaults()`) |
+| `mat-form-field`   | AtlasNG tokens for Angular Material form fields (`ds.mat-form-field-defaults()`)               |
+| `mat-progress-bar` | AtlasNG tokens for Angular Material progress bars (`ds.mat-progress-bar-defaults()`)           |
+| `mat-slider`       | AtlasNG tokens for Angular Material sliders (`ds.mat-slider-defaults()`)                       |
+| `mat-tree`         | Transparent background for Angular Material trees (`ds.mat-tree-defaults()`)                   |
+| `text-selection`   | Theme colors for selected text (`ds.text-selection-styles()`)                                  |
 
 ```scss
 @include ds.defaults($exclude: text-selection);
