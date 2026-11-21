@@ -1,5 +1,11 @@
 <div class="ang-basic-profile-card--image-container">
-  <img class="ang-basic-profile-card--image" fill [ngSrc]="image()" [attr.alt]="`Profile picture of ${name()}`" />
+  <img
+    class="ang-basic-profile-card--image"
+    fill
+    loading="eager"
+    [ngSrc]="image()"
+    [attr.alt]="`Profile picture of ${name()}`"
+  />
 </div>
 <div class="ang-basic-profile-card--content">
   @if (link()) {

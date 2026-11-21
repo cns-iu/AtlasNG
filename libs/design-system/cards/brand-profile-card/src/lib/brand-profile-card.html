@@ -1,5 +1,11 @@
 <div class="ang-brand-profile-card--image-container">
-  <img class="ang-brand-profile-card--image" fill [ngSrc]="image()" [attr.alt]="`Profile picture of ${name()}`" />
+  <img
+    class="ang-brand-profile-card--image"
+    fill
+    loading="eager"
+    [ngSrc]="image()"
+    [attr.alt]="`Profile picture of ${name()}`"
+  />
 </div>
 <div class="ang-brand-profile-card--content">
   <div class="ang-brand-profile-card--title">{{ name() }}</div>

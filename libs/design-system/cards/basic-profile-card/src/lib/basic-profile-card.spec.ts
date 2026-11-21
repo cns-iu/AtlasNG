@@ -30,6 +30,12 @@ describe('BasicProfileCard', () => {
     expect(screen.getByText('Design leader and accessibility advocate.')).toBeVisible();
   });
 
+  it('loads the image eagerly, without the `auto` sizes that iOS draws squished', async () => {
+    await setup();
+
+    expect(screen.getByRole('img', { name: 'Profile picture of Jane Doe' })).toHaveAttribute('sizes', '100vw');
+  });
+
   it('renders the name as a link when link input is provided', async () => {
     await setup({ link: 'https://example.com/profiles/jane-doe' });
 
