@@ -47,6 +47,12 @@ describe('YouTubePlayerPlaceholder', () => {
     expect(screen.getByRole('presentation')).toHaveAttribute('src', source);
   });
 
+  it('loads the placeholder image eagerly, without the `auto` sizes that iOS draws squished', async () => {
+    await setup();
+
+    expect(screen.getByRole('presentation')).toHaveAttribute('sizes', '100vw');
+  });
+
   it('omits the placeholder image and reports an invalid video ID in development mode', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 

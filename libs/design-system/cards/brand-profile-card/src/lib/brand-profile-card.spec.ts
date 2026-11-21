@@ -33,6 +33,12 @@ describe('BrandProfileCard', () => {
     expect(screen.getByText('Design leader and accessibility advocate.')).toBeVisible();
   });
 
+  it('loads the image eagerly, without the `auto` sizes that iOS draws squished', async () => {
+    await setup();
+
+    expect(screen.getByRole('img', { name: 'Profile picture of Jane Doe' })).toHaveAttribute('sizes', '100vw');
+  });
+
   it('centers the card when centered is enabled', async () => {
     const { rerender } = await setup();
     const card = screen.getByTestId('brand-profile-card');
