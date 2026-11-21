@@ -6,7 +6,7 @@ $container-padding: 24px;
 $container-gap: 32px;
 $subcontainer-gap: 16px;
 $content-max-width: 716px;
-$action-min-width: 188px;
+$action-basis: 188px;
 
 body.ang-cookie-banner--container {
   overflow-y: auto;
@@ -92,9 +92,11 @@ body.ang-cookie-banner--container {
     gap: $subcontainer-gap;
   }
 
+  // A button that can't fit its label beside another moves to its own row instead of wrapping the label.
   .ang-cookie-banner--action {
-    flex: 1 1 $action-min-width;
-    min-width: $action-min-width;
+    flex: 1 1 $action-basis;
+    min-width: max-content;
+    white-space: nowrap;
   }
 
   @include breakpoints.breakpoint(medium) {

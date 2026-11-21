@@ -20,6 +20,11 @@ $button-defaults: (
 
 @mixin button-defaults {
   @include mat.button-overrides($button-defaults);
+
+  // Material lets button labels wrap, which breaks the button's one-line shape.
+  .mat-mdc-button-base {
+    white-space: nowrap;
+  }
 }
 
 @mixin form-field-defaults {
